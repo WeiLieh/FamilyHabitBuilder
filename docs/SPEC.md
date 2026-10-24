@@ -50,6 +50,15 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-25 06:59 SGT] Version 1.5, Nudge repository and unlocks (owner's answers):
+  1. Nudge IDs are generated automatically by Supabase, so they are always unique (the app's duplicate-ID check stays as a backstop). CSV imports leave the ID column out.
+  2. Rows can be added and edited, but not deleted while any parent has chosen them (enforced by the database once the Datastore holds parents' targets). A nudge is retired by setting a new **active** column to no: parents can't pick it, and its history stays.
+  3. **Unlock = a bigger menu.** Each nudge has a **starts unlocked** yes/no. A parent can pick only nudges that start unlocked or that they have unlocked. An unlock never raises how many behaviours a parent picks (limits stay 2 quick, 1 deliberate).
+  4. Starts unlocked: all 4 quick nudges, plus "spending quality time" and "interesting activities". Starts locked: "setting a good example", "incidental teaching", "ask-say-do". The per-nudge flag allows a future quick nudge to start locked.
+  5. How a parent earns an unlock stays WIP (`docs/PRODUCT-BACKLOG.md`).
+  6. Refusal messages no longer say "for now" about the limits.
+  7. Batch 1 additions confirmed: duplicate IDs handled like duplicate names; description limit 1 to 280; all reasons reported at once; the 2-times-a-week deliberate total is kept "if an experiment ever allows 2 deliberate"; a test checks the limits match `docs/EXPERIMENTS.md`.
+- [2026-10-25 06:59 SGT] SUPERSEDES the earlier "unlock" wording in v1.1 answer 6 ("choosing more is an unlock"): unlocks open more nudges, they do not allow choosing more at once.
 - [2026-10-24 22:18 SGT] Version 1.4, Batch 1 rules agreed by the owner:
   1. If one nudge row in the Nudge repository is broken, the app leaves out only that nudge and alerts the owner; the other nudges keep working.
   2. A nudge that allows photos must have a photo idea. A nudge must allow at least one way to log (self-report or photo).

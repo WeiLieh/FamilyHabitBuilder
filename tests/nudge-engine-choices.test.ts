@@ -5,18 +5,22 @@
 // guardrails set by the app (spec v1.1 to v1.4). The limits are starting values
 // recorded in docs/EXPERIMENTS.md and kept in shared/settings.ts.
 // Test-run IDs: quick nudges are 1 to 4, deliberate nudges are 5 to 9.
+// Unlocked from the start: 1 to 4 (quick) and 5, 6 (deliberate). Locked: 7, 8, 9.
+// An unlock opens more of the menu; it never raises how many a parent picks.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
 import { checkChoices, type Choice } from "../shared/nudge-engine/choices.js";
 import { STARTING_CHOICE_LIMITS } from "../shared/settings.js";
-import { nineTestNudges } from "./helpers/nudge-rows.js";
+import { readNudgeRows } from "../shared/nudge-repository.js";
+import { nineTestNudges, nineTestRows } from "./helpers/nudge-rows.js";
 
 const nudges = nineTestNudges();
 
-// Helper: check choices with the normal starting limits.
-function check(choices: Choice[]) {
-  return checkChoices(choices, nudges, STARTING_CHOICE_LIMITS);
+// Helper: check choices with the normal starting limits, for a parent who has
+// not unlocked anything yet (unless a list of unlocked nudge IDs is given).
+function check(choices: Choice[], unlockedByParent: number[] = []) {
+  return checkChoices(choices, nudges, STARTING_CHOICE_LIMITS, unlockedByParent);
 }
 
 describe("Nudge engine: starting limits", () => {
@@ -45,7 +49,7 @@ describe("Nudge engine: checking a parent's choices", () => {
 
   it("accepts a single behaviour of either kind (at least 1 in total, any mix)", () => {
     expect(check([{ nudgeId: 3, frequency: "every_day" }]).ok).toBe(true);
-    expect(check([{ nudgeId: 7, frequency: "twice_a_week" }]).ok).toBe(true);
+    expect(check([{ nudgeId: 6, frequency: "twice_a_week" }]).ok).toBe(true);
   });
 
   it("refuses an empty choice: at least 1 behaviour is needed", () => {
@@ -55,7 +59,7 @@ describe("Nudge engine: checking a parent's choices", () => {
   });
 
   // Test 9: too many, duplicates, unknown nudges
-  it("refuses 3 quick behaviours, saying the limit is 2 for now", () => {
+  it("refuses 3 quick behaviours, saying the limit is 2", () => {
     const result = check([
       { nudgeId: 1, frequency: "every_day" },
       { nudgeId: 2, frequency: "every_day" },
@@ -65,7 +69,7 @@ describe("Nudge engine: checking a parent's choices", () => {
     if (!result.ok) expect(result.reasons.join(" ")).toMatch(/up to 2 quick/i);
   });
 
-  it("refuses 2 deliberate behaviours, saying the limit is 1 for now", () => {
+  it("refuses 2 deliberate behaviours, saying the limit is 1", () => {
     const result = check([
       { nudgeId: 5, frequency: "once_a_week" },
       { nudgeId: 6, frequency: "once_a_week" },
@@ -102,8 +106,8 @@ describe("Nudge engine: checking a parent's choices", () => {
     if (!result.ok) expect(result.reasons.join(" ")).toMatch(/1 or 2 times a week/i);
   });
 
-  it("keeps deliberate behaviours to 2 times a week in total, even after an unlock raises the limit", () => {
-    // Pretend a parent has unlocked a second deliberate behaviour.
+  it("keeps deliberate behaviours to 2 times a week in total, if an experiment ever allows 2 deliberate", () => {
+    // Pretend an experiment lets some parents pick 2 deliberate behaviours.
     const unlocked = { ...STARTING_CHOICE_LIMITS, maxDeliberate: 2 };
     const tooMuch = checkChoices(
       [
@@ -125,6 +129,41 @@ describe("Nudge engine: checking a parent's choices", () => {
       unlocked,
     );
     expect(fine.ok).toBe(true);
+  });
+
+  // Locked and retired nudges (spec v1.5)
+  it("refuses a nudge that starts locked, if the parent has not unlocked it", () => {
+    const result = check([{ nudgeId: 7, frequency: "once_a_week" }]);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reasons.join(" ")).toMatch(/not unlocked yet/i);
+  });
+
+  it("accepts a nudge that starts locked once the parent has unlocked it", () => {
+    const result = check([{ nudgeId: 7, frequency: "once_a_week" }], [7]);
+    expect(result.ok).toBe(true);
+  });
+
+  it("refuses a retired (inactive) nudge, even if the parent had unlocked it", () => {
+    const withRetired = readNudgeRows(
+      nineTestRows().map((row) => (row["id"] === 2 ? { ...row, active: false } : row)),
+    ).nudges;
+    const result = checkChoices(
+      [{ nudgeId: 2, frequency: "every_day" }],
+      withRetired,
+      STARTING_CHOICE_LIMITS,
+      [2],
+    );
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.reasons.join(" ")).toMatch(/no longer available/i);
+  });
+
+  it("does not say 'for now' about the limits (unlocks don't raise them)", () => {
+    const result = check([
+      { nudgeId: 1, frequency: "every_day" },
+      { nudgeId: 2, frequency: "every_day" },
+      { nudgeId: 3, frequency: "every_day" },
+    ]);
+    if (!result.ok) expect(result.reasons.join(" ")).not.toMatch(/for now/i);
   });
 
   it("gives every reason at once, so the parent can fix everything in one go", () => {

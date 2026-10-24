@@ -32,7 +32,13 @@ One entry per item: Item / Why it matters / Priority / Status. Newest first.
 - **Priority:** [2026-10-24 18:26 SGT] High
 - **Status:** [2026-10-24 18:26 SGT] In progress (WIP). Defined together with the rewards.
 
+## [2026-10-25 06:59 SGT] WIP: How a parent earns an unlock (bigger menu)
+- **Why it matters:** [2026-10-25 06:59 SGT] Some nudges start locked (3 deliberate today). A parent can pick them only after unlocking them. The code already refuses locked nudges and accepts ones a parent has unlocked; what earns an unlock is not decided yet (spec v1.5).
+- **Priority:** [2026-10-25 06:59 SGT] Medium
+- **Status:** [2026-10-25 06:59 SGT] In progress (WIP). Defined together with the rewards. Replaces the item below.
+
 ## [2026-10-24 18:26 SGT] WIP: Rule for unlocking more behaviours
+- [2026-10-25 06:59 SGT] SUPERSEDED by the item above: an unlock now opens more nudges, it does not allow choosing more at once.
 - **Why it matters:** [2026-10-24 18:26 SGT] Parents start with 2 quick and 1 deliberate behaviour. Choosing more is an unlock they earn; the earning rule is not decided yet.
 - **Priority:** [2026-10-24 18:26 SGT] Medium
 - **Status:** [2026-10-24 18:26 SGT] In progress (WIP). Defined together with the rewards.

@@ -10,6 +10,7 @@
 ### [2026-10-24 22:14 SGT] Nudge repository edits skip review and history
 - **Issue:** [2026-10-24 22:14 SGT] Edits in the Supabase dashboard go live to parents immediately, without a pull request, tests or Git history.
 - **Impact:** [2026-10-24 22:14 SGT] A typo or a deleted row reaches parents straight away, and the old version cannot be recovered unless a backup was exported. A reviewer (for example a Change Advisory Board (CAB)) would ask who can change live content and how a bad change is undone.
+- [2026-10-25 06:59 SGT] Update: IDs are now generated automatically (no duplicates), and retiring a nudge uses the "active" column. Blocking deletes of chosen nudges needs the parents' targets table, so it arrives with the Datastore (step 2); until then, a delete is not blocked.
 - **Workaround:** [2026-10-24 22:14 SGT] Database rules block badly formed rows; the app refuses to use invalid rows; the owner exports a CSV backup before each big change. Only the owner has dashboard access.
 
 ### [2026-10-24 22:09 SGT] Photo check judging against the photo idea may be too strict

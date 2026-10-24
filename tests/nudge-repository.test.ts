@@ -37,6 +37,8 @@ describe("Nudge repository: reading nudge rows", () => {
         descriptionMaxChars: 280,
         photoUploadAllowed: false,
         photoIdea: null,
+        active: true,
+        startsUnlocked: true,
       },
     ]);
   });
@@ -75,6 +77,18 @@ describe("Nudge repository: reading nudge rows", () => {
     expect(readOne({ self_report_allowed: "Yes" }).nudges).toEqual([]);
     expect(readOne({ self_report_allowed: null }).nudges).toEqual([]);
     expect(readOne({ photo_upload_allowed: "maybe" }).nudges).toEqual([]);
+  });
+
+  it("refuses 'active' or 'starts unlocked' that is not a yes or no", () => {
+    expect(readOne({ active: "Yes" }).nudges).toEqual([]);
+    expect(readOne({ active: null }).nudges).toEqual([]);
+    expect(readOne({ starts_unlocked: "no" }).nudges).toEqual([]);
+    expect(readOne({ starts_unlocked: "no" }).problems[0]?.reasons.join(" ")).toMatch(/starts unlocked/i);
+  });
+
+  it("keeps a retired (inactive) nudge, so past history can still show its name", () => {
+    // Retired nudges are read normally; the Nudge engine stops parents picking them.
+    expect(readOne({ active: false }).nudges[0]?.active).toBe(false);
   });
 
   // Test 5
@@ -117,6 +131,7 @@ describe("Nudge repository: reading nudge rows", () => {
     expect(result.problems[0]?.reasons.join(" ")).toMatch(/same name/i);
   });
 
+  // Backstop: Supabase generates IDs automatically, so this should never happen.
   it("leaves out every row that shares an ID with another row, and reports it", () => {
     const rows = [
       validRow({ id: 4, name: "A" }),

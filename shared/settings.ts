@@ -4,8 +4,8 @@
 // The source of truth for these numbers is docs/EXPERIMENTS.md, under
 // "Starting values". If you change a number here, change it there too (and the
 // other way round). A test checks the choice limits match what was agreed.
-// Later, experiments may give some parents different values, and unlocks may
-// raise the limits for a parent who earns them.
+// Later, experiments may give some parents different values. Unlocks do NOT
+// change these limits: an unlock only opens more nudges to choose from.
 // =============================================================================
 
 // How many behaviours a parent may choose at a time (spec v1.1, v1.4).

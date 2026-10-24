@@ -12,6 +12,9 @@
 //   - quick: every day or every 2 days
 //   - deliberate: 1 or 2 times a week, and 2 times a week in total at most
 //   - no duplicates, and only nudges that exist in the Nudge repository
+//   - only active nudges (retired ones can't be picked)
+//   - only unlocked nudges: those that start unlocked, plus any this parent has
+//     unlocked. An unlock opens more of the menu; it never raises the limits.
 //
 // The limits are passed in (not fixed inside), so experiments and unlocks can
 // give a parent different limits later without changing this code.
@@ -44,7 +47,14 @@ function behaviours(count: number): string {
   return count === 1 ? "1 behaviour" : `${count} behaviours`;
 }
 
-export function checkChoices(choices: Choice[], nudges: Nudge[], limits: ChoiceLimits): ChoiceResult {
+// unlockedByParent: IDs of nudges this parent has unlocked (from the Datastore).
+// How a parent earns an unlock is still being decided (WIP in the backlog).
+export function checkChoices(
+  choices: Choice[],
+  nudges: Nudge[],
+  limits: ChoiceLimits,
+  unlockedByParent: number[] = [],
+): ChoiceResult {
   const reasons: string[] = [];
 
   // A quick way to look up a nudge by its ID.
@@ -77,6 +87,18 @@ export function checkChoices(choices: Choice[], nudges: Nudge[], limits: ChoiceL
     }
     seen.add(nudge.id);
 
+    // Rule: retired nudges can't be picked.
+    if (!nudge.active) {
+      reasons.push(`"${nudge.name}" is no longer available.`);
+      continue;
+    }
+
+    // Rule: locked nudges can't be picked until this parent unlocks them.
+    if (!nudge.startsUnlocked && !unlockedByParent.includes(nudge.id)) {
+      reasons.push(`"${nudge.name}" is not unlocked yet.`);
+      continue;
+    }
+
     // Rule: the frequency must fit the category.
     if (nudge.category === "quick") {
       quickCount += 1;
@@ -98,10 +120,10 @@ export function checkChoices(choices: Choice[], nudges: Nudge[], limits: ChoiceL
 
   // Rules on totals.
   if (quickCount > limits.maxQuick) {
-    reasons.push(`You can choose up to ${limits.maxQuick} quick ${limits.maxQuick === 1 ? "behaviour" : "behaviours"} for now.`);
+    reasons.push(`You can choose up to ${limits.maxQuick} quick ${limits.maxQuick === 1 ? "behaviour" : "behaviours"}.`);
   }
   if (deliberateCount > limits.maxDeliberate) {
-    reasons.push(`You can choose up to ${limits.maxDeliberate} deliberate ${limits.maxDeliberate === 1 ? "behaviour" : "behaviours"} for now.`);
+    reasons.push(`You can choose up to ${limits.maxDeliberate} deliberate ${limits.maxDeliberate === 1 ? "behaviour" : "behaviours"}.`);
   }
   if (deliberateTimesPerWeek > MAX_DELIBERATE_TIMES_PER_WEEK) {
     reasons.push(`Deliberate behaviours can add up to ${MAX_DELIBERATE_TIMES_PER_WEEK} times a week in total.`);

@@ -25,12 +25,16 @@ export function validRow(overrides: Record<string, unknown> = {}): Record<string
     description_max_chars: 280,
     photo_upload_allowed: false,
     photo_idea: null,
+    active: true, // false = retired: kept for history, but parents can't pick it
+    starts_unlocked: true, // false = parents must unlock it before picking it
     ...overrides, // fields given by the test replace the defaults above
   };
 }
 
 // The same layout as the owner's real table: 4 quick nudges (IDs 1 to 4) and
 // 5 deliberate nudges (IDs 5 to 9). Deliberate ones allow photos.
+// Starts unlocked: all 4 quick, plus deliberate 5 and 6 (like "spending quality
+// time" and "interesting activities"). Deliberate 7, 8 and 9 start locked.
 export function nineTestRows(): Record<string, unknown>[] {
   const quick = [1, 2, 3, 4].map((id) =>
     validRow({ id, name: `Quick nudge ${id}`, category: "quick" }),
@@ -42,6 +46,7 @@ export function nineTestRows(): Record<string, unknown>[] {
       category: "deliberate",
       photo_upload_allowed: true,
       photo_idea: `Photo idea for nudge ${id}`,
+      starts_unlocked: id === 5 || id === 6,
     }),
   );
   return [...quick, ...deliberate];

@@ -2,6 +2,7 @@
 
 ## [2026-10-25 06:17 SGT] Session 2
 ### Done
+- [2026-10-25 06:59 SGT] Spec v1.5 (auto IDs, active column, unlock = bigger menu, starts-unlocked flag, no "for now"). Tests updated first (6 failed), then code; all 34 tests pass, full check passes.
 - [2026-10-25 06:25 SGT] **Batch 1 built test-first.** 26 new tests written first and seen failing (red), then code written until all passed (green). Full check passes: 28 tests (3 files). Files: `shared/nudge-repository.ts`, `shared/nudge-engine/choices.ts`, `shared/settings.ts`, `tests/nudge-repository.test.ts`, `tests/nudge-engine-choices.test.ts`, `tests/helpers/nudge-rows.ts`. Installed approved library `zod`.
 - [2026-10-25 06:17 SGT] Owner asked for learner-friendly comments in all code. Added headers and step-by-step comments to `api/health.ts`, `tests/api-health.test.ts`, `tsconfig.json`, `tsconfig.build.json` and `.github/workflows/check.yml` (behaviour unchanged, check passes). Made it a standing rule in `CLAUDE.md`.
 ### In progress

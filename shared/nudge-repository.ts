@@ -30,6 +30,8 @@ export type Nudge = {
   descriptionMaxChars: number; // limit for the parent's optional description
   photoUploadAllowed: boolean;
   photoIdea: string | null; // required when photos are allowed
+  active: boolean; // false = retired: kept for history, but parents can't pick it
+  startsUnlocked: boolean; // false = a parent must unlock it before picking it
 };
 
 // One broken row: which row, and every reason it was refused.
@@ -72,6 +74,8 @@ const rowSchema = z.object({
   // The photo idea may be empty here; whether it is REQUIRED depends on
   // another column, so that rule is checked separately below.
   photo_idea: z.string({ error: "Photo idea must be text." }).nullable().optional(),
+  active: z.boolean({ error: yesNoMessage("Active") }),
+  starts_unlocked: z.boolean({ error: yesNoMessage("Starts unlocked") }),
 });
 
 // ---- Helpers -----------------------------------------------------------------
@@ -133,7 +137,8 @@ export function readNudgeRows(rows: Record<string, unknown>[]): ReadResult {
     }
 
     // 3. Rules across rows: duplicates. We can't tell which duplicate is the
-    //    right one, so every row involved is left out.
+    //    right one, so every row involved is left out. (Supabase generates IDs
+    //    automatically, so duplicate IDs are a backstop check only.)
     const name = normaliseName(row["name"]);
     if (name !== null && (nameCounts.get(name) ?? 0) > 1) {
       reasons.push("Another row has the same name.");
@@ -160,6 +165,8 @@ export function readNudgeRows(rows: Record<string, unknown>[]): ReadResult {
       descriptionMaxChars: data.description_max_chars,
       photoUploadAllowed: data.photo_upload_allowed,
       photoIdea: isBlank(data.photo_idea) ? null : (data.photo_idea as string).trim(),
+      active: data.active,
+      startsUnlocked: data.starts_unlocked,
     });
   });
 
