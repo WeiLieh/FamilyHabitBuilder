@@ -2,6 +2,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 22:09 SGT] Read the owner's Nudge Repository spreadsheet and agreed answers 1 to 8. Spec v1.3 recorded (quality time now deliberate; per-nudge self-report and photo flags; optional description as Investment; examples, photo ideas and moment tags; naming: nudge, example, nudge message).
 - [2026-10-24 21:35 SGT] Development order agreed and recorded in `docs/CONTEXT.md` (Key decisions).
 - [2026-10-24 21:34 SGT] Saved the owner's architecture diagram as `docs/architecture-diagram.png` and recorded its 8 module names as the official vocabulary in `docs/CONTEXT.md`.
 - [2026-10-24 21:24 SGT] Owner decided all regions are Singapore: Upstash Redis and Vercel functions as well as Supabase. Added `vercel.json` with region `sin1`.
@@ -14,6 +15,7 @@
 - [2026-10-24 17:39 SGT] Placed `CLAUDE.md` at the root and `SPEC.md` in `docs/`. Created the other project files from the structures in `CLAUDE.md`.
 - [2026-10-24 17:39 SGT] Read the spec and sent the product manager clarifying questions.
 ### In progress
+- [2026-10-24 22:09 SGT] Question 9 open: where the master copy of the Nudge repository lives (spreadsheet, code data file, or Supabase table). Then update and show the Batch 1 tests.
 - [2026-10-24 21:34 SGT] Agreeing the development order of the modules with the owner.
 - [2026-10-24 18:47 SGT] Waiting for owner approval of the pending stack items (scheduler, GitHub Actions, Singapore regions, database change method, Anthropic spend limit) and the library list.
 - [2026-10-24 18:34 SGT] Technology stack choice deferred by the product manager (options A, B, C were presented; A recommended).

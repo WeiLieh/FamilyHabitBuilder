@@ -14,10 +14,18 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 ## Constraints
 - [2026-10-24 17:24 SGT] **Modules:** Telegram bot; nudge engine ("brain" plus experiments); nudge repository (the 9 actions as data rows, never inside a prompt); photo check (AI vision model); variable rewards; datastore (history, targets, photos; fastest to build, least effort); web app; telemetry. The engine reads each parent's history from the datastore and decides rewards row 5 and experiment variants.
 - [2026-10-24 17:24 SGT] **User-led, never pushy:** parents choose which behaviours to do more of, within guardrails set by the app. The app privately compares them against a hidden objective level that is never shown.
-- [2026-10-24 17:24 SGT] **Actions (from Triple P (Positive Parenting Program)):**
+- [2026-10-24 22:09 SGT] **Nudges (the 9 rows of the Nudge repository, from Triple P (Positive Parenting Program)), aligned with the owner's Nudge Repository spreadsheet:**
+  - **Quick** (1 to 2 minutes): talking with children, showing affection, descriptive praise, giving attention. Parent picks every day or every 2 days for each. Hidden ideal 1 per day, floor 1 per 2 days.
+  - **Deliberate** (more time): spending quality time, interesting activities, setting a good example, incidental teaching, ask-say-do. Parent sets 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
+  - **Each nudge has:** a category (quick or deliberate); 5 **examples**; "self-report allowed" (yes or no); an optional description of up to 280 characters; "photo upload allowed" (yes or no); and a **photo idea** (for nudges that allow photos).
+  - "Photo upload allowed" is its own yes or no for each nudge, not tied to the category. Today it happens to be yes for all 5 deliberate nudges and no for all 4 quick ones; all 9 allow self-report.
+- [2026-10-24 17:24 SGT] **Actions (from Triple P (Positive Parenting Program)):** SUPERSEDED [2026-10-24 22:09 SGT]
   - Quick, 1 to 2 minutes: spending quality time, talking with children, showing affection, descriptive praise, giving attention. Parent picks every day or every 2 days. Hidden ideal 1 per day, floor 1 per 2 days.
   - Deliberate, more time: interesting activities, setting a good example, incidental teaching, ask-say-do. Parent sets 1 or 2 per week at most. Hidden ideal 1 per week, no floor.
 - [2026-10-24 17:24 SGT] **Nudges:** maximum 3 per day, combined across all of a parent's behaviours, set by the engine (not the parent). Bot replies after a parent logs an action do not count toward the cap.
+- [2026-10-24 22:09 SGT] **Optional description = the Investment step of the Hooked model:** when logging, the parent can add a short description (max 280 characters) of what they did. It is shown in the Web app history and the weekly snapshot, and given to Claude as context for that parent's future nudge messages, to make them more relevant. If it is longer than 280 characters, the bot asks the parent to shorten it (never cut it off silently).
+- [2026-10-24 22:09 SGT] **Examples:** used both as inspiration for Claude when writing a nudge message, and shown to the parent ("for example…") when choosing behaviours. Each example will be tagged with the moment(s) it fits (to school, dinner, bedtime, weekend), so a nudge message at a given moment uses a fitting example (WIP: `docs/PRODUCT-BACKLOG.md`).
+- [2026-10-24 22:09 SGT] **Photo idea:** shown to the parent when they are invited to send a photo, and used by the Photo check to judge whether the photo fits (for now; risk logged in `docs/KNOWN-ISSUES.md`).
 - [2026-10-24 18:26 SGT] **Verification (update):** sending a photo is always optional. Parents give consent to photo storage once, when they join. No guidance is given about what may appear in a photo.
 - [2026-10-24 17:24 SGT] **Verification:** photo evidence is checked automatically by an AI vision model; photos are stored in the datastore. Actions that cannot be photographed are self-reported. If the photo check fails, the bot asks for self-report and labels it as self-reported.
 - [2026-10-24 17:24 SGT] **Variable rewards (5 types):** (1) encouraging phrases, (2) XP and leveling, (3) progress visualization including streaks (a streak stays alive across a 2-day gap), (4) "look how far you've come" snapshot of photos, numbers and trends, sent weekly and monthly as a bot preview with a one-tap sign-in link to the web app, (5) unpredictable discovery (surprise bonus on 20% of logged actions). Rows 1 to 4 fire on fixed rules. Every reward that fires is logged as an event.
@@ -42,6 +50,16 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-24 22:09 SGT] Version 1.3, aligned with the owner's Nudge Repository spreadsheet (answers to the Batch 1a questions):
+  1. "Photo upload allowed" stays a separate yes or no per nudge, even though it currently matches "deliberate", so a future quick nudge could allow photos.
+  2. "Spending quality time" moves from quick to deliberate: 4 quick and 5 deliberate. Its frequency is now part of the weekly deliberate total (1 or 2 per week), hidden ideal 1 per week. The 1-deliberate limit now means 1 out of 5.
+  3. The optional description is the Investment step: shown in Web app history and the weekly snapshot, and given to Claude as context for future nudge messages.
+  4. Over 280 characters: the bot asks the parent to shorten it.
+  5. Examples are used both by Claude (inspiration) and shown to the parent.
+  6. Examples will be tagged by moment (WIP).
+  7. The photo idea is shown to the parent and used by the Photo check (for now).
+  8. Naming: **nudge** = one of the 9 rows; **example** = one of its 5 ideas; **nudge message** = what the bot actually sends. Replaces "action" for the rows.
+  - Still open: where the master copy of the Nudge repository lives (question 9).
 - [2026-10-24 18:34 SGT] Version 1.2, scope confirmed by the product manager: the metrics add three features to the MVP: (a) a weekly optional bot question, "How connected did you feel with your child?" (1 to 5, metric 10); (b) a mute/stop option for the bot (metric 9); (c) a "too many nudges" button (metric 9). Weekend nudge moments and trial length stay WIP (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-24 18:26 SGT] Version 1.1, agreed answers to the session 1 clarifying questions (numbers match the questions):
   1. **Photos:** optional. Consent once at sign-up. No guidance about faces. Photos are kept (no 90-day deletion). A "delete my data" function lives on the web page. **WIP**, built when the UI is designed (`docs/PRODUCT-BACKLOG.md`).

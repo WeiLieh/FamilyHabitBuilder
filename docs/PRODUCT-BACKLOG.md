@@ -2,6 +2,11 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-24 22:09 SGT] WIP: Tag each example with the moment(s) it fits
+- **Why it matters:** So a nudge message sent at dinner uses a dinner example, not a bedtime one. Agreed in spec v1.3.
+- **Priority:** [2026-10-24 22:09 SGT] Medium
+- **Status:** [2026-10-24 22:09 SGT] In progress (WIP). Best done once the weekend moments are defined. Who drafts the tags (owner or Claude) to be agreed.
+
 ## [2026-10-24 18:34 SGT] WIP: Weekend nudge moments
 - **Why it matters:** [2026-10-24 18:34 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need their own set before weekend nudges can be sent.
 - **Priority:** [2026-10-24 18:34 SGT] High

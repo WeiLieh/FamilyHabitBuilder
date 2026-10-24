@@ -104,6 +104,12 @@
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
 ## Glossary (terms and acronyms)
+- [2026-10-24 22:09 SGT] **Nudge:** one of the 9 rows in the Nudge repository (for example "Descriptive praise"). Replaces the older word "action" for the rows.
+- [2026-10-24 22:09 SGT] **Example:** one of the 5 ideas listed under a nudge.
+- [2026-10-24 22:09 SGT] **Nudge message:** the actual message the bot sends a parent.
+- [2026-10-24 22:09 SGT] **Photo idea:** a suggestion of what to photograph for a nudge that allows photos.
+- [2026-10-24 22:09 SGT] **Optional description:** the parent's short note (max 280 characters) when logging; the Investment step of the Hooked model.
+- [2026-10-24 22:09 SGT] **Moment:** an everyday time slot for nudge messages (weekday: to school, dinner, bedtime; weekend: to be defined).
 - [2026-10-24 21:34 SGT] **Module names:** see "Official module names" under Architecture summary. "Habit rules" is not a module name; do not use it.
 - [2026-10-24 21:19 SGT] **CI (Continuous Integration):** automatically running the checks on every proposed change. Ours is GitHub Actions.
 - [2026-10-24 21:19 SGT] **Health check:** a tiny web address that only answers "I'm alive", used to confirm a deployment works.
