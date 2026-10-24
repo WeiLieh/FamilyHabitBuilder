@@ -2,6 +2,31 @@
 
 ## Notebook
 
+### [2026-10-24 21:19 SGT] Red, then green (test first)
+- **Concept:** The red-green cycle of Test-Driven Development (TDD).
+- **In plain English:** We write a test that describes what the code should do, run it and watch it fail (red), because the code doesn't exist yet. Then we write the code and run it again until it passes (green). The failing run proves the test really checks something.
+- **Analogy:** Testing a smoke alarm by holding a match under it. If it doesn't beep before you fix the wiring, you know the test works.
+- **Why and when to use it:** For any rule that matters (XP, streaks, nudge caps). Not worth it for throwaway experiments you will delete tomorrow.
+- **Best practices:**
+  - Always see the test fail once before writing the code.
+  - Test what the user sees (the reply), not how the code is wired inside.
+  - Never loosen a test just to make it pass.
+- **Where it showed up in this project:** The `/api/health` test was written first, failed, and passed after `api/health.ts` was written.
+- **Explain it to others:** "We write the acceptance check before the feature. It fails first, which proves the check is real, then we build until it passes. So every rule in the app has proof it works."
+
+### [2026-10-24 21:19 SGT] Continuous Integration (CI) with GitHub Actions
+- **Concept:** CI (Continuous Integration), run by GitHub Actions.
+- **In plain English:** Every time someone proposes a change (a pull request), GitHub automatically sets up a clean computer, installs the project and runs `npm run check`. The pull request shows a green tick or a red cross.
+- **Analogy:** A second inspector at the factory gate who checks every delivery, even if the first inspector already said it was fine.
+- **Why and when to use it:** Any project with pull requests; it catches "works on my machine" problems. Overkill for a single throwaway script.
+- **Best practices:**
+  - Run the same check command locally and in CI, so results match.
+  - Only merge with a green tick.
+  - Give CI only read access to the code.
+- **Where it showed up in this project:** `.github/workflows/check.yml` runs on Node.js 24 for every pull request and every push to `main`.
+- **Explain it to others:** "No change reaches main unless an automatic, independent run of all our tests passes on a clean machine."
+- **Governance angle:** A Change Advisory Board (CAB) would ask: can a change be merged with failing checks? Answer: our rule is no; GitHub's branch protection can enforce it.
+
 ### [2026-10-24 17:39 SGT] Project memory files
 - **Concept:** Project memory files (the `docs/` folder plus `CLAUDE.md`).
 - **In plain English:** Claude forgets everything between sessions. These files are where we write down what we are building, what we decided and where we stopped, so every new session starts from the same page.

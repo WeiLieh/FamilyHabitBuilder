@@ -2,6 +2,16 @@
 
 ## Open
 
+### [2026-10-24 21:19 SGT] Development container runs Node.js 22, not 24
+- **Issue:** [2026-10-24 21:19 SGT] The project targets Node.js 24 (Vercel and GitHub Actions), but this cloud development container has Node.js 22. npm may print an "unsupported engine" warning here.
+- **Impact:** [2026-10-24 21:19 SGT] Low. Checks pass on 22; GitHub Actions runs them again on 24 for every pull request.
+- **Workaround:** [2026-10-24 21:19 SGT] Rely on the GitHub Actions run on Node.js 24 as the final word.
+
+### [2026-10-24 21:19 SGT] Vercel project settings not yet confirmed
+- **Issue:** [2026-10-24 21:19 SGT] The Vercel project has not been created yet. On the first deploy we must confirm the build settings (framework "Other", Node.js 24) and that `/api/health` answers.
+- **Impact:** [2026-10-24 21:19 SGT] Nothing is live yet.
+- **Workaround:** [2026-10-24 21:19 SGT] The owner creates the Vercel project when we are ready for the first preview; Claude guides the steps.
+
 ### [2026-10-24 18:26 SGT] Weekend nudge moments not defined
 - **Issue:** [2026-10-24 18:26 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need a separate set, not defined yet.
 - **Impact:** [2026-10-24 18:26 SGT] The bot cannot send weekend nudges until these are defined.

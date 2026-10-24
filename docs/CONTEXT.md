@@ -4,11 +4,20 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-10-24 21:19 SGT] First time: `npm install`. Then `npm run check` runs, in order: `npm run typecheck` (TypeScript checks every file), `npm test` (Vitest runs everything in `tests/`) and `npm run build` (compiles `api/` and `shared/` into `dist/`, which Git ignores). Any failure stops the chain.
+- [2026-10-24 21:19 SGT] GitHub Actions (`.github/workflows/check.yml`) runs `npm ci` and `npm run check` on Node.js 24 for every pull request and every push to `main`.
+- [2026-10-24 21:19 SGT] Secrets: copy `.env.example` to `.env` for local use (Git ignores `.env`). Real values live in Vercel only.
 - [2026-10-24 18:47 SGT] Package manager: npm, with `package-lock.json` as the only lockfile. Runtime: Node.js.
 - [2026-10-24 18:47 SGT] Check command (run before every commit): `npm run check` = type check, then tests (Vitest), then build. Same as the SG Weather project. Exact scripts are written when the project skeleton is set up.
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-24 21:19 SGT] Folder layout (same pattern as SG Weather):
+  - `api/`: Vercel functions, one file per web address. Kept thin. Helpers go in `api/_...` folders (Vercel does not expose folders starting with `_`).
+  - `shared/`: the brain and other logic, with no direct web calls, so it can be tested on its own.
+  - `tests/`: Vitest tests.
+  - `docs/`: project memory files.
+- [2026-10-24 21:19 SGT] First endpoint: `api/health.ts` (GET `/api/health` answers `{ ok: true, service: "family-habit-builder" }`; anything else gets 405). Uses Node's own request/response types, so the same file runs on Vercel and in tests.
 - [2026-10-24 18:47 SGT] First outline (details come when we design each module):
   - **Telegram** sends each parent message to a Vercel function (a "webhook"). That function is a thin layer: it passes the message to the brain and sends the brain's reply back.
   - **The brain** (nudge engine, rewards, experiments) is plain TypeScript with no direct web calls, so it can be fully tested.
@@ -74,6 +83,8 @@
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
 ## Glossary (terms and acronyms)
+- [2026-10-24 21:19 SGT] **CI (Continuous Integration):** automatically running the checks on every proposed change. Ours is GitHub Actions.
+- [2026-10-24 21:19 SGT] **Health check:** a tiny web address that only answers "I'm alive", used to confirm a deployment works.
 - [2026-10-24 18:47 SGT] **Webhook:** Telegram "knocks" on our Vercel address each time a parent sends something, instead of our app constantly asking Telegram for news.
 - [2026-10-24 18:47 SGT] **Serverless function:** code that Vercel runs only when a request arrives; nothing runs between requests.
 - [2026-10-24 18:47 SGT] **Cron (scheduler):** an alarm clock that wakes the app at set times.
