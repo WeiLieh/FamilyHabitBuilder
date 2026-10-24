@@ -50,6 +50,11 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-24 22:18 SGT] Version 1.4, Batch 1 rules agreed by the owner:
+  1. If one nudge row in the Nudge repository is broken, the app leaves out only that nudge and alerts the owner; the other nudges keep working.
+  2. A nudge that allows photos must have a photo idea. A nudge must allow at least one way to log (self-report or photo).
+  3. A parent must choose at least 1 behaviour in total (any mix).
+  4. The choice limits (2 quick, 1 deliberate) are starting values in `docs/EXPERIMENTS.md`, so they can be tested and raised by unlocks.
 - [2026-10-24 22:09 SGT] Version 1.3, aligned with the owner's Nudge Repository spreadsheet (answers to the Batch 1a questions):
   1. "Photo upload allowed" stays a separate yes or no per nudge, even though it currently matches "deliberate", so a future quick nudge could allow photos.
   2. "Spending quality time" moves from quick to deliberate: 4 quick and 5 deliberate. Its frequency is now part of the weekly deliberate total (1 or 2 per week), hidden ideal 1 per week. The 1-deliberate limit now means 1 out of 5.

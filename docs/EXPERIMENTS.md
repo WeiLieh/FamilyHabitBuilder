@@ -10,9 +10,11 @@ The single place where experiments are defined. The nudge engine reads its exper
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 These apply to everyone who is not in an experiment that changes them.
+- [2026-10-24 22:18 SGT] Choice limits: up to 2 quick and up to 1 deliberate behaviour at a time; at least 1 in total. Choosing more is an unlock (rule WIP).
 - [2026-10-24 18:26 SGT] Maximum nudges per day: 3
 - [2026-10-24 18:26 SGT] Surprise bonus rate: 20% of logged actions
-- [2026-10-24 18:26 SGT] Quick actions: parent picks every day or every 2 days. Hidden ideal 1 per day, floor 1 per 2 days.
+- [2026-10-24 22:18 SGT] Quick nudges (4): parent picks every day or every 2 days for each. Hidden ideal 1 per day, floor 1 per 2 days. Deliberate nudges (5, including spending quality time): 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
+- [2026-10-24 18:26 SGT] SUPERSEDED [2026-10-24 22:18 SGT] Quick actions: parent picks every day or every 2 days. Hidden ideal 1 per day, floor 1 per 2 days.
 - [2026-10-24 18:26 SGT] Deliberate actions: 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
 - [2026-10-24 18:26 SGT] Streak gap allowed (quick actions): up to 2 missed days in a row
 

@@ -1,7 +1,25 @@
 # Progress (handoff between sessions)
 
+## [2026-10-24 22:18 SGT] HANDOFF FOR THE NEXT SESSION (read this first)
+### Where we are
+- [2026-10-24 22:18 SGT] Branch `claude/festive-einstein-nf623s` (not `main`); everything committed and pushed; no pull request opened yet.
+- [2026-10-24 22:18 SGT] Spec is at version 1.4 (`docs/SPEC.md`, Change notes). Tech stack, approved libraries, regions (all Singapore) and development order are in `docs/CONTEXT.md`.
+- [2026-10-24 22:18 SGT] Code so far: project skeleton only (`npm run check` passes; `/api/health` with 2 tests; GitHub Actions workflow). No module code yet.
+- [2026-10-24 22:18 SGT] Official module names: Telegram bot, Nudge engine, Nudge repository, Photo check, Variable rewards, Datastore, Web app, Telemetry (`docs/architecture-diagram.png`). Words: nudge (one of 9 rows), example, nudge message.
+### Next steps (in order)
+1. [2026-10-24 22:18 SGT] **Write the agreed Batch 1 tests, watch them fail, then write the code until they pass** (step 1 of the development order). Tests agreed by the owner:
+   - **1a. Nudge repository, what counts as a valid nudge:** (1) a complete, correct row is accepted; (2) category must be "quick" or "deliberate"; (3) name and all 5 examples must not be blank; (4) "self-report allowed" and "photo upload allowed" must each be yes or no; (5) a nudge that allows photos must have a photo idea; (6) a nudge must allow at least one way to log; (7) no two nudges share the same name; plus: a broken row is left out and reported (alert to owner) while the other nudges keep working.
+   - **1b. Nudge engine, guardrails on a parent's choices:** (8) up to 2 of the 4 quick and up to 1 of the 5 deliberate; at least 1 in total; (9) more than allowed, a duplicate, or an unknown nudge is refused with a clear reason; (10) each quick nudge is every day or every 2 days, the deliberate nudge is 1 or 2 per week; (11) a valid choice is returned as the parent's targets. Limits come from the starting values in `docs/EXPERIMENTS.md`.
+   - The nudge content lives in a Supabase table, so Batch 1 tests use test rows, not the real 9. The `zod` library is approved for checking rows (install it when first used).
+2. [2026-10-24 22:18 SGT] Prepare the Supabase table structure as a SQL file (with database rules matching tests 2 to 7) and a template CSV made from the owner's `Nudge_Repository.xlsx` for the first import. The owner runs the SQL and imports the CSV in the dashboard. Note: the spreadsheet was uploaded to an earlier session only; ask the owner to re-upload it if it is not in the repo.
+3. [2026-10-24 22:18 SGT] Then Batch 2 (3-nudges-a-day cap, weekday moments, priority by hidden ideal and floor) and Batch 3 (surprise bonus yes or no at 20%, sticky experiment groups): show tests in plain English first.
+### Waiting on the owner (not blocking step 1)
+- [2026-10-24 22:18 SGT] WIP: weekend moments; trial length; XP values and levels; unlock rule; context collected for AI nudge messages; personality and tone in `docs/NUDGE-CONTEXT.md`; moment tags for examples; UI look (Web app). See `docs/PRODUCT-BACKLOG.md` and `docs/KNOWN-ISSUES.md`.
+- [2026-10-24 22:18 SGT] Owner setup later (step 3, first deploy): create the Supabase project (Singapore), Upstash Redis (Singapore), the Vercel project, the Telegram bot in BotFather, and the Anthropic spend limit. Claude will guide each step.
+
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 22:18 SGT] Owner agreed the Batch 1 rules (broken row handling, photo idea and logging-method rules, at least 1 behaviour, limits in `docs/EXPERIMENTS.md`). Spec v1.4. Session ended for the night; handoff written at the top of this file.
 - [2026-10-24 22:14 SGT] Question 9 decided: the Nudge repository master copy is a Supabase table edited in the dashboard. Recorded in `docs/SPEC.md`, `docs/CONTEXT.md`, with the trade-off in `docs/KNOWN-ISSUES.md`.
 - [2026-10-24 22:09 SGT] Read the owner's Nudge Repository spreadsheet and agreed answers 1 to 8. Spec v1.3 recorded (quality time now deliberate; per-nudge self-report and photo flags; optional description as Investment; examples, photo ideas and moment tags; naming: nudge, example, nudge message).
 - [2026-10-24 21:35 SGT] Development order agreed and recorded in `docs/CONTEXT.md` (Key decisions).
