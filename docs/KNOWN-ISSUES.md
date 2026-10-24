@@ -6,16 +6,19 @@
 - **Issue:** [2026-10-24 18:26 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need a separate set, not defined yet.
 - **Impact:** [2026-10-24 18:26 SGT] The bot cannot send weekend nudges until these are defined.
 - **Workaround:** [2026-10-24 18:26 SGT] None. Product manager to define the weekend moments.
+- [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
 ### [2026-10-24 18:26 SGT] Trial length not decided
 - **Issue:** [2026-10-24 18:26 SGT] Metrics 6 and 7 (target-hit rate, unprompted log rate) use "the final 4 weeks" and "the final 2 weeks", so they need a trial length of at least 4 weeks.
 - **Impact:** [2026-10-24 18:26 SGT] Success tests Y and Z cannot be calculated without it.
 - **Workaround:** [2026-10-24 18:26 SGT] None yet. Product manager to decide (see the Settings sheet of the metrics file).
+- [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
 ### [2026-10-24 18:26 SGT] Photos kept with no time limit
 - **Issue:** [2026-10-24 18:26 SGT] Photos (which may show children) are kept until the parent deletes their data. The PDPA expects organisations to stop keeping personal data once it is no longer needed.
 - **Impact:** [2026-10-24 18:26 SGT] Fine for a friends trial with consent; a reviewer would question it before opening to the public.
 - **Workaround:** [2026-10-24 18:26 SGT] Consent at sign-up plus the "delete my data" function. Revisit before any public launch.
+- [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
 

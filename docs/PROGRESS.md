@@ -2,10 +2,12 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 18:34 SGT] Product manager confirmed the three flags: metric-driven bot features are in scope (spec v1.2); weekend moments and trial length added to the backlog as WIP; photo retention kept as an open issue.
 - [2026-10-24 18:26 SGT] Product manager answered all 18 questions. Recorded as spec version 1.1 in `docs/SPEC.md`. Added `docs/EXPERIMENTS.md` and the metrics spreadsheet. Logged WIP items in the backlog and open questions in known issues.
 - [2026-10-24 17:39 SGT] Placed `CLAUDE.md` at the root and `SPEC.md` in `docs/`. Created the other project files from the structures in `CLAUDE.md`.
 - [2026-10-24 17:39 SGT] Read the spec and sent the product manager clarifying questions.
 ### In progress
+- [2026-10-24 18:34 SGT] Technology stack choice deferred by the product manager (options A, B, C were presented; A recommended).
 - [2026-10-24 18:26 SGT] Technology stack proposal sent; waiting for the product manager's choice.
 - [2026-10-24 17:39 SGT] Waiting for answers to the clarifying questions.
 ### Next steps

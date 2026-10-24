@@ -24,6 +24,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 18:26 SGT] **Experiments (update):** experiments are defined in `docs/EXPERIMENTS.md` (no admin screen). Each parent is randomly assigned to a variant once and stays in it.
 - [2026-10-24 17:24 SGT] **Experiments:** the nudge engine can define experiments that serve different variants (nudges, rewards, surprise rate) to different parents and compare outcomes.
 - [2026-10-24 18:26 SGT] **Telemetry:** the 10 metrics, definitions, windows and targets in `docs/Family_Habit_App_Success_Metrics.xlsx` (5 Usage metrics and 5 Habit formation metrics; success tests X, Y, Z at trial end).
+- [2026-10-24 18:34 SGT] **Bot features needed by the metrics:** weekly optional connection question (1 to 5), mute/stop option, "too many nudges" button.
 - [2026-10-24 17:24 SGT] **Telemetry:** activation rate, feature adoption rate, active users and stickiness, churn rate, drop-off rate. SUPERSEDED [2026-10-24 18:26 SGT]
 - [2026-10-24 17:24 SGT] **All frequencies and the 20% rate are starting hypotheses** to be tested with the experiments feature. Channel is Telegram only.
 - [2026-10-24 17:24 SGT] The app's own AI prompt (personality and rules only) lives in `docs/NUDGE-CONTEXT.md`.
@@ -41,6 +42,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-24 18:34 SGT] Version 1.2, scope confirmed by the product manager: the metrics add three features to the MVP: (a) a weekly optional bot question, "How connected did you feel with your child?" (1 to 5, metric 10); (b) a mute/stop option for the bot (metric 9); (c) a "too many nudges" button (metric 9). Weekend nudge moments and trial length stay WIP (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-24 18:26 SGT] Version 1.1, agreed answers to the session 1 clarifying questions (numbers match the questions):
   1. **Photos:** optional. Consent once at sign-up. No guidance about faces. Photos are kept (no 90-day deletion). A "delete my data" function lives on the web page. **WIP**, built when the UI is designed (`docs/PRODUCT-BACKLOG.md`).
   2. **Access:** invite-only. Only Telegram accounts the product manager approves can use the bot.

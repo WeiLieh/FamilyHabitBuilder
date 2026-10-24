@@ -2,6 +2,16 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-24 18:34 SGT] WIP: Weekend nudge moments
+- **Why it matters:** [2026-10-24 18:34 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need their own set before weekend nudges can be sent.
+- **Priority:** [2026-10-24 18:34 SGT] High
+- **Status:** [2026-10-24 18:34 SGT] In progress (WIP). Product manager to define. Also tracked in `docs/KNOWN-ISSUES.md`.
+
+## [2026-10-24 18:34 SGT] WIP: Trial length
+- **Why it matters:** [2026-10-24 18:34 SGT] Metrics 6 and 7 (success tests Y and Z) use "the final 4 weeks" and "the final 2 weeks", so the trial must be at least 4 weeks long.
+- **Priority:** [2026-10-24 18:34 SGT] High
+- **Status:** [2026-10-24 18:34 SGT] In progress (WIP). Product manager to decide. Also tracked in `docs/KNOWN-ISSUES.md`.
+
 ## [2026-10-24 18:26 SGT] WIP: "Delete my data" on the web page
 - **Why it matters:** [2026-10-24 18:26 SGT] Photos are kept until the parent deletes them, so parents need a clear way to delete all their data. Required by the agreed spec (question 1 and 18).
 - **Priority:** [2026-10-24 18:26 SGT] High
