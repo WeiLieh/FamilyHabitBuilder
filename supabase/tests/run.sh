@@ -19,4 +19,4 @@ cleanup() {
 }
 trap cleanup EXIT
 
-psql -q -v ON_ERROR_STOP=1 -d "$DB" -f supabase/tests/nudges-table.test.sql
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f supabase/tests/nudge-repository.test.sql

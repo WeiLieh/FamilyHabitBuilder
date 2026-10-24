@@ -3,6 +3,7 @@
 ## Open
 
 ### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
+- [2026-10-25 07:51 SGT] The file is now `supabase/migrations/001_create_nudge_repository.sql` (two tables, guard, view); 25 database checks pass locally. Still not run on Supabase.
 - **Issue:** [2026-10-25 07:17 SGT] `001_create_nudges.sql` passed 13 tests on a local PostgreSQL 16, but Supabase may differ slightly (version, built-in roles, Data API grant rules).
 - **Impact:** [2026-10-25 07:17 SGT] The first run in Supabase could show an error.
 - **Workaround:** [2026-10-25 07:17 SGT] When the owner creates the Supabase project (step 3), run the file in the SQL Editor and report any error; Claude fixes it and logs it here.
@@ -13,6 +14,7 @@
 - **Workaround:** [2026-10-25 07:17 SGT] Run `npm run test:db` manually after any SQL change. Later option: add a PostgreSQL service to the GitHub Actions workflow (ask the owner first).
 
 ### [2026-10-25 06:25 SGT] Broken nudge rows are reported, but no alert is sent yet
+- [2026-10-25 07:48 SGT] Also covers nudges with fewer than 3 active examples (spec v1.6): the app reports them, but no alert is delivered yet.
 - **Issue:** [2026-10-25 06:25 SGT] The Nudge repository returns a list of broken rows (spec v1.4 says alert the owner), but nothing delivers that alert yet.
 - **Impact:** [2026-10-25 06:25 SGT] Until it is built, the owner would not hear about a broken row.
 - **Workaround:** [2026-10-25 06:25 SGT] Build the alert with the Datastore and Telegram bot (step 2 or 3), for example a Telegram message or log line to the owner. Not live yet, so no real impact.

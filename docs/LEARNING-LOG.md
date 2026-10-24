@@ -2,6 +2,18 @@
 
 ## Notebook
 
+### [2026-10-25 07:51 SGT] Database trigger (an automatic guard)
+- **Concept:** A trigger: a small program the database runs automatically when rows change.
+- **In plain English:** Some rules can't be written as a simple column check, because they depend on other rows (here: "a nudge must keep at least 3 active examples"). A trigger runs after each change, counts what is left, and refuses the whole change with a clear message if the rule would be broken.
+- **Analogy:** A library that won't let you return the last copy of a book to the stockroom: the desk checks the shelf count before accepting.
+- **Why and when to use it:** For rules across rows that must hold no matter who edits (dashboard, CSV import, code). Avoid for heavy logic or anything that calls other services; keep triggers small and well tested.
+- **Best practices:**
+  - Give a message that says what to do next ("Add another example first").
+  - Test both the refused and the allowed cases.
+  - Keep the number in one place per side, with comments pointing to each other.
+- **Where it showed up in this project:** `examples_keep_minimum` in `001_create_nudge_repository.sql`; tests in `supabase/tests/nudge-repository.test.sql`. We broke it on purpose (minimum 2) to confirm the tests catch it.
+- **Explain it to others:** "The database itself refuses any edit that would leave a nudge with fewer than 3 examples, and tells the editor how to fix it, so the content can't quietly degrade."
+
 ### [2026-10-25 07:42 SGT] Two tables linked by a short code (nudges and examples)
 - **Concept:** Splitting data into two linked tables (a "one-to-many" relationship), linked by a reference that the database checks (a "foreign key").
 - **In plain English:** Each nudge's settings are written once in the `nudges` table. Each example is a row in the `examples` table that names its nudge by a short code such as TWC. One nudge can have any number of examples, and the database refuses an example whose code doesn't exist.

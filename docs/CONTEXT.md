@@ -4,6 +4,9 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-10-25 07:51 SGT] **First load of the Nudge repository (owner, once, in this order):** (1) SQL Editor: run `supabase/migrations/001_create_nudge_repository.sql`; (2) Table Editor > `nudges` > Import data from CSV > `supabase/seed/nudges-first-load.csv`; (3) Table Editor > `examples` > Import data from CSV > `supabase/seed/examples-first-load.csv`. Neither CSV has an ID column; Supabase generates IDs. Examples must come second because their codes must already exist.
+- [2026-10-25 07:51 SGT] **Adding examples later:** import a CSV with two columns, `nudge_code` and `example` (codes: TWC, SAF, DPR, GAT, SQT, IAC, SGE, ITE, ASD), or add rows in the Table Editor. To replace an example on a nudge with exactly 3, add the new one first, then retire the old one (set `active` to false).
+- [2026-10-25 07:51 SGT] Database tests: `npm run test:db` now runs `supabase/tests/nudge-repository.test.sql` (25 checks).
 - [2026-10-25 07:17 SGT] **Database tests:** `npm run test:db` runs `supabase/tests/run.sh` against a local PostgreSQL server (set `PGHOST`, `PGPORT`, `PGUSER`). It builds the table from `supabase/migrations/001_create_nudges.sql` in a throwaway database, imports the first-load CSV, checks 13 things, then deletes the database. Not part of `npm run check` or GitHub Actions yet (needs PostgreSQL running).
 - [2026-10-25 07:17 SGT] **Applying a database change to Supabase (owner):** Supabase dashboard > SQL Editor > paste the migration file > Run. Files in `supabase/migrations/` are numbered and run once each, in order.
 - [2026-10-25 07:17 SGT] **First load of the nudges (owner, once):** Table Editor > `nudges` > Insert > Import data from CSV > `supabase/seed/nudges-first-load.csv` (it has no ID column; Supabase generates IDs 1 to 9).
@@ -15,6 +18,14 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-25 07:51 SGT] **Nudge repository, two tables (spec v1.6)** in `supabase/migrations/001_create_nudge_repository.sql` (replaces `001_create_nudges.sql`, which never ran anywhere):
+  - `nudges`: `id` (generated), `code` (unique, 2 to 10 capital letters or digits), `name`, `category`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`, `active`, `starts_unlocked`, `created_at`. Cannot be deleted while it has examples (retire instead).
+  - `examples`: `id` (generated), `nudge_code` (must match a nudge's code; follows a code change automatically), `example`, `active`, `created_at`.
+  - Guard (database trigger `examples_keep_minimum`): refuses deleting, retiring or moving an example if its nudge would be left with fewer than 3 active examples. The number 3 is also `MIN_EXAMPLES_PER_NUDGE` in `shared/settings.ts`.
+  - `nudge_examples_view`: read-only, every example next to its nudge's code, name and category, for browsing.
+  - Security: RLS on both tables; our server (service role) may only read; public roles have no access.
+  - App side: `readNudgeRows(nudgeRows, exampleRows)` in `shared/nudge-repository.ts` returns `nudges` (each with its active examples, oldest first), `problems` (table, row, reasons) and `shortages` (nudges below 3 active examples; they keep working).
+- [2026-10-25 07:51 SGT] SUPERSEDED: the single-table `nudges` design with `example_1` to `example_5` described in the entries below.
 - [2026-10-25 07:17 SGT] **`supabase/` folder:** `migrations/001_create_nudges.sql` (creates the `nudges` table with the same rules as the app, auto IDs, unique names ignoring capitals and spaces, Row Level Security on, read-only access for our server's service role, no access for public roles); `seed/nudges-first-load.csv` (the owner's 9 nudges, made from `docs/Nudge_Repository.xlsx`; booleans as true/false; photo idea empty for quick nudges; starts_unlocked per spec v1.5); `tests/` (database tests). A Vitest test also checks the CSV passes the app's own rules, so database and app agree.
 - [2026-10-25 06:25 SGT] **Batch 1 code (step 1 of the development order):**
   - `shared/nudge-repository.ts` (Nudge repository): `readNudgeRows` checks raw rows from the Supabase `nudges` table with `zod`. Valid rows become Nudge objects; broken rows are left out and returned as problems (row ID plus every reason). Duplicated names (ignoring capitals and spaces) or IDs: all rows involved are left out.

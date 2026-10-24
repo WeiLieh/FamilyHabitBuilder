@@ -3,6 +3,7 @@
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
 ## [2026-10-25 07:17 SGT] Session 2 (2026-10-25 morning): Batch 1 and the nudges table
+- [2026-10-25 07:51 SGT] **Update:** session ran past the 90-min timebox at the owner's request. Elapsed now about 1 h 50 min (06:05 to 07:55 SGT), all active. Extra block 07:20 to 07:55 (about 35 min): owner's review of the SQL led to the two-table design (examples unlimited, codes, minimum 3 with block plus alert), built and tested. Timeboxing note: design discussion on the examples table took about 20 min, the rebuild about 15 min.
 - **Timebox:** 90 min (owner)
 - **Elapsed:** about 1 h 15 min (06:05 to about 07:20 SGT)
 - **Active:** about 1 h 15 min (no breaks)
