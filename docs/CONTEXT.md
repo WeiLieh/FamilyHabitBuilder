@@ -10,6 +10,9 @@
 - [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice.
 
 ## Key decisions and why
+- [2026-10-24 18:26 SGT] Spec version 1.1 agreed (see Change notes in `docs/SPEC.md`). Experiments live in `docs/EXPERIMENTS.md`; metrics live in `docs/Family_Habit_App_Success_Metrics.xlsx`.
+- [2026-10-24 18:26 SGT] Web pages are plain and unstyled for now, so we can get the data right before the product manager supplies the look.
+- [2026-10-24 18:26 SGT] Invite-only access, because the trial is for friends and the app stores family photos.
 - [2026-10-24 17:39 SGT] Project memory files created in `docs/` (plus `CLAUDE.md` at the root), so each new session can pick up where the last one stopped.
 
 ## Approved libraries
@@ -19,11 +22,16 @@
 <!-- Empty until the product manager supplies the look. -->
 
 ## Git and release workflow
-- [2026-10-24 17:39 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirm with the product manager).
+- [2026-10-24 18:26 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirmed by the product manager).
+- [2026-10-24 17:39 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirm with the product manager). SUPERSEDED [2026-10-24 18:26 SGT]
 - [2026-10-24 17:39 SGT] Never work on `main`. One branch per task. Merge into `main` only through a pull request, after the product manager approves.
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
 ## Glossary (terms and acronyms)
+- [2026-10-24 18:26 SGT] **WIP (Work In Progress):** started or agreed in principle, but waiting on a decision before it can be finished.
+- [2026-10-24 18:26 SGT] **PDPA (Personal Data Protection Act):** Singapore's personal data law.
+- [2026-10-24 18:26 SGT] **WAU/MAU (Weekly Active Users ÷ Monthly Active Users):** our stickiness measure.
+- [2026-10-24 18:26 SGT] **Unlock:** a feature (such as choosing more behaviours) that a parent earns rather than gets from the start.
 - [2026-10-24 17:39 SGT] **MVP (Minimum Viable Product):** the smallest version that is good enough to test with real users.
 - [2026-10-24 17:39 SGT] **XP (Experience Points):** points a parent earns for logged actions; they add up to levels.
 - [2026-10-24 17:39 SGT] **Triple P (Positive Parenting Program):** the parenting programme the 9 actions come from.

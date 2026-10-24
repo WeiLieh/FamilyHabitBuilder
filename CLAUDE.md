@@ -118,6 +118,8 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/PRODUCT-BACKLOG.md` | What we might build next, prioritised. |
 | `docs/KNOWN-ISSUES.md` | Problems that are still open, with workarounds. |
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
+| `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
+| `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |
 
 #### Setup (first session of a new project)
 If any of the files above are missing, create them (in a `docs/` folder, except `CLAUDE.md`) using the structures below, then tell me what you created. Do not overwrite a file that already exists.

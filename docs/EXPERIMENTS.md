@@ -1,0 +1,23 @@
+# Experiments
+
+The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
+
+## How experiments work
+- [2026-10-24 18:26 SGT] Each experiment tests one thing (for example, a nudge wording, a reward or the surprise rate) by giving different **variants** to different parents.
+- [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
+- [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
+- [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
+
+## Starting values (hypotheses, from `docs/SPEC.md`)
+These apply to everyone who is not in an experiment that changes them.
+- [2026-10-24 18:26 SGT] Maximum nudges per day: 3
+- [2026-10-24 18:26 SGT] Surprise bonus rate: 20% of logged actions
+- [2026-10-24 18:26 SGT] Quick actions: parent picks every day or every 2 days. Hidden ideal 1 per day, floor 1 per 2 days.
+- [2026-10-24 18:26 SGT] Deliberate actions: 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
+- [2026-10-24 18:26 SGT] Streak gap allowed (quick actions): up to 2 missed days in a row
+
+## Active experiments
+- [2026-10-24 18:26 SGT] None yet.
+
+## Finished experiments
+- [2026-10-24 18:26 SGT] None yet.
