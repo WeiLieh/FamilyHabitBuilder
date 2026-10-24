@@ -2,6 +2,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 22:14 SGT] Question 9 decided: the Nudge repository master copy is a Supabase table edited in the dashboard. Recorded in `docs/SPEC.md`, `docs/CONTEXT.md`, with the trade-off in `docs/KNOWN-ISSUES.md`.
 - [2026-10-24 22:09 SGT] Read the owner's Nudge Repository spreadsheet and agreed answers 1 to 8. Spec v1.3 recorded (quality time now deliberate; per-nudge self-report and photo flags; optional description as Investment; examples, photo ideas and moment tags; naming: nudge, example, nudge message).
 - [2026-10-24 21:35 SGT] Development order agreed and recorded in `docs/CONTEXT.md` (Key decisions).
 - [2026-10-24 21:34 SGT] Saved the owner's architecture diagram as `docs/architecture-diagram.png` and recorded its 8 module names as the official vocabulary in `docs/CONTEXT.md`.
@@ -22,6 +23,7 @@
 - [2026-10-24 18:26 SGT] Technology stack proposal sent; waiting for the product manager's choice.
 - [2026-10-24 17:39 SGT] Waiting for answers to the clarifying questions.
 ### Next steps
+- [2026-10-24 22:14 SGT] Show the updated Batch 1 tests in plain English (Nudge repository rules and Nudge engine guardrails) for the owner to confirm.
 - [2026-10-24 21:35 SGT] Step 1: Nudge repository, then Nudge engine (decisions half). Wait for the owner's extra context upload, then show tests in plain English before writing code.
 - [2026-10-24 21:24 SGT] Owner is uploading more context for the first module. Wait for it before writing tests.
 - [2026-10-24 21:19 SGT] Owner to pick the first module to build. Owner to confirm Upstash Redis is created in its Singapore region.

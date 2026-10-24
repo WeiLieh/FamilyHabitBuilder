@@ -59,7 +59,8 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
   6. Examples will be tagged by moment (WIP).
   7. The photo idea is shown to the parent and used by the Photo check (for now).
   8. Naming: **nudge** = one of the 9 rows; **example** = one of its 5 ideas; **nudge message** = what the bot actually sends. Replaces "action" for the rows.
-  - Still open: where the master copy of the Nudge repository lives (question 9).
+  - Still open: where the master copy of the Nudge repository lives (question 9). SUPERSEDED [2026-10-24 22:14 SGT]
+  - [2026-10-24 22:14 SGT] Question 9 answered: the master copy of the Nudge repository is a table in Supabase, edited by the owner in the Supabase dashboard (directly, or by importing an AI-generated CSV).
 - [2026-10-24 18:34 SGT] Version 1.2, scope confirmed by the product manager: the metrics add three features to the MVP: (a) a weekly optional bot question, "How connected did you feel with your child?" (1 to 5, metric 10); (b) a mute/stop option for the bot (metric 9); (c) a "too many nudges" button (metric 9). Weekend nudge moments and trial length stay WIP (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-24 18:26 SGT] Version 1.1, agreed answers to the session 1 clarifying questions (numbers match the questions):
   1. **Photos:** optional. Consent once at sign-up. No guidance about faces. Photos are kept (no 90-day deletion). A "delete my data" function lives on the web page. **WIP**, built when the UI is designed (`docs/PRODUCT-BACKLOG.md`).

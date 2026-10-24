@@ -39,6 +39,12 @@
 - [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Key decisions and why
+- [2026-10-24 22:14 SGT] **Nudge repository master copy = a Supabase table**, edited by the owner in the Supabase dashboard (grid editing, or importing a CSV saved from an AI-generated Excel file). Chosen over "Excel in Git" because it is more direct and changes go live without a pull request. Trade-off accepted: content changes skip review, tests and Git history. Safety nets instead:
+  - The table's structure (columns and rules) is still created by SQL files in Git, through pull requests.
+  - Database rules refuse bad rows at save time (for example category must be quick or deliberate, no blank nudge name or examples, description limit 280).
+  - The app checks every row it reads; a bad row is shown as a failure, never patched with made-up values (rule 9).
+  - The owner exports a CSV backup before each big change.
+  - The first load comes from the owner's spreadsheet (`Nudge_Repository.xlsx`), converted by Claude into a CSV for import.
 - [2026-10-24 21:35 SGT] **Development order (agreed by the owner):**
   1. Nudge repository, then Nudge engine (decisions half)
   2. Datastore, including the event log (events recorded from day one for Telemetry)
