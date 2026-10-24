@@ -12,6 +12,16 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-24 21:34 SGT] **Official module names** (from the owner's diagram, `docs/architecture-diagram.png`). Use only these names in code, docs and conversation:
+  1. **Telegram bot**: chat with the parent. Talks to the Nudge engine, sends photos to the Photo check, writes to the Datastore.
+  2. **Nudge engine**: the brain plus experiments. Reads from the Nudge repository, reads and writes the Datastore, triggers Variable rewards.
+  3. **Nudge repository**: the 9 actions as data rows.
+  4. **Photo check**: the AI vision model. Writes results to the Datastore.
+  5. **Variable rewards**: the 5 reward types.
+  6. **Datastore**: history and targets (Supabase, plus Upstash Redis for short-term chat context).
+  7. **Web app**: login, history, XP. Reads from the Datastore.
+  8. **Telemetry**: listens to events from all modules.
+- [2026-10-24 21:34 SGT] The Nudge engine has two halves: **decisions** (who to nudge, when, about what; guardrails, cap, moments, priority, surprise yes/no, experiment groups) and **words** (AI-written nudge text, waiting on WIP decisions).
 - [2026-10-24 21:19 SGT] Folder layout (same pattern as SG Weather):
   - `api/`: Vercel functions, one file per web address. Kept thin. Helpers go in `api/_...` folders (Vercel does not expose folders starting with `_`).
   - `shared/`: the brain and other logic, with no direct web calls, so it can be tested on its own.
@@ -85,6 +95,7 @@
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
 ## Glossary (terms and acronyms)
+- [2026-10-24 21:34 SGT] **Module names:** see "Official module names" under Architecture summary. "Habit rules" is not a module name; do not use it.
 - [2026-10-24 21:19 SGT] **CI (Continuous Integration):** automatically running the checks on every proposed change. Ours is GitHub Actions.
 - [2026-10-24 21:19 SGT] **Health check:** a tiny web address that only answers "I'm alive", used to confirm a deployment works.
 - [2026-10-24 18:47 SGT] **Webhook:** Telegram "knocks" on our Vercel address each time a parent sends something, instead of our app constantly asking Telegram for news.

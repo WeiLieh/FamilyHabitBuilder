@@ -119,6 +119,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/KNOWN-ISSUES.md` | Problems that are still open, with workarounds. |
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
 | `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
+| `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). |
 | `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |
 
 #### Setup (first session of a new project)
