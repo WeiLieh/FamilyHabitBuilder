@@ -2,6 +2,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 18:50 SGT] Owner decided the stack setup items (Supabase Cron, GitHub Actions, Supabase in Singapore with Vercel in Washington, SQL files for database changes, Anthropic spend limit) and approved the library list. Recorded in `docs/CONTEXT.md`.
 - [2026-10-24 18:47 SGT] Tech stack (11 parts) agreed and logged in `docs/CONTEXT.md`, with the reason for each. Check command `npm run check` recorded.
 - [2026-10-24 18:44 SGT] Owner decided: plain web requests for Telegram, reuse SG Weather / Haze Uncle patterns (separate brain, secrets only in Vercel, PR + Vercel preview + merge), Upstash Redis for bot context. Recorded in `docs/CONTEXT.md`.
 - [2026-10-24 18:34 SGT] Product manager confirmed the three flags: metric-driven bot features are in scope (spec v1.2); weekend moments and trial length added to the backlog as WIP; photo retention kept as an open issue.
@@ -14,6 +15,7 @@
 - [2026-10-24 18:26 SGT] Technology stack proposal sent; waiting for the product manager's choice.
 - [2026-10-24 17:39 SGT] Waiting for answers to the clarifying questions.
 ### Next steps
+- [2026-10-24 18:50 SGT] Set up the project skeleton (package.json, TypeScript, Vitest, `npm run check`, GitHub Actions) on a new branch, then start the first module with tests first.
 - [2026-10-24 18:44 SGT] Finalise the tech stack with the owner, then record approved libraries, package manager and check command in `docs/CONTEXT.md`.
 - [2026-10-24 18:26 SGT] Record the stack choice, approved libraries, package manager and check command in `docs/CONTEXT.md`. Then set up the project skeleton.
 - [2026-10-24 17:39 SGT] Record agreed answers as change notes in `docs/SPEC.md`.

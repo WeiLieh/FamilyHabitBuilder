@@ -31,7 +31,13 @@
   9. **npm**: the package manager, one lockfile.
   10. **Vitest**: runs the tests.
   11. **Upstash Redis** (free plan): short-term bot conversation context.
-- [2026-10-24 18:47 SGT] **Pending owner approval** (proposed with the stack, not yet agreed):
+- [2026-10-24 18:50 SGT] **Stack setup items, decided by the owner** (supersede the pending list below):
+  - **Scheduler: Supabase Cron** wakes the app every few minutes; our code decides who is due a nudge. Because Vercel's free scheduler runs at most once a day.
+  - **GitHub Actions** runs `npm run check` on every pull request, as a second check before merge.
+  - **Regions:** Supabase in Singapore, so stored family data stays in Singapore. Vercel functions stay in Washington, D.C. (Vercel's default), the owner's choice. Trade-off: each database call travels Singapore to Washington and back, so bot replies may be slightly slower; data passes through the US while being processed (it also does when sent to Claude). Can be moved to Singapore later in Vercel settings.
+  - **Database changes:** written as SQL files in the repo; the owner runs them in the Supabase dashboard. No extra tool, and the owner sees every change.
+  - **Spend limit:** the owner sets a monthly limit in the Anthropic Console (about US$10).
+- [2026-10-24 18:47 SGT] **Pending owner approval** (proposed with the stack, not yet agreed): SUPERSEDED [2026-10-24 18:50 SGT]
   - **Scheduler:** Supabase Cron, because Vercel's free scheduler runs at most once a day and nudges need 3 moments a day.
   - **GitHub Actions** to run `npm run check` automatically on every pull request (free).
   - **Singapore regions** for Vercel functions and Supabase, to keep family data in Singapore (a likely PDPA reviewer question).
@@ -49,7 +55,13 @@
 - [2026-10-24 17:39 SGT] Project memory files created in `docs/` (plus `CLAUDE.md` at the root), so each new session can pick up where the last one stopped.
 
 ## Approved libraries
-- [2026-10-24 18:47 SGT] Package manager: npm (one lockfile, `package-lock.json`). Tools approved as part of the stack: TypeScript, Vitest. Exact library list still to be approved (see Key decisions, pending items).
+- [2026-10-24 18:50 SGT] Approved by the owner (npm, one lockfile `package-lock.json`):
+  - `@anthropic-ai/sdk`: talk to Claude.
+  - `@supabase/supabase-js`: talk to Supabase (database and photo storage).
+  - `zod`: check that data from outside (Claude, Telegram, Supabase) has the expected shape before we trust it.
+  - Development only: `typescript`, `vitest`, `@types/node`.
+  - Telegram and Upstash Redis are called with plain web requests (no library). Anything else needs the owner's approval first.
+- [2026-10-24 18:47 SGT] Package manager: npm (one lockfile, `package-lock.json`). Tools approved as part of the stack: TypeScript, Vitest. Exact library list still to be approved (see Key decisions, pending items). SUPERSEDED [2026-10-24 18:50 SGT]
 - [2026-10-24 17:39 SGT] None yet. Package manager and lockfile to be chosen with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## UI decisions
