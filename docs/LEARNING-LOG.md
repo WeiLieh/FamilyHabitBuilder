@@ -2,6 +2,19 @@
 
 ## Notebook
 
+### [2026-10-25 06:25 SGT] Checking data at the door (validation with zod)
+- **Concept:** Input validation with a schema (using the `zod` library).
+- **In plain English:** Any data coming from outside the code (a database the owner edits by hand, a Telegram message, Claude's reply) is checked against a description of what "good" looks like before the app uses it. Bad data is refused with clear reasons instead of quietly causing strange behaviour later.
+- **Analogy:** A receiving clerk who checks each delivery against the order form before it goes on the shelf, and sends back anything wrong with a note saying why.
+- **Why and when to use it:** Wherever data crosses into the app from something we don't control. Not needed for values the code creates itself.
+- **Best practices:**
+  - Check at the door, once; inside, trust the checked data.
+  - Report every problem at once, in words a person can act on.
+  - Never patch bad data with guesses (our rule 9).
+- **Where it showed up in this project:** `shared/nudge-repository.ts` checks every row of the owner-edited `nudges` table; a broken row is left out and reported while the other nudges keep working.
+- **Explain it to others:** "Because content is edited live in the database, the app checks every row before using it. A bad row is set aside and flagged, and the rest of the app carries on."
+- **Governance angle:** A reviewer would ask what happens when someone enters bad content. Answer: it is refused and reported, never shown to parents.
+
 ### [2026-10-24 21:35 SGT] Walking skeleton
 - **Concept:** Walking skeleton.
 - **In plain English:** The thinnest version of the whole product that works from end to end, deployed for real, before any part is made rich. Every later feature plugs into something that already runs.

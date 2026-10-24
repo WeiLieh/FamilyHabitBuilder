@@ -9,6 +9,7 @@ The single place where experiments are defined. The nudge engine reads its exper
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
+- [2026-10-25 06:25 SGT] The code's copy of these values is `shared/settings.ts`. Change both together; a test checks the choice limits.
 These apply to everyone who is not in an experiment that changes them.
 - [2026-10-24 22:18 SGT] Choice limits: up to 2 quick and up to 1 deliberate behaviour at a time; at least 1 in total. Choosing more is an unlock (rule WIP).
 - [2026-10-24 18:26 SGT] Maximum nudges per day: 3

@@ -2,9 +2,11 @@
 
 ## [2026-10-25 06:17 SGT] Session 2
 ### Done
+- [2026-10-25 06:25 SGT] **Batch 1 built test-first.** 26 new tests written first and seen failing (red), then code written until all passed (green). Full check passes: 28 tests (3 files). Files: `shared/nudge-repository.ts`, `shared/nudge-engine/choices.ts`, `shared/settings.ts`, `tests/nudge-repository.test.ts`, `tests/nudge-engine-choices.test.ts`, `tests/helpers/nudge-rows.ts`. Installed approved library `zod`.
 - [2026-10-25 06:17 SGT] Owner asked for learner-friendly comments in all code. Added headers and step-by-step comments to `api/health.ts`, `tests/api-health.test.ts`, `tsconfig.json`, `tsconfig.build.json` and `.github/workflows/check.yml` (behaviour unchanged, check passes). Made it a standing rule in `CLAUDE.md`.
 ### In progress
-- [2026-10-25 06:17 SGT] Next: Batch 1 (see the handoff below).
+- [2026-10-25 06:25 SGT] Next: handoff step 2 (Supabase table SQL file and first-load CSV), then Batch 2 tests in plain English.
+- [2026-10-25 06:17 SGT] Next: Batch 1 (see the handoff below). SUPERSEDED [2026-10-25 06:25 SGT]
 ### Next steps
 - [2026-10-25 06:17 SGT] Follow "Next steps (in order)" in the handoff below.
 ### Blockers

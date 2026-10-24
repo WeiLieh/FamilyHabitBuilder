@@ -12,6 +12,11 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-25 06:25 SGT] **Batch 1 code (step 1 of the development order):**
+  - `shared/nudge-repository.ts` (Nudge repository): `readNudgeRows` checks raw rows from the Supabase `nudges` table with `zod`. Valid rows become Nudge objects; broken rows are left out and returned as problems (row ID plus every reason). Duplicated names (ignoring capitals and spaces) or IDs: all rows involved are left out.
+  - `shared/nudge-engine/choices.ts` (Nudge engine): `checkChoices` checks a parent's picks against the guardrails and returns targets or every reason, in words the bot can show.
+  - `shared/settings.ts`: starting values (choice limits, 2 deliberate times a week in total), mirrored from `docs/EXPERIMENTS.md`.
+  - Supabase `nudges` table columns (planned, used by the tests): `id`, `name`, `category`, `example_1` to `example_5`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`.
 - [2026-10-24 21:34 SGT] **Official module names** (from the owner's diagram, `docs/architecture-diagram.png`). Use only these names in code, docs and conversation:
   1. **Telegram bot**: chat with the parent. Talks to the Nudge engine, sends photos to the Photo check, writes to the Datastore.
   2. **Nudge engine**: the brain plus experiments. Reads from the Nudge repository, reads and writes the Datastore, triggers Variable rewards.

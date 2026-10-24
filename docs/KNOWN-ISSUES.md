@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-10-25 06:25 SGT] Broken nudge rows are reported, but no alert is sent yet
+- **Issue:** [2026-10-25 06:25 SGT] The Nudge repository returns a list of broken rows (spec v1.4 says alert the owner), but nothing delivers that alert yet.
+- **Impact:** [2026-10-25 06:25 SGT] Until it is built, the owner would not hear about a broken row.
+- **Workaround:** [2026-10-25 06:25 SGT] Build the alert with the Datastore and Telegram bot (step 2 or 3), for example a Telegram message or log line to the owner. Not live yet, so no real impact.
+
 ### [2026-10-24 22:14 SGT] Nudge repository edits skip review and history
 - **Issue:** [2026-10-24 22:14 SGT] Edits in the Supabase dashboard go live to parents immediately, without a pull request, tests or Git history.
 - **Impact:** [2026-10-24 22:14 SGT] A typo or a deleted row reaches parents straight away, and the old version cannot be recovered unless a backup was exported. A reviewer (for example a Change Advisory Board (CAB)) would ask who can change live content and how a bad change is undone.
