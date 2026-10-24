@@ -17,6 +17,7 @@
   - `shared/`: the brain and other logic, with no direct web calls, so it can be tested on its own.
   - `tests/`: Vitest tests.
   - `docs/`: project memory files.
+  - [2026-10-24 21:24 SGT] `vercel.json`: Vercel settings; currently only the function region (`sin1`, Singapore).
 - [2026-10-24 21:19 SGT] First endpoint: `api/health.ts` (GET `/api/health` answers `{ ok: true, service: "family-habit-builder" }`; anything else gets 405). Uses Node's own request/response types, so the same file runs on Vercel and in tests.
 - [2026-10-24 18:47 SGT] First outline (details come when we design each module):
   - **Telegram** sends each parent message to a Vercel function (a "webhook"). That function is a thin layer: it passes the message to the brain and sends the brain's reply back.
@@ -43,7 +44,8 @@
 - [2026-10-24 18:50 SGT] **Stack setup items, decided by the owner** (supersede the pending list below):
   - **Scheduler: Supabase Cron** wakes the app every few minutes; our code decides who is due a nudge. Because Vercel's free scheduler runs at most once a day.
   - **GitHub Actions** runs `npm run check` on every pull request, as a second check before merge.
-  - **Regions:** Supabase in Singapore, so stored family data stays in Singapore. Vercel functions stay in Washington, D.C. (Vercel's default), the owner's choice. Trade-off: each database call travels Singapore to Washington and back, so bot replies may be slightly slower; data passes through the US while being processed (it also does when sent to Claude). Can be moved to Singapore later in Vercel settings.
+  - [2026-10-24 21:24 SGT] **Regions (owner's update):** everything in Singapore for consistency: Supabase (Singapore), Upstash Redis (Singapore region, chosen when the owner creates it) and Vercel functions (region `sin1`, set in `vercel.json`). Stored and processed family data stays in Singapore, except what is sent to Claude.
+  - **Regions:** SUPERSEDED [2026-10-24 21:24 SGT] Supabase in Singapore, so stored family data stays in Singapore. Vercel functions stay in Washington, D.C. (Vercel's default), the owner's choice. Trade-off: each database call travels Singapore to Washington and back, so bot replies may be slightly slower; data passes through the US while being processed (it also does when sent to Claude). Can be moved to Singapore later in Vercel settings.
   - **Database changes:** written as SQL files in the repo; the owner runs them in the Supabase dashboard. No extra tool, and the owner sees every change.
   - **Spend limit:** the owner sets a monthly limit in the Anthropic Console (about US$10).
 - [2026-10-24 18:47 SGT] **Pending owner approval** (proposed with the stack, not yet agreed): SUPERSEDED [2026-10-24 18:50 SGT]
