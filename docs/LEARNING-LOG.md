@@ -2,6 +2,19 @@
 
 ## Notebook
 
+### [2026-10-25 07:17 SGT] Defence in depth (two locks on the same door)
+- **Concept:** Defence in depth: the same rule checked in more than one place.
+- **In plain English:** The nudge rules (no blank names, valid categories, photo idea when photos are allowed...) are checked twice: by the database when the owner saves a row, and by the app when it reads rows. If one check is missed or bypassed, the other still catches the problem.
+- **Analogy:** A building with a locked front door and a locked flat door: a mistake at one door doesn't leave your home open.
+- **Why and when to use it:** For data that people edit by hand and that reaches real users. Not worth it for data only our own code creates.
+- **Best practices:**
+  - Keep the two sets of rules the same, and test that they agree (we test the first-load CSV against both).
+  - Lock everything by default (Row Level Security on, no public access), then open only what is needed (our server may read).
+  - Never rely only on the screen the editor uses.
+- **Where it showed up in this project:** `supabase/migrations/001_create_nudges.sql` (database rules) plus `shared/nudge-repository.ts` (app rules), each with its own tests.
+- **Explain it to others:** "Content is edited live, so we enforce the rules twice: the database refuses bad rows on save, and the app refuses bad rows on read. Both are tested."
+- **Governance angle:** A security reviewer will ask who can read or change the nudges table. Answer: only our server can read it (secret key in Vercel), public roles have no access, and only the owner edits it, through the dashboard.
+
 ### [2026-10-25 06:25 SGT] Checking data at the door (validation with zod)
 - **Concept:** Input validation with a schema (using the `zod` library).
 - **In plain English:** Any data coming from outside the code (a database the owner edits by hand, a Telegram message, Claude's reply) is checked against a description of what "good" looks like before the app uses it. Bad data is refused with clear reasons instead of quietly causing strange behaviour later.

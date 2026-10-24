@@ -2,6 +2,16 @@
 
 ## Open
 
+### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
+- **Issue:** [2026-10-25 07:17 SGT] `001_create_nudges.sql` passed 13 tests on a local PostgreSQL 16, but Supabase may differ slightly (version, built-in roles, Data API grant rules).
+- **Impact:** [2026-10-25 07:17 SGT] The first run in Supabase could show an error.
+- **Workaround:** [2026-10-25 07:17 SGT] When the owner creates the Supabase project (step 3), run the file in the SQL Editor and report any error; Claude fixes it and logs it here.
+
+### [2026-10-25 07:17 SGT] Database tests are not run automatically
+- **Issue:** [2026-10-25 07:17 SGT] `npm run test:db` needs a running PostgreSQL, so it is not part of `npm run check` or GitHub Actions.
+- **Impact:** [2026-10-25 07:17 SGT] A change to the SQL could break the rules without CI noticing.
+- **Workaround:** [2026-10-25 07:17 SGT] Run `npm run test:db` manually after any SQL change. Later option: add a PostgreSQL service to the GitHub Actions workflow (ask the owner first).
+
 ### [2026-10-25 06:25 SGT] Broken nudge rows are reported, but no alert is sent yet
 - **Issue:** [2026-10-25 06:25 SGT] The Nudge repository returns a list of broken rows (spec v1.4 says alert the owner), but nothing delivers that alert yet.
 - **Impact:** [2026-10-25 06:25 SGT] Until it is built, the owner would not hear about a broken row.

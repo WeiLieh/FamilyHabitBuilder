@@ -4,6 +4,9 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-10-25 07:17 SGT] **Database tests:** `npm run test:db` runs `supabase/tests/run.sh` against a local PostgreSQL server (set `PGHOST`, `PGPORT`, `PGUSER`). It builds the table from `supabase/migrations/001_create_nudges.sql` in a throwaway database, imports the first-load CSV, checks 13 things, then deletes the database. Not part of `npm run check` or GitHub Actions yet (needs PostgreSQL running).
+- [2026-10-25 07:17 SGT] **Applying a database change to Supabase (owner):** Supabase dashboard > SQL Editor > paste the migration file > Run. Files in `supabase/migrations/` are numbered and run once each, in order.
+- [2026-10-25 07:17 SGT] **First load of the nudges (owner, once):** Table Editor > `nudges` > Insert > Import data from CSV > `supabase/seed/nudges-first-load.csv` (it has no ID column; Supabase generates IDs 1 to 9).
 - [2026-10-24 21:19 SGT] First time: `npm install`. Then `npm run check` runs, in order: `npm run typecheck` (TypeScript checks every file), `npm test` (Vitest runs everything in `tests/`) and `npm run build` (compiles `api/` and `shared/` into `dist/`, which Git ignores). Any failure stops the chain.
 - [2026-10-24 21:19 SGT] GitHub Actions (`.github/workflows/check.yml`) runs `npm ci` and `npm run check` on Node.js 24 for every pull request and every push to `main`.
 - [2026-10-24 21:19 SGT] Secrets: copy `.env.example` to `.env` for local use (Git ignores `.env`). Real values live in Vercel only.
@@ -12,6 +15,7 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-25 07:17 SGT] **`supabase/` folder:** `migrations/001_create_nudges.sql` (creates the `nudges` table with the same rules as the app, auto IDs, unique names ignoring capitals and spaces, Row Level Security on, read-only access for our server's service role, no access for public roles); `seed/nudges-first-load.csv` (the owner's 9 nudges, made from `docs/Nudge_Repository.xlsx`; booleans as true/false; photo idea empty for quick nudges; starts_unlocked per spec v1.5); `tests/` (database tests). A Vitest test also checks the CSV passes the app's own rules, so database and app agree.
 - [2026-10-25 06:25 SGT] **Batch 1 code (step 1 of the development order):**
   - `shared/nudge-repository.ts` (Nudge repository): `readNudgeRows` checks raw rows from the Supabase `nudges` table with `zod`. Valid rows become Nudge objects; broken rows are left out and returned as problems (row ID plus every reason). Duplicated names (ignoring capitals and spaces) or IDs: all rows involved are left out.
   - `shared/nudge-engine/choices.ts` (Nudge engine): `checkChoices` checks a parent's picks against the guardrails and returns targets or every reason, in words the bot can show.
