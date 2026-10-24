@@ -50,6 +50,13 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-25 07:42 SGT] Version 1.6 (in progress), Nudge repository becomes two tables (owner agreed after mock-ups):
+  1. **`nudges`** (one row per nudge): ID number (generated; used by parents' choices, history and metrics), a unique short **code**, name, category and the other settings (self-report allowed, photo upload allowed, photo idea, description limit, active, starts unlocked), each written once.
+  2. **`examples`** (one row per example, unlimited): ID number (generated, never changes), **nudge_code** (must match a code in `nudges`, so typos are refused) and the example text. Different nudges can have different numbers of examples.
+  3. **Codes:** TWC Talking with children, SAF Showing affection, DPR Descriptive praise, GAT Giving attention, SQT Spending quality time, IAC Interesting activities, SGE Setting a good example, ITE Incidental teaching, ASD Ask-say-do. Codes do not change when a nudge is renamed.
+  4. A read-only combined view shows code, name, category and example together for browsing.
+  5. Replaces the 5 fixed example columns (`example_1` to `example_5`). Rejected alternatives: one table with settings repeated on every example row (rows could disagree, typos create new nudges); IDs with meaning built in such as `1_TWC` (unchecked, hand-numbered, must change on rename).
+  - Still open: minimum number of examples per nudge (suggested 3).
 - [2026-10-25 06:59 SGT] Version 1.5, Nudge repository and unlocks (owner's answers):
   1. Nudge IDs are generated automatically by Supabase, so they are always unique (the app's duplicate-ID check stays as a backstop). CSV imports leave the ID column out.
   2. Rows can be added and edited, but not deleted while any parent has chosen them (enforced by the database once the Datastore holds parents' targets). A nudge is retired by setting a new **active** column to no: parents can't pick it, and its history stays.

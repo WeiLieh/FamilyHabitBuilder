@@ -2,6 +2,18 @@
 
 ## Notebook
 
+### [2026-10-25 07:42 SGT] Two tables linked by a short code (nudges and examples)
+- **Concept:** Splitting data into two linked tables (a "one-to-many" relationship), linked by a reference that the database checks (a "foreign key").
+- **In plain English:** Each nudge's settings are written once in the `nudges` table. Each example is a row in the `examples` table that names its nudge by a short code such as TWC. One nudge can have any number of examples, and the database refuses an example whose code doesn't exist.
+- **Analogy:** A contacts list (each person's details once) and a message log (each message just names who it's for). You never re-type someone's address on every message.
+- **Why and when to use it:** When one thing has many of another (one nudge, many examples), and the "one" side has details that must not disagree. Not needed when every item has exactly the same small, fixed number of parts that never grows.
+- **Best practices:**
+  - Give every row a plain number ID that never changes; keep meaning (like TWC) in a separate column.
+  - Let the database check the link, so typos are refused.
+  - Write each fact once.
+- **Where it showed up in this project:** The owner noticed 5 fixed example columns limited variety; we compared one table, smart IDs like `1_TWC`, and two linked tables, and chose two tables with short codes (spec v1.6).
+- **Explain it to others:** "Nudge settings live once in a small table; examples live in their own table, each tagged with its nudge's code, so we can add unlimited examples without ever copying or contradicting the settings."
+
 ### [2026-10-25 07:17 SGT] Defence in depth (two locks on the same door)
 - **Concept:** Defence in depth: the same rule checked in more than one place.
 - **In plain English:** The nudge rules (no blank names, valid categories, photo idea when photos are allowed...) are checked twice: by the database when the owner saves a row, and by the app when it reads rows. If one check is missed or bypassed, the other still catches the problem.
@@ -81,5 +93,5 @@
 - **Governance angle:** A reviewer can trace every decision to a dated entry, which helps with audits and change approvals.
 
 ## Still unclear
-- [2026-10-25 07:34 SGT] **Two tables linked by name (nudges and examples):** proposed design where `nudges` holds each nudge's settings once (with an ID number used by parents' choices) and `examples` holds one row per example, naming its nudge. Explained with a mock-up and the contacts-list / message-log analogy. Waiting for the owner to confirm it is clear.
+- [2026-10-25 07:34 SGT] **Two tables linked by name (nudges and examples):** proposed design where `nudges` holds each nudge's settings once (with an ID number used by parents' choices) and `examples` holds one row per example, naming its nudge. Explained with a mock-up and the contacts-list / message-log analogy. Waiting for the owner to confirm it is clear. CONFIRMED [2026-10-25 07:42 SGT]: moved to the Notebook.
 - [2026-10-24 17:39 SGT] Nothing yet. SUPERSEDED [2026-10-25 07:34 SGT]
