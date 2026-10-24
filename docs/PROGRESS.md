@@ -1,5 +1,15 @@
 # Progress (handoff between sessions)
 
+## [2026-10-25 06:17 SGT] Session 2
+### Done
+- [2026-10-25 06:17 SGT] Owner asked for learner-friendly comments in all code. Added headers and step-by-step comments to `api/health.ts`, `tests/api-health.test.ts`, `tsconfig.json`, `tsconfig.build.json` and `.github/workflows/check.yml` (behaviour unchanged, check passes). Made it a standing rule in `CLAUDE.md`.
+### In progress
+- [2026-10-25 06:17 SGT] Next: Batch 1 (see the handoff below).
+### Next steps
+- [2026-10-25 06:17 SGT] Follow "Next steps (in order)" in the handoff below.
+### Blockers
+- [2026-10-25 06:17 SGT] None.
+
 ## [2026-10-24 22:18 SGT] HANDOFF FOR THE NEXT SESSION (read this first)
 ### Where we are
 - [2026-10-24 22:18 SGT] Branch `claude/festive-einstein-nf623s` (not `main`); everything committed and pushed; no pull request opened yet.

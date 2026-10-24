@@ -1,8 +1,15 @@
+// TypeScript settings for `npm run build`: compile the app into plain
+// JavaScript in the dist/ folder, to prove it builds. Tests are left out.
 {
+  // Start from all the settings in tsconfig.json...
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    // ...but actually write output files this time,
     "noEmit": false,
+    // treating the project's top folder as the starting point (TypeScript 7
+    // needs this spelled out; see docs/ERROR-LOG.md),
     "rootDir": ".",
+    // and put the compiled files in dist/ (Git ignores this folder).
     "outDir": "dist"
   },
   "include": ["api", "shared"]

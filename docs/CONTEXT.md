@@ -39,6 +39,7 @@
 - [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Key decisions and why
+- [2026-10-25 06:17 SGT] **Code is commented for a learner** (owner's request, now a rule in `CLAUDE.md`): each file starts with a header explaining what it does and why, and each meaningful step has a plain-English comment. Applied to all existing code and config files. `package.json` and `vercel.json` cannot hold comments, so: `package.json` lists the project name, Node.js version (24) and the four scripts (`typecheck`, `test`, `build`, `check`) plus the installed libraries; `vercel.json` sets the Vercel function region to Singapore (`sin1`).
 - [2026-10-24 22:14 SGT] **Nudge repository master copy = a Supabase table**, edited by the owner in the Supabase dashboard (grid editing, or importing a CSV saved from an AI-generated Excel file). Chosen over "Excel in Git" because it is more direct and changes go live without a pull request. Trade-off accepted: content changes skip review, tests and Git history. Safety nets instead:
   - The table's structure (columns and rules) is still created by SQL files in Git, through pull requests.
   - Database rules refuse bad rows at save time (for example category must be quick or deliberate, no blank nudge name or examples, description limit 280).

@@ -1,14 +1,26 @@
+// TypeScript settings used by `npm run typecheck` and by the tests.
+// (This file may contain comments; TypeScript allows them here.)
 {
   "compilerOptions": {
+    // Which JavaScript version to produce; ES2023 is modern and runs on Node.js 24.
     "target": "ES2023",
+    // Use Node.js's modern module system ("import ... from ...").
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    // Strict mode: TypeScript's strongest checks, to catch mistakes early.
     "strict": true,
+    // When reading from a list by position, treat the result as possibly
+    // missing, so we must handle "not there" instead of crashing.
     "noUncheckedIndexedAccess": true,
+    // Smooth over small differences between older and newer module styles.
     "esModuleInterop": true,
+    // Don't re-check the type files inside installed libraries (faster).
     "skipLibCheck": true,
+    // Treat "Health.ts" and "health.ts" as different, as Vercel's servers do.
     "forceConsistentCasingInFileNames": true,
+    // Load the type descriptions for Node.js itself.
     "types": ["node"]
   },
+  // Folders to check: web addresses, shared logic, and tests.
   "include": ["api", "shared", "tests"]
 }

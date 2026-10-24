@@ -24,6 +24,8 @@
   - Test what the user sees (the reply), not how the code is wired inside.
   - Never loosen a test just to make it pass.
 - **Where it showed up in this project:** The `/api/health` test was written first, failed, and passed after `api/health.ts` was written.
+- [2026-10-25 06:17 SGT] **The third step, refactor:** the full cycle is red, green, **refactor**. Once tests pass, the code can be tidied or improved (renamed, simplified, commented) and the tests re-run to prove the behaviour did not change. Adding learner comments to `api/health.ts` was a small refactor: same behaviour, tests still green.
+- [2026-10-25 06:17 SGT] **Reading a test file:** `describe` groups related tests; `it` is one test ("it should..."); `expect(...)` is a check that fails the test if false; `beforeAll`/`afterAll` set up and clean up. The owner used GitHub Copilot to map the explanation to each line of `tests/api-health.test.ts` (line numbers have since shifted because comments were added).
 - **Explain it to others:** "We write the acceptance check before the feature. It fails first, which proves the check is real, then we build until it passes. So every rule in the app has proof it works."
 
 ### [2026-10-24 21:19 SGT] Continuous Integration (CI) with GitHub Actions

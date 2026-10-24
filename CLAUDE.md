@@ -69,6 +69,7 @@ A task is only complete when all of these are true:
 - Treat `docs/LEARNING-LOG.md` as my study notebook. Add an entry only for genuinely new concepts, techniques or decisions, not for every step. Keep entries short and in plain English, so the notebook stays readable and I can use it to explain the work to others.
 - If I say I don't understand something, explain it again in a simpler way with a different analogy, and add it to "Still unclear" until I confirm I understand.
 - At my request (for example, "quiz me" or "prepare me to explain this"), use the notebook to test me or to draft talking points for a presentation.
+- [2026-10-25 06:17 SGT] Comment all code for a learner: a header at the top of each file saying what it does and why, and plain-English comments on each meaningful step (what it does and why, spelling out jargon). Tests say what behaviour they check. Files that cannot hold comments (`package.json`, `vercel.json`) are explained in `docs/CONTEXT.md` instead.
 
 ### More Rules for This Project
 
