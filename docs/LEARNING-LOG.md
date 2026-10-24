@@ -81,4 +81,5 @@
 - **Governance angle:** A reviewer can trace every decision to a dated entry, which helps with audits and change approvals.
 
 ## Still unclear
-- [2026-10-24 17:39 SGT] Nothing yet.
+- [2026-10-25 07:34 SGT] **Two tables linked by name (nudges and examples):** proposed design where `nudges` holds each nudge's settings once (with an ID number used by parents' choices) and `examples` holds one row per example, naming its nudge. Explained with a mock-up and the contacts-list / message-log analogy. Waiting for the owner to confirm it is clear.
+- [2026-10-24 17:39 SGT] Nothing yet. SUPERSEDED [2026-10-25 07:34 SGT]
