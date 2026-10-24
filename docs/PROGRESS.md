@@ -2,6 +2,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 18:44 SGT] Owner decided: plain web requests for Telegram, reuse SG Weather / Haze Uncle patterns (separate brain, secrets only in Vercel, PR + Vercel preview + merge), Upstash Redis for bot context. Recorded in `docs/CONTEXT.md`.
 - [2026-10-24 18:34 SGT] Product manager confirmed the three flags: metric-driven bot features are in scope (spec v1.2); weekend moments and trial length added to the backlog as WIP; photo retention kept as an open issue.
 - [2026-10-24 18:26 SGT] Product manager answered all 18 questions. Recorded as spec version 1.1 in `docs/SPEC.md`. Added `docs/EXPERIMENTS.md` and the metrics spreadsheet. Logged WIP items in the backlog and open questions in known issues.
 - [2026-10-24 17:39 SGT] Placed `CLAUDE.md` at the root and `SPEC.md` in `docs/`. Created the other project files from the structures in `CLAUDE.md`.
@@ -11,6 +12,7 @@
 - [2026-10-24 18:26 SGT] Technology stack proposal sent; waiting for the product manager's choice.
 - [2026-10-24 17:39 SGT] Waiting for answers to the clarifying questions.
 ### Next steps
+- [2026-10-24 18:44 SGT] Finalise the tech stack with the owner, then record approved libraries, package manager and check command in `docs/CONTEXT.md`.
 - [2026-10-24 18:26 SGT] Record the stack choice, approved libraries, package manager and check command in `docs/CONTEXT.md`. Then set up the project skeleton.
 - [2026-10-24 17:39 SGT] Record agreed answers as change notes in `docs/SPEC.md`.
 - [2026-10-24 17:39 SGT] Propose the technology stack (at least two options with trade-offs) and record the choice in `docs/CONTEXT.md`.

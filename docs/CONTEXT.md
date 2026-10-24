@@ -10,6 +10,12 @@
 - [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice.
 
 ## Key decisions and why
+- [2026-10-24 18:44 SGT] **Follow the proven patterns from the owner's SG Weather / Haze Uncle project (`WeiLieh/SGDataAPI`)**, because they already worked in production:
+  - Talk to Telegram with plain web requests (no Telegram library), so there is one fewer library to approve and maintain.
+  - Keep the bot's "brain" separate from the Telegram layer (the spec's "thin layer"), so the brain can be tested on its own and another channel could be added later without changing it.
+  - Secret keys live only in Vercel (and a local file Git ignores), never in code, Git, logs or chat.
+  - Each change goes through a pull request, a Vercel preview to test on, then a merge.
+- [2026-10-24 18:44 SGT] **Upstash Redis keeps the Telegram bot's conversation context** (short-term memory), as in Haze Uncle, called with plain web requests. Supabase stays the permanent store (history, targets, photos, rewards, telemetry). "Delete my data" must clear both.
 - [2026-10-24 18:26 SGT] Spec version 1.1 agreed (see Change notes in `docs/SPEC.md`). Experiments live in `docs/EXPERIMENTS.md`; metrics live in `docs/Family_Habit_App_Success_Metrics.xlsx`.
 - [2026-10-24 18:26 SGT] Web pages are plain and unstyled for now, so we can get the data right before the product manager supplies the look.
 - [2026-10-24 18:26 SGT] Invite-only access, because the trial is for friends and the app stores family photos.
