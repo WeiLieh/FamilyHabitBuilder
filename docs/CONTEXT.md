@@ -39,6 +39,15 @@
 - [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Key decisions and why
+- [2026-10-24 21:35 SGT] **Development order (agreed by the owner):**
+  1. Nudge repository, then Nudge engine (decisions half)
+  2. Datastore, including the event log (events recorded from day one for Telemetry)
+  3. Telegram bot (basic version) and first deploy: the "walking skeleton"
+  4. Variable rewards, then Nudge engine (words half)
+  5. Photo check
+  6. Telemetry (the 10 metrics)
+  7. Web app
+  Why: the brain comes first, but an end-to-end version that runs on the owner's phone comes early (step 3), so problems connecting Vercel, Telegram, Supabase and the scheduler show up early. Telemetry is split: events are recorded from step 2, because metrics can't be calculated later from data that was never recorded; the metric calculations come at step 6, when every module produces events. Steps 4 to 7 also leave time for the owner's WIP decisions (rewards, nudge context, UI look). The owner first proposed Engine, Telemetry, Repository/Rewards/Datastore, Photo check, Telegram bot/Web app; this order was adjusted after review.
 - [2026-10-24 18:47 SGT] **Tech stack agreed by the owner (11 parts), and why:**
   1. **Claude (Anthropic)** as the brain: writes the nudges (AI-written from day one) and does the photo check. One AI provider for both, already used in Haze Uncle.
   2. **Telegram** as the chat interface: the spec's only channel. Reached with plain web requests.

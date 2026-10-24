@@ -2,6 +2,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 21:35 SGT] Development order agreed and recorded in `docs/CONTEXT.md` (Key decisions).
 - [2026-10-24 21:34 SGT] Saved the owner's architecture diagram as `docs/architecture-diagram.png` and recorded its 8 module names as the official vocabulary in `docs/CONTEXT.md`.
 - [2026-10-24 21:24 SGT] Owner decided all regions are Singapore: Upstash Redis and Vercel functions as well as Supabase. Added `vercel.json` with region `sin1`.
 - [2026-10-24 21:19 SGT] Project skeleton set up: `package.json` (npm, Node.js 24), TypeScript settings, Vitest, `npm run check`, GitHub Actions workflow, `.gitignore` and `.env.example` (blank placeholders). First endpoint `/api/health` built test-first; 2 tests pass, full check passes.
@@ -19,6 +20,7 @@
 - [2026-10-24 18:26 SGT] Technology stack proposal sent; waiting for the product manager's choice.
 - [2026-10-24 17:39 SGT] Waiting for answers to the clarifying questions.
 ### Next steps
+- [2026-10-24 21:35 SGT] Step 1: Nudge repository, then Nudge engine (decisions half). Wait for the owner's extra context upload, then show tests in plain English before writing code.
 - [2026-10-24 21:24 SGT] Owner is uploading more context for the first module. Wait for it before writing tests.
 - [2026-10-24 21:19 SGT] Owner to pick the first module to build. Owner to confirm Upstash Redis is created in its Singapore region.
 - [2026-10-24 18:50 SGT] Set up the project skeleton (package.json, TypeScript, Vitest, `npm run check`, GitHub Actions) on a new branch, then start the first module with tests first.

@@ -2,6 +2,18 @@
 
 ## Notebook
 
+### [2026-10-24 21:35 SGT] Walking skeleton
+- **Concept:** Walking skeleton.
+- **In plain English:** The thinnest version of the whole product that works from end to end, deployed for real, before any part is made rich. Every later feature plugs into something that already runs.
+- **Analogy:** Before decorating a house, you first make sure the plumbing runs from the street to one tap. Then you add rooms.
+- **Why and when to use it:** When a product joins several services (here Telegram, Vercel, Supabase, a scheduler), so connection problems show up early and cheaply. Less useful for a single, self-contained component.
+- **Best practices:**
+  - Keep the first version embarrassingly small.
+  - Deploy it for real, not just on a laptop.
+  - Build the core logic first, then connect it end to end soon after.
+- **Where it showed up in this project:** The Telegram bot moved from last to step 3 in the development order, so the owner can try the app on a phone early.
+- **Explain it to others:** "We build the brain first, then quickly wire up a bare-bones version that runs end to end on a phone, so integration surprises appear in week two, not at launch."
+
 ### [2026-10-24 21:19 SGT] Red, then green (test first)
 - **Concept:** The red-green cycle of Test-Driven Development (TDD).
 - **In plain English:** We write a test that describes what the code should do, run it and watch it fail (red), because the code doesn't exist yet. Then we write the code and run it again until it passes (green). The failing run proves the test really checks something.
