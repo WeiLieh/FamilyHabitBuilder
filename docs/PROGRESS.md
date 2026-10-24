@@ -19,6 +19,7 @@
 
 ## [2026-10-24 17:39 SGT] Session 1: project setup and spec review
 ### Done
+- [2026-10-24 22:20 SGT] Created `docs/TIME-LOG.md` with session 1's time (about 5 h elapsed, about 2 h 30 min active), and added it to `CLAUDE.md` (file table and end-of-session steps).
 - [2026-10-24 22:18 SGT] Owner agreed the Batch 1 rules (broken row handling, photo idea and logging-method rules, at least 1 behaviour, limits in `docs/EXPERIMENTS.md`). Spec v1.4. Session ended for the night; handoff written at the top of this file.
 - [2026-10-24 22:14 SGT] Question 9 decided: the Nudge repository master copy is a Supabase table edited in the dashboard. Recorded in `docs/SPEC.md`, `docs/CONTEXT.md`, with the trade-off in `docs/KNOWN-ISSUES.md`.
 - [2026-10-24 22:09 SGT] Read the owner's Nudge Repository spreadsheet and agreed answers 1 to 8. Spec v1.3 recorded (quality time now deliberate; per-nudge self-report and photo flags; optional description as Investment; examples, photo ideas and moment tags; naming: nudge, example, nudge message).

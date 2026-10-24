@@ -120,6 +120,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
 | `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
 | `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). |
+| `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |
 | `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |
 
 #### Setup (first session of a new project)
@@ -136,6 +137,7 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 
 #### End of every task or session
 Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md`, `ERROR-LOG.md`, `KNOWN-ISSUES.md`, `PRODUCT-BACKLOG.md`. If a new concept, technique or decision came up that I had not met before, add it to `docs/LEARNING-LOG.md`. Tell me which files you updated.
+- [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
 #### Date/time rule (applies to ALL project files)
 Every addition or change to a project file must start with a date/time prefix in this exact format, so I can see when it was added:
