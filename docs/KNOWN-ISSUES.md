@@ -2,13 +2,6 @@
 
 ## Open
 
-### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
-- [2026-10-25 08:11 SGT] `001` has now run on Supabase (tables and columns confirmed by screenshot). The live permission check found extra `service_role` permissions; fixed by `002` (see `docs/ERROR-LOG.md`), waiting for the owner to run it.
-- [2026-10-25 07:51 SGT] The file is now `supabase/migrations/001_create_nudge_repository.sql` (two tables, guard, view); 25 database checks pass locally. Still not run on Supabase.
-- **Issue:** [2026-10-25 07:17 SGT] `001_create_nudges.sql` passed 13 tests on a local PostgreSQL 16, but Supabase may differ slightly (version, built-in roles, Data API grant rules).
-- **Impact:** [2026-10-25 07:17 SGT] The first run in Supabase could show an error.
-- **Workaround:** [2026-10-25 07:17 SGT] When the owner creates the Supabase project (step 3), run the file in the SQL Editor and report any error; Claude fixes it and logs it here.
-
 ### [2026-10-25 07:17 SGT] Database tests are not run automatically
 - **Issue:** [2026-10-25 07:17 SGT] `npm run test:db` needs a running PostgreSQL, so it is not part of `npm run check` or GitHub Actions.
 - **Impact:** [2026-10-25 07:17 SGT] A change to the SQL could break the rules without CI noticing.
@@ -60,6 +53,15 @@
 - [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
+
+### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
+- [2026-10-25 08:14 SGT] RESOLVED: `001` and `002` have run on Supabase; tables, columns and permissions confirmed by the owner's screenshots. (Moved to Resolved.)
+- [2026-10-25 08:11 SGT] `001` has now run on Supabase (tables and columns confirmed by screenshot). The live permission check found extra `service_role` permissions; fixed by `002` (see `docs/ERROR-LOG.md`), waiting for the owner to run it.
+- [2026-10-25 07:51 SGT] The file is now `supabase/migrations/001_create_nudge_repository.sql` (two tables, guard, view); 25 database checks pass locally. Still not run on Supabase.
+- **Issue:** [2026-10-25 07:17 SGT] `001_create_nudges.sql` passed 13 tests on a local PostgreSQL 16, but Supabase may differ slightly (version, built-in roles, Data API grant rules).
+- **Impact:** [2026-10-25 07:17 SGT] The first run in Supabase could show an error.
+- **Workaround:** [2026-10-25 07:17 SGT] When the owner creates the Supabase project (step 3), run the file in the SQL Editor and report any error; Claude fixes it and logs it here.
+
 
 ### [2026-10-24 17:39 SGT] How long photos of children are kept
 - [2026-10-24 18:26 SGT] **Resolved:** photos are kept until the parent deletes their data, with consent at sign-up (spec version 1.1). The remaining privacy risk is tracked above under "Photos kept with no time limit".

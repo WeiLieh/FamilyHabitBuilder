@@ -2,6 +2,7 @@
 
 ## [2026-10-25 06:17 SGT] Session 2
 ### Done
+- [2026-10-25 08:14 SGT] Owner ran `002`; permission check now shows only `service_role` with `SELECT` on `nudges` and `examples`. Next: Part C (import the two CSVs).
 - [2026-10-25 08:11 SGT] **Supabase setup with the owner:** project `family-habit-builder` created (Singapore, Free; Data API on, auto-expose off, auto RLS on). `001` run; columns confirmed. Permission check found extra `service_role` permissions; wrote `002_service_role_read_only.sql` test-first. Next: owner runs `002`, re-checks permissions, then imports the two CSVs (Part C).
 - [2026-10-25 07:51 SGT] **Spec v1.6 built:** two tables (`nudges` with codes, `examples` unlimited), minimum 3 active examples (database blocks reductions; app flags shortages), read-only combined view. App tests rewritten first and seen failing (27), then code: 46 tests pass. Two first-load CSVs (9 nudges, 45 examples). Database: 25 checks pass; the guard was broken on purpose to prove the tests catch it. Note: the database tests were written after the SQL this time, not before.
 - [2026-10-25 07:17 SGT] **Handoff step 2 done:** `supabase/migrations/001_create_nudges.sql`, `supabase/seed/nudges-first-load.csv` (from the owner's spreadsheet), database tests (`npm run test:db`, 13 passed on local PostgreSQL 16) and a Vitest test that the CSV passes the app's rules. `npm run check`: 38 tests pass.
