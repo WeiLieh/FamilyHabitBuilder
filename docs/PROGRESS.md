@@ -1,5 +1,18 @@
 # Progress (handoff between sessions)
 
+## [2026-10-25 08:15 SGT] HANDOFF: session 2 paused mid-way through Supabase setup (read this first)
+### Where we are
+- [2026-10-25 08:15 SGT] Branch `claude/festive-einstein-nf623s`; all committed and pushed; no pull request yet. Spec v1.6.
+- [2026-10-25 08:15 SGT] Code: Nudge repository (two tables: `nudges` with codes, `examples` unlimited, minimum 3 with block plus alert) and Nudge engine choice guardrails. `npm run check`: 46 tests pass. `npm run test:db`: database checks pass locally.
+- [2026-10-25 08:15 SGT] Supabase project `family-habit-builder` exists (Singapore, Free; Data API on, auto-expose off, auto RLS on). Migrations `001` and `002` have run; permissions confirmed (only `service_role` with `SELECT` on `nudges` and `examples`). Both tables are still EMPTY.
+### Next steps (in order)
+1. [2026-10-25 08:15 SGT] **Part C1:** owner downloads `supabase/seed/nudges-first-load.csv` from GitHub (branch above) and imports it into `nudges` (Table Editor > nudges > Import data from CSV). Expect 9 rows, IDs 1 to 9, codes TWC, SAF, DPR, GAT, SQT, IAC, SGE, ITE, ASD.
+2. [2026-10-25 08:15 SGT] **Part C2:** import `supabase/seed/examples-first-load.csv` into `examples`. Expect 45 rows, 5 per code.
+3. [2026-10-25 08:15 SGT] **Part D:** check `nudge_examples_view` shows 45 rows; optionally test the guard (try retiring examples on a nudge until 3 remain, then one more: should be refused with "Add another example first").
+4. [2026-10-25 08:15 SGT] Then Batch 2 tests in plain English (3-nudges-a-day cap, weekday moments, priority by hidden ideal and floor), then Batch 3; then Datastore (step 2 of the development order).
+### Waiting on the owner (not blocking)
+- [2026-10-25 08:15 SGT] WIP: weekend moments; trial length; XP values; how a parent earns an unlock; context collected for AI nudge messages; personality in `docs/NUDGE-CONTEXT.md`; moment tags for examples; UI look.
+
 ## [2026-10-25 06:17 SGT] Session 2
 ### Done
 - [2026-10-25 08:14 SGT] Owner ran `002`; permission check now shows only `service_role` with `SELECT` on `nudges` and `examples`. Next: Part C (import the two CSVs).
