@@ -2,6 +2,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-10-25 08:11 SGT] Our server's role had more than read-only access on the real Supabase
+- **What broke:** [2026-10-25 08:11 SGT] The owner's permission check on the live project showed `service_role` with TRUNCATE, TRIGGER and REFERENCES on `nudges`, `examples` and the view, not just SELECT.
+- **Cause:** [2026-10-25 08:11 SGT] Supabase's default permissions give `service_role` these on new tables. Our local test database has no such defaults, so the test passed locally while the real project differed.
+- **Fix:** [2026-10-25 08:11 SGT] New migration `002_service_role_read_only.sql` removes all of `service_role`'s permissions on the three objects and grants back SELECT on the two tables only. The database test now copies Supabase's defaults first and checks TRUNCATE, TRIGGER and REFERENCES are absent (seen failing without 002, passing with it).
+- **How to prevent it:** [2026-10-25 08:11 SGT] After running any migration on Supabase, run the read-only permission check query; make the local test start from Supabase-like defaults; always "revoke all" before "grant" for our roles.
+
 ## [2026-10-25 07:17 SGT] Database test expected the next ID to be 10, got 19
 - **What broke:** [2026-10-25 07:17 SGT] A database test (my own, just written) failed: a new row got ID 19, not 10.
 - **Cause:** [2026-10-25 07:17 SGT] Each refused insert earlier in the test still used up an ID number. Databases never hand back numbers from failed attempts, so IDs can skip. The test's assumption was wrong, not the table.

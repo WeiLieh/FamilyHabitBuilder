@@ -2,7 +2,7 @@
 -- supabase/tests/nudge-repository.test.sql: tests for the nudges and examples tables
 --
 -- What it checks: that supabase/migrations/001_create_nudge_repository.sql
--- builds tables which (1) accept the owner's 9 nudges and 45 examples from the
+-- (plus 002_service_role_read_only.sql) builds tables which (1) accept the owner's 9 nudges and 45 examples from the
 -- first-load CSVs, (2) refuse each kind of bad row, (3) refuse edits that
 -- would leave a nudge with fewer than 3 active examples, and (4) keep the
 -- public locked out. Run on a throwaway local PostgreSQL database via
@@ -24,8 +24,14 @@ create role anon nologin;
 create role authenticated nologin;
 create role service_role nologin;
 
--- Build the tables exactly as the owner will in Supabase.
+-- Copy Supabase's default: new tables give service_role extra permissions
+-- (seen on the real project: TRUNCATE, TRIGGER, REFERENCES). Without this
+-- line the local test would miss them, as it did before 002 existed.
+alter default privileges in schema public grant all on tables to service_role;
+
+-- Build the tables exactly as the owner did in Supabase, in order.
 \i supabase/migrations/001_create_nudge_repository.sql
+\i supabase/migrations/002_service_role_read_only.sql
 
 -- Load the owner's data the way the dashboard's CSV import does: nudges first,
 -- then examples (examples need their nudge codes to exist already).
@@ -161,8 +167,14 @@ do $$
 begin
   assert has_table_privilege('service_role', 'public.nudges', 'select'), 'service_role should read nudges';
   assert has_table_privilege('service_role', 'public.examples', 'select'), 'service_role should read examples';
+  -- Read-only means nothing else at all (spec: least privilege).
   assert not has_table_privilege('service_role', 'public.examples', 'insert'), 'service_role should not insert';
   assert not has_table_privilege('service_role', 'public.nudges', 'delete'), 'service_role should not delete';
+  assert not has_table_privilege('service_role', 'public.nudges', 'truncate'), 'service_role should not truncate nudges';
+  assert not has_table_privilege('service_role', 'public.examples', 'truncate'), 'service_role should not truncate examples';
+  assert not has_table_privilege('service_role', 'public.examples', 'trigger'), 'service_role should not add triggers';
+  assert not has_table_privilege('service_role', 'public.nudges', 'references'), 'service_role should not add references';
+  assert not has_table_privilege('service_role', 'public.nudge_examples_view', 'truncate'), 'service_role should have nothing on the view';
   assert not has_table_privilege('anon', 'public.nudges', 'select'), 'anon should not read nudges';
   assert not has_table_privilege('anon', 'public.examples', 'select'), 'anon should not read examples';
   assert not has_table_privilege('authenticated', 'public.examples', 'select'), 'authenticated should not read examples';

@@ -3,6 +3,7 @@
 ## Open
 
 ### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
+- [2026-10-25 08:11 SGT] `001` has now run on Supabase (tables and columns confirmed by screenshot). The live permission check found extra `service_role` permissions; fixed by `002` (see `docs/ERROR-LOG.md`), waiting for the owner to run it.
 - [2026-10-25 07:51 SGT] The file is now `supabase/migrations/001_create_nudge_repository.sql` (two tables, guard, view); 25 database checks pass locally. Still not run on Supabase.
 - **Issue:** [2026-10-25 07:17 SGT] `001_create_nudges.sql` passed 13 tests on a local PostgreSQL 16, but Supabase may differ slightly (version, built-in roles, Data API grant rules).
 - **Impact:** [2026-10-25 07:17 SGT] The first run in Supabase could show an error.
