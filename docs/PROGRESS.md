@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 22:32 SGT] Session ended. Owner suggested a rules recap and a visual module progress map to speed up getting back into context; Claude proposed one catch-up page (see Next steps).
 - [2026-10-28 22:23 SGT] **Batch 2 built test-first** (spec v1.7, answers 1 to 28, Option B for deliberate). 37 new tests written first and seen failing (3 files), then code; all 84 tests pass and the full check passes. Files: `shared/sgt.ts`, `shared/nudge-engine/schedule.ts`, `shared/nudge-engine/due.ts`, `shared/nudge-engine/planner.ts`, settings added to `shared/settings.ts`.
 - [2026-10-28 22:08 SGT] Owner confirmed slots are shared by all behaviours (not per behaviour) and agreed the logging rules (log any time; unchosen behaviours accepted; back to yesterday only; repeat logs count once but should be celebrated: backlog WIP).
 - [2026-10-28 21:49 SGT] (Batch 2 since built, see above.) All Batch 2 decisions agreed (spec v1.7, answers 1 to 20); example rewrites approved (owner to run the content script in Supabase). Next: Batch 2 tests in plain English.
@@ -13,6 +14,7 @@
 - [2026-10-28 20:19 SGT] **Supabase setup finished:** owner imported both CSVs (9 nudges, 45 examples); summary query matched exactly; the 3-example guard refused a live test change. Parts C and D of the handoff are done.
 - [2026-10-28 20:11 SGT] Session started; read the handoff below.
 ### In progress
+- [2026-10-28 22:32 SGT] FIRST next session (if the owner agrees): create the catch-up page `docs/CATCH-UP.md` (module progress map plus rules recap) and show it at the start of every session.
 - [2026-10-28 22:23 SGT] Next: Batch 3 (surprise bonus yes or no at 20%, sticky experiment groups), tests in plain English first. Then step 2 of the development order: the Datastore.
 - [2026-10-28 20:19 SGT] SUPERSEDED [2026-10-28 22:23 SGT] Next: Batch 2 tests in plain English (3-nudges-a-day cap, weekday moments, priority by hidden ideal and floor).
 - [2026-10-28 20:11 SGT] SUPERSEDED [2026-10-28 20:19 SGT] Part C1: owner importing `nudges-first-load.csv` into Supabase.
