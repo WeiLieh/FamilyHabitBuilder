@@ -121,6 +121,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
 | `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
 | `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). |
+| `docs/CATCH-UP.md` | [2026-10-28 22:37 SGT] One-page catch-up after time away: module progress map, what each module and file does, current rules recap, questions to think about before the next session. A snapshot, rewritten each session (history stays in Git and `docs/SPEC.md`). |
 | `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |
 | `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |
 
@@ -130,6 +131,7 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 #### Start of every session
 1. Read `docs/PROGRESS.md` and `docs/KNOWN-ISSUES.md`. Read `docs/SPEC.md` and `docs/CONTEXT.md` when relevant to the task.
 2. Tell me in a few lines what you understand the current state to be, so I can correct you early.
+3. [2026-10-28 22:37 SGT] Show me `docs/CATCH-UP.md` (link it) and ask for my answers to its section 4 questions before starting new work.
 
 #### During work
 - Before debugging an error, check `docs/ERROR-LOG.md` to see if we have solved it before.
@@ -138,6 +140,7 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 
 #### End of every task or session
 Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md`, `ERROR-LOG.md`, `KNOWN-ISSUES.md`, `PRODUCT-BACKLOG.md`. If a new concept, technique or decision came up that I had not met before, add it to `docs/LEARNING-LOG.md`. Tell me which files you updated.
+- [2026-10-28 22:37 SGT] Also rewrite `docs/CATCH-UP.md`: update the module map and file table, the rules recap (current rules only, no abbreviations in the diagram), and the questions for the next session.
 - [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
 #### Date/time rule (applies to ALL project files)

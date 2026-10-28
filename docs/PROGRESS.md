@@ -14,7 +14,8 @@
 - [2026-10-28 20:19 SGT] **Supabase setup finished:** owner imported both CSVs (9 nudges, 45 examples); summary query matched exactly; the 3-example guard refused a live test change. Parts C and D of the handoff are done.
 - [2026-10-28 20:11 SGT] Session started; read the handoff below.
 ### In progress
-- [2026-10-28 22:32 SGT] FIRST next session (if the owner agrees): create the catch-up page `docs/CATCH-UP.md` (module progress map plus rules recap) and show it at the start of every session.
+- [2026-10-28 22:37 SGT] DONE: `docs/CATCH-UP.md` created (module map with full names, module-and-file table, rules recap, Batch 3 questions) and added to `CLAUDE.md` (start and end of session).
+- [2026-10-28 22:32 SGT] SUPERSEDED FIRST next session (if the owner agrees): create the catch-up page `docs/CATCH-UP.md` (module progress map plus rules recap) and show it at the start of every session.
 - [2026-10-28 22:23 SGT] Next: Batch 3 (surprise bonus yes or no at 20%, sticky experiment groups), tests in plain English first. Then step 2 of the development order: the Datastore.
 - [2026-10-28 20:19 SGT] SUPERSEDED [2026-10-28 22:23 SGT] Next: Batch 2 tests in plain English (3-nudges-a-day cap, weekday moments, priority by hidden ideal and floor).
 - [2026-10-28 20:11 SGT] SUPERSEDED [2026-10-28 20:19 SGT] Part C1: owner importing `nudges-first-load.csv` into Supabase.
