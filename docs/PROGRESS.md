@@ -1,5 +1,15 @@
 # Progress (handoff between sessions)
 
+## [2026-10-28 20:11 SGT] Session 3
+### Done
+- [2026-10-28 20:11 SGT] Session started; read the handoff below.
+### In progress
+- [2026-10-28 20:11 SGT] Part C1: owner importing `nudges-first-load.csv` into Supabase.
+### Next steps
+- [2026-10-28 20:11 SGT] Follow "Next steps (in order)" in the session 2 handoff below.
+### Blockers
+- [2026-10-28 20:11 SGT] None.
+
 ## [2026-10-25 08:15 SGT] HANDOFF: session 2 paused mid-way through Supabase setup (read this first)
 ### Where we are
 - [2026-10-25 08:15 SGT] Branch `claude/festive-einstein-nf623s`; all committed and pushed; no pull request yet. Spec v1.6.
