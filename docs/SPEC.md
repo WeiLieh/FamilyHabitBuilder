@@ -54,6 +54,11 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
   1. **Only nudge messages count toward the 3-a-day cap.** A nudge message is one the bot sends on its own initiative. Anything the bot says in reply to the parent (logging, questions, any back-and-forth) never counts.
   2. **Every nudge message has two buttons: ✅ Done and 😴 Not today.** "Not today" (button, or the same meaning in the parent's own words, recognised by Claude) stops nudge messages for the rest of that Singapore day; they resume automatically the next day. No penalty and no "why" question; a kind acknowledgement only.
   3. **"Not today" does not count toward metric 9 (mute/stop rate).** It is tracked as its own event, so Telemetry can show how often it is used and whether it rises before a parent mutes.
+  5. [2026-10-28 20:53 SGT] **Deliberate nudge messages go only at the dinner moment** (and possibly weekend moments later). Quick nudge messages can go at any moment.
+  6. [2026-10-28 20:53 SGT] **Fewer nudges at the hidden ideal:** if a quick behaviour was logged on all of the last 7 days, it is nudged only every other day (room for the habit to become automatic; metric 7).
+  7. [2026-10-28 20:53 SGT] **A week = Monday to Sunday, Singapore time** (for deliberate behaviours).
+  8. [2026-10-28 20:53 SGT] **School holidays:** for the MVP, the owner uploads the Ministry of Education (MOE) school holiday dates before launch; automatic updates (e.g. from the MOE website) are in the backlog. How the morning moment behaves on school holidays is still to be agreed.
+  - Still open: owner-chosen 30-minute time blocks per moment (question 1 and 2 follow-ups).
   4. **How much open conversation the bot supports** (e.g. "any ideas for a rainy day?") is WIP, decided with the nudge personality work (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-25 07:51 SGT] Version 1.6 complete and built (two tables, codes, minimum 3 examples with block plus alert).
 - [2026-10-25 07:42 SGT] Version 1.6 (in progress), Nudge repository becomes two tables (owner agreed after mock-ups):

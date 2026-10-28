@@ -2,6 +2,16 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-28 20:53 SGT] BEFORE LAUNCH: owner uploads MOE school holiday dates
+- **Why it matters:** "To school" nudge messages during school holidays would feel odd and careless. Dates for primary schools (children 7 to 12) are public on the MOE website.
+- **Priority:** [2026-10-28 20:53 SGT] High (required before real families use the app)
+- **Status:** [2026-10-28 20:53 SGT] Not started. Claude to remind the owner before launch and provide the upload format.
+
+## [2026-10-28 20:53 SGT] Keep school holiday dates up to date automatically
+- **Why it matters:** Manual uploads can be forgotten each year. Options include a periodic check of the MOE website. Mechanics not yet thought through (owner).
+- **Priority:** [2026-10-28 20:53 SGT] Low
+- **Status:** [2026-10-28 20:53 SGT] Not started.
+
 ## [2026-10-28 20:37 SGT] WIP: How much open conversation the bot supports
 - **Why it matters:** Parents may chat beyond logging (asking for ideas or advice). The architecture allows it (Claude as brain, Upstash Redis for chat context), but the scope, safety limits and cost are not decided. Replies never count toward the 3-a-day cap (spec v1.7).
 - **Priority:** [2026-10-28 20:37 SGT] Medium

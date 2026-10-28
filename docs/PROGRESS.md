@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 20:53 SGT] Owner answered Batch 2 questions 3 to 6 (deliberate at dinner only; fewer nudges after 7 straight days; week = Monday to Sunday; school holidays uploaded by owner before launch, automation in backlog). Questions 1 and 2 became owner-chosen 30-minute blocks: follow-up scenarios sent. Question 7 explained again.
 - [2026-10-28 20:37 SGT] Owner clarified Batch 2: replies never count toward the cap; "Done" and "Not today" buttons on every nudge message; "Not today" stops nudges for the rest of the day, tracked as its own event (not metric 9); free-chat scope WIP. Spec v1.7 in progress.
 - [2026-10-28 20:19 SGT] **Supabase setup finished:** owner imported both CSVs (9 nudges, 45 examples); summary query matched exactly; the 3-example guard refused a live test change. Parts C and D of the handoff are done.
 - [2026-10-28 20:11 SGT] Session started; read the handoff below.
