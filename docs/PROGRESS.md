@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 22:08 SGT] Owner confirmed slots are shared by all behaviours (not per behaviour) and agreed the logging rules (log any time; unchosen behaviours accepted; back to yesterday only; repeat logs count once but should be celebrated: backlog WIP).
 - [2026-10-28 21:49 SGT] All Batch 2 decisions agreed (spec v1.7, answers 1 to 20); example rewrites approved (owner to run the content script in Supabase). Next: Batch 2 tests in plain English.
 - [2026-10-28 21:26 SGT] Owner decided: no separate custom option; non-school defaults 9:00am, 12:30pm, 7:00pm; slots at least 1 hour apart; any behaviour in any slot; "too many nudges" opens slot settings. Still open: slot range and the minimum number of slots (explained again).
 - [2026-10-28 21:21 SGT] Owner decided: nudge slots with 3 pre-selected suggestions (7am, 7pm, 9pm with helper text) plus a custom option, to avoid setup drop-off; two schedules (school days / non-school days) with exact criteria. Logged in spec v1.7 with the remaining open points.

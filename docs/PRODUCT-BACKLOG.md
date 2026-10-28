@@ -2,6 +2,11 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-28 22:08 SGT] WIP: Celebrate repeat logs and logs of unchosen behaviours
+- **Why it matters:** A parent who hugs their child twice in a day, or does a behaviour they didn't choose, is making extra effort. These count once (or not at all) toward targets and streaks, but the owner does not want that progress discounted.
+- **Priority:** [2026-10-28 22:08 SGT] Medium
+- **Status:** [2026-10-28 22:08 SGT] In progress (WIP). Design with the Variable rewards (e.g. bonus XP, a special encouraging phrase, or a "bonus moments" count in the snapshot).
+
 ## [2026-10-28 20:53 SGT] BEFORE LAUNCH: owner uploads MOE school holiday dates
 - [2026-10-28 21:21 SGT] **Update:** also upload **Singapore public holiday dates** (published by the Ministry of Manpower (MOM)). Both lists decide whether a day is a school day or a non-school day (spec v1.7, answer 11).
 - **Why it matters:** "To school" nudge messages during school holidays would feel odd and careless. Dates for primary schools (children 7 to 12) are public on the MOE website.
