@@ -35,6 +35,7 @@
 - **Workaround:** [2026-10-24 21:19 SGT] The owner creates the Vercel project when we are ready for the first preview; Claude guides the steps.
 
 ### [2026-10-24 18:26 SGT] Weekend nudge moments not defined
+- [2026-10-28 21:21 SGT] Now part of the non-school-day schedule (Saturday, Sunday, public and MOE school holidays, spec v1.7). Still open: the default slots for non-school days.
 - **Issue:** [2026-10-24 18:26 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need a separate set, not defined yet.
 - **Impact:** [2026-10-24 18:26 SGT] The bot cannot send weekend nudges until these are defined.
 - **Workaround:** [2026-10-24 18:26 SGT] None. Product manager to define the weekend moments.

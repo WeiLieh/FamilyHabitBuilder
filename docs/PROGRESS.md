@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 21:21 SGT] Owner decided: nudge slots with 3 pre-selected suggestions (7am, 7pm, 9pm with helper text) plus a custom option, to avoid setup drop-off; two schedules (school days / non-school days) with exact criteria. Logged in spec v1.7 with the remaining open points.
 - [2026-10-28 21:16 SGT] **Time-agnostic examples:** owner decided examples must not have times baked in. Test written first (failed), 10 examples rewritten in the seed CSV (47 tests pass), update script `supabase/content/2026-10-28_time_agnostic_examples.sql` verified locally (10 rows first run, 0 second run, result matches the seed file). Waiting for the owner to approve the wording and run it in Supabase. Owner is reviewing the rest of the generalised design (nudge slots, two schedules, Claude adds time context).
 - [2026-10-28 20:53 SGT] Owner answered Batch 2 questions 3 to 6 (deliberate at dinner only; fewer nudges after 7 straight days; week = Monday to Sunday; school holidays uploaded by owner before launch, automation in backlog). Questions 1 and 2 became owner-chosen 30-minute blocks: follow-up scenarios sent. Question 7 explained again.
 - [2026-10-28 20:37 SGT] Owner clarified Batch 2: replies never count toward the cap; "Done" and "Not today" buttons on every nudge message; "Not today" stops nudges for the rest of the day, tracked as its own event (not metric 9); free-chat scope WIP. Spec v1.7 in progress.

@@ -3,6 +3,7 @@
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
 ## [2026-10-28 20:53 SGT] BEFORE LAUNCH: owner uploads MOE school holiday dates
+- [2026-10-28 21:21 SGT] **Update:** also upload **Singapore public holiday dates** (published by the Ministry of Manpower (MOM)). Both lists decide whether a day is a school day or a non-school day (spec v1.7, answer 11).
 - **Why it matters:** "To school" nudge messages during school holidays would feel odd and careless. Dates for primary schools (children 7 to 12) are public on the MOE website.
 - **Priority:** [2026-10-28 20:53 SGT] High (required before real families use the app)
 - **Status:** [2026-10-28 20:53 SGT] Not started. Claude to remind the owner before launch and provide the upload format.
