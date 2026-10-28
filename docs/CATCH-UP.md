@@ -29,7 +29,7 @@ flowchart LR
     photo --> datastore
     telegram --> datastore
     datastore --> webapp
-    telemetry -.listens to all.- datastore
+    telemetry -. listens to all .- datastore
 
     classDef done fill:#2e7d32,color:#ffffff
     classDef part fill:#f9a825,color:#000000
