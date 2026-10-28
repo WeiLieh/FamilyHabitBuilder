@@ -5,6 +5,11 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 ## [2026-10-28 20:11 SGT] Session 3 (2026-10-28 evening)
 - **Started:** 20:11 SGT (owner resumed time logging)
 - **Plan:** finish Supabase setup (Part C imports, Part D checks), then Batch 2 tests in plain English.
+- [2026-10-28 22:23 SGT] **Progress so far (about 2 h 10 min, 20:11 to 22:23, all active):**
+  - 20:11 to 20:19 (about 8 min): Supabase imports (9 nudges, 45 examples) and live checks, guard tested live
+  - 20:19 to 21:55 (about 1 h 35 min): Batch 2 design discussion: Done / Not today buttons, the shift from fixed moments to parent-chosen slots, two schedules, time-agnostic examples (rewritten, applied live), logging rules, clashing scenarios
+  - 21:55 to 22:23 (about 30 min): deliberate-nudge days (Option B), Batch 2 tests and code (84 tests pass)
+- **Notes for timeboxing:** design took about 4 times longer than building. Stepping back to generalise (slots instead of fixed moments) removed many special cases.
 
 ## [2026-10-25 07:17 SGT] Session 2 (2026-10-25 morning): Batch 1 and the nudges table
 - [2026-10-25 08:15 SGT] **Paused by the owner at 08:15 SGT.** Total: about 2 h 10 min elapsed (06:05 to 08:15), all active, against a 90-min timebox. Extra block 07:55 to 08:15 (about 20 min): Supabase setup with the owner (account, project, security settings, running 001, permission check, finding and fixing extra permissions with 002). Output added: Supabase project live in Singapore with both tables, view and locked-down permissions. Timeboxing note: first-time Supabase setup took about 20 min; Part C (imports) and Part D (checks) remain, estimate about 15 min.

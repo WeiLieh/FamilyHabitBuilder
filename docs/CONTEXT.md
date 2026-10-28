@@ -24,6 +24,12 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-28 22:23 SGT] **Batch 2 code (Nudge engine, decisions half, spec v1.7):**
+  - `shared/sgt.ts`: Singapore time helpers (a moment <-> Singapore day and minutes after midnight; add days, weekday, Monday of the week).
+  - `shared/nudge-engine/schedule.ts`: `dayTypeFor` (school / non-school day from weekday plus uploaded public and MOE school holidays), `checkSchedules` (0 to 3 slots per schedule, at least 1 in total, valid half-hour starts 7:00am to 9:30pm, at least 1 hour apart), `availableSlotStarts` (which times the setup screen greys out).
+  - `shared/nudge-engine/due.ts`: `isDue` (every day / every 2 days / 1 or 2 times a week, Monday to Sunday).
+  - `shared/nudge-engine/planner.ts`: `planNudge` decides, for one parent at one moment, "send nudge X in this slot" or "don't send" with a reason. "Now" is passed in (no clock inside), so every situation is testable. The sender (not built yet) must call it again immediately before sending.
+  - Settings in `shared/settings.ts`: slot length, the 30 slot starts, 1-hour gap, 3 slots per schedule, 3 nudges a day, default slots, 7-day streak rule, deliberate days (Friday, Sunday).
 - [2026-10-25 07:51 SGT] **Nudge repository, two tables (spec v1.6)** in `supabase/migrations/001_create_nudge_repository.sql` (replaces `001_create_nudges.sql`, which never ran anywhere):
   - `nudges`: `id` (generated), `code` (unique, 2 to 10 capital letters or digits), `name`, `category`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`, `active`, `starts_unlocked`, `created_at`. Cannot be deleted while it has examples (retire instead).
   - `examples`: `id` (generated), `nudge_code` (must match a nudge's code; follows a code change automatically), `example`, `active`, `created_at`.

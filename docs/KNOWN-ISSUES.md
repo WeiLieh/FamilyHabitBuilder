@@ -2,6 +2,16 @@
 
 ## Open
 
+### [2026-10-28 22:23 SGT] Deliberate nudges can be crowded out on Friday and Sunday
+- **Issue:** [2026-10-28 22:23 SGT] Deliberate behaviours are only nudged on Friday and Sunday, and come after due quick behaviours in priority. A parent with few slots on those days (e.g. 1) and a due quick behaviour may never get a deliberate nudge that week.
+- **Impact:** [2026-10-28 22:23 SGT] Deliberate behaviours (the bigger family activities) could be under-nudged for some parents.
+- **Workaround:** [2026-10-28 22:23 SGT] Parents can still log on their own. Owner chose Option B "to progress things first; we'll figure it along the way". Option to revisit: on Friday and Sunday, put a due deliberate behaviour first.
+
+### [2026-10-28 22:23 SGT] Batch 2 parts that depend on later steps
+- **Issue:** [2026-10-28 22:23 SGT] The planner is built and tested, but these are not built yet: the sender that re-checks just before sending (Datastore and Telegram bot steps), the ✅ Done and 😴 Not today buttons, the slot setup screen, and the holiday dates (owner uploads before launch).
+- **Impact:** [2026-10-28 22:23 SGT] No nudge messages are sent yet.
+- **Workaround:** [2026-10-28 22:23 SGT] Build with the Datastore (step 2) and Telegram bot (step 3).
+
 ### [2026-10-25 07:17 SGT] Database tests are not run automatically
 - **Issue:** [2026-10-25 07:17 SGT] `npm run test:db` needs a running PostgreSQL, so it is not part of `npm run check` or GitHub Actions.
 - **Impact:** [2026-10-25 07:17 SGT] A change to the SQL could break the rules without CI noticing.

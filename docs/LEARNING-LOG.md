@@ -2,6 +2,18 @@
 
 ## Notebook
 
+### [2026-10-28 22:23 SGT] Passing "now" in (testing time-based rules)
+- **Concept:** A pure function with the current time passed in as an input ("injecting the clock").
+- **In plain English:** The nudge planner never looks at the real clock. Whoever calls it says "it is Friday 7:05pm"; the planner answers what to do. So a test can check Friday evening, a public holiday or a Sunday at any time of day, instantly and exactly.
+- **Analogy:** A flight simulator: the pilot can practise a storm at night without waiting for one.
+- **Why and when to use it:** Any rule that depends on dates and times (schedules, streaks, deadlines). Not needed for code that doesn't care about time.
+- **Best practices:**
+  - Keep the decision (pure, testable) separate from the action (sending a message).
+  - Convert to the local time zone once, at the edge (we use Singapore time everywhere).
+  - Test the boundaries: the first and last minute of a slot, midnight, Sunday to Monday.
+- **Where it showed up in this project:** `planNudge` in `shared/nudge-engine/planner.ts`, with 25+ tests covering slots, holidays, the daily cap, Not today, priority and the Friday/Sunday rule.
+- **Explain it to others:** "The nudge brain is a pure decision function: give it a parent's situation and a time, it says whether to nudge and about what. That let us test every scenario, including holidays and weekends, without waiting for real days."
+
 ### [2026-10-25 07:51 SGT] Database trigger (an automatic guard)
 - **Concept:** A trigger: a small program the database runs automatically when rows change.
 - **In plain English:** Some rules can't be written as a simple column check, because they depend on other rows (here: "a nudge must keep at least 3 active examples"). A trigger runs after each change, counts what is left, and refuses the whole change with a clear message if the rule would be broken.
