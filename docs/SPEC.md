@@ -50,6 +50,11 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-28 20:37 SGT] Version 1.7 (in progress), Batch 2 clarifications (owner):
+  1. **Only nudge messages count toward the 3-a-day cap.** A nudge message is one the bot sends on its own initiative. Anything the bot says in reply to the parent (logging, questions, any back-and-forth) never counts.
+  2. **Every nudge message has two buttons: ✅ Done and 😴 Not today.** "Not today" (button, or the same meaning in the parent's own words, recognised by Claude) stops nudge messages for the rest of that Singapore day; they resume automatically the next day. No penalty and no "why" question; a kind acknowledgement only.
+  3. **"Not today" does not count toward metric 9 (mute/stop rate).** It is tracked as its own event, so Telemetry can show how often it is used and whether it rises before a parent mutes.
+  4. **How much open conversation the bot supports** (e.g. "any ideas for a rainy day?") is WIP, decided with the nudge personality work (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-25 07:51 SGT] Version 1.6 complete and built (two tables, codes, minimum 3 examples with block plus alert).
 - [2026-10-25 07:42 SGT] Version 1.6 (in progress), Nudge repository becomes two tables (owner agreed after mock-ups):
   1. **`nudges`** (one row per nudge): ID number (generated; used by parents' choices, history and metrics), a unique short **code**, name, category and the other settings (self-report allowed, photo upload allowed, photo idea, description limit, active, starts unlocked), each written once.

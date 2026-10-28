@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 20:37 SGT] Owner clarified Batch 2: replies never count toward the cap; "Done" and "Not today" buttons on every nudge message; "Not today" stops nudges for the rest of the day, tracked as its own event (not metric 9); free-chat scope WIP. Spec v1.7 in progress.
 - [2026-10-28 20:19 SGT] **Supabase setup finished:** owner imported both CSVs (9 nudges, 45 examples); summary query matched exactly; the 3-example guard refused a live test change. Parts C and D of the handoff are done.
 - [2026-10-28 20:11 SGT] Session started; read the handoff below.
 ### In progress

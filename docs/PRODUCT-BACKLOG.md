@@ -2,6 +2,11 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-28 20:37 SGT] WIP: How much open conversation the bot supports
+- **Why it matters:** Parents may chat beyond logging (asking for ideas or advice). The architecture allows it (Claude as brain, Upstash Redis for chat context), but the scope, safety limits and cost are not decided. Replies never count toward the 3-a-day cap (spec v1.7).
+- **Priority:** [2026-10-28 20:37 SGT] Medium
+- **Status:** [2026-10-28 20:37 SGT] In progress (WIP). Decided with the nudge personality work (`docs/NUDGE-CONTEXT.md`).
+
 ## [2026-10-24 22:09 SGT] WIP: Tag each example with the moment(s) it fits
 - **Why it matters:** So a nudge message sent at dinner uses a dinner example, not a bedtime one. Agreed in spec v1.3.
 - **Priority:** [2026-10-24 22:09 SGT] Medium
