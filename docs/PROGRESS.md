@@ -2,6 +2,7 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 21:49 SGT] All Batch 2 decisions agreed (spec v1.7, answers 1 to 20); example rewrites approved (owner to run the content script in Supabase). Next: Batch 2 tests in plain English.
 - [2026-10-28 21:26 SGT] Owner decided: no separate custom option; non-school defaults 9:00am, 12:30pm, 7:00pm; slots at least 1 hour apart; any behaviour in any slot; "too many nudges" opens slot settings. Still open: slot range and the minimum number of slots (explained again).
 - [2026-10-28 21:21 SGT] Owner decided: nudge slots with 3 pre-selected suggestions (7am, 7pm, 9pm with helper text) plus a custom option, to avoid setup drop-off; two schedules (school days / non-school days) with exact criteria. Logged in spec v1.7 with the remaining open points.
 - [2026-10-28 21:16 SGT] **Time-agnostic examples:** owner decided examples must not have times baked in. Test written first (failed), 10 examples rewritten in the seed CSV (47 tests pass), update script `supabase/content/2026-10-28_time_agnostic_examples.sql` verified locally (10 rows first run, 0 second run, result matches the seed file). Waiting for the owner to approve the wording and run it in Supabase. Owner is reviewing the rest of the generalised design (nudge slots, two schedules, Claude adds time context).
