@@ -131,7 +131,8 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 #### Start of every session
 1. Read `docs/PROGRESS.md` and `docs/KNOWN-ISSUES.md`. Read `docs/SPEC.md` and `docs/CONTEXT.md` when relevant to the task.
 2. Tell me in a few lines what you understand the current state to be, so I can correct you early.
-3. [2026-10-28 22:37 SGT] Show me `docs/CATCH-UP.md` (link it) and ask for my answers to its section 4 questions before starting new work.
+3. [2026-10-28 22:39 SGT] **Recap before building:** first show me `docs/CATCH-UP.md` (link it), remind me to read it, and invite my questions about it. Then ask for my answers to its section 4 questions. Only start building after the recap is done.
+   - SUPERSEDED [2026-10-28 22:39 SGT]: [2026-10-28 22:37 SGT] Show me `docs/CATCH-UP.md` (link it) and ask for my answers to its section 4 questions before starting new work.
 
 #### During work
 - Before debugging an error, check `docs/ERROR-LOG.md` to see if we have solved it before.
