@@ -2,9 +2,11 @@
 
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
+- [2026-10-28 20:19 SGT] **Supabase setup finished:** owner imported both CSVs (9 nudges, 45 examples); summary query matched exactly; the 3-example guard refused a live test change. Parts C and D of the handoff are done.
 - [2026-10-28 20:11 SGT] Session started; read the handoff below.
 ### In progress
-- [2026-10-28 20:11 SGT] Part C1: owner importing `nudges-first-load.csv` into Supabase.
+- [2026-10-28 20:19 SGT] Next: Batch 2 tests in plain English (3-nudges-a-day cap, weekday moments, priority by hidden ideal and floor).
+- [2026-10-28 20:11 SGT] SUPERSEDED [2026-10-28 20:19 SGT] Part C1: owner importing `nudges-first-load.csv` into Supabase.
 ### Next steps
 - [2026-10-28 20:11 SGT] Follow "Next steps (in order)" in the session 2 handoff below.
 ### Blockers
