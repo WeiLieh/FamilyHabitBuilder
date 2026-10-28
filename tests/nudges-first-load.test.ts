@@ -61,6 +61,17 @@ describe("First-load CSVs for the Supabase nudges and examples tables", () => {
     expect(result.nudges.every((n) => n.examples.length === 5)).toBe(true);
   });
 
+  it("has examples with no time of day baked in, so Claude can fit them to any nudge slot (spec v1.7)", () => {
+    // Words that tie an example to one part of the day. Claude adds timing
+    // context itself, based on when the nudge message is sent.
+    const timeWords = /\b(morning|breakfast|lunch|lunchbox|dinner|supper|evening|tonight|night|bedtime|after homework|on the way home|leaves for school)\b/i;
+    const timeBound = result.nudges
+      .flatMap((n) => n.examples)
+      .filter((e) => timeWords.test(e.text))
+      .map((e) => e.text);
+    expect(timeBound).toEqual([]);
+  });
+
   it("starts unlocked: all 4 quick plus spending quality time and interesting activities (spec v1.5)", () => {
     expect(result.nudges.filter((n) => !n.startsUnlocked).map((n) => n.code)).toEqual(["SGE", "ITE", "ASD"]);
   });

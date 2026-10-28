@@ -59,6 +59,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
   7. [2026-10-28 20:53 SGT] **A week = Monday to Sunday, Singapore time** (for deliberate behaviours).
   8. [2026-10-28 20:53 SGT] **School holidays:** for the MVP, the owner uploads the Ministry of Education (MOE) school holiday dates before launch; automatic updates (e.g. from the MOE website) are in the backlog. How the morning moment behaves on school holidays is still to be agreed.
   - Still open: owner-chosen 30-minute time blocks per moment (question 1 and 2 follow-ups).
+  9. [2026-10-28 21:16 SGT] **Examples are time-agnostic** (owner): no time of day baked into example text ("at dinner", "before bedtime"...). Claude adds timing context when it writes a nudge message. 10 examples rewritten (IDs 1, 2, 5, 6, 7, 9, 21, 22, 23, 30); a test checks the seed file has no time-of-day words. Applied to Supabase with `supabase/content/2026-10-28_time_agnostic_examples.sql` (owner runs it). The owner's original spreadsheet `docs/Nudge_Repository.xlsx` is kept unchanged as history.
   4. **How much open conversation the bot supports** (e.g. "any ideas for a rainy day?") is WIP, decided with the nudge personality work (`docs/PRODUCT-BACKLOG.md`).
 - [2026-10-25 07:51 SGT] Version 1.6 complete and built (two tables, codes, minimum 3 examples with block plus alert).
 - [2026-10-25 07:42 SGT] Version 1.6 (in progress), Nudge repository becomes two tables (owner agreed after mock-ups):

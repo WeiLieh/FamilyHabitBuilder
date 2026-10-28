@@ -1,13 +1,13 @@
 nudge_code,example
-TWC,"Ask ""What was the best part of your day?"" on the way home from school."
-TWC,"Ask ""What made you laugh today?"" at dinner."
+TWC,"Ask ""What was the best part of your day?"" and listen to the full answer."
+TWC,"Ask ""What made you laugh today?"""
 TWC,Ask about their favourite game or YouTube channel and listen to the full answer.
 TWC,"Share a short story about your own day, so they learn to share theirs too."
-TWC,"At bedtime, ask ""Is there anything on your mind?"" and just listen."
-SAF,Give a hug when your child leaves for school and when you reunite.
-SAF,"Say ""I love you"" before bedtime."
+TWC,"Ask ""Is there anything on your mind?"" and just listen."
+SAF,Give a hug when you say goodbye and again when you meet up.
+SAF,"Say ""I love you"", face to face."
 SAF,Give a high-five or fist bump after a good effort.
-SAF,Leave a small sticky note with a smiley in their bag or lunchbox.
+SAF,Leave a small sticky note with a smiley where your child will find it.
 SAF,Ruffle their hair or give a gentle shoulder squeeze as you walk past.
 DPR,"""You packed your school bag by yourself. That was really responsible."""
 DPR,"""I noticed you shared your snack with your brother. That was kind."""
@@ -19,16 +19,16 @@ GAT,"Pause what you're doing for one minute when they say ""Look at this!"""
 GAT,"Watch them show off a skill, such as a skipping trick or a drawing, and react with interest."
 GAT,Ask follow-up questions about what they just told you.
 GAT,"Notice small things, such as ""You got a new haircut!"" or ""You seem tired today."""
-SQT,Eat dinner together with all phones put away.
-SQT,Play one round of a board or card game after homework.
-SQT,Take a 15-minute evening walk around the neighbourhood together.
+SQT,Share a meal together with all phones put away.
+SQT,Play one round of a board or card game together.
+SQT,Take a 15-minute walk around the neighbourhood together.
 SQT,"Let your child pick a show and watch it together, snuggled on the sofa."
 SQT,"Do a short ""just us two"" outing, such as getting ice cream at the void deck or nearby shop."
 IAC,Bake cookies or a simple cake together.
 IAC,"Do a mini science experiment at home, such as a baking soda volcano."
 IAC,Build a LEGO set or a cardboard fort together.
 IAC,Go on a nature trail or cycling trip at a park.
-IAC,"Have a family craft night, such as painting or making DIY (Do-It-Yourself) cards."
+IAC,"Have a family craft session, such as painting or making DIY (Do-It-Yourself) cards."
 SGE,"Say ""sorry"" to your child when you make a mistake."
 SGE,Let them see you read a book instead of scrolling your phone.
 SGE,"Tidy up after yourself, and let them see you do it."
