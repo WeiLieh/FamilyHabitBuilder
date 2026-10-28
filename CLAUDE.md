@@ -141,6 +141,7 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 
 #### End of every task or session
 Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md`, `ERROR-LOG.md`, `KNOWN-ISSUES.md`, `PRODUCT-BACKLOG.md`. If a new concept, technique or decision came up that I had not met before, add it to `docs/LEARNING-LOG.md`. Tell me which files you updated.
+- [2026-10-28 22:49 SGT] Rules in `docs/CATCH-UP.md` carry stable **rule IDs** (section.number, e.g. 3.4). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID moves to "Retired rule IDs". Refer to rules by ID in conversation and in `docs/SPEC.md` change notes.
 - [2026-10-28 22:37 SGT] Also rewrite `docs/CATCH-UP.md`: update the module map and file table, the rules recap (current rules only, no abbreviations in the diagram), and the questions for the next session.
 - [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
