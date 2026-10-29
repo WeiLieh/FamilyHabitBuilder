@@ -18,6 +18,7 @@ One entry per item: Item / Why it matters / Priority / Status. Newest first.
   - [2026-10-29 20:58 SGT] Points to weigh in the session: (a) a predictable reward is a fixed reward, not a "variable" one in the Hooked sense, so variety must come from other categories; (b) double XP for unprompted logs could be gamed (e.g. waiting more than 4 hours after a nudge before logging); consider "logged before that behaviour's first nudge of the day" as the trigger instead.
 - **Priority:** [2026-10-29 20:58 SGT] High (needed before step 4 of the development order)
 - **Status:** [2026-10-29 20:58 SGT] In progress (WIP). Needs a dedicated design session with the owner.
+- [2026-10-29 22:03 SGT] Owner supplied a first spec (`docs/variable-rewards-spec-v0.1-original.md`); Claude adapted it to our rules as `docs/VARIABLE-REWARDS-SPEC.md` (v0.2 draft) with 9 decisions (D1 to D9) for the owner.
 
 ## [2026-10-28 22:08 SGT] WIP: Celebrate repeat logs and logs of unchosen behaviours
 - **Why it matters:** A parent who hugs their child twice in a day, or does a behaviour they didn't choose, is making extra effort. These count once (or not at all) toward targets and streaks, but the owner does not want that progress discounted.
