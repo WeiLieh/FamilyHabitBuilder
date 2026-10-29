@@ -15,6 +15,7 @@ One entry per item: Item / Why it matters / Priority / Status. Newest first.
   - **Celebrating repeat logs and unchosen behaviours** (rule 5.4)
   - **Other categories still to brainstorm,** each with its own variety
   - Where it lives: probably reward content as data (like the nudges) plus a rules module in code
+  - [2026-10-29 20:58 SGT] Points to weigh in the session: (a) a predictable reward is a fixed reward, not a "variable" one in the Hooked sense, so variety must come from other categories; (b) double XP for unprompted logs could be gamed (e.g. waiting more than 4 hours after a nudge before logging); consider "logged before that behaviour's first nudge of the day" as the trigger instead.
 - **Priority:** [2026-10-29 20:58 SGT] High (needed before step 4 of the development order)
 - **Status:** [2026-10-29 20:58 SGT] In progress (WIP). Needs a dedicated design session with the owner.
 
