@@ -50,6 +50,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-29 22:22 SGT] Version 1.9 (in progress), Variable rewards scope (owner): MVP rewards = features 1 (validation reply), 2 (surprise / varied ideas), 3 (weekly streak), 4 (one-tap logging), 6 (family memory album), 10 (three milestone badges) from `docs/VARIABLE-REWARDS-SPEC.md`, **plus snapshots** (weekly and monthly, as in the Definition of done; the MVP already collects photos). **Unlocks are excluded from the MVP.** Details still under review (D1 to D11 in that file).
 - [2026-10-29 20:58 SGT] Version 1.8, Batch 3 answers (owner):
   1. **The random surprise bonus (20% of logs) is dropped** (rule 7.2). Replaced by a predictable reward: **double XP for an unprompted log** (no nudge message in the 4 hours before, rule 5.2). XP values are still WIP. Supersedes reward type (5) "unpredictable discovery" in Constraints and the 20% rate in `docs/EXPERIMENTS.md`.
   2. **Variable rewards are not fully designed** (rule 7.4): each category (encouraging phrases, badges, XP, levels, progress bar, streaks, snapshots, unlocks, celebrations...) needs rules, content and variety, and probably its own data and rules module. Parked in `docs/PRODUCT-BACKLOG.md` for a dedicated design session.

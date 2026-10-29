@@ -6,6 +6,33 @@
 
 ---
 
+## 0. Universe of rewards and MVP scope
+
+[2026-10-29 22:22 SGT] **Agreed by the owner:** the MVP rewards are features **1, 2, 3, 4, 6 and 10**, plus **snapshots (e)**, included because the MVP already collects photos. **Unlocks (f) are excluded from the MVP.**
+
+| # | Reward | Source | Hooked category | Status |
+|---|---|---|---|---|
+| 1 | Validation reply after each log | v0.1 | Tribe | **MVP (agreed)** |
+| 2 | Surprise activity card | v0.1 | Hunt | **MVP (agreed)**; how: folded into varied nudge messages (D6, to review) |
+| 3 | Weekly streak | v0.1 | Self | **MVP (agreed)**; details D3 to D5 to review |
+| 4 | Completion checklist (one-tap logging) | v0.1 | Self | **MVP (agreed)** |
+| 5 | Co-parent reaction | v0.1 | Tribe | Later |
+| 6 | Family memory album | v0.1 | Self | **MVP (agreed)** |
+| 7 | XP and levels | v0.1; rules 7.1, 7.2 | Self | To decide (D1) |
+| 8 | Social benchmarking | v0.1 | Tribe | Skip |
+| 9 | Time-limited weekend challenge | v0.1 | Hunt | Skip |
+| 10 | Three milestone badges | v0.1 | Self | **MVP (agreed)** |
+| 11 | Per-activity badge collection | v0.1 | Self | Skip |
+| 12 | Shared family badges | v0.1 | Tribe | Later |
+| a | Double XP for unprompted logs | rule 7.2 | Hunt | To decide (D1) |
+| b | Celebrating repeat logs and unchosen behaviours | rule 5.4 | Tribe | Within feature 1 |
+| c | Encouraging phrases | rule 7.1 | Tribe | Same as feature 1 |
+| d | Progress bar | owner, session 4 | Self | Same as feature 3 |
+| e | "Look how far you've come" snapshots (weekly, monthly, one-tap web link) | spec Definition of done; rule 7.1 | Self | **MVP (agreed)**; details D10 |
+| f | Unlocks (earning a locked nudge) | rule 2.2 | Hunt | **Excluded from MVP (agreed)**; consequence D11 |
+
+---
+
 ## 1. Decisions needed from the owner
 
 Each has a suggestion; "agree" is enough. Numbers D1 to D9 are only for this review.
@@ -20,6 +47,8 @@ Each has a suggestion; "agree" is enough. Numbers D1 to D9 are only for this rev
 | **D6** | **Surprise activity cards: separate feature, or folded into nudge messages?** | v0.1's cards replace "the daily prompt" at random. We have no single daily prompt (we have slots, rule 3.1), we dropped the random surprise (7.2), and cards outside the 9 nudges are out of scope. | **Fold into nudge messages:** each nudge message uses a different example (no repeats until all are used), so every message is a small surprise. v0.1's cards become **new example rows** under the matching nudge (section 7). Add an **"Another idea"** button (v0.1's Swap), once per message. |
 | **D7** | **Weekly album prompt: allowed, and does it count toward the 3-a-day cap?** | v0.1 adds a Sunday-evening prompt. Rule 3.4 caps bot-initiated messages at 3 a day. | **Allowed, once a week, in the parent's last Sunday slot, and it counts as one of that day's nudge messages.** Sent only if the parent logged at least once that week (nothing to save otherwise). |
 | **D8** | **Album photos: only from logs, or any photo?** | Rule 4.3: photos are allowed only for nudges with "photo upload allowed" (the 5 deliberate ones). v0.1's weekly prompt invites any photo. | **The weekly prompt may take a photo or a line about any moment that week**, saved as an album entry (not a log, so no target, streak or badge effect). Photo rules 5.5 (optional, consent, kept until deleted) apply. |
+| **D10** | **Snapshots: what and when?** (added [2026-10-29 22:22 SGT]) | Agreed for the MVP; the Definition of done requires them. Each is a bot-initiated message, so rule 3.4 (cap) applies. | **Weekly:** in the parent's last Sunday slot, **combined with the album prompt (D7)** into one message: days this week, steady weeks so far, photos and lines saved this week, a one-tap web link, and "want to save one more moment?". **Monthly:** on the 1st of the month, in the parent's first slot: the month's numbers, a few saved photos or lines, and the link. Each counts as one nudge message that day. |
+| **D11** | **Locked nudges without unlocks** (added [2026-10-29 22:22 SGT]) | Unlocks are out of the MVP, but rule 2.2 locks 3 deliberate nudges (Setting a good example, Incidental teaching, Ask-say-do). Without unlocks they can never be picked. | Choose: **(a) start all 9 unlocked in the MVP** (parents see the full menu; unlocks return later), or **(b) keep the 3 locked and simply unavailable in the MVP** (a smaller, simpler menu of 6). |
 | **D9** | **Trial length** (open since session 1, needed by metrics 6 and 7). v0.1 suggests 5 weeks with 5 to 10 families. | Metrics 6 and 7 need at least 4 weeks. | **5 weeks**, 5 to 10 friends' families to start (within our capacity of 50). |
 
 ---
