@@ -117,7 +117,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 ### 7. Variable rewards
 - **7.1** **MVP rewards** (from `docs/VARIABLE-REWARDS-SPEC.md`): 1 validation reply after each log, 2 varied ideas (surprise), 3 weekly streak, 4 one-tap logging, 6 family memory album **including weekly and monthly snapshots**, 10 three milestone badges. Unlocks are out of the MVP. Details under review (D1 to D11). *(decided 24 Oct, changed 29 Oct)*
-- **7.2** **No random surprise bonus.** Instead, a predictable reward: **double XP for logging without a nudge** (unprompted, rule 5.2). XP values and levels: **WIP**. *(decided 24 Oct, changed 29 Oct)*
+- **7.2** **No XP or levels in the MVP** (D1). No random surprise bonus either. An **unprompted log** (rule 5.2) gets a **special validation reply** noticing the parent did it on their own. *(decided 24 Oct, changed 29 Oct)*
 - **7.4** **Variable rewards need a full design session:** every reward category needs its rules, its content and its variety (parked in `docs/PRODUCT-BACKLOG.md`). *(decided 29 Oct)*
 - **7.3** Streaks: a quick streak survives up to 2 missed days in a row; deliberate streaks are weekly. *(decided 24 Oct)*
 
