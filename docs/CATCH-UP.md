@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-28 22:36 SGT]** (end of session 3). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-29 22:40 SGT]** (end of session 4). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. What each module does, and its files · 3. Rules recap (with rule IDs) · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -16,7 +16,7 @@ flowchart LR
     engine["2. Nudge engine<br/>decisions: BUILT<br/>words: WAITING"]:::part
     repository["3. Nudge repository<br/>BUILT and LIVE"]:::done
     photo["4. Photo check<br/>NOT STARTED"]:::todo
-    rewards["5. Variable rewards<br/>WAITING on your decisions"]:::todo
+    rewards["5. Variable rewards<br/>DESIGN in progress<br/>(spec v0.2, D5 to D10 open)"]:::part
     datastore["6. Datastore<br/>nudge tables LIVE<br/>parent tables NOT STARTED"]:::part
     webapp["7. Web app<br/>NOT STARTED"]:::todo
     telemetry["8. Telemetry<br/>NOT STARTED"]:::todo
@@ -58,8 +58,9 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `shared/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
 | | | | | `supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done) | 6 |
 | | | | | `supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
+| | | | | `supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
 | 4 | **Photo check** | Claude looks at a photo and judges whether it fits the behaviour | Not started | (none yet) | |
-| 5 | **Variable rewards** | The 5 reward types: encouraging phrases, XP and levels, progress and streaks, snapshots, surprise bonus | Waiting on your decisions | (none yet) | |
+| 5 | **Variable rewards** | Rewards after logging: validation reply (receipt + Claude), varied ideas, weekly streak and steady weeks, one-tap logging, family memory album with snapshots, 3 milestone badges | Design in progress (no code yet) | `docs/VARIABLE-REWARDS-SPEC.md`: the design (v0.2): universe of rewards, MVP scope, decisions D1 to D11 | (design only) |
 | 6 | **Datastore** | Where everything is kept: Supabase (Singapore) for permanent records and photos, Upstash Redis for short-term chat memory | Nudge tables live | `supabase/migrations/001_create_nudge_repository.sql`: creates the nudges and examples tables, the 3-example guard and the browsing view | 25 database checks |
 | | | | | `supabase/migrations/002_service_role_read_only.sql`: makes our server read-only on those tables | (in the 25) |
 | 7 | **Web app** | Plain pages: history, progress, rewards, XP, "delete my data" | Not started | (none yet) | |
@@ -140,24 +141,26 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 ## 4. Questions to think about before next session
 
-Answer whenever you have a moment (even on your phone, in the chat). Each has my suggestion, so "agree" is enough.
+[2026-10-29 22:40 SGT] Answer whenever you have a moment; each has a suggestion, so "agree" is enough. Full details are in section 1 of `docs/VARIABLE-REWARDS-SPEC.md`.
 
-**[2026-10-29 20:58 SGT] Batch 3 answered (session 4):** the random surprise bonus is replaced by double XP for unprompted logs (rule 7.2); Variable rewards need a full design session (rule 7.4); experiment questions 3 to 5 are parked with the list of experiment variables in `docs/EXPERIMENTS.md`. The questions below are kept for reference.
+**First, one task:** run `supabase/content/2026-10-29_unlock_all_nudges.sql` in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD unlocked).
 
-**Batch 3: surprise bonus and experiment groups (Nudge engine, decisions half)**
-1. **Which logs can get the surprise bonus?** *Suggestion:* any log of a **chosen** behaviour, self-reported or photo alike (photos are optional, so they shouldn't earn more luck). Logs of unchosen behaviours and repeat logs: no surprise for now (they get their own celebration later, WIP).
-2. **Pure luck, or a safety net?** With pure 20% luck, a parent can go 10+ logs without a surprise. *Suggestion:* pure luck to start (that is what "variable reward" means), and record every roll as an event so we can check fairness later.
-3. **Where does the code read experiment settings from?** (a) `shared/settings.ts`, changed through a pull request, or (b) a Supabase table you edit. *Suggestion:* (a) for the trial: experiments are rare and should be reviewed and tested.
-4. **First experiment at launch?** *Suggestion:* none at launch. Run the first one after 2 weeks of real data (e.g. surprise rate 20% vs 10%).
-5. **When is a parent assigned to a group?** *Suggestion:* when an experiment starts, each active parent is randomly assigned once and stays in that group until it ends.
+**Variable rewards, parked decisions D5 to D10**
+- **D5 Repair pass** (a free "missed day" pass): *suggestion:* not in the MVP; slack in steady weeks (rule 7.6) and logging up to yesterday (rule 5.4) cover forgetful days.
+- **D6 Surprise ideas:** *suggestion:* each nudge message uses a fresh example (no repeats until all are used); your v0.1 cards become new example rows; add an **"Another idea"** button, once per message.
+- **D7 Weekly album prompt:** *suggestion:* once a week, in your last Sunday slot, only if you logged that week; counts as one of that day's nudge messages.
+- **D8 Album photos:** *suggestion:* the weekly prompt can take a photo or line about any moment, saved as an album entry (not a log).
+- **D9 Trial:** *suggestion:* 5 weeks, 5 to 10 friends' families.
+- **D10 Snapshot timing:** *suggestion:* weekly snapshot combined with the D7 album prompt (Sunday); monthly on the 1st, in the parent's first slot.
 
-**Coming after Batch 3: the Datastore** (tables for parents, their picks, slots, logs and messages). No decisions expected from you; Claude will propose the tables.
+**After the rewards design:** the Datastore (step 2 of the development order), starting with table mock-ups for your agreement.
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- XP values and levels; how an unlock is earned; celebrating repeat and unchosen logs (all with **Variable rewards**)
-- Context collected from parents for AI nudge messages; nudge personality (`docs/NUDGE-CONTEXT.md`); how much free chat the bot supports
-- Trial length (needed for metrics 6 and 7)
+- Run the unlock script (section 4)
+- Rewards decisions D5 to D10 (section 4)
+- Nudge personality (`docs/NUDGE-CONTEXT.md`), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
+- Badge graphics and the look of every screen (Web app, setup)
 - **Before launch:** upload MOE school holiday and Singapore public holiday dates
-- UI look (Web app and setup screens)
+- Experiment mechanics (parked in `docs/EXPERIMENTS.md`)

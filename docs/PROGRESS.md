@@ -1,7 +1,14 @@
 # Progress (handoff between sessions)
 
+## [2026-10-29 22:40 SGT] HANDOFF after session 4 (read this first)
+- [2026-10-29 22:40 SGT] **Start next session with the catch-up recap:** show `docs/CATCH-UP.md`, remind the owner to read it, invite questions, then ask for the section 4 answers (unlock script; rewards decisions D5 to D10). Only then start new work.
+- [2026-10-29 22:40 SGT] State: spec v1.9 (in progress). Code unchanged since session 3 apart from data: 84 app tests and the database checks pass. All 9 nudges unlocked in the seed file; the live Supabase change waits for the owner to run `supabase/content/2026-10-29_unlock_all_nudges.sql`.
+- [2026-10-29 22:40 SGT] Rewards design: `docs/VARIABLE-REWARDS-SPEC.md` v0.2. MVP rewards agreed (1, 2, 3, 4, 6 with snapshots, 10); D1 to D4 and D11 answered (rules 7.2, 7.3, 7.5, 7.6, 2.2); D5 to D10 parked.
+- [2026-10-29 22:40 SGT] After the rewards decisions: the Datastore (step 2 of the development order), table mock-ups first.
+
 ## [2026-10-29 20:34 SGT] Session 4
 ### Done
+- [2026-10-29 22:40 SGT] Session ended by the owner. Catch-up page rewritten for next time.
 - [2026-10-29 22:37 SGT] D1 confirmed (no double XP), D2 answered (receipt first, then Claude), D3 and D4 answered together (weekly streaks; steady week = own frequency with slack). New rules 7.5, 7.6; rule 7.3 changed. D5 to D9 parked.
 - [2026-10-29 22:33 SGT] D1 answered (no XP or levels; rule 7.2 updated). D2 partly answered (Claude writes replies; failure handling open). D3 explained (fits the weekly model; linked to D4). D4 to D9 parked.
 - [2026-10-29 22:25 SGT] Snapshots folded into feature 6 (album). Rule 2.2 changed: all 9 nudges start unlocked (D11). Test updated first (failed), seed CSV updated (84 tests pass, database tests pass), live script `2026-10-29_unlock_all_nudges.sql` verified locally; owner to run it.

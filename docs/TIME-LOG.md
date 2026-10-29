@@ -3,6 +3,11 @@
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
 ## [2026-10-29 20:34 SGT] Session 4 (2026-10-29 evening)
+- [2026-10-29 22:40 SGT] **Ended by the owner.** About 2 h 10 min (20:34 to about 22:45), all active, design and thinking only (no new module code).
+  - 20:34 to 20:58 (about 25 min): catch-up recap, question on rules 2.2 vs 4.3, Batch 3 answers (random surprise dropped, experiment variables parked)
+  - 20:58 to 22:03 (about 1 h): owner's rewards spec v0.1 reviewed against our rules; adapted v0.2 written (17 clashes, D1 to D9)
+  - 22:03 to 22:45 (about 40 min): universe of rewards and MVP scope agreed; all 9 nudges unlocked; D1 to D4 answered
+- **Notes for timeboxing:** the catch-up page made the restart quick (about 25 min to be back in context, versus most of session 3). Reviewing an outside spec against our rules took about 1 hour.
 - **Started:** 20:34 SGT
 - **Plan:** catch-up recap first (owner reads `docs/CATCH-UP.md`, asks questions, answers the Batch 3 questions), then build Batch 3, then the Datastore.
 
