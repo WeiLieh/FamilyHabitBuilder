@@ -80,7 +80,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 ### 2. Nudge engine: what a parent picks
 - **2.1** Up to **2 quick and 1 deliberate** behaviour, at least 1 in total. *(decided 25 Oct)*
-- **2.2** Only **active** and **unlocked** nudges. 6 start unlocked: the 4 quick plus Spending quality time and Interesting activities. An **unlock opens more of the menu**; it never raises the 2 + 1 limit. How an unlock is earned: **WIP**. *(decided 25 Oct)*
+- **2.2** Only **active** and **unlocked** nudges can be picked. **In the MVP all 9 start unlocked** (unlocks are out of the MVP). The "starts unlocked" setting stays on each nudge, ready for when unlocks return. *(decided 25 Oct, changed 29 Oct)*
 - **2.3** Quick: **every day** or **every 2 days**. Deliberate: **1 or 2 times a week**, at most 2 in total. *(decided 24 Oct)*
 - **2.4** The frequency is how often the parent wants to **do** it. We only nudge while it is still undone ("due"). *(decided 28 Oct)*
 
@@ -116,7 +116,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)*
 
 ### 7. Variable rewards
-- **7.1** Reward types so far: encouraging phrases, XP and levels, progress and streaks, "look how far you've come" snapshots (weekly and monthly, with a one-tap web link), and double XP for unprompted logs (rule 7.2). **Not fully designed yet** (rule 7.4). *(decided 24 Oct, changed 29 Oct)*
+- **7.1** **MVP rewards** (from `docs/VARIABLE-REWARDS-SPEC.md`): 1 validation reply after each log, 2 varied ideas (surprise), 3 weekly streak, 4 one-tap logging, 6 family memory album **including weekly and monthly snapshots**, 10 three milestone badges. Unlocks are out of the MVP. Details under review (D1 to D11). *(decided 24 Oct, changed 29 Oct)*
 - **7.2** **No random surprise bonus.** Instead, a predictable reward: **double XP for logging without a nudge** (unprompted, rule 5.2). XP values and levels: **WIP**. *(decided 24 Oct, changed 29 Oct)*
 - **7.4** **Variable rewards need a full design session:** every reward category needs its rules, its content and its variety (parked in `docs/PRODUCT-BACKLOG.md`). *(decided 29 Oct)*
 - **7.3** Streaks: a quick streak survives up to 2 missed days in a row; deliberate streaks are weekly. *(decided 24 Oct)*

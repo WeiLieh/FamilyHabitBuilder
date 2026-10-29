@@ -45,7 +45,7 @@ begin
   assert (select array_agg(id order by id) from public.nudges) = array[1,2,3,4,5,6,7,8,9]::bigint[], 'expected IDs 1 to 9';
   assert (select string_agg(code, ',' order by id) from public.nudges) = 'TWC,SAF,DPR,GAT,SQT,IAC,SGE,ITE,ASD', 'expected the agreed codes';
   assert (select count(*) from public.nudges where category = 'quick') = 4, 'expected 4 quick';
-  assert (select count(*) from public.nudges where starts_unlocked) = 6, 'expected 6 unlocked at start';
+  assert (select count(*) from public.nudges where starts_unlocked) = 9, 'expected all 9 unlocked at start (rule 2.2)';
   assert (select count(*) from public.examples) = 45, 'expected 45 examples';
   assert not exists (select nudge_code from public.examples group by nudge_code having count(*) <> 5), 'expected 5 examples per nudge';
   assert (select count(*) from public.examples where active) = 45, 'expected examples to be active by default';

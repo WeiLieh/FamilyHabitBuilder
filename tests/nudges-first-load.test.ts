@@ -72,8 +72,8 @@ describe("First-load CSVs for the Supabase nudges and examples tables", () => {
     expect(timeBound).toEqual([]);
   });
 
-  it("starts unlocked: all 4 quick plus spending quality time and interesting activities (spec v1.5)", () => {
-    expect(result.nudges.filter((n) => !n.startsUnlocked).map((n) => n.code)).toEqual(["SGE", "ITE", "ASD"]);
+  it("starts with all 9 nudges unlocked (rule 2.2, changed 29 Oct: unlocks are out of the MVP)", () => {
+    expect(result.nudges.filter((n) => !n.startsUnlocked).map((n) => n.code)).toEqual([]);
   });
 
   it("allows photos (with a photo idea) for exactly the 5 deliberate nudges, self-report for all 9", () => {

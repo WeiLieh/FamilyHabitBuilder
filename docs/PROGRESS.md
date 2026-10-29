@@ -2,6 +2,7 @@
 
 ## [2026-10-29 20:34 SGT] Session 4
 ### Done
+- [2026-10-29 22:25 SGT] Snapshots folded into feature 6 (album). Rule 2.2 changed: all 9 nudges start unlocked (D11). Test updated first (failed), seed CSV updated (84 tests pass, database tests pass), live script `2026-10-29_unlock_all_nudges.sql` verified locally; owner to run it.
 - [2026-10-29 22:22 SGT] Owner confirmed MVP rewards 1, 2, 3, 4, 6, 10 plus snapshots; unlocks excluded. Universe table added to `docs/VARIABLE-REWARDS-SPEC.md` (section 0); new decisions D10 (snapshots) and D11 (locked nudges without unlocks).
 - [2026-10-29 22:03 SGT] Design work: owner's Variable rewards spec v0.1 saved unchanged; Claude reviewed it against our rules (17 clashes or gaps found) and wrote `docs/VARIABLE-REWARDS-SPEC.md` v0.2 draft with 9 decisions (D1 to D9) for the owner's review. No rules changed yet.
 - [2026-10-29 20:58 SGT] Recap done. Owner's question on rules 2.2 vs 4.3 answered (not a typo; 4.3 reworded). Batch 3 answered: random surprise bonus replaced by double XP for unprompted logs; Variable rewards need a full design session (backlog); experiment variables listed and parked in `docs/EXPERIMENTS.md`. Spec v1.8.

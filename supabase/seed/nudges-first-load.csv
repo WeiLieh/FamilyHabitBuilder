@@ -5,6 +5,6 @@ DPR,Descriptive praise,quick,true,280,false,,true,true
 GAT,Giving attention,quick,true,280,false,,true,true
 SQT,Spending quality time,deliberate,true,280,true,The dinner table with phones stacked in a basket and the family's plates in view.,true,true
 IAC,Interesting activities,deliberate,true,280,true,"The finished creation (the cookies, LEGO build or craft) with your child's hands holding it up.",true,true
-SGE,Setting a good example,deliberate,true,280,true,"You reading a book or tidying up, with your child nearby doing the same or watching.",true,false
-ITE,Incidental teaching,deliberate,true,280,true,"Your child pointing at the MRT route map, a price tag or a plant they just learned about.",true,false
-ASD,Ask-say-do,deliberate,true,280,true,"A before-and-after shot of the task, such as the tidy shelf or the folded laundry your child completed.",true,false
+SGE,Setting a good example,deliberate,true,280,true,"You reading a book or tidying up, with your child nearby doing the same or watching.",true,true
+ITE,Incidental teaching,deliberate,true,280,true,"Your child pointing at the MRT route map, a price tag or a plant they just learned about.",true,true
+ASD,Ask-say-do,deliberate,true,280,true,"A before-and-after shot of the task, such as the tidy shelf or the folded laundry your child completed.",true,true
