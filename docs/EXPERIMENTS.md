@@ -23,6 +23,7 @@ These apply to everyone who is not in an experiment that changes them.
 - [2026-10-24 18:26 SGT] Streak gap allowed (quick actions): up to 2 missed days in a row
 
 ## Experiment variables (parked)
+- [2026-10-29 22:37 SGT] Added: steady-week bars (every day 6 of 7; every 2 days 3; deliberate as chosen), rule 7.6.
 [2026-10-29 20:58 SGT] Everything in the app that an experiment could change, so we remember them when we design the experiment module. Nothing here is decided; current values are in "Starting values" above and `shared/settings.ts`.
 
 **Nudge timing (Nudge engine)**
