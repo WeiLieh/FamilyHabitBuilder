@@ -2,6 +2,7 @@
 
 ## [2026-10-29 20:34 SGT] Session 4
 ### Done
+- [2026-10-29 20:58 SGT] Recap done. Owner's question on rules 2.2 vs 4.3 answered (not a typo; 4.3 reworded). Batch 3 answered: random surprise bonus replaced by double XP for unprompted logs; Variable rewards need a full design session (backlog); experiment variables listed and parked in `docs/EXPERIMENTS.md`. Spec v1.8.
 - [2026-10-29 20:34 SGT] Session started; read the handoff and known issues.
 ### In progress
 - [2026-10-29 20:34 SGT] Catch-up recap with the owner (`docs/CATCH-UP.md`), then Batch 3 answers.

@@ -2,6 +2,22 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-29 20:58 SGT] WIP: Design the Variable rewards (all categories)
+- **Why it matters:** Rewards are the "Variable Reward" step of the Hooked model, but so far we only have a list of types. Each category needs rules, content and variety before it can be built (owner, session 4). Known so far:
+  - **Encouraging phrases:** wording and variety, defined with the nudge personality (`docs/NUDGE-CONTEXT.md`)
+  - **Badges:** which badges, criteria, and graphics (the look comes from the owner)
+  - **XP:** points per log (quick, deliberate), double XP for unprompted logs (rule 7.2)
+  - **Levels:** thresholds and names
+  - **Progress bar:** what it measures and when it fills
+  - **Streaks:** already decided (rule 7.3), but how they are shown
+  - **Snapshots:** weekly and monthly content
+  - **Unlocks:** how a locked nudge is earned (rule 2.2)
+  - **Celebrating repeat logs and unchosen behaviours** (rule 5.4)
+  - **Other categories still to brainstorm,** each with its own variety
+  - Where it lives: probably reward content as data (like the nudges) plus a rules module in code
+- **Priority:** [2026-10-29 20:58 SGT] High (needed before step 4 of the development order)
+- **Status:** [2026-10-29 20:58 SGT] In progress (WIP). Needs a dedicated design session with the owner.
+
 ## [2026-10-28 22:08 SGT] WIP: Celebrate repeat logs and logs of unchosen behaviours
 - **Why it matters:** A parent who hugs their child twice in a day, or does a behaviour they didn't choose, is making extra effort. These count once (or not at all) toward targets and streaks, but the owner does not want that progress discounted.
 - **Priority:** [2026-10-28 22:08 SGT] Medium

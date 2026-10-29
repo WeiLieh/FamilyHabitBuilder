@@ -50,6 +50,11 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Change notes
+- [2026-10-29 20:58 SGT] Version 1.8, Batch 3 answers (owner):
+  1. **The random surprise bonus (20% of logs) is dropped** (rule 7.2). Replaced by a predictable reward: **double XP for an unprompted log** (no nudge message in the 4 hours before, rule 5.2). XP values are still WIP. Supersedes reward type (5) "unpredictable discovery" in Constraints and the 20% rate in `docs/EXPERIMENTS.md`.
+  2. **Variable rewards are not fully designed** (rule 7.4): each category (encouraging phrases, badges, XP, levels, progress bar, streaks, snapshots, unlocks, celebrations...) needs rules, content and variety, and probably its own data and rules module. Parked in `docs/PRODUCT-BACKLOG.md` for a dedicated design session.
+  3. **Experiments are parked:** where experiment settings live, the first experiment and group assignment (Batch 3 questions 3 to 5) wait until the experiment module is designed. All variables that could be experimented on are listed in `docs/EXPERIMENTS.md`.
+  4. Rule 4.3 reworded (no change in meaning): "starts unlocked" is a yes/no setting on each nudge; which ones are yes is rule 2.2.
 - [2026-10-28 20:37 SGT] Version 1.7 (in progress), Batch 2 clarifications (owner):
   1. **Only nudge messages count toward the 3-a-day cap.** A nudge message is one the bot sends on its own initiative. Anything the bot says in reply to the parent (logging, questions, any back-and-forth) never counts.
   2. **Every nudge message has two buttons: ✅ Done and 😴 Not today.** "Not today" (button, or the same meaning in the parent's own words, recognised by Claude) stops nudge messages for the rest of that Singapore day; they resume automatically the next day. No penalty and no "why" question; a kind acknowledgement only.

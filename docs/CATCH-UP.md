@@ -100,7 +100,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 ### 4. Nudge repository
 - **4.1** Two tables you edit in Supabase: **nudges** (9 rows, settings written once, short codes TWC, SAF, DPR, GAT, SQT, IAC, SGE, ITE, ASD) and **examples** (unlimited, linked by code). *(decided 25 Oct)*
 - **4.2** **4 quick:** Talking with children, Showing affection, Descriptive praise, Giving attention. **5 deliberate:** Spending quality time, Interesting activities, Setting a good example, Incidental teaching, Ask-say-do. *(decided 24 Oct)*
-- **4.3** Each nudge has: self-report allowed, photo upload allowed (+ photo idea), description limit (280), active, starts unlocked. *(decided 24 Oct, 25 Oct)*
+- **4.3** Each nudge has these settings: self-report allowed (yes/no), photo upload allowed (yes/no, plus a photo idea), description limit (280), active (yes/no), and **starts unlocked (yes/no)**. Which nudges are set to start unlocked is rule 2.2. *(decided 24 Oct, 25 Oct; reworded 29 Oct)*
 - **4.4** At least **3 active examples** per nudge: the database blocks edits that go below 3; the app flags new nudges below 3 (the nudge keeps working). *(decided 25 Oct)*
 - **4.5** Examples are **time-agnostic** (no "at dinner", "before bedtime"). *(decided 28 Oct)*
 - **4.6** Never delete: **retire** (active = no). A broken row is left out and reported; the rest keeps working. *(decided 25 Oct)*
@@ -116,8 +116,9 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)*
 
 ### 7. Variable rewards
-- **7.1** 5 types: encouraging phrases, XP and levels, progress and streaks, "look how far you've come" snapshots (weekly and monthly, with a one-tap web link), surprise bonus. *(decided 24 Oct)*
-- **7.2** **Surprise bonus:** on 20% of logged actions, double XP plus a special message. XP values and levels: **WIP**. *(decided 24 Oct)*
+- **7.1** Reward types so far: encouraging phrases, XP and levels, progress and streaks, "look how far you've come" snapshots (weekly and monthly, with a one-tap web link), and double XP for unprompted logs (rule 7.2). **Not fully designed yet** (rule 7.4). *(decided 24 Oct, changed 29 Oct)*
+- **7.2** **No random surprise bonus.** Instead, a predictable reward: **double XP for logging without a nudge** (unprompted, rule 5.2). XP values and levels: **WIP**. *(decided 24 Oct, changed 29 Oct)*
+- **7.4** **Variable rewards need a full design session:** every reward category needs its rules, its content and its variety (parked in `docs/PRODUCT-BACKLOG.md`). *(decided 29 Oct)*
 - **7.3** Streaks: a quick streak survives up to 2 missed days in a row; deliberate streaks are weekly. *(decided 24 Oct)*
 
 ### 8. Datastore
@@ -138,6 +139,8 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 ## 4. Questions to think about before next session
 
 Answer whenever you have a moment (even on your phone, in the chat). Each has my suggestion, so "agree" is enough.
+
+**[2026-10-29 20:58 SGT] Batch 3 answered (session 4):** the random surprise bonus is replaced by double XP for unprompted logs (rule 7.2); Variable rewards need a full design session (rule 7.4); experiment questions 3 to 5 are parked with the list of experiment variables in `docs/EXPERIMENTS.md`. The questions below are kept for reference.
 
 **Batch 3: surprise bonus and experiment groups (Nudge engine, decisions half)**
 1. **Which logs can get the surprise bonus?** *Suggestion:* any log of a **chosen** behaviour, self-reported or photo alike (photos are optional, so they shouldn't earn more luck). Logs of unchosen behaviours and repeat logs: no surprise for now (they get their own celebration later, WIP).
