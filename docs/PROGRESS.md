@@ -1,5 +1,15 @@
 # Progress (handoff between sessions)
 
+## [2026-10-29 20:34 SGT] Session 4
+### Done
+- [2026-10-29 20:34 SGT] Session started; read the handoff and known issues.
+### In progress
+- [2026-10-29 20:34 SGT] Catch-up recap with the owner (`docs/CATCH-UP.md`), then Batch 3 answers.
+### Next steps
+- [2026-10-29 20:34 SGT] Batch 3 (surprise bonus, experiment groups), then the Datastore (step 2 of the development order).
+### Blockers
+- [2026-10-29 20:34 SGT] None.
+
 ## [2026-10-28 20:11 SGT] Session 3
 ### Done
 - [2026-10-28 22:32 SGT] Session ended. Owner suggested a rules recap and a visual module progress map to speed up getting back into context; Claude proposed one catch-up page (see Next steps).

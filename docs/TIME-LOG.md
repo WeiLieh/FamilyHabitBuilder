@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-10-29 20:34 SGT] Session 4 (2026-10-29 evening)
+- **Started:** 20:34 SGT
+- **Plan:** catch-up recap first (owner reads `docs/CATCH-UP.md`, asks questions, answers the Batch 3 questions), then build Batch 3, then the Datastore.
+
 ## [2026-10-28 20:11 SGT] Session 3 (2026-10-28 evening)
 - [2026-10-28 22:37 SGT] Extra few minutes after the end: created `docs/CATCH-UP.md` at the owner's request.
 - [2026-10-28 22:32 SGT] **Ended by the owner.** Total about 2 h 20 min (20:11 to about 22:30), all active, no timebox set. Owner's reflection: 3 days since the last session meant a lot of lost context, so getting back up to speed was slow. Proposed fixes: a recap of all decided rules, and a visual map of the modules showing progress.
