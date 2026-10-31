@@ -1,5 +1,17 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 14:47 SGT] Session 6
+### Done
+- [2026-10-31 14:47 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up recap done.
+- [2026-10-31 14:47 SGT] Owner approved and merged PR #11 (two review agents). Step 2 complete. Branch restarted from `main`.
+- [2026-10-31 14:47 SGT] Owner agreed both review findings go into `docs/KNOWN-ISSUES.md` (new-table lock-down; no real photos before consent and "delete my data"). Added.
+### In progress
+- [2026-10-31 14:47 SGT] None.
+### Next steps
+- [2026-10-31 14:47 SGT] The Datastore build (development order step 2), starting with table mock-ups for the owner's agreement.
+### Blockers
+- [2026-10-31 14:47 SGT] None blocking. Waiting on the owner (not blocking): run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in Supabase ("later"); rewards decisions D5 to D10 parked by the owner.
+
 ## [2026-10-31 10:22 SGT] HANDOFF: session 5 paused (read this first)
 ### Where we are
 - [2026-10-31 10:22 SGT] **Restructure Step 1 complete** (PRs 0 to 9 merged into `main`, GitHub PRs #1 to #10): `shared/` renamed `src/`; every module has `src/<slug>/SPEC.md` next to its code; `supabase/` moved to `src/datastore/supabase/`; one diagram `docs/ARCHITECTURE.md`; master spec `docs/SPEC.md` holds the Module table (all 8 migrated), cross-cutting rules 1.1 to 1.3 and the structure rules; drift test (`tests/docs-drift.test.ts`) runs in `npm run check`; habits H1 to H5 in `CLAUDE.md`. 106 tests pass.
