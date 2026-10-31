@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-31 17:53 SGT] "Another idea" button on nudge messages
+- **Item:** [2026-10-31 17:53 SGT] A button on each nudge message that swaps in a different example (v0.1's "Swap"), once per message.
+- **Why it matters:** [2026-10-31 17:53 SGT] Gives parents more choice in the moment. Left out of the MVP by the owner (D6): it adds complexity, and parents might tap it repeatedly instead of acting. Nudge messages keep only Done and Not today (rule 3.5).
+- **Priority:** [2026-10-31 17:53 SGT] Low (revisit at the trial review)
+- **Status:** [2026-10-31 17:53 SGT] Not started
+
 ## [2026-10-31 17:44 SGT] Content review of the examples approved "for now"
 - **Item:** [2026-10-31 17:44 SGT] The owner reviews the wording of the 25 drafted examples added on 31 Oct (5 each for SAF, DPR, GAT, ITE, ASD), plus the 7 from the v0.1 surprise cards, as part of a wider content design pass. Edits happen in Supabase (retire, never delete, rule 4.6) and are mirrored in the seed file.
 - **Why it matters:** [2026-10-31 17:44 SGT] The owner approved them "for now" (decision D6) so the trial has variety; they have not had a full content design review.

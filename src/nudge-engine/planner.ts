@@ -15,7 +15,8 @@
 //   2. Only inside one of today's slots (today's schedule: school or
 //      non-school day), never after the slot ends; not in a slot that was
 //      changed after it started.
-//   3. At most 1 nudge message per slot and 3 per day. Replies never count.
+//   3. At most 1 nudge message per slot and 3 per day. Replies and the
+//      Weekly Wrap Up never count (rule 3.4; the Wrap Up is in wrap-up.ts).
 //   4. Pick the most important behaviour that is due and allowed today:
 //      - not already nudged today
 //      - quick, logged on each of the last 7 days: rests if nudged yesterday
@@ -40,9 +41,11 @@ import {
 import { addDays, sgtInstant, toSgt, weekdayOf } from "../sgt.js";
 
 // A message the bot has sent to this parent. Only kind "nudge" counts toward
-// the daily cap; "reply" is anything said in answer to the parent.
+// the daily cap and the 1-per-slot limit (rule 3.4); "reply" is anything said
+// in answer to the parent; "weekly_wrap_up" is the Sunday summary (rule 3.12),
+// which has its own timing and never uses a slot.
 export type SentMessage = {
-  kind: "nudge" | "reply";
+  kind: "nudge" | "reply" | "weekly_wrap_up";
   date: string; // Singapore day it was sent
   slotStart?: number; // which slot, for nudge messages
   nudgeId?: number; // which behaviour, for nudge messages

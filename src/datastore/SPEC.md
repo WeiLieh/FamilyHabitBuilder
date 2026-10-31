@@ -11,6 +11,9 @@
 - [2026-10-31 09:59 SGT] `supabase/content/`: one-off content changes to live data, named `YYYY-MM-DD_what.sql` (rule B2).
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
 
+## Planned for the Datastore build
+- [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
+
 ## Applied migrations (rule B1)
 [2026-10-31 09:59 SGT] Migrations that have run on the real Supabase project, with a fingerprint (the first 12 characters of the SHA-256 code of the file's contents). The drift test recomputes each fingerprint on every pull request and fails if a file was edited. To change the database, add a new numbered migration instead.
 

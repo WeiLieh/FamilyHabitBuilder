@@ -121,9 +121,16 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 
 ### Minimum test count
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
-- [2026-10-31 09:40 SGT] Minimum test count: 106
+- [2026-10-31 17:53 SGT] Minimum test count: 129
+- SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 17:53 SGT] **Version 1.10 (in progress), D5 to D7 (owner, from a design chat, 31 Oct about 17:20 SGT; built test-first in PR B):**
+  - **D5:** no repair pass in the MVP (DESIGN.md "Later").
+  - **D5b:** the week **closes at midnight Sunday**; a Monday log for Sunday is saved but counts toward neither week, and the receipt says so. Rule 7.6 changed; `src/variable-rewards/week.ts` with tests.
+  - **D6:** surprise cards folded into nudge messages, a fresh unused example each time (new rule 3.13, built with the words half); **no "Another idea" button in the MVP** (backlog); examples added in PR A.
+  - **D7:** the **Weekly Wrap Up** replaces the weekly album prompt. New rule 3.12 (`src/nudge-engine/wrap-up.ts` with tests). Rule 3.4 changed: the cap and 1-per-slot limit apply to nudge messages only. New rules 3.14 (Telegram bot setup screen) and 10.2 (Telemetry: its own event; metrics 8 and 9 don't count it). Rule 7.1 changed. Owner also agreed: paused = muted (one setting); any log counts toward "logged this week"; wrap-up times = any 30-minute block from 7:00am to 9:30pm; if the scheduler is late, still sent later that Sunday, never Monday.
+  - Tests: 106 → 129 (23 new). Minimum test count raised to 129. D8 to D10 still open.
 - [2026-10-31 17:44 SGT] **Version 1.10 (in progress), D6 part 3 and 4 (owner, from a design chat):** 32 new examples approved: 7 from the v0.1 surprise cards (TWC 3, SGE 1, SQT 1, IAC 2; the "funniest thing today" card skipped because it overlaps TWC "What made you laugh today?") and 25 new drafts (5 each for SAF, DPR, GAT, ITE, ASD) approved "for now" (content review in the backlog). Added to `src/datastore/supabase/seed/examples-first-load.csv` (77 examples) and `src/datastore/supabase/content/2026-10-31_more_examples.sql` (owner runs it; expect 32 rows). All pass rule 4.5 (time-agnostic). The seed tests now check the count per nudge instead of "5 each".
 - [2026-10-31 10:17 SGT] **Restructure PR 9 (final step):** cross-cutting rules 1.1 to 1.3 now live in this spec (section "Modules and structure", "Cross-cutting rules"); the structure rules S1 to S7, R1 to R4, D1 to D3, B1, B2, P1 and P2 are written down here; habits H1 to H5 added to `CLAUDE.md`; the catch-up page now only links to rules. Every rule now lives in exactly one place.
 - [2026-10-31 10:12 SGT] **Restructure PR 8 (Telegram bot, Photo check, Web app migrated):** each gets its folder with only a `SPEC.md` (no code yet). Rules 5.1, 5.3, 5.4 → `src/telegram-bot/SPEC.md`; 6.1 → `src/photo-check/SPEC.md`; 9.1 → `src/web-app/SPEC.md` (wording unchanged; in 9.1 "you" now reads "the owner", same meaning). Module table: all 8 modules "migrated: yes".
