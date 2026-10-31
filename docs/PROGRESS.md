@@ -10,7 +10,8 @@
 - [2026-10-31 18:04 SGT] Owner: design the shape of a possible **Experiments** module in Claude Chat before the Datastore table mock-ups (own module or part of the Nudge engine; settings in code or an editable table; A/B groups in the first trial or one set of values for everyone, since 5 to 10 families is too few to compare groups; record each family's values from day one).
 - [2026-10-31 18:04 SGT] Then the Datastore build (step 2), table mock-ups first (include wrap-up time and on/off, a record of Wrap Ups sent, and whatever the Experiments design needs).
 ### Blockers
-- [2026-10-31 18:04 SGT] None. Waiting on the owner: merge #12 and run `2026-10-31_more_examples.sql` (expect 32 rows); then PR B's pull request.
+- [2026-10-31 18:12 SGT] None. PR A (#12) merged; examples script applied in Supabase (32 rows). PR B is #13, waiting for the owner's review.
+- [2026-10-31 18:04 SGT] SUPERSEDED [2026-10-31 18:12 SGT] None. Waiting on the owner: merge #12 and run `2026-10-31_more_examples.sql` (expect 32 rows); then PR B's pull request.
 
 ## [2026-10-31 17:46 SGT] HANDOFF: session 6 paused at about 50% context (read this first)
 ### Where we are

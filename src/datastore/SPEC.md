@@ -23,7 +23,8 @@
 | 002_service_role_read_only.sql | 99f8e46eec97 |
 
 ## Content scripts
-- [2026-10-31 17:45 SGT] `2026-10-31_more_examples.sql`: adds the 32 examples approved on 31 Oct (D6). **Waiting for the owner to run it** in the Supabase SQL Editor (expect 32 rows; a second run adds 0).
+- [2026-10-31 18:12 SGT] `2026-10-31_more_examples.sql`: applied by the owner on 31 Oct (32 rows). Live Supabase now has 77 examples, matching the seed file.
+- SUPERSEDED [2026-10-31 18:12 SGT] [2026-10-31 17:45 SGT] `2026-10-31_more_examples.sql`: adds the 32 examples approved on 31 Oct (D6). **Waiting for the owner to run it** in the Supabase SQL Editor (expect 32 rows; a second run adds 0).
 - [2026-10-31 17:45 SGT] `2026-10-29_unlock_all_nudges.sql`: applied (the owner confirmed on 31 Oct that all 9 nudges are unlocked; the run showed 0 rows because it had already been applied).
 - [2026-10-31 09:59 SGT] `2026-10-28_time_agnostic_examples.sql`: applied by the owner on 28 Oct (10 rows).
 - SUPERSEDED [2026-10-31 17:45 SGT] [2026-10-31 09:59 SGT] `2026-10-29_unlock_all_nudges.sql`: **waiting for the owner to run it** in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD).

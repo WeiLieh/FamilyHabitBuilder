@@ -56,7 +56,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ## 4. Questions to think about before next session
 
 [2026-10-31 18:04 SGT] "Agree" is enough where there's a suggestion.
-1. **Review and merge PR A** (#12: 32 new examples, habits H6 and H7): https://github.com/WeiLieh/FamilyHabitBuilder/pull/12. Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
+1. [2026-10-31 18:12 SGT] DONE: PR A (#12) merged and the examples script applied (32 rows). **Review and merge PR A** (#12: 32 new examples, habits H6 and H7): https://github.com/WeiLieh/FamilyHabitBuilder/pull/12. Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
 2. **Review PR B** (Weekly Wrap Up, D5 to D10), on branch `claude/festive-einstein-nf623s-pr-b`; Claude opens its pull request once #12 is merged.
 3. **Experiments module (design in Claude Chat, before the Datastore mock-ups):** its own module or part of the Nudge engine? Settings in code or an editable table? A/B groups in the first trial, or one set of values for everyone (5 to 10 families is too few to compare groups)? Record each family's values from day one?
 4. **Still undecided from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
