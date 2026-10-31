@@ -2,22 +2,24 @@
 
 [2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](../src/experiments/SPEC.md). The paragraph below is history (SUPERSEDED [2026-10-31 19:06 SGT]).
 
-The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
+SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
 
 ## How experiments work
 - [2026-10-24 18:26 SGT] Each experiment tests one thing (for example, a nudge wording, a reward or the surprise rate) by giving different **variants** to different parents.
-- [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
+- SUPERSEDED [2026-10-31 19:09 SGT] (now rule 11.6 in src/experiments/SPEC.md) [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
+- [2026-10-31 19:09 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`.
 - [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
+- [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
 - [2026-10-31 19:06 SGT] Trial length (D9, rule 10.3): 5 full weeks per parent from their first full Monday; the week-one friends group, about 12 parents.
 - SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-31 18:00 SGT] Trial length (D9, rule 10.3): 5 full weeks per family from its first full Monday; 5 to 10 friends' families.
 - [2026-10-31 17:53 SGT] Weekly Wrap Up (rule 3.12): Sunday, default 8:00pm, on by default; the parent can change the time (any 30-minute block, 7:00am to 9:30pm) or turn it off. Not a nudge message: no slot, not counted toward the 3-a-day cap. In `src/settings.ts` (`WEEKLY_WRAP_UP_WEEKDAY`, `DEFAULT_WEEKLY_WRAP_UP`). Possible future experiment: another day or default time.
 - [2026-10-28 22:23 SGT] Nudge slots: 30-minute blocks from 7:00am to 9:30pm (last start), up to 3 per schedule, at least 1 hour apart, at least 1 in total. Defaults: school days 7:00am, 7:00pm, 9:00pm; non-school days 9:00am, 12:30pm, 7:00pm.
 - [2026-10-28 22:23 SGT] Deliberate behaviours are nudged on Friday (planning) and Sunday (only if still due). Possible future experiment: other patterns (e.g. a midweek nudge).
 - [2026-10-28 22:23 SGT] A quick behaviour logged on each of the last 7 days is nudged only if it was not nudged yesterday.
-- [2026-10-31 18:59 SGT] The code's copy of these values is `src/settings.ts` (moved from `shared/` on 31 Oct). Change both together; a test checks the choice limits.
+- SUPERSEDED [2026-10-31 19:09 SGT] (rule 1.4: the code holds the values, this file describes them) [2026-10-31 18:59 SGT] The code's copy of these values is `src/settings.ts` (moved from `shared/` on 31 Oct). Change both together; a test checks the choice limits.
 - SUPERSEDED [2026-10-31 18:59 SGT] [2026-10-25 06:25 SGT] The code's copy of these values is `shared/settings.ts`. Change both together; a test checks the choice limits.
 These apply to everyone who is not in an experiment that changes them.
 - [2026-10-24 22:18 SGT] Choice limits: up to 2 quick and up to 1 deliberate behaviour at a time; at least 1 in total. Choosing more is an unlock (rule WIP).
@@ -31,6 +33,7 @@ These apply to everyone who is not in an experiment that changes them.
 ## Experiment variables (parked)
 - [2026-10-29 22:37 SGT] Added: steady-week bars (every day 6 of 7; every 2 days 3; deliberate as chosen), rule 7.6.
 [2026-10-31 18:59 SGT] Correction: the code's values are now in `src/settings.ts` (was `shared/settings.ts`).
+[2026-10-31 19:09 SGT] The experiment module has now been designed: [src/experiments/SPEC.md](../src/experiments/SPEC.md).
 
 [2026-10-29 20:58 SGT] Everything in the app that an experiment could change, so we remember them when we design the experiment module. Nothing here is decided; current values are in "Starting values" above and `shared/settings.ts`.
 
@@ -74,6 +77,7 @@ These apply to everyone who is not in an experiment that changes them.
 - How the bot thanks the parent after a log
 
 **Experiment mechanics: open questions (parked, Batch 3 questions 3 to 5)**
+- [2026-10-31 19:09 SGT] ANSWERED on 31 Oct (Experiments module): settings in code, recorded per parent in the Datastore (rules 1.4, 11.1); week one is `baseline` only, a random split starts when the owner decides, and a parent's variant never changes (rules 11.3, 11.6); the first experiment is chosen before alpha (backlog). The three questions below are kept as history.
 - Where experiment settings live: a code file changed by pull request, or a Supabase table the owner edits
 - When parents are assigned to a group (when an experiment starts? at sign-up?) and whether they stay in it
 - How many groups per experiment, and the first experiment to run (suggested: none at launch, start after 2 weeks of data)

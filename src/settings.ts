@@ -46,7 +46,8 @@ export const MIN_SLOT_GAP_MINUTES = 60;
 // Most slots per schedule (school days, non-school days).
 export const MAX_SLOTS_PER_SCHEDULE = 3;
 
-// Most nudge messages per parent per Singapore day (docs/EXPERIMENTS.md: 3).
+// Most nudge messages per parent per Singapore day: 3. A guardrail ceiling:
+// an experiment may lower it, never raise it (rule 11.4).
 // Replies never count. Kept as a safety net even though slots also limit it.
 export const MAX_NUDGES_PER_DAY = 3;
 

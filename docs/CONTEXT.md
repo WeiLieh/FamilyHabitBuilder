@@ -51,7 +51,7 @@
   - SUPERSEDED [2026-10-25 06:59 SGT] Supabase `nudges` table columns (planned, used by the tests): `id`, `name`, `category`, `example_1` to `example_5`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`.
 - [2026-10-24 21:34 SGT] **Official module names** (from the owner's diagram, `docs/architecture-diagram.png`). Use only these names in code, docs and conversation:
   1. **Telegram bot**: chat with the parent. Talks to the Nudge engine, sends photos to the Photo check, writes to the Datastore.
-  2. **Nudge engine**: the brain plus experiments. Reads from the Nudge repository, reads and writes the Datastore, triggers Variable rewards.
+  2. SUPERSEDED [2026-10-31 19:09 SGT] (experiments are now their own module, item 9 below) **Nudge engine**: the brain plus experiments. Reads from the Nudge repository, reads and writes the Datastore, triggers Variable rewards.
   3. **Nudge repository**: the 9 actions as data rows.
   4. **Photo check**: the AI vision model. Writes results to the Datastore.
   5. **Variable rewards**: the 5 reward types.
@@ -59,7 +59,7 @@
   7. **Web app**: login, history, XP. Reads from the Datastore.
   8. **Telemetry**: listens to events from all modules.
   - [2026-10-31 19:06 SGT] 9. **Experiments**: which settings and variant each parent has, recorded from day one; owner-run experiments before alpha. Added by the owner on 31 Oct; the Nudge engine is no longer "brain plus experiments" but the brain only. The current list is the Module table in `docs/SPEC.md`.
-- [2026-10-24 21:34 SGT] The Nudge engine has two halves: **decisions** (who to nudge, when, about what; guardrails, cap, moments, priority, surprise yes/no, experiment groups) and **words** (AI-written nudge text, waiting on WIP decisions).
+- [2026-10-24 21:34 SGT] The Nudge engine has two halves: **decisions** (who to nudge, when, about what; guardrails, cap, moments, priority, surprise yes/no, experiment groups [2026-10-31 19:09 SGT: experiment groups moved to the Experiments module]) and **words** (AI-written nudge text, waiting on WIP decisions).
 - [2026-10-24 21:19 SGT] Folder layout (same pattern as SG Weather):
   - `api/`: Vercel functions, one file per web address. Kept thin. Helpers go in `api/_...` folders (Vercel does not expose folders starting with `_`).
   - `shared/`: the brain and other logic, with no direct web calls, so it can be tested on its own.

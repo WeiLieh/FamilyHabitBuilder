@@ -7,7 +7,7 @@
 // Datastore) or refuses them with every reason, in plain words the Telegram
 // bot can show the parent.
 //
-// Guardrails (spec v1.1 to v1.4, starting values in docs/EXPERIMENTS.md):
+// Guardrails (spec v1.1 to v1.4; the values live in src/settings.ts, rule 1.4):
 //   - up to 2 quick and up to 1 deliberate behaviour, at least 1 in total
 //   - quick: every day or every 2 days
 //   - deliberate: 1 or 2 times a week, and 2 times a week in total at most
