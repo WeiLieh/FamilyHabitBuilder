@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-31 10:22 SGT]** (session 5 paused). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-31 17:46 SGT]** (session 6 paused at about 50% context). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -55,19 +55,22 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-10-31 10:22 SGT] "Agree" is enough where there's a suggestion.
-1. **Merge the Step 2 pull request** (two read-only review agents): https://github.com/WeiLieh/FamilyHabitBuilder/pull/11
-2. **Which review findings go into known issues?** Suggested, both new: (a) every future Supabase table must repeat migration 002's lock-down steps, or it starts with broad default access; (b) no real families send photos until photo consent and "delete my data" are built.
-3. **Run the unlock script** in Supabase: `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` (expect 3 rows).
-4. **Rewards decisions D5 to D10:** see section 1 of [src/variable-rewards/DESIGN.md](../src/variable-rewards/DESIGN.md) (repair pass, surprise ideas, weekly album prompt, album photos, trial length, snapshot timing).
+[2026-10-31 17:46 SGT] "Agree" is enough where there's a suggestion. (Last session's items are done: PR #11 merged, both known issues logged, unlock script confirmed.)
+1. **Review and merge PR A** (32 new examples, habits H6 and H7). Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
+2. **Two low review notes, log as known issues or not?** (a) The database doesn't block the same example text twice for one nudge (only the script checks). (b) The time-word test doesn't treat "today" as a time word; 3 examples use it ("What made you laugh today?"). Suggestion: log (a), leave (b) as is.
+3. **D8, D9, D10** (we decide these together after PR B): see section 1 of [src/variable-rewards/DESIGN.md](../src/variable-rewards/DESIGN.md).
+   - D8: album photos, only from logs, or any photo sent in reply to the Weekly Wrap Up?
+   - D9: trial length (suggestion: 5 weeks, 5 to 10 families).
+   - D10: weekly snapshot = the Weekly Wrap Up (confirm what it shows); monthly snapshot: a similar message on the 1st? What if the 1st is a Sunday? Does it count toward the 3-a-day cap?
 
-**After that:** the Datastore build (development order step 2), starting with table mock-ups for your agreement.
+**Next in code:** PR B, the Weekly Wrap Up and decisions D5 to D7 (plan and tests already agreed; see the HANDOFF in [docs/PROGRESS.md](PROGRESS.md)). Then the Datastore build (step 2), table mock-ups first.
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- Run the unlock script (section 4)
-- Rewards decisions D5 to D10 (section 4)
+- [2026-10-31 16:47 SGT] DONE: Run the unlock script (section 4)
+- [2026-10-31 17:46 SGT] Rewards decisions D8 to D10 (section 4); D5 to D7 answered on 31 Oct.
+- SUPERSEDED [2026-10-31 17:46 SGT] Rewards decisions D5 to D10 (section 4)
 - Nudge personality ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
 - Badge graphics and the look of every screen (Web app, setup)
 - **Before launch:** upload MOE school holiday and Singapore public holiday dates

@@ -1,5 +1,50 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 17:46 SGT] HANDOFF: session 6 paused at about 50% context (read this first)
+### Where we are
+- [2026-10-31 17:46 SGT] **PR A (32 new examples, D6) is open for the owner's review** (link in the session 6 chat; branch `claude/festive-einstein-nf623s`). Seed file now 77 examples; content script `src/datastore/supabase/content/2026-10-31_more_examples.sql` (owner runs it in Supabase after merging; expect 32 rows). Tests updated first; 106 app tests and all database tests pass. Both review agents ran (no high or medium findings).
+- [2026-10-31 17:46 SGT] Also in PR A: habits H6 and H7 in `CLAUDE.md`, two new known issues, unlock script confirmed applied.
+- [2026-10-31 17:46 SGT] **Next: build PR B** (Weekly Wrap Up and decisions D5 to D7). The plan and tests below were **agreed by the owner** (including Claude's 4 suggestions). Do not ask again; show the tests briefly, then build test-first.
+### PR B: agreed plan
+- [2026-10-31 17:46 SGT] **Decisions (owner, from a design chat, 31 Oct about 17:20 SGT):**
+  - **D5:** no repair pass in the MVP (Later list, revisit if parents ask).
+  - **D5b:** the week **closes at midnight Sunday** (SGT). A Monday log for Sunday (allowed by rule 5.4) is saved (history and album) but counts toward neither week; the receipt says so honestly, e.g. "Saved for Sunday. Last week has closed, so it's in your album but not in last week's count."
+  - **D6:** (1) fold surprise cards into nudge messages: each nudge message carries one example not yet used for that parent; repeats only after all are used. (2) **No "Another idea" button in the MVP** (backlog; owner: complexity, and parents might tap it instead of acting). Remove it from DESIGN.md features 2 and 4 (and sections 0 and 8); nudge messages keep only Done and Not today (rule 3.5, no change needed). (3) and (4): done in PR A.
+  - **D7: the Weekly Wrap Up** (replaces the "weekly album prompt"): a new kind of message, separate from nudge messages. Sunday only; the parent can change only the time (default **8:00pm**; choices: any 30-minute block 7:00am to 9:30pm, like slots). Does not use a slot (sent even with no Sunday slots). Not counted toward the 3-a-day cap or the 1-per-slot limit. Sent only if the parent logged at least once that week (**any log counts, including unchosen behaviours**). At most once a week. Can be turned off (visible on the setup screen). Not sent when **paused (= muted, one setting)**. "Not today" does not block it. If the scheduler is late, it is still sent later that Sunday, never on Monday. Says "this week so far" (week closes at midnight); the final result shows in the Web app. Content: weekly snapshot plus album prompt in one message (D10 to confirm).
+- [2026-10-31 17:46 SGT] **Files and rule IDs:**
+  - Nudge engine: **3.4** changed (define "nudge message" vs "Weekly Wrap Up"; cap and 1-per-slot apply to nudge messages only; SUPERSEDED line for the old text). **3.12** new: Weekly Wrap Up, code `src/nudge-engine/wrap-up.ts`, tests `tests/nudge-engine-wrap-up.test.ts`. **3.13** new: example rotation (D6.1), "Not yet tested", built with the words half (owner agreed). Planner: `SentMessage.kind` gains "weekly_wrap_up"; add a planner test that it does not count.
+  - Telegram bot spec: **3.14** new: setup screen shows "Weekly Wrap Up: Sunday at [time] [change] [turn off]". Not yet tested.
+  - Variable rewards: **7.1** changed (Weekly Wrap Up replaces the album prompt). **7.6** changed: week judged at midnight Sunday; late Sunday log saved, not counted, receipt says so. Code `src/variable-rewards/week.ts`, tests `tests/variable-rewards-week.test.ts`.
+  - Telemetry: **10.2** new: "Weekly Wrap Up sent" is its own event; metrics 8 and 9 never count it as a nudge. Not yet tested.
+  - Datastore spec: note two new per-parent values (wrap-up time, on or off) for the table mock-ups (no rule).
+  - `src/settings.ts` and `docs/EXPERIMENTS.md`: default wrap-up time 8:00pm, day Sunday.
+  - `src/variable-rewards/DESIGN.md`: D5, D5b, D6, D7 marked ANSWERED with dates (keep old text); feature 1 fixed (Claude writes replies, rule 7.5, not a library); features 2, 4 (no "Another idea"); feature 6 (Weekly Wrap Up); section 0 table row "[Swap]" and section 8 table ("Another idea" rates); section 9 guardrail to "nudges only in the parent's slots, plus one Weekly Wrap Up at a time the parent can see and change"; section 10 Later list (repair pass already there: add a dated status).
+  - `docs/PRODUCT-BACKLOG.md`: "Another idea" button. `docs/SPEC.md`: Version 1.10 change notes; raise the minimum test count. `docs/CATCH-UP.md`, `docs/LEARNING-LOG.md` if a new concept.
+- [2026-10-31 17:46 SGT] **Agreed tests (plain English):**
+  - Weekly Wrap Up (3.12): (1) sent Sunday 8:00pm by default with no Sunday slots, if logged this week; (2) not before the time, never Monday to Saturday; late scheduler still sends later Sunday, never Monday; (3) a changed time (e.g. 6:30pm) is used; (4) not counted: after it, all 3 nudge messages still possible that Sunday, slots unaffected (planner test); (5) not sent with no log this week; last Sunday's log doesn't count; an unchosen-behaviour log does count; (6) not sent when paused; (7) still sent after "Not today"; (8) never twice in a week, even after a time change; (9) not sent when turned off.
+  - Week close (7.6): (1) Sunday 11:59pm log for Sunday counts; (2) Monday 12:01am log for Sunday saved, counts toward neither week, flagged for the receipt; (3) Sunday log for Saturday counts; (4) Wednesday log for Tuesday counts.
+### Then, with the owner
+- [2026-10-31 17:46 SGT] Decide **D8** (album photos: only from logs, or any photo in the Weekly Wrap Up), **D9** (trial length; suggestion 5 weeks, 5 to 10 families), **D10** (snapshot timing: weekly = the Weekly Wrap Up, confirm contents; monthly: a Wrap Up style message on the 1st? what if the 1st is a Sunday? cap?). Suggestions are in `src/variable-rewards/DESIGN.md` section 1.
+- [2026-10-31 17:46 SGT] After that: the Datastore build (step 2), table mock-ups first (include the two wrap-up values).
+### Waiting on the owner
+- [2026-10-31 17:46 SGT] Review and merge PR A; then run `2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
+- [2026-10-31 17:46 SGT] Low review notes (not yet logged; owner decides): (a) the examples table has no database rule against the same text twice for one nudge (only the script checks); (b) the time-word test does not include "today" (3 examples use it; probably fine, owner to decide).
+
+## [2026-10-31 14:47 SGT] Session 6
+### Done
+- [2026-10-31 14:47 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up recap done.
+- [2026-10-31 14:47 SGT] Owner approved and merged PR #11 (two review agents). Step 2 complete. Branch restarted from `main`.
+- [2026-10-31 15:07 SGT] Housekeeping: new habits H6 (context handoff at about 50%, owner types `/clear`) and H7 (end of every code session: send `CLAUDE.md`, `docs/CATCH-UP.md`, `docs/SPEC.md` for Claude Chat) added to `CLAUDE.md`; decision in `docs/CONTEXT.md`. Review agents stay per pull request (H3).
+- [2026-10-31 14:47 SGT] Owner agreed both review findings go into `docs/KNOWN-ISSUES.md` (new-table lock-down; no real photos before consent and "delete my data"). Added.
+### In progress
+- [2026-10-31 17:46 SGT] PR B (Weekly Wrap Up, D5 to D7): plan and tests agreed, not started (see HANDOFF above).
+- [2026-10-31 14:47 SGT] None. SUPERSEDED [2026-10-31 17:46 SGT]
+### Next steps
+- [2026-10-31 14:47 SGT] The Datastore build (development order step 2), starting with table mock-ups for the owner's agreement.
+### Blockers
+- [2026-10-31 16:47 SGT] None blocking. Waiting on the owner (not blocking): rewards decisions D5 to D10 (parked). The unlock script is done.
+- [2026-10-31 14:47 SGT] SUPERSEDED [2026-10-31 16:47 SGT] None blocking. Waiting on the owner (not blocking): run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in Supabase ("later"); rewards decisions D5 to D10 parked by the owner.
+
 ## [2026-10-31 10:22 SGT] HANDOFF: session 5 paused (read this first)
 ### Where we are
 - [2026-10-31 10:22 SGT] **Restructure Step 1 complete** (PRs 0 to 9 merged into `main`, GitHub PRs #1 to #10): `shared/` renamed `src/`; every module has `src/<slug>/SPEC.md` next to its code; `supabase/` moved to `src/datastore/supabase/`; one diagram `docs/ARCHITECTURE.md`; master spec `docs/SPEC.md` holds the Module table (all 8 migrated), cross-cutting rules 1.1 to 1.3 and the structure rules; drift test (`tests/docs-drift.test.ts`) runs in `npm run check`; habits H1 to H5 in `CLAUDE.md`. 106 tests pass.

@@ -4,7 +4,7 @@
 // src/datastore/supabase/seed/nudges-first-load.csv and examples-first-load.csv were made
 // from docs/archive/Nudge_Repository.xlsx. The owner imports them into Supabase once
 // (nudges first, then examples). The database has its own rules (tested by
-// src/datastore/src/datastore/supabase/tests/); this test checks the APP's rules accept the same data, so
+// src/datastore/supabase/tests/); this test checks the APP's rules accept the same data, so
 // the two sets of rules agree.
 // =============================================================================
 
@@ -57,8 +57,12 @@ describe("First-load CSVs for the Supabase nudges and examples tables", () => {
     ]);
   });
 
-  it("has the owner's 5 examples for every nudge (45 in total)", () => {
-    expect(result.nudges.every((n) => n.examples.length === 5)).toBe(true);
+  // [2026-10-31 17:43 SGT] Was "5 for every nudge (45 in total)". The owner
+  // approved 32 more examples on 31 Oct (D6: 7 from the v0.1 surprise cards,
+  // 25 new drafts), so each nudge now has its own count.
+  it("has the owner's 45 first examples plus the 32 added on 31 Oct (77 in total), counted per nudge", () => {
+    const counts = Object.fromEntries(result.nudges.map((n) => [n.code, n.examples.length]));
+    expect(counts).toEqual({ TWC: 8, SAF: 10, DPR: 10, GAT: 10, SQT: 6, IAC: 7, SGE: 6, ITE: 10, ASD: 10 });
   });
 
   it("has examples with no time of day baked in, so Claude can fit them to any nudge slot (spec v1.7)", () => {

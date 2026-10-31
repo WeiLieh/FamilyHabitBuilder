@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-10-31 17:46 SGT] Session 6 (2026-10-31 afternoon)
+- [2026-10-31 17:46 SGT] **Paused at about 50% context (habit H6).** About 3 h elapsed (14:41 to about 17:50 SGT), about 1 h 30 min active (idle 15:10 to 16:45 while the owner was away). Start-of-session routine, PR #11 merged, known issues, habits H6 and H7, unlock script confirmed, D5 to D7 handoff from a design chat, PR A (32 examples) built and reviewed.
+- **Notes for timeboxing:** checking a content script against a copy of the live data caught a row-order problem the tests would not have; worth the 5 minutes.
+- **Started:** 14:41 SGT
+
 ## [2026-10-31 09:29 SGT] Session 5 (2026-10-31 morning)
 - [2026-10-31 10:22 SGT] **Paused by the owner.** About 1 h 45 min (08:42 to about 10:25 SGT), all active. Owner's restructure task: plan (Phase A), then 10 pull requests merged in about 55 minutes (PR 0 to PR 9) plus Step 2 opened. Timeboxing note: small pull requests with a test-first ratchet kept each one to about 5 minutes; the owner merged each within minutes.
 - **Started:** 08:42 SGT
