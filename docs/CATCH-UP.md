@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-31 17:46 SGT]** (session 6, Experiments module on paper). [2026-10-31 19:06 SGT] Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-31 21:32 SGT]** (session 6 ended). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -56,13 +56,11 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-10-31 19:06 SGT] "Agree" is enough where there's a suggestion.
-1. **Review and merge the Experiments pull request** (the module on paper: rules 11.1 to 11.12, 1.4 and 1.5, diagram, Module table, `EXPERIMENTS.md` moved next to the module). [2026-10-31 21:29 SGT]
-2. **Delete the `claude/festive-einstein-nf623s-pr-b` branch on GitHub** (the "Delete branch" button on PR #13). Claude Code can't delete branches from its session.
-3. **Still open from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
-4. **Experiments, next round in Claude Chat (not blocking):** the first alpha experiment (suggestion: message style).
-
-**Next in code:** the Datastore table mock-ups (step 2), in plain English, for your agreement.
+[2026-10-31 21:32 SGT] "Agree" is enough where there's a suggestion. (Done in session 6: PRs #11 to #14 merged, examples applied, the `-pr-b` branch deleted.)
+1. **Datastore table mock-ups (next in code):** anything you want in or out before I draft them? The planned list is in [src/datastore/SPEC.md](../src/datastore/SPEC.md), "Planned for the Datastore build".
+2. **PR A review leftovers:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
+3. **Test title wording:** may I reword the title of the choice-limits test (`tests/nudge-engine-choices.test.ts`), which still mentions the old `docs/EXPERIMENTS.md`, in a small pull request? It checks the same numbers. (Suggested: yes.)
+4. **Claude Chat, not blocking:** the first alpha experiment (suggestion: message style).
 
 ---
 
