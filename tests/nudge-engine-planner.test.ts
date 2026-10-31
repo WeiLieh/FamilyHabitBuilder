@@ -86,6 +86,20 @@ describe("When a nudge message is sent (tests 8 to 15)", () => {
     expect(result).toEqual({ send: true, nudgeId: 2, slotStart: 1140 }); // A was nudged this morning
   });
 
+  // Rule 3.4 (changed 31 Oct) and rule 3.12: the Weekly Wrap Up is not a nudge message.
+  it("never counts the Weekly Wrap Up toward the 3 a day or the 1 per slot", () => {
+    // Sunday 8 Nov (non-school slots 9:00am, 12:30pm, 7:00pm). Two nudge messages
+    // already, and the parent's Wrap Up (set to 7:00pm) went out at 7:00pm,
+    // inside the 7:00pm slot. The third nudge message can still go in that slot.
+    const sunday = [
+      sent("2026-11-08", 540, 1),
+      sent("2026-11-08", 750, 2),
+      { kind: "weekly_wrap_up" as const, date: "2026-11-08" },
+    ];
+    const result = planNudge(input({ now: at("2026-11-08", "19:05"), messagesSent: sunday }));
+    expect(result).toEqual({ send: true, nudgeId: 5, slotStart: 1140 }); // deliberate C, still due on Sunday
+  });
+
   // Test 11
   it("sends nothing more that day after 'Not today', and starts again the next day", () => {
     expect(planNudge(input({ notTodayDate: "2026-11-04" }))).toEqual({ send: false, reason: "not_today" });

@@ -63,3 +63,13 @@ export const STREAK_DAYS_FOR_FEWER_NUDGES = 7;
 // answer 28): Friday = planning for the weekend, Sunday = "still time today".
 // 0 = Sunday, 5 = Friday.
 export const DELIBERATE_NUDGE_WEEKDAYS = [5, 0];
+
+// ---- Weekly Wrap Up (rule 3.12, decision D7, 31 Oct) ------------------------
+// Once a week, on Sunday, a summary of "this week so far" plus an invitation to
+// save a moment for the album. It is NOT a nudge message: it doesn't use a slot
+// and doesn't count toward the 3-a-day cap. The day is fixed; the parent can
+// change only the time (any slot start, 7:00am to 9:30pm) or turn it off.
+// Day of the week it is sent: 0 = Sunday.
+export const WEEKLY_WRAP_UP_WEEKDAY = 0;
+// Every new parent starts with it on, at 8:00pm (20 x 60 = 1200 minutes).
+export const DEFAULT_WEEKLY_WRAP_UP = { enabled: true, minutes: 20 * 60 };

@@ -151,6 +151,8 @@
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
 ## Glossary (terms and acronyms)
+- [2026-10-31 17:53 SGT] **Weekly Wrap Up:** the once-a-week Sunday message (rule 3.12) with "this week so far" and an invitation to save a moment for the album. A different kind of message from a nudge message: no slot, not counted toward the 3-a-day cap.
+- [2026-10-31 17:53 SGT] **Week closes:** a week (Monday to Sunday) is judged at midnight on Sunday, Singapore time (rule 7.6). A log made after that for Sunday is saved but no longer counts.
 - [2026-10-24 22:09 SGT] **Nudge:** one of the 9 rows in the Nudge repository (for example "Descriptive praise"). Replaces the older word "action" for the rows.
 - [2026-10-24 22:09 SGT] **Example:** one of the 5 ideas listed under a nudge.
 - [2026-10-24 22:09 SGT] **Nudge message:** the actual message the bot sends a parent.

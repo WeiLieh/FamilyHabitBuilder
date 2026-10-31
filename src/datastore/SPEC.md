@@ -11,6 +11,9 @@
 - [2026-10-31 09:59 SGT] `supabase/content/`: one-off content changes to live data, named `YYYY-MM-DD_what.sql` (rule B2).
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
 
+## Planned for the Datastore build
+- [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
+
 ## Applied migrations (rule B1)
 [2026-10-31 09:59 SGT] Migrations that have run on the real Supabase project, with a fingerprint (the first 12 characters of the SHA-256 code of the file's contents). The drift test recomputes each fingerprint on every pull request and fails if a file was edited. To change the database, add a new numbered migration instead.
 
@@ -20,7 +23,8 @@
 | 002_service_role_read_only.sql | 99f8e46eec97 |
 
 ## Content scripts
-- [2026-10-31 17:45 SGT] `2026-10-31_more_examples.sql`: adds the 32 examples approved on 31 Oct (D6). **Waiting for the owner to run it** in the Supabase SQL Editor (expect 32 rows; a second run adds 0).
+- [2026-10-31 18:12 SGT] `2026-10-31_more_examples.sql`: applied by the owner on 31 Oct (32 rows). Live Supabase now has 77 examples, matching the seed file.
+- SUPERSEDED [2026-10-31 18:12 SGT] [2026-10-31 17:45 SGT] `2026-10-31_more_examples.sql`: adds the 32 examples approved on 31 Oct (D6). **Waiting for the owner to run it** in the Supabase SQL Editor (expect 32 rows; a second run adds 0).
 - [2026-10-31 17:45 SGT] `2026-10-29_unlock_all_nudges.sql`: applied (the owner confirmed on 31 Oct that all 9 nudges are unlocked; the run showed 0 rows because it had already been applied).
 - [2026-10-31 09:59 SGT] `2026-10-28_time_agnostic_examples.sql`: applied by the owner on 28 Oct (10 rows).
 - SUPERSEDED [2026-10-31 17:45 SGT] [2026-10-31 09:59 SGT] `2026-10-29_unlock_all_nudges.sql`: **waiting for the owner to run it** in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD).
