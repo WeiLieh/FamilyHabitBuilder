@@ -135,16 +135,23 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 2. Tell me in a few lines what you understand the current state to be, so I can correct you early.
 3. [2026-10-28 22:39 SGT] **Recap before building:** first show me `docs/CATCH-UP.md` (link it), remind me to read it, and invite my questions about it. Then ask for my answers to its section 4 questions. Only start building after the recap is done.
    - SUPERSEDED [2026-10-28 22:39 SGT]: [2026-10-28 22:37 SGT] Show me `docs/CATCH-UP.md` (link it) and ask for my answers to its section 4 questions before starting new work.
+4. [2026-10-31 10:17 SGT] **H1, drift check first:** run `npx vitest run tests/docs-drift.test.ts` and report any failures or DRIFT WARNINGs. Fix drift before building anything new.
 
 #### During work
+- [2026-10-31 10:17 SGT] **Where things live:** each module's rules are in its own spec next to its code, `src/<slug>/SPEC.md`; cross-cutting rules, the Module table and the structure rules (S, R, D, B, P) are in [docs/SPEC.md](docs/SPEC.md), "Modules and structure"; the one diagram is [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The drift test (`npm run check`) enforces them.
+- [2026-10-31 10:17 SGT] **H3, before each pull request:** run both review agents (privacy and security; spec compliance) and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. (Until the agents exist, say so.)
+- [2026-10-31 10:17 SGT] **H4, one module per pull request** where possible; each pull request lists the rule IDs it adds or changes, and the test count before and after (it must never drop below the minimum in `docs/SPEC.md`).
+- [2026-10-31 10:17 SGT] **H5, never weaken the drift test** to make it pass. Changing what it checks needs my approval, like any other test.
 - Before debugging an error, check `docs/ERROR-LOG.md` to see if we have solved it before.
 - If you discover a problem you are not fixing now, add it to `docs/KNOWN-ISSUES.md`.
 - If you or I think of future work, add it to `docs/PRODUCT-BACKLOG.md` instead of doing it now (no scope creep).
 
 #### End of every task or session
 Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md`, `ERROR-LOG.md`, `KNOWN-ISSUES.md`, `PRODUCT-BACKLOG.md`. If a new concept, technique or decision came up that I had not met before, add it to `docs/LEARNING-LOG.md`. Tell me which files you updated.
-- [2026-10-28 22:49 SGT] Rules in `docs/CATCH-UP.md` carry stable **rule IDs** (section.number, e.g. 3.4). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID moves to "Retired rule IDs". Refer to rules by ID in conversation and in `docs/SPEC.md` change notes.
-- [2026-10-28 22:37 SGT] Also rewrite `docs/CATCH-UP.md`: update the module map and file table, the rules recap (current rules only, no abbreviations in the diagram), and the questions for the next session.
+- [2026-10-31 10:17 SGT] Rules carry stable **rule IDs** (e.g. 3.4) and live in exactly one spec (module rules in `src/<slug>/SPEC.md`, cross-cutting ones in `docs/SPEC.md`). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID goes to "Retired rule IDs" in `docs/SPEC.md`. Refer to rules by ID.
+- [2026-10-28 22:49 SGT] Rules in `docs/CATCH-UP.md` carry stable **rule IDs** (section.number, e.g. 3.4). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID moves to "Retired rule IDs". Refer to rules by ID in conversation and in `docs/SPEC.md` change notes. SUPERSEDED [2026-10-31 10:17 SGT]: rules now live in the specs, see the line above.
+- [2026-10-31 10:17 SGT] **H2, end of session:** update the module spec(s) you touched, the Module table and the diagram status, and `docs/CATCH-UP.md` (its links, the questions for next session and what's waiting on me). Run the drift check; it must pass before the final commit.
+- [2026-10-28 22:37 SGT] Also rewrite `docs/CATCH-UP.md`: update the module map and file table, the rules recap (current rules only, no abbreviations in the diagram), and the questions for the next session. SUPERSEDED [2026-10-31 10:17 SGT]: the catch-up page now links to the specs instead of copying them; see H2 above.
 - [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
 #### Date/time rule (applies to ALL project files)

@@ -60,6 +60,34 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Module specs: [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md), [Variable rewards](../src/variable-rewards/SPEC.md) (with its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)), [Telemetry](../src/telemetry/SPEC.md), [Telegram bot](../src/telegram-bot/SPEC.md), [Photo check](../src/photo-check/SPEC.md), [Web app](../src/web-app/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
 - History lives in `docs/archive/` (exempt from the checks).
 
+### Cross-cutting rules
+[2026-10-31 10:17 SGT] Rules that belong to no single module (rule IDs are permanent; module rules live in each module's `SPEC.md`).
+- **1.1** Parents of children aged 7 to 12; each parent is a separate user. **Invite-only.** English only. Channel: Telegram. *(decided 24 Oct)* Not yet tested (invite-only sign-up is not built).
+- **1.2** All times and days are **Singapore time**, midnight to midnight. A week is **Monday to Sunday**. *(decided 24 Oct, 28 Oct)* Tested by: tests/nudge-engine-schedule.test.ts, tests/nudge-engine-due.test.ts, tests/nudge-engine-planner.test.ts (Singapore days, Monday-to-Sunday weeks).
+- **1.3** **No fallbacks:** a failure is shown as a failure, never filled with made-up values. Exception: if the photo check fails, the parent self-reports. *(decided 24 Oct)* Tested by: tests/nudge-repository.test.ts (broken rows are reported, never patched). Not yet tested elsewhere (nothing else that calls outside services is built).
+
+### Structure rules (checked by the drift test)
+[2026-10-31 10:17 SGT] Agreed on 31 Oct (restructure plan). Enforced by `tests/docs-drift.test.ts` on every pull request unless marked otherwise. "Per module" rules apply only to modules marked "migrated: yes" (the ratchet).
+- **S1** Every module lives in `src/<slug>/`, with its `SPEC.md` next to its code (per module).
+- **S2** A new module needs, in one pull request: a Module table row, a diagram box, its folder and its `SPEC.md`. Only the owner approves a new module or name (approval is a habit, not a test).
+- **S3** `api/` holds only thin web-address files named after a module, or cross-cutting files.
+- **S4** Files directly in `src/` must be on the cross-cutting list; folders in `src/` must be module slugs.
+- **S5** Test files of a module are named `<slug>…`; helpers `helpers/<slug>-…` (per module).
+- **S6** All SQL lives in `src/datastore/`.
+- **S7** A module may use another module's code only if the diagram has an arrow between them.
+- **R1** Each rule is written once, in one spec; other documents link to it.
+- **R2** Rule IDs are unique and never reused; dropped IDs go to "Retired rule IDs".
+- **R3** Every rule in a module spec says "Tested by: …" or "Not yet tested" (per module).
+- **R4** Warning only: a module's code changed after its `SPEC.md`.
+- **D1** Every `.md` file is reachable by links from `CLAUDE.md` or this spec; history goes only to `docs/archive/`.
+- **D2** One architecture diagram, `docs/ARCHITECTURE.md`; each box's status matches the Module table.
+- **D3** Only official module names; retired names fail.
+- **B1** An applied migration is never edited (fingerprints in `src/datastore/SPEC.md`).
+- **B2** Content scripts live in `src/datastore/supabase/content/`, named `YYYY-MM-DD_what.sql`.
+- **P1** The number of tests never drops below the minimum below.
+- **P2** `.env.example` holds names only, never values.
+- Habits H1 to H5 (what Claude does at the start and end of each session and before each pull request) are in [CLAUDE.md](../CLAUDE.md).
+
 ### Module table
 [2026-10-31 09:40 SGT] Official names (from the owner's diagram), slugs, folders and status. "Migrated" is the ratchet: per-module checks (S1, S5, R3) apply only to rows marked yes; each restructure pull request flips one row. Status must match the diagram.
 
@@ -96,6 +124,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 10:17 SGT] **Restructure PR 9 (final step):** cross-cutting rules 1.1 to 1.3 now live in this spec (section "Modules and structure", "Cross-cutting rules"); the structure rules S1 to S7, R1 to R4, D1 to D3, B1, B2, P1 and P2 are written down here; habits H1 to H5 added to `CLAUDE.md`; the catch-up page now only links to rules. Every rule now lives in exactly one place.
 - [2026-10-31 10:12 SGT] **Restructure PR 8 (Telegram bot, Photo check, Web app migrated):** each gets its folder with only a `SPEC.md` (no code yet). Rules 5.1, 5.3, 5.4 → `src/telegram-bot/SPEC.md`; 6.1 → `src/photo-check/SPEC.md`; 9.1 → `src/web-app/SPEC.md` (wording unchanged; in 9.1 "you" now reads "the owner", same meaning). Module table: all 8 modules "migrated: yes".
 - [2026-10-31 10:09 SGT] **Restructure PR 7 (Telemetry migrated):** rules 5.2 and 10.1 now live in `src/telemetry/SPEC.md` (unchanged wording, "Not yet tested"). Path-move map: `docs/Family_Habit_App_Success_Metrics.xlsx` → `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`. Module table: Telemetry "migrated: yes".
 - [2026-10-31 10:05 SGT] **Restructure PR 6 (Variable rewards migrated):** rules 7.1 to 7.6 now live in `src/variable-rewards/SPEC.md` (unchanged wording, each "Not yet tested" as nothing is built). Path-move map: `docs/VARIABLE-REWARDS-SPEC.md` → `src/variable-rewards/DESIGN.md` (the working design, D5 to D10 still open); `docs/variable-rewards-spec-v0.1-original.md` → `docs/archive/variable-rewards-spec-v0.1-original.md`. Module table: Variable rewards "migrated: yes".

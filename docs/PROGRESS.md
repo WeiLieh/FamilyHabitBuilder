@@ -2,6 +2,7 @@
 
 ## [2026-10-31 09:29 SGT] Session 5
 ### Done
+- [2026-10-31 10:17 SGT] PR 8 merged (all 8 modules migrated). PR 9: rules 1.1 to 1.3 and the structure rules written into `docs/SPEC.md`; habits H1 to H5 in `CLAUDE.md`; catch-up page sections 2 and 3 now links only.
 - [2026-10-31 10:12 SGT] PR 7 merged. PR 8 (Telegram bot, Photo check, Web app): three flags flipped first (drift red: three specs missing); spec-only folders written. All 8 modules migrated.
 - [2026-10-31 10:09 SGT] PR 6 merged. PR 7 (Telemetry): flag flipped first (drift red: no spec); metrics spreadsheet moved to `src/telemetry/`; spec written (rules 5.2, 10.1, not yet tested).
 - [2026-10-31 10:05 SGT] PR 5 merged. PR 6 (Variable rewards): flag flipped first (drift red: no spec); design moved to `src/variable-rewards/DESIGN.md`, v0.1 original archived, spec written (rules 7.1 to 7.6, all not yet tested).
