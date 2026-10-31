@@ -61,13 +61,8 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 ### 4. Nudge repository
 [2026-10-31 09:56 SGT] Rules 4.1 to 4.6 now live in one place: **[src/nudge-repository/SPEC.md](../src/nudge-repository/SPEC.md)**.
 
-### 5. Logging (Telegram bot and Datastore)
-- **5.1** Parents can log **any time**: tap ✅ Done on a nudge message, a "Log something" button, or free text Claude understands. *(decided 28 Oct)*
-- **5.3** Optional **description** (up to 280 characters) = the Hooked "Investment". Over 280: the bot asks to shorten it. Shown in the web app and snapshot, and given to Claude for future nudges. *(decided 24 Oct)*
-- **5.4** Logging a behaviour not chosen: **accepted with thanks**, doesn't count toward targets. Logging late: **back to yesterday only**. Twice in a day: counts once for targets and streaks, but **should still be celebrated (WIP)**. *(decided 28 Oct)*
-
-### 6. Photo check
-- **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)*
+### 5. Logging and 6. Photo check
+[2026-10-31 10:12 SGT] Rules 5.1, 5.3 and 5.4 (logging) now live in **[src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)**; rule 6.1 in **[src/photo-check/SPEC.md](../src/photo-check/SPEC.md)**. (Rule 5.2 is in Telemetry, 5.5 in Datastore.)
 
 ### 7. Variable rewards
 [2026-10-31 10:05 SGT] Rules 7.1 to 7.6 now live in one place: **[src/variable-rewards/SPEC.md](../src/variable-rewards/SPEC.md)**; open decisions D5 to D10 are in its [DESIGN.md](../src/variable-rewards/DESIGN.md).
@@ -76,7 +71,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 [2026-10-31 09:59 SGT] Rules 8.1, 8.2 and 5.5 (photo storage) now live in one place: **[src/datastore/SPEC.md](../src/datastore/SPEC.md)**.
 
 ### 9. Web app
-- **9.1** Plain, unstyled pages that show the right data; **the look comes from you later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)*
+[2026-10-31 10:12 SGT] Rule 9.1 now lives in **[src/web-app/SPEC.md](../src/web-app/SPEC.md)**.
 
 ### 10. Telemetry
 [2026-10-31 10:09 SGT] Rules 10.1 and 5.2 now live in one place: **[src/telemetry/SPEC.md](../src/telemetry/SPEC.md)**, next to the metrics spreadsheet.
