@@ -125,6 +125,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 18:00 SGT] **Version 1.10 (in progress), D8 to D10 (owner):** **D8** option A: from the Weekly Wrap Up a parent may save one photo and/or one line about any moment that week, as an album entry, not a log (new rule 7.7). **D9** trial = 5 full weeks per family from its first full Monday, 5 to 10 families (new rule 10.3; known issue resolved). **D10** weekly snapshot = the Weekly Wrap Up (5 items); monthly = a "last month" section in the first Wrap Up of each calendar month (new rule 7.8). Rules 3.12 and 7.1 updated to point at them. All Variable rewards decisions D1 to D11 are now answered. No code; the new rules are "not yet tested".
 - [2026-10-31 17:53 SGT] **Version 1.10 (in progress), D5 to D7 (owner, from a design chat, 31 Oct about 17:20 SGT; built test-first in PR B):**
   - **D5:** no repair pass in the MVP (DESIGN.md "Later").
   - **D5b:** the week **closes at midnight Sunday**; a Monday log for Sunday is saved but counts toward neither week, and the receipt says so. Rule 7.6 changed; `src/variable-rewards/week.ts` with tests.

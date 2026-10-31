@@ -69,12 +69,6 @@
 - **Workaround:** [2026-10-24 18:26 SGT] None. Product manager to define the weekend moments.
 - [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
-### [2026-10-24 18:26 SGT] Trial length not decided
-- **Issue:** [2026-10-24 18:26 SGT] Metrics 6 and 7 (target-hit rate, unprompted log rate) use "the final 4 weeks" and "the final 2 weeks", so they need a trial length of at least 4 weeks.
-- **Impact:** [2026-10-24 18:26 SGT] Success tests Y and Z cannot be calculated without it.
-- **Workaround:** [2026-10-24 18:26 SGT] None yet. Product manager to decide (see the Settings sheet of the metrics file).
-- [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
-
 ### [2026-10-24 18:26 SGT] Photos kept with no time limit
 - **Issue:** [2026-10-24 18:26 SGT] Photos (which may show children) are kept until the parent deletes their data. The PDPA expects organisations to stop keeping personal data once it is no longer needed.
 - **Impact:** [2026-10-24 18:26 SGT] Fine for a friends trial with consent; a reviewer would question it before opening to the public.
@@ -82,6 +76,13 @@
 - [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
+
+### [2026-10-24 18:26 SGT] Trial length not decided
+- [2026-10-31 18:00 SGT] RESOLVED: 5 full weeks per family from its first full Monday, 5 to 10 families (D9, Telemetry rule 10.3). Moved to Resolved.
+- **Issue:** [2026-10-24 18:26 SGT] Metrics 6 and 7 (target-hit rate, unprompted log rate) use "the final 4 weeks" and "the final 2 weeks", so they need a trial length of at least 4 weeks.
+- **Impact:** [2026-10-24 18:26 SGT] Success tests Y and Z cannot be calculated without it.
+- **Workaround:** [2026-10-24 18:26 SGT] None yet. Product manager to decide (see the Settings sheet of the metrics file).
+- [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
 ### [2026-10-25 07:17 SGT] The nudges SQL has not run on the real Supabase yet
 - [2026-10-25 08:14 SGT] RESOLVED: `001` and `002` have run on Supabase; tables, columns and permissions confirmed by the owner's screenshots. (Moved to Resolved.)
