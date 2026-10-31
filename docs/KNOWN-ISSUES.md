@@ -8,6 +8,7 @@
 - **Workaround:** [2026-10-31 14:47 SGT] Do not onboard real families or accept real photos until both are built and tested. Testing with the owner's own sample photos is fine.
 
 ### [2026-10-31 14:47 SGT] New Supabase tables start with broad default access
+- [2026-10-31 15:07 SGT] Lower risk than first written: the project was created with "Automatically expose new tables" off and "Enable automatic RLS" on (`docs/CONTEXT.md`, 25 Oct), so new tables start locked from the Data API. Database-level grants can still be wider than needed, so the lock-down steps and permission tests remain the rule.
 - **Issue:** [2026-10-31 14:47 SGT] Supabase gives every new table wide default permissions. Migration 002 removed them for the nudge tables only. Each future migration must repeat the same "revoke, then grant only what is needed" steps (found by the privacy and security review of PR #11; owner agreed to log it).
 - **Impact:** [2026-10-31 14:47 SGT] A table created without those steps (for example parents' data in the Datastore build) could be readable or writable by more roles than intended.
 - **Workaround:** [2026-10-31 14:47 SGT] Every new migration copies the lock-down steps of migration 002, and its database tests check the permissions. Consider a drift or database test that fails if any table lacks them (ask the owner first).

@@ -4,6 +4,7 @@
 ### Done
 - [2026-10-31 14:47 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up recap done.
 - [2026-10-31 14:47 SGT] Owner approved and merged PR #11 (two review agents). Step 2 complete. Branch restarted from `main`.
+- [2026-10-31 15:07 SGT] Housekeeping: new habits H6 (context handoff at about 50%, owner types `/clear`) and H7 (end of every code session: send `CLAUDE.md`, `docs/CATCH-UP.md`, `docs/SPEC.md` for Claude Chat) added to `CLAUDE.md`; decision in `docs/CONTEXT.md`. Review agents stay per pull request (H3).
 - [2026-10-31 14:47 SGT] Owner agreed both review findings go into `docs/KNOWN-ISSUES.md` (new-table lock-down; no real photos before consent and "delete my data"). Added.
 ### In progress
 - [2026-10-31 14:47 SGT] None.
