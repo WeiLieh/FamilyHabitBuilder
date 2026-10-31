@@ -1,0 +1,30 @@
+name: Check
+
+# Runs the project's check command (type check, tests, build) on every pull request
+# and on every push to main, as a second inspector before anything is merged.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Least privilege: this job may only read the code, never change it.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    # A fresh, clean Linux computer provided by GitHub for each run.
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download this repository's code onto that computer.
+      - uses: actions/checkout@v5
+      # 2. Install Node.js 24 (the same version Vercel uses), and reuse
+      #    downloaded libraries between runs to save time.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      # 3. Install exactly the library versions recorded in package-lock.json.
+      - run: npm ci
+      # 4. Type check, tests, build. If any step fails, the pull request shows a red cross.
+      - run: npm run check

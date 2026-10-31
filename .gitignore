@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vercel/
+# Secrets: never commit real values. Only .env.example (blank placeholders) is tracked.
+.env
+.env.*
+!.env.example
