@@ -32,7 +32,7 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 | Datastore | [src/datastore/SPEC.md](../src/datastore/SPEC.md) |
 | Web app | [src/web-app/SPEC.md](../src/web-app/SPEC.md) |
 | Telemetry | [src/telemetry/SPEC.md](../src/telemetry/SPEC.md) |
-| Experiments | [src/experiments/SPEC.md](../src/experiments/SPEC.md) (added 31 Oct) |
+| Experiments | [src/experiments/SPEC.md](../src/experiments/SPEC.md) (added 31 Oct) and its plain-English plans, [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md) |
 
 Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the test helpers) are listed in [docs/SPEC.md](SPEC.md), section "Modules and structure".
 
@@ -74,4 +74,5 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - Nudge personality ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
 - Badge graphics and the look of every screen (Web app, setup)
 - **Before launch:** upload MOE school holiday and Singapore public holiday dates
-- Experiment mechanics (parked in `docs/EXPERIMENTS.md`)
+- [2026-10-31 19:18 SGT] First alpha experiment (plans in [src/experiments/EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md))
+- SUPERSEDED [2026-10-31 19:18 SGT] Experiment mechanics (parked in `docs/EXPERIMENTS.md`)

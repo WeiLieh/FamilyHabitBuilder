@@ -3,7 +3,7 @@
 //
 // [31 Oct] This file is the ONE place these numbers live (rule 1.4). The
 // Experiments module (src/experiments/SPEC.md) will record which values each
-// parent had; docs/EXPERIMENTS.md describes the experiments in plain English
+// parent had; src/experiments/EXPERIMENTS.md describes the experiments in plain English
 // and points here. A test checks the choice limits match what was agreed.
 // Later, experiments may give some parents different values. Unlocks do NOT
 // change these limits: an unlock only opens more nudges to choose from.

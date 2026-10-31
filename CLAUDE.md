@@ -121,7 +121,8 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/PRODUCT-BACKLOG.md` | What we might build next, prioritised. |
 | `docs/KNOWN-ISSUES.md` | Problems that are still open, with workarounds. |
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
-| `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
+| `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. SUPERSEDED [2026-10-31 19:18 SGT]: moved to [src/experiments/EXPERIMENTS.md](src/experiments/EXPERIMENTS.md), see the next row. |
+| `src/experiments/EXPERIMENTS.md` | [2026-10-31 19:18 SGT] Plain-English description of the experiments we might run and the starting values, next to the Experiments module's rules ([src/experiments/SPEC.md](src/experiments/SPEC.md)). The numbers live in `src/settings.ts` (rule 1.4). |
 | `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). SUPERSEDED [2026-10-31 09:40 SGT]: moved to `docs/archive/`; the only diagram is now `docs/ARCHITECTURE.md`. |
 | `docs/CATCH-UP.md` | [2026-10-28 22:37 SGT] One-page catch-up after time away: module progress map, what each module and file does, current rules recap, questions to think about before the next session. A snapshot, rewritten each session (history stays in Git and `docs/SPEC.md`). |
 | `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |

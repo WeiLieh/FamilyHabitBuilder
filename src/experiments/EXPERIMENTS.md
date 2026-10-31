@@ -1,6 +1,8 @@
 # Experiments
 
-[2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](../src/experiments/SPEC.md). The paragraph below is history (SUPERSEDED [2026-10-31 19:06 SGT]).
+[2026-10-31 19:18 SGT] **Moved** from `docs/EXPERIMENTS.md` to this folder, next to the module's rules ([SPEC.md](SPEC.md)), on the owner's decision.
+
+[2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](SPEC.md). The paragraph below is history (SUPERSEDED [2026-10-31 19:06 SGT]).
 
 SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
 
@@ -33,7 +35,7 @@ These apply to everyone who is not in an experiment that changes them.
 ## Experiment variables (parked)
 - [2026-10-29 22:37 SGT] Added: steady-week bars (every day 6 of 7; every 2 days 3; deliberate as chosen), rule 7.6.
 [2026-10-31 18:59 SGT] Correction: the code's values are now in `src/settings.ts` (was `shared/settings.ts`).
-[2026-10-31 19:09 SGT] The experiment module has now been designed: [src/experiments/SPEC.md](../src/experiments/SPEC.md).
+[2026-10-31 19:09 SGT] The experiment module has now been designed: [src/experiments/SPEC.md](SPEC.md).
 
 [2026-10-29 20:58 SGT] Everything in the app that an experiment could change, so we remember them when we design the experiment module. Nothing here is decided; current values are in "Starting values" above and `shared/settings.ts`.
 
