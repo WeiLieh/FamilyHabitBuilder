@@ -14,7 +14,8 @@ The single place where experiments are defined. The nudge engine reads its exper
 - [2026-10-28 22:23 SGT] Nudge slots: 30-minute blocks from 7:00am to 9:30pm (last start), up to 3 per schedule, at least 1 hour apart, at least 1 in total. Defaults: school days 7:00am, 7:00pm, 9:00pm; non-school days 9:00am, 12:30pm, 7:00pm.
 - [2026-10-28 22:23 SGT] Deliberate behaviours are nudged on Friday (planning) and Sunday (only if still due). Possible future experiment: other patterns (e.g. a midweek nudge).
 - [2026-10-28 22:23 SGT] A quick behaviour logged on each of the last 7 days is nudged only if it was not nudged yesterday.
-- [2026-10-25 06:25 SGT] The code's copy of these values is `shared/settings.ts`. Change both together; a test checks the choice limits.
+- [2026-10-31 18:59 SGT] The code's copy of these values is `src/settings.ts` (moved from `shared/` on 31 Oct). Change both together; a test checks the choice limits.
+- SUPERSEDED [2026-10-31 18:59 SGT] [2026-10-25 06:25 SGT] The code's copy of these values is `shared/settings.ts`. Change both together; a test checks the choice limits.
 These apply to everyone who is not in an experiment that changes them.
 - [2026-10-24 22:18 SGT] Choice limits: up to 2 quick and up to 1 deliberate behaviour at a time; at least 1 in total. Choosing more is an unlock (rule WIP).
 - [2026-10-24 18:26 SGT] Maximum nudges per day: 3
@@ -26,6 +27,8 @@ These apply to everyone who is not in an experiment that changes them.
 
 ## Experiment variables (parked)
 - [2026-10-29 22:37 SGT] Added: steady-week bars (every day 6 of 7; every 2 days 3; deliberate as chosen), rule 7.6.
+[2026-10-31 18:59 SGT] Correction: the code's values are now in `src/settings.ts` (was `shared/settings.ts`).
+
 [2026-10-29 20:58 SGT] Everything in the app that an experiment could change, so we remember them when we design the experiment module. Nothing here is decided; current values are in "Starting values" above and `shared/settings.ts`.
 
 **Nudge timing (Nudge engine)**
@@ -47,7 +50,8 @@ These apply to everyone who is not in an experiment that changes them.
 
 **What a parent picks**
 - Limits: how many quick and deliberate behaviours (now 2 + 1)
-- Which nudges start unlocked (now 6 of 9), and how an unlock is earned
+- [2026-10-31 18:59 SGT] Which nudges start unlocked (now all 9, rule 2.2 changed 29 Oct; unlocks are out of the MVP), and how an unlock is earned
+- SUPERSEDED [2026-10-31 18:59 SGT] Which nudges start unlocked (now 6 of 9), and how an unlock is earned
 - Frequencies offered (every day / every 2 days; 1 or 2 times a week)
 - Hidden ideal and floor values
 
