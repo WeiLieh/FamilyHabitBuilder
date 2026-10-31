@@ -1,5 +1,5 @@
 -- =============================================================================
--- supabase/content/2026-10-28_time_agnostic_examples.sql
+-- src/datastore/supabase/content/2026-10-28_time_agnostic_examples.sql
 --
 -- What it does: rewrites 10 examples that had a time of day baked in (e.g.
 -- "at dinner", "before bedtime"), so Claude can fit any example to whenever a

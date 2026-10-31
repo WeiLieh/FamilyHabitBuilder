@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# supabase/tests/run.sh: runs the database tests on a throwaway local database
+# src/datastore/supabase/tests/run.sh: runs the database tests on a throwaway local database
 #
 # Needs a local PostgreSQL server (not Supabase). Connection details come from
 # the standard PG* settings, for example:
@@ -19,4 +19,4 @@ cleanup() {
 }
 trap cleanup EXIT
 
-psql -q -v ON_ERROR_STOP=1 -d "$DB" -f supabase/tests/nudge-repository.test.sql
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/nudge-repository.test.sql

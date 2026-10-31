@@ -1,5 +1,5 @@
 -- =============================================================================
--- supabase/content/2026-10-29_unlock_all_nudges.sql
+-- src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql
 --
 -- What it does: sets "starts unlocked" to yes for the 3 deliberate nudges that
 -- started locked (SGE Setting a good example, ITE Incidental teaching, ASD

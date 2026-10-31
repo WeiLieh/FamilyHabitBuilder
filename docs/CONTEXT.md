@@ -4,6 +4,7 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-10-31 09:59 SGT] **Database files moved:** everything that was in `supabase/` is now in `src/datastore/supabase/` (Datastore module; spec `src/datastore/SPEC.md`). `npm run test:db` runs `src/datastore/supabase/tests/run.sh`. Older entries below keep the old paths as history.
 - [2026-10-31 09:41 SGT] **Drift test:** `tests/docs-drift.test.ts` (checks in `tests/helpers/docs-drift.ts`) runs inside `npm run check`, so GitHub Actions runs it on every pull request. It checks the repo against the facts in `docs/SPEC.md`, section "Modules and structure", and the one diagram `docs/ARCHITECTURE.md`. Failures fail the check; "code changed after its spec" (R4) is printed as a DRIFT WARNING only.
 - [2026-10-29 22:25 SGT] **Content script waiting for the owner:** `supabase/content/2026-10-29_unlock_all_nudges.sql` (unlocks SGE, ITE, ASD; expect 3 rows; verified on a local copy of the live data, safe to run twice).
 - [2026-10-28 21:56 SGT] **Content script applied on live Supabase (owner):** `2026-10-28_time_agnostic_examples.sql` returned 10 rows (IDs 1, 2, 5, 6, 7, 9, 21, 22, 23, 30), each matching `supabase/seed/examples-first-load.csv` word for word. Live examples and the seed file now agree.

@@ -57,7 +57,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Master prompt: [CLAUDE.md](../CLAUDE.md) · Read-me: [README.md](../README.md)
 - The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](EXPERIMENTS.md)
-- Module specs: [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
+- Module specs: [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
 - Module documents not yet moved to their module folders: [VARIABLE-REWARDS-SPEC.md](VARIABLE-REWARDS-SPEC.md), [variable-rewards-spec-v0.1-original.md](variable-rewards-spec-v0.1-original.md)
 - History lives in `docs/archive/` (exempt from the checks).
 
@@ -71,7 +71,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | no |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | no |
-| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Nudge tables live | no |
+| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Nudge tables live | yes |
 | Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | no |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | no |
 
@@ -97,6 +97,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 09:59 SGT] **Restructure PR 5 (Datastore migrated):** rules 5.5, 8.1 and 8.2 now live in `src/datastore/SPEC.md` (unchanged wording, each saying how it is tested), with the applied-migration fingerprints (rule B1). Path-move map: `supabase/` → `src/datastore/supabase/` (migrations, seed, content, tests; migrations moved unchanged, byte for byte). `package.json` `test:db` now runs `src/datastore/supabase/tests/run.sh`. Rules S6, B1 and B2 now apply. Module table: Datastore "migrated: yes".
 - [2026-10-31 09:56 SGT] **Restructure PR 4 (Nudge repository migrated):** rules 4.1 to 4.6 now live in `src/nudge-repository/SPEC.md` (unchanged wording, each with "Tested by:"). Path-move map: `src/nudge-repository.ts` → `src/nudge-repository/nudge-repository.ts`; `tests/nudges-first-load.test.ts` → `tests/nudge-repository-first-load.test.ts`; `tests/helpers/nudge-rows.ts` → `tests/helpers/nudge-repository-rows.ts`; `docs/Nudge_Repository.xlsx` → `docs/archive/Nudge_Repository.xlsx`. `tests/nudge-engine-choices.test.ts` now gets its retired test nudge through the helper (`nineTestNudgesWith`) instead of reaching into the Nudge repository's code (rule S5); same behaviour. Module table: Nudge repository "migrated: yes".
 - [2026-10-31 09:43 SGT] **Restructure PR 3 (Nudge engine migrated):** rules 2.1 to 2.4 and 3.1 to 3.11 now live in `src/nudge-engine/SPEC.md` (unchanged wording, each with "Tested by:"). Path-move map: `docs/NUDGE-CONTEXT.md` → `src/nudge-engine/NUDGE-CONTEXT.md`. Module table: Nudge engine "migrated: yes".
 - [2026-10-31 09:40 SGT] **Restructure PR 2 (drift test):** added the "Modules and structure" section (document index, Module table with all modules "migrated: no", cross-cutting files, retired names, retired rule IDs, minimum test count 106) and the one diagram `docs/ARCHITECTURE.md`. Path-move map: `docs/architecture-diagram.png` → `docs/archive/architecture-diagram.png`. The catch-up page now links to the diagram instead of keeping its own copy.

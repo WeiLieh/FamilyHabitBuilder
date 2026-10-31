@@ -1,12 +1,12 @@
 -- =============================================================================
--- supabase/tests/nudge-repository.test.sql: tests for the nudges and examples tables
+-- src/datastore/supabase/tests/nudge-repository.test.sql: tests for the nudges and examples tables
 --
--- What it checks: that supabase/migrations/001_create_nudge_repository.sql
+-- What it checks: that src/datastore/supabase/migrations/001_create_nudge_repository.sql
 -- (plus 002_service_role_read_only.sql) builds tables which (1) accept the owner's 9 nudges and 45 examples from the
 -- first-load CSVs, (2) refuse each kind of bad row, (3) refuse edits that
 -- would leave a nudge with fewer than 3 active examples, and (4) keep the
 -- public locked out. Run on a throwaway local PostgreSQL database via
--- supabase/tests/run.sh, never on the real Supabase project.
+-- src/datastore/supabase/tests/run.sh, never on the real Supabase project.
 --
 -- How a "refuse" test works: we try a bad change inside a small block. If the
 -- database refuses it (raises an error), good. If it is accepted, we raise our
@@ -30,13 +30,13 @@ create role service_role nologin;
 alter default privileges in schema public grant all on tables to service_role;
 
 -- Build the tables exactly as the owner did in Supabase, in order.
-\i supabase/migrations/001_create_nudge_repository.sql
-\i supabase/migrations/002_service_role_read_only.sql
+\i src/datastore/supabase/migrations/001_create_nudge_repository.sql
+\i src/datastore/supabase/migrations/002_service_role_read_only.sql
 
 -- Load the owner's data the way the dashboard's CSV import does: nudges first,
 -- then examples (examples need their nudge codes to exist already).
-\copy public.nudges (code, name, category, self_report_allowed, description_max_chars, photo_upload_allowed, photo_idea, active, starts_unlocked) from 'supabase/seed/nudges-first-load.csv' with (format csv, header true)
-\copy public.examples (nudge_code, example) from 'supabase/seed/examples-first-load.csv' with (format csv, header true)
+\copy public.nudges (code, name, category, self_report_allowed, description_max_chars, photo_upload_allowed, photo_idea, active, starts_unlocked) from 'src/datastore/supabase/seed/nudges-first-load.csv' with (format csv, header true)
+\copy public.examples (nudge_code, example) from 'src/datastore/supabase/seed/examples-first-load.csv' with (format csv, header true)
 
 -- Test: the first load.
 do $$

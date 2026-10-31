@@ -18,6 +18,7 @@
 - **Workaround:** [2026-10-28 22:23 SGT] Build with the Datastore (step 2) and Telegram bot (step 3).
 
 ### [2026-10-25 07:17 SGT] Database tests are not run automatically
+- [2026-10-31 09:59 SGT] Path update: the database tests now live in `src/datastore/supabase/tests/` (still run by hand with `npm run test:db`).
 - **Issue:** [2026-10-25 07:17 SGT] `npm run test:db` needs a running PostgreSQL, so it is not part of `npm run check` or GitHub Actions.
 - **Impact:** [2026-10-25 07:17 SGT] A change to the SQL could break the rules without CI noticing.
 - **Workaround:** [2026-10-25 07:17 SGT] Run `npm run test:db` manually after any SQL change. Later option: add a PostgreSQL service to the GitHub Actions workflow (ask the owner first).

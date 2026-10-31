@@ -11,7 +11,7 @@
     "test": "vitest run",
     "build": "tsc -p tsconfig.build.json",
     "check": "npm run typecheck && npm run test && npm run build",
-    "test:db": "bash supabase/tests/run.sh"
+    "test:db": "bash src/datastore/supabase/tests/run.sh"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
