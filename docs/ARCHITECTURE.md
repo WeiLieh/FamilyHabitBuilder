@@ -12,6 +12,7 @@ flowchart LR
     datastore["Datastore<br/>Nudge tables live"]:::part
     webapp["Web app<br/>Not started"]:::todo
     telemetry["Telemetry<br/>Not started"]:::todo
+    experiments["Experiments<br/>Not started"]:::todo
 
     telegram <--> engine
     repository --> engine
@@ -21,6 +22,8 @@ flowchart LR
     photo --> datastore
     telegram --> datastore
     datastore --> webapp
+    engine --> experiments
+    experiments --> datastore
     telemetry -.- telegram
     telemetry -.- engine
     telemetry -.- repository
@@ -28,6 +31,7 @@ flowchart LR
     telemetry -.- rewards
     telemetry -.- datastore
     telemetry -.- webapp
+    telemetry -.- experiments
 
     classDef done fill:#2e7d32,color:#ffffff
     classDef part fill:#f9a825,color:#000000

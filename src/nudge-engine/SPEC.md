@@ -8,12 +8,14 @@
 - **Words** (not built yet): Claude writes the nudge message, guided by [NUDGE-CONTEXT.md](NUDGE-CONTEXT.md) (the app's own AI personality; not instructions for Claude Code).
 
 ## Code in this folder
+- [2026-10-31 19:18 SGT] Comments in `choices.ts` now point to `src/settings.ts` for the values (rule 1.4); no rule changed.
 - [2026-10-31 09:43 SGT] `choices.ts`: checks a parent's picks (rules 2.1 to 2.3).
 - [2026-10-31 09:43 SGT] `schedule.ts`: school or non-school day; checks slots; which times the setup screen greys out (rules 3.1 to 3.3).
 - [2026-10-31 09:43 SGT] `due.ts`: is a behaviour still to do (rules 2.4, 3.7).
 - [2026-10-31 17:52 SGT] `wrap-up.ts`: the decision "send the Weekly Wrap Up now" or "don't send", with the reason, and the check on the time a parent picks (rule 3.12).
 - [2026-10-31 09:43 SGT] `planner.ts`: the decision "send a nudge about X now" or "don't send", with the reason (rules 3.4 to 3.11).
-- Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../../docs/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
+- [2026-10-31 19:06 SGT] Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), the [Experiments](../experiments/SPEC.md) module (which settings and variant each parent has; the engine passes reward settings on to Variable rewards), and the cross-cutting files `src/settings.ts` (the numbers, rule 1.4) and `src/sgt.ts` (Singapore time).
+- SUPERSEDED [2026-10-31 19:06 SGT] Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../experiments/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
 
 ## Rules at a glance
 2.1 limits · 2.2 active and unlocked · 2.3 frequencies · 2.4 nudge only while due · 3.1 slots · 3.2 two schedules · 3.3 defaults · 3.4 caps · 3.5 Done / Not today · 3.6 when nothing is sent · 3.7 due · 3.8 priority · 3.9 rest after 7 days · 3.10 deliberate on Friday and Sunday · 3.11 any slot, Claude adds context · 3.12 Weekly Wrap Up · 3.13 a fresh example in each nudge message

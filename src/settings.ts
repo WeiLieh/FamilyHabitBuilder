@@ -1,9 +1,10 @@
 // =============================================================================
 // src/settings.ts: starting values (hypotheses) used by the Nudge engine
 //
-// The source of truth for these numbers is docs/EXPERIMENTS.md, under
-// "Starting values". If you change a number here, change it there too (and the
-// other way round). A test checks the choice limits match what was agreed.
+// [31 Oct] This file is the ONE place these numbers live (rule 1.4). The
+// Experiments module (src/experiments/SPEC.md) will record which values each
+// parent had; src/experiments/EXPERIMENTS.md describes the experiments in plain English
+// and points here. A test checks the choice limits match what was agreed.
 // Later, experiments may give some parents different values. Unlocks do NOT
 // change these limits: an unlock only opens more nudges to choose from.
 // =============================================================================
@@ -45,7 +46,8 @@ export const MIN_SLOT_GAP_MINUTES = 60;
 // Most slots per schedule (school days, non-school days).
 export const MAX_SLOTS_PER_SCHEDULE = 3;
 
-// Most nudge messages per parent per Singapore day (docs/EXPERIMENTS.md: 3).
+// Most nudge messages per parent per Singapore day: 3. A guardrail ceiling:
+// an experiment may lower it, never raise it (rule 11.4).
 // Replies never count. Kept as a safety net even though slots also limit it.
 export const MAX_NUDGES_PER_DAY = 3;
 

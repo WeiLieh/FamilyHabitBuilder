@@ -12,6 +12,7 @@
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
 
 ## Planned for the Datastore build
+- [2026-10-31 19:09 SGT] For the [Experiments](../experiments/SPEC.md) module, to show in the table mock-ups: **settings versions** (rules 11.1, 11.8), **experiment definitions** (rule 11.7), **parent assignments** (rules 11.3, 11.6), **stamps on every event** (rule 11.2), **sign-up date and cohort** on each parent (rule 11.11), the parent's **recorded agreement** and, before alpha, an **opt-out of experiments** (rule 11.9); "delete my data" must be able to remove all of a parent's rows (rule 11.12). "Delete my data" (rule 1.5) goes through **one narrow database function** that can remove only one parent's data and write the non-personal deletion log; apart from that, the server may only add rows to these tables. Every new table gets **only the access it needs**, spelled out per table in the mock-ups (for example: the server may add rows but never edit or delete them, except for "delete my data"), following migration 002's lock-down (`docs/KNOWN-ISSUES.md`).
 - [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
 
 ## Applied migrations (rule B1)

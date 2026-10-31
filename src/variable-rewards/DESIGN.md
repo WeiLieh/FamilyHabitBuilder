@@ -210,7 +210,7 @@ All are time-agnostic (rule 4.5). They would be added as example rows after the 
 
 ## 8. Success measures and trial
 
-**Trial (D9, answered [2026-10-31 18:00 SGT]):** 5 to 10 friends' families, 5 full weeks each from their first full Monday (rule 10.3). (Was: 5 to 10 friends' families for 5 weeks (tune).) Our **10 metrics** (rule 10.1) remain the main measures. v0.1's extra questions are added:
+**Trial (changed [2026-10-31 19:06 SGT]):** the week-one friends group, about 12 parents, 5 full weeks each (rule 10.3). **Trial (D9, answered [2026-10-31 18:00 SGT]):** 5 to 10 friends' families, 5 full weeks each from their first full Monday (rule 10.3). (Was: 5 to 10 friends' families for 5 weeks (tune).) Our **10 metrics** (rule 10.1) remain the main measures. v0.1's extra questions are added:
 
 | Question (v0.1) | Measure | Maps to |
 |---|---|---|

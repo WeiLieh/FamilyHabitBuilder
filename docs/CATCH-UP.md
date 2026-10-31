@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-31 17:46 SGT]** (session 6, PR B built). [2026-10-31 18:04 SGT] Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-31 17:46 SGT]** (session 6, Experiments module on paper). [2026-10-31 19:06 SGT] Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -8,7 +8,7 @@ Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: whe
 
 ## 1. Module map
 
-The 8 modules from your architecture diagram, coloured by progress. Numbers match the table in section 2.
+The modules from your architecture diagram, coloured by progress (9 since 31 Oct: Experiments added [2026-10-31 19:06 SGT]). Numbers match the table in section 2.
 
 [2026-10-31 09:40 SGT] The module map now lives in one place: **[docs/ARCHITECTURE.md](ARCHITECTURE.md)** (also the source of each module's status, checked by the drift test).
 
@@ -32,6 +32,7 @@ The 8 modules from your architecture diagram, coloured by progress. Numbers matc
 | Datastore | [src/datastore/SPEC.md](../src/datastore/SPEC.md) |
 | Web app | [src/web-app/SPEC.md](../src/web-app/SPEC.md) |
 | Telemetry | [src/telemetry/SPEC.md](../src/telemetry/SPEC.md) |
+| Experiments | [src/experiments/SPEC.md](../src/experiments/SPEC.md) (added 31 Oct) and its plain-English plans, [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md) |
 
 Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the test helpers) are listed in [docs/SPEC.md](SPEC.md), section "Modules and structure".
 
@@ -55,13 +56,13 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-10-31 18:04 SGT] "Agree" is enough where there's a suggestion.
-1. [2026-10-31 18:12 SGT] DONE: PR A (#12) merged and the examples script applied (32 rows). **Review and merge PR A** (#12: 32 new examples, habits H6 and H7): https://github.com/WeiLieh/FamilyHabitBuilder/pull/12. Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
-2. **Review PR B** (Weekly Wrap Up, D5 to D10), on branch `claude/festive-einstein-nf623s-pr-b`; Claude opens its pull request once #12 is merged.
-3. **Experiments module (design in Claude Chat, before the Datastore mock-ups):** its own module or part of the Nudge engine? Settings in code or an editable table? A/B groups in the first trial, or one set of values for everyone (5 to 10 families is too few to compare groups)? Record each family's values from day one?
-4. **Still undecided from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
+[2026-10-31 19:06 SGT] "Agree" is enough where there's a suggestion.
+1. **Review and merge the Experiments pull request** (the module on paper: rules 11.1 to 11.12, 1.4 and 1.5, diagram, Module table, `EXPERIMENTS.md` moved next to the module). [2026-10-31 21:29 SGT]
+2. **Delete the `claude/festive-einstein-nf623s-pr-b` branch on GitHub** (the "Delete branch" button on PR #13). Claude Code can't delete branches from its session.
+3. **Still open from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
+4. **Experiments, next round in Claude Chat (not blocking):** the first alpha experiment (suggestion: message style).
 
-**Next in code:** the Datastore build (step 2), table mock-ups first.
+**Next in code:** the Datastore table mock-ups (step 2), in plain English, for your agreement.
 
 ---
 
@@ -73,4 +74,5 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - Nudge personality ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
 - Badge graphics and the look of every screen (Web app, setup)
 - **Before launch:** upload MOE school holiday and Singapore public holiday dates
-- Experiment mechanics (parked in `docs/EXPERIMENTS.md`)
+- [2026-10-31 19:18 SGT] First alpha experiment (plans in [src/experiments/EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md))
+- SUPERSEDED [2026-10-31 19:18 SGT] Experiment mechanics (parked in `docs/EXPERIMENTS.md`)

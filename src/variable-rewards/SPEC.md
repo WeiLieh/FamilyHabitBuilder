@@ -6,6 +6,7 @@
 [2026-10-31 10:05 SGT] Make logging a bonding moment feel noticed and worthwhile without turning family time into points: rewards are **informational** ("here is what you did"), never **controlling** ("do this to earn points").
 
 ## Code in this folder
+- [2026-10-31 19:18 SGT] `DESIGN.md`: trial wording updated to the week-one group of about 12 parents (rule 10.3); no rule here changed.
 - [2026-10-31 17:52 SGT] `week.ts`: which week a log belongs to and whether it still counts (the week closes at midnight Sunday, rule 7.6). The rest is built at step 4 of the development order.
 - SUPERSEDED [2026-10-31 17:52 SGT] [2026-10-31 10:05 SGT] None yet. Design in progress; building comes at step 4 of the development order.
 - Will use: the [Nudge engine](../nudge-engine/SPEC.md) and the [Datastore](../datastore/SPEC.md) (log history), per the arrows in [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
