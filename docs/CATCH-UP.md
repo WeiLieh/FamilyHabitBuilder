@@ -36,7 +36,7 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | | | | | `src/datastore/supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
 | | | | | `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
 | 4 | **Photo check** | Claude looks at a photo and judges whether it fits the behaviour | Not started | (none yet) | |
-| 5 | **Variable rewards** | Rewards after logging: validation reply (receipt + Claude), varied ideas, weekly streak and steady weeks, one-tap logging, family memory album with snapshots, 3 milestone badges | Design in progress (no code yet) | `docs/VARIABLE-REWARDS-SPEC.md`: the design (v0.2): universe of rewards, MVP scope, decisions D1 to D11 | (design only) |
+| 5 | **Variable rewards** | Rewards after logging: validation reply (receipt + Claude), varied ideas, weekly streak and steady weeks, one-tap logging, family memory album with snapshots, 3 milestone badges | Design in progress (no code yet) | `src/variable-rewards/DESIGN.md`: the design (v0.2): universe of rewards, MVP scope, decisions D1 to D11 | (design only) |
 | 6 | **Datastore** | Where everything is kept: Supabase (Singapore) for permanent records and photos, Upstash Redis for short-term chat memory | Nudge tables live | `src/datastore/supabase/migrations/001_create_nudge_repository.sql`: creates the nudges and examples tables, the 3-example guard and the browsing view | 25 database checks |
 | | | | | `src/datastore/supabase/migrations/002_service_role_read_only.sql`: makes our server read-only on those tables | (in the 25) |
 | 7 | **Web app** | Plain pages: history, progress, rewards, XP, "delete my data" | Not started | (none yet) | |
@@ -71,12 +71,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)*
 
 ### 7. Variable rewards
-- **7.1** **MVP rewards** (from `docs/VARIABLE-REWARDS-SPEC.md`): 1 validation reply after each log, 2 varied ideas (surprise), 3 weekly streak, 4 one-tap logging, 6 family memory album **including weekly and monthly snapshots**, 10 three milestone badges. Unlocks are out of the MVP. Details under review (D1 to D11). *(decided 24 Oct, changed 29 Oct)*
-- **7.2** **No XP or levels in the MVP** (D1). No random surprise bonus either. An **unprompted log** (rule 5.2) gets a **special validation reply** noticing the parent did it on their own. *(decided 24 Oct, changed 29 Oct)*
-- **7.4** **Variable rewards need a full design session:** every reward category needs its rules, its content and its variety (parked in `docs/PRODUCT-BACKLOG.md`). *(decided 29 Oct)*
-- **7.3** **Streaks are weekly** (D3): one unit for everyone, the week (Monday to Sunday). The headline is "days this week"; the streak counts **steady weeks** (rule 7.6), in total and in a row. A short week never gets a "broken streak" message. No repair pass in the MVP. Replaces the earlier per-behaviour streaks. *(decided 24 Oct, changed 29 Oct)*
-- **7.5** **Validation reply after every log** (D2): first an honest **receipt** ("✅ Saved: Showing affection, today."), then a warm reply **written by Claude** naming what the parent did. If Claude fails, the receipt stands and the failure is recorded. Replies never count toward the 3-a-day cap. *(decided 29 Oct)*
-- **7.6** **Steady week** (D4) = every behaviour the parent chose met its weekly bar, with some slack: every day = 6 of 7 days; every 2 days = 3 days; deliberate once a week = 1; twice a week = 2. The week a parent joins doesn't count against them (their streak starts with their first full week). Picks in place on Sunday are the ones judged. *(decided 29 Oct; bars are starting values, tune after the trial)*
+[2026-10-31 10:05 SGT] Rules 7.1 to 7.6 now live in one place: **[src/variable-rewards/SPEC.md](../src/variable-rewards/SPEC.md)**; open decisions D5 to D10 are in its [DESIGN.md](../src/variable-rewards/DESIGN.md).
 
 ### 8. Datastore
 [2026-10-31 09:59 SGT] Rules 8.1, 8.2 and 5.5 (photo storage) now live in one place: **[src/datastore/SPEC.md](../src/datastore/SPEC.md)**.
@@ -94,7 +89,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 ## 4. Questions to think about before next session
 
-[2026-10-29 22:40 SGT] Answer whenever you have a moment; each has a suggestion, so "agree" is enough. Full details are in section 1 of `docs/VARIABLE-REWARDS-SPEC.md`.
+[2026-10-29 22:40 SGT] Answer whenever you have a moment; each has a suggestion, so "agree" is enough. Full details are in section 1 of `src/variable-rewards/DESIGN.md`.
 
 **First, one task:** run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD unlocked).
 

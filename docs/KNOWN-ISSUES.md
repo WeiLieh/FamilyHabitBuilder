@@ -3,6 +3,7 @@
 ## Open
 
 ### [2026-10-31 09:41 SGT] "One diagram" means one architecture diagram
+- [2026-10-31 10:05 SGT] Path update: the rewards design (with its hook-loop flow) is now `src/variable-rewards/DESIGN.md`; the v0.1 original is in `docs/archive/`.
 - **Issue:** [2026-10-31 09:41 SGT] The drift test counts as a diagram: any image file, or a Mermaid block that names 2 or more official modules, outside `docs/archive/`. The "hook loop" Mermaid flows in the two rewards specs name no modules, so they are allowed.
 - **Impact:** [2026-10-31 09:41 SGT] If the owner meant "no other diagrams at all", the rewards specs' flow diagrams would need moving or removing.
 - **Workaround:** [2026-10-31 09:41 SGT] Owner to confirm the reading at PR 2 review.
