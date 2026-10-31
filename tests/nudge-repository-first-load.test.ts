@@ -1,8 +1,8 @@
 // =============================================================================
-// tests/nudges-first-load.test.ts: the owner's first-load CSVs pass the app's rules
+// tests/nudge-repository-first-load.test.ts: the owner's first-load CSVs pass the app's rules
 //
 // supabase/seed/nudges-first-load.csv and examples-first-load.csv were made
-// from docs/Nudge_Repository.xlsx. The owner imports them into Supabase once
+// from docs/archive/Nudge_Repository.xlsx. The owner imports them into Supabase once
 // (nudges first, then examples). The database has its own rules (tested by
 // supabase/tests/); this test checks the APP's rules accept the same data, so
 // the two sets of rules agree.
@@ -10,7 +10,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { readNudgeRows } from "../src/nudge-repository.js";
+import { readNudgeRows } from "../src/nudge-repository/nudge-repository.js";
 import { csvToObjects } from "./helpers/csv.js";
 
 // Read a CSV and shape each row the way Supabase will return it: IDs 1, 2, 3...

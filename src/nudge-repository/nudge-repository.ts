@@ -1,5 +1,5 @@
 // =============================================================================
-// src/nudge-repository.ts: the Nudge repository's row checks
+// src/nudge-repository/nudge-repository.ts: the Nudge repository's row checks
 //
 // What it does: takes the raw rows read from the two Supabase tables the owner
 // edits by hand (spec v1.6):
@@ -23,7 +23,7 @@
 // zod is our approved checking library: we describe what a valid value looks
 // like, and zod tells us exactly what is wrong when it doesn't match.
 import { z } from "zod";
-import { MIN_EXAMPLES_PER_NUDGE } from "./settings.js";
+import { MIN_EXAMPLES_PER_NUDGE } from "../settings.js";
 
 // ---- What a valid nudge looks like inside the app --------------------------
 

@@ -12,8 +12,7 @@
 import { describe, expect, it } from "vitest";
 import { checkChoices, type Choice } from "../src/nudge-engine/choices.js";
 import { STARTING_CHOICE_LIMITS } from "../src/settings.js";
-import { readNudgeRows } from "../src/nudge-repository.js";
-import { nineTestNudges, nineTestTables } from "./helpers/nudge-rows.js";
+import { nineTestNudges, nineTestNudgesWith } from "./helpers/nudge-repository-rows.js";
 
 const nudges = nineTestNudges();
 
@@ -144,11 +143,7 @@ describe("Nudge engine: checking a parent's choices", () => {
   });
 
   it("refuses a retired (inactive) nudge, even if the parent had unlocked it", () => {
-    const { nudgeRows, exampleRows } = nineTestTables();
-    const withRetired = readNudgeRows(
-      nudgeRows.map((row) => (row["id"] === 2 ? { ...row, active: false } : row)),
-      exampleRows,
-    ).nudges;
+    const withRetired = nineTestNudgesWith(2, { active: false }); // nudge 2 retired
     const result = checkChoices(
       [{ nudgeId: 2, frequency: "every_day" }],
       withRetired,
