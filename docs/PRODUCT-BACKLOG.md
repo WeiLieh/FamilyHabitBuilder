@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-31 18:04 SGT] See whether the Weekly Wrap Up makes parents mute the bot
+- **Item:** [2026-10-31 18:04 SGT] In Telemetry, track mutes and stops within 24 hours of a Weekly Wrap Up, as well as metric 9 (which never counts the Wrap Up as a nudge, rule 10.2).
+- **Why it matters:** [2026-10-31 18:04 SGT] Otherwise we can't tell whether the Wrap Up itself drives opt-outs (privacy and security review of PR B, low finding; owner agreed).
+- **Priority:** [2026-10-31 18:04 SGT] Medium (with Telemetry, step 6)
+- **Status:** [2026-10-31 18:04 SGT] Not started
+
 ## [2026-10-31 17:53 SGT] "Another idea" button on nudge messages
 - **Item:** [2026-10-31 17:53 SGT] A button on each nudge message that swaps in a different example (v0.1's "Swap"), once per message.
 - **Why it matters:** [2026-10-31 17:53 SGT] Gives parents more choice in the moment. Left out of the MVP by the owner (D6): it adds complexity, and parents might tap it repeatedly instead of acting. Nudge messages keep only Done and Not today (rule 3.5).

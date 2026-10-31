@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-10-31 18:04 SGT] A failed history read could look like "nothing happened"
+- **Issue:** [2026-10-31 18:04 SGT] The Weekly Wrap Up decision (`src/nudge-engine/wrap-up.ts`) and the nudge planner trust the lists of logs and sent messages they are given. If reading them from the Datastore fails and the caller passes empty lists, a failure would look like "never sent" (the Wrap Up could go out twice) or "nothing logged" (silently skipped). Found by the privacy and security review of PR B; owner agreed to log it.
+- **Impact:** [2026-10-31 18:04 SGT] None yet (nothing is sent). Once the scheduler is wired up, this would break rule 1.3 (no fallbacks).
+- **Workaround:** [2026-10-31 18:04 SGT] When building the scheduler (Datastore and Telegram bot steps), a failed read must stop the decision for that parent and be reported as a failure, never replaced with an empty list. Add a test for it then.
+
 ### [2026-10-31 14:47 SGT] No real families may send photos until consent and "delete my data" are built
 - **Issue:** [2026-10-31 14:47 SGT] Photo consent at sign-up and the "delete my data" function exist only as specs, not as code (found by the privacy and security review of PR #11; owner agreed to log it).
 - **Impact:** [2026-10-31 14:47 SGT] Photos may show children. Collecting them without recorded consent or a working way to delete them would break the agreed privacy rules and the Singapore Personal Data Protection Act (PDPA) expectations.

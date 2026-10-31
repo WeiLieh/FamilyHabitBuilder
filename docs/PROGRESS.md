@@ -1,5 +1,17 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 18:04 SGT] Session 6, later: PR B built (read this first)
+### Done
+- [2026-10-31 18:04 SGT] **PR B built test-first** on branch `claude/festive-einstein-nf623s-pr-b` (owner approved a second branch so PR A, #12, stays separate): Weekly Wrap Up (rule 3.12, `src/nudge-engine/wrap-up.ts`), rule 3.4 changed, week close at midnight Sunday (rule 7.6, `src/variable-rewards/week.ts`), new rules 3.13, 3.14, 10.2, rule 7.1 changed, D5 to D7 in DESIGN.md. Tests 106 → 129 (minimum raised to 129). Both review agents ran; owner agreed all suggestions (one known issue, one backlog item, a stronger "Not today" test).
+- [2026-10-31 18:04 SGT] **D8 to D10 answered** (all rewards decisions D1 to D11 now done): rules 7.7 (album entry from the Wrap Up), 7.8 (weekly and monthly snapshots), 10.3 (trial: 5 full weeks per family from its first full Monday, 5 to 10 families).
+### In progress
+- [2026-10-31 18:04 SGT] PR A (#12) waiting for the owner's review. PR B pushed to its own branch; its pull request is opened after #12 is merged (then PR B's branch only adds its own commits on top of main).
+### Next steps
+- [2026-10-31 18:04 SGT] Owner: design the shape of a possible **Experiments** module in Claude Chat before the Datastore table mock-ups (own module or part of the Nudge engine; settings in code or an editable table; A/B groups in the first trial or one set of values for everyone, since 5 to 10 families is too few to compare groups; record each family's values from day one).
+- [2026-10-31 18:04 SGT] Then the Datastore build (step 2), table mock-ups first (include wrap-up time and on/off, a record of Wrap Ups sent, and whatever the Experiments design needs).
+### Blockers
+- [2026-10-31 18:04 SGT] None. Waiting on the owner: merge #12 and run `2026-10-31_more_examples.sql` (expect 32 rows); then PR B's pull request.
+
 ## [2026-10-31 17:46 SGT] HANDOFF: session 6 paused at about 50% context (read this first)
 ### Where we are
 - [2026-10-31 17:46 SGT] **PR A (32 new examples, D6) is open for the owner's review** (link in the session 6 chat; branch `claude/festive-einstein-nf623s`). Seed file now 77 examples; content script `src/datastore/supabase/content/2026-10-31_more_examples.sql` (owner runs it in Supabase after merging; expect 32 rows). Tests updated first; 106 app tests and all database tests pass. Both review agents ran (no high or medium findings).

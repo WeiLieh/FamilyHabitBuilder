@@ -19,6 +19,7 @@ import {
   planWeeklyWrapUp,
   type WrapUpInput,
 } from "../src/nudge-engine/wrap-up.js";
+import { planNudge } from "../src/nudge-engine/planner.js";
 import { sgtInstant } from "../src/sgt.js";
 import { DEFAULT_WEEKLY_WRAP_UP, SLOT_STARTS } from "../src/settings.js";
 
@@ -112,9 +113,23 @@ describe("Weekly Wrap Up: when it is sent (rule 3.12)", () => {
 
   // Agreed test 7
   it("is still sent after the parent tapped 'Not today' that Sunday", () => {
-    // "Not today" stops nudge messages only, so the Wrap Up never even looks at it.
-    expect("notTodayDate" in input({})).toBe(false);
-    expect(planWeeklyWrapUp(input({}))).toEqual({ send: true });
+    // The same parent, same moment: "Not today" (tapped this Sunday) stops the
+    // nudge message in the 8:00pm hour, but the Weekly Wrap Up still goes out.
+    const now = at("2026-11-08", "20:05");
+    const logs = [{ nudgeId: 1, date: "2026-11-04" }];
+    const nudge = planNudge({
+      now,
+      targets: [{ nudgeId: 1, category: "quick", frequency: "every_day" }],
+      schedules: { school: [420], nonSchool: [1200] }, // a Sunday slot at 8:00pm
+      holidays: { publicHolidays: [], schoolHolidays: [] },
+      logs,
+      messagesSent: [],
+      notTodayDate: "2026-11-08",
+      paused: false,
+      slotsChangedAt: null,
+    });
+    expect(nudge).toEqual({ send: false, reason: "not_today" });
+    expect(planWeeklyWrapUp(input({ now, logs }))).toEqual({ send: true });
   });
 
   // Agreed test 8

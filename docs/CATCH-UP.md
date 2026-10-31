@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-31 17:46 SGT]** (session 6 paused at about 50% context). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-31 17:46 SGT]** (session 6, PR B built). [2026-10-31 18:04 SGT] Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -55,21 +55,20 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-10-31 17:46 SGT] "Agree" is enough where there's a suggestion. (Last session's items are done: PR #11 merged, both known issues logged, unlock script confirmed.)
-1. **Review and merge PR A** (32 new examples, habits H6 and H7). Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
-2. **Two low review notes, log as known issues or not?** (a) The database doesn't block the same example text twice for one nudge (only the script checks). (b) The time-word test doesn't treat "today" as a time word; 3 examples use it ("What made you laugh today?"). Suggestion: log (a), leave (b) as is.
-3. **D8, D9, D10** (we decide these together after PR B): see section 1 of [src/variable-rewards/DESIGN.md](../src/variable-rewards/DESIGN.md).
-   - D8: album photos, only from logs, or any photo sent in reply to the Weekly Wrap Up?
-   - D9: trial length (suggestion: 5 weeks, 5 to 10 families).
-   - D10: weekly snapshot = the Weekly Wrap Up (confirm what it shows); monthly snapshot: a similar message on the 1st? What if the 1st is a Sunday? Does it count toward the 3-a-day cap?
+[2026-10-31 18:04 SGT] "Agree" is enough where there's a suggestion.
+1. **Review and merge PR A** (#12: 32 new examples, habits H6 and H7): https://github.com/WeiLieh/FamilyHabitBuilder/pull/12. Then run `src/datastore/supabase/content/2026-10-31_more_examples.sql` in Supabase (expect 32 rows).
+2. **Review PR B** (Weekly Wrap Up, D5 to D10), on branch `claude/festive-einstein-nf623s-pr-b`; Claude opens its pull request once #12 is merged.
+3. **Experiments module (design in Claude Chat, before the Datastore mock-ups):** its own module or part of the Nudge engine? Settings in code or an editable table? A/B groups in the first trial, or one set of values for everyone (5 to 10 families is too few to compare groups)? Record each family's values from day one?
+4. **Still undecided from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
 
-**Next in code:** PR B, the Weekly Wrap Up and decisions D5 to D7 (plan and tests already agreed; see the HANDOFF in [docs/PROGRESS.md](PROGRESS.md)). Then the Datastore build (step 2), table mock-ups first.
+**Next in code:** the Datastore build (step 2), table mock-ups first.
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
 - [2026-10-31 16:47 SGT] DONE: Run the unlock script (section 4)
-- [2026-10-31 17:46 SGT] Rewards decisions D8 to D10 (section 4); D5 to D7 answered on 31 Oct.
+- [2026-10-31 18:04 SGT] DONE: all rewards decisions D1 to D11 answered (31 Oct).
+- SUPERSEDED [2026-10-31 18:04 SGT] [2026-10-31 17:46 SGT] Rewards decisions D8 to D10 (section 4); D5 to D7 answered on 31 Oct.
 - SUPERSEDED [2026-10-31 17:46 SGT] Rewards decisions D5 to D10 (section 4)
 - Nudge personality ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
 - Badge graphics and the look of every screen (Web app, setup)
