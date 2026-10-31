@@ -2,6 +2,7 @@
 
 ## [2026-10-31 09:29 SGT] Session 5
 ### Done
+- [2026-10-31 10:09 SGT] PR 6 merged. PR 7 (Telemetry): flag flipped first (drift red: no spec); metrics spreadsheet moved to `src/telemetry/`; spec written (rules 5.2, 10.1, not yet tested).
 - [2026-10-31 10:05 SGT] PR 5 merged. PR 6 (Variable rewards): flag flipped first (drift red: no spec); design moved to `src/variable-rewards/DESIGN.md`, v0.1 original archived, spec written (rules 7.1 to 7.6, all not yet tested).
 - [2026-10-31 09:59 SGT] PR 4 merged. PR 5 (Datastore): flag flipped first (drift red: 5 SQL files outside the Datastore, no spec); `supabase/` moved to `src/datastore/supabase/` (migrations byte-for-byte unchanged); paths updated; database tests pass from the new place; spec with rules 5.5, 8.1, 8.2 and migration fingerprints.
 - [2026-10-31 09:56 SGT] PR 3 merged. PR 4 (Nudge repository): flag flipped first (drift red: file in src root, no spec); code moved into `src/nudge-repository/`, 2 tests renamed to the slug, spreadsheet archived; the drift test then caught a broken link in the Nudge engine spec and a test reaching into another module (fixed via the helper); spec written. 
