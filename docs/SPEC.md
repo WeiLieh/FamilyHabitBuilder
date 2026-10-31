@@ -49,7 +49,54 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 18:26 SGT] The engine can run an experiment (read from `docs/EXPERIMENTS.md`), telemetry shows the 10 metrics in `docs/Family_Habit_App_Success_Metrics.xlsx`, and the system works for 50 trial users.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
+## Modules and structure
+
+[2026-10-31 09:40 SGT] This section holds the facts the **drift test** (`tests/docs-drift.test.ts`, run by `npm run check` on every pull request) checks the repo against. The tables and lists below are a **current snapshot**, updated in place; every change to them is also recorded in the Change notes. Rules S1 to S7, R1 to R4, D1 to D3, B1, B2, P1 and P2 were agreed on 31 Oct (restructure plan).
+
+[2026-10-31 09:40 SGT] **Document index** (every Markdown file must be reachable by links from here or from `CLAUDE.md`):
+- Master prompt: [CLAUDE.md](../CLAUDE.md) · Read-me: [README.md](../README.md)
+- The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
+- Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](EXPERIMENTS.md)
+- Module documents not yet moved to their module folders: [NUDGE-CONTEXT.md](NUDGE-CONTEXT.md), [VARIABLE-REWARDS-SPEC.md](VARIABLE-REWARDS-SPEC.md), [variable-rewards-spec-v0.1-original.md](variable-rewards-spec-v0.1-original.md)
+- History lives in `docs/archive/` (exempt from the checks).
+
+### Module table
+[2026-10-31 09:40 SGT] Official names (from the owner's diagram), slugs, folders and status. "Migrated" is the ratchet: per-module checks (S1, S5, R3) apply only to rows marked yes; each restructure pull request flips one row. Status must match the diagram.
+
+| Module | Slug | Folder | Spec | Status | Migrated |
+|---|---|---|---|---|---|
+| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Not started | no |
+| Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | no |
+| Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | no |
+| Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | no |
+| Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | no |
+| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Nudge tables live | no |
+| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | no |
+| Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | no |
+
+### Cross-cutting files
+Files that belong to no module (exempt from the slug rules). Documented here and in `docs/CONTEXT.md`.
+- [2026-10-31 09:40 SGT] `src/settings.ts`: all the numbers (limits, slots, defaults)
+- [2026-10-31 09:40 SGT] `src/sgt.ts`: Singapore time helpers
+- [2026-10-31 09:40 SGT] `api/health.ts`: "I'm alive" deployment check
+- [2026-10-31 09:40 SGT] `tests/api-health.test.ts`: tests for `api/health.ts`
+- [2026-10-31 09:40 SGT] `tests/helpers/csv.ts`: reads CSV files in tests
+- [2026-10-31 09:40 SGT] `tests/helpers/docs-drift.ts`: the drift checks
+- [2026-10-31 09:40 SGT] `tests/docs-drift.test.ts`: the drift test
+
+### Retired module names
+Names that must not be used as module names (diagram, Module table, `CLAUDE.md`, catch-up page, module specs).
+- [2026-10-31 09:40 SGT] Habit rules (my own label from session 1; it covered parts of three modules)
+
+### Retired rule IDs
+- [2026-10-31 09:40 SGT] None yet.
+
+### Minimum test count
+The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
+- [2026-10-31 09:40 SGT] Minimum test count: 106
+
 ## Change notes
+- [2026-10-31 09:40 SGT] **Restructure PR 2 (drift test):** added the "Modules and structure" section (document index, Module table with all modules "migrated: no", cross-cutting files, retired names, retired rule IDs, minimum test count 106) and the one diagram `docs/ARCHITECTURE.md`. Path-move map: `docs/architecture-diagram.png` → `docs/archive/architecture-diagram.png`. The catch-up page now links to the diagram instead of keeping its own copy.
 - [2026-10-31 09:30 SGT] **Path-move map, restructure PR 1** (no rules changed): `shared/` → `src/` (`shared/nudge-engine/*` → `src/nudge-engine/*`; `shared/nudge-repository.ts` → `src/nudge-repository.ts`; `shared/settings.ts` → `src/settings.ts`; `shared/sgt.ts` → `src/sgt.ts`). Older notes keep the old paths as written.
 - [2026-10-29 22:37 SGT] Version 1.9 (in progress), D2 to D4 (owner): **D2** validation replies: honest receipt first, then Claude's reply (rule 7.5). **D3** streaks are weekly (rule 7.3 changed). **D4** steady week = the parent's own chosen frequency with slack: every day 6 of 7, every 2 days 3, deliberate 1 or 2 as chosen; the joining week doesn't count against them (rule 7.6; bars to tune after the trial). D5 to D9 and D10 timing remain parked.
 - [2026-10-29 22:33 SGT] Version 1.9 (in progress), D1 and D2 (owner): **no XP or levels in the MVP**; the double XP for unprompted logs (v1.8) becomes a special validation reply (rule 7.2). **Validation replies are written by Claude** (not a fixed library), because a library cannot cover every scenario. Still open: what the parent sees if Claude fails (suggested: an honest receipt first, then Claude's reply). D3 open, D4 to D9 parked.
