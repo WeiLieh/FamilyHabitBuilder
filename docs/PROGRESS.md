@@ -11,7 +11,8 @@
 ### Next steps
 - [2026-10-31 14:47 SGT] The Datastore build (development order step 2), starting with table mock-ups for the owner's agreement.
 ### Blockers
-- [2026-10-31 14:47 SGT] None blocking. Waiting on the owner (not blocking): run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in Supabase ("later"); rewards decisions D5 to D10 parked by the owner.
+- [2026-10-31 16:47 SGT] None blocking. Waiting on the owner (not blocking): rewards decisions D5 to D10 (parked). The unlock script is done.
+- [2026-10-31 14:47 SGT] SUPERSEDED [2026-10-31 16:47 SGT] None blocking. Waiting on the owner (not blocking): run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in Supabase ("later"); rewards decisions D5 to D10 parked by the owner.
 
 ## [2026-10-31 10:22 SGT] HANDOFF: session 5 paused (read this first)
 ### Where we are

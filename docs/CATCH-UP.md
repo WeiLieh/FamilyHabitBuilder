@@ -58,7 +58,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-10-31 10:22 SGT] "Agree" is enough where there's a suggestion.
 1. **Merge the Step 2 pull request** (two read-only review agents): https://github.com/WeiLieh/FamilyHabitBuilder/pull/11
 2. **Which review findings go into known issues?** Suggested, both new: (a) every future Supabase table must repeat migration 002's lock-down steps, or it starts with broad default access; (b) no real families send photos until photo consent and "delete my data" are built.
-3. **Run the unlock script** in Supabase: `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` (expect 3 rows).
+3. [2026-10-31 16:47 SGT] DONE: all 9 nudges confirmed unlocked in Supabase. **Run the unlock script** in Supabase: `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` (expect 3 rows).
 4. **Rewards decisions D5 to D10:** see section 1 of [src/variable-rewards/DESIGN.md](../src/variable-rewards/DESIGN.md) (repair pass, surprise ideas, weekly album prompt, album photos, trial length, snapshot timing).
 
 **After that:** the Datastore build (development order step 2), starting with table mock-ups for your agreement.
@@ -66,7 +66,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- Run the unlock script (section 4)
+- [2026-10-31 16:47 SGT] DONE: Run the unlock script (section 4)
 - Rewards decisions D5 to D10 (section 4)
 - Nudge personality ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)), which now also guides Claude's validation replies (rule 7.5); context collected from parents; how much free chat the bot supports
 - Badge graphics and the look of every screen (Web app, setup)
