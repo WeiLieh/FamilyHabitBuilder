@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-10-31 09:29 SGT] Session 5 (2026-10-31 morning)
+- **Started:** 08:42 SGT
+- **Plan:** documentation restructure so docs can't drift from code (owner's task): Phase A plan approved (with rule S7); Phase B as a sequence of small pull requests, starting with PR 0 (merge existing work into `main`).
+
 ## [2026-10-29 20:34 SGT] Session 4 (2026-10-29 evening)
 - [2026-10-29 22:40 SGT] **Ended by the owner.** About 2 h 10 min (20:34 to about 22:45), all active, design and thinking only (no new module code).
   - 20:34 to 20:58 (about 25 min): catch-up recap, question on rules 2.2 vs 4.3, Batch 3 answers (random surprise dropped, experiment variables parked)

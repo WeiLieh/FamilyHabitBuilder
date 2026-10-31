@@ -1,5 +1,15 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 09:29 SGT] Session 5
+### Done
+- [2026-10-31 09:29 SGT] Owner's restructure task: Phase A plan approved (module folders `src/<slug>/` with SPEC.md next to code; `shared/` renamed `src/`; Datastore owns `src/datastore/supabase/`; one Mermaid diagram `docs/ARCHITECTURE.md`; drift test with rules S1 to S7, R1 to R4, D1 to D3, B1, B2, P1, P2; habits H1 to H5 in CLAUDE.md; PRs 0 to 9 with a ratchet).
+### In progress
+- [2026-10-31 09:29 SGT] PR 0: merge all existing work into `main` (waiting for the owner's review and approval).
+### Next steps
+- [2026-10-31 09:29 SGT] PR 1 (rename `shared/` to `src/`), then PR 2 (drift test first), then one PR per module.
+### Blockers
+- [2026-10-31 09:29 SGT] Each PR waits for the owner's approval before merging.
+
 ## [2026-10-29 22:40 SGT] HANDOFF after session 4 (read this first)
 - [2026-10-29 22:40 SGT] **Start next session with the catch-up recap:** show `docs/CATCH-UP.md`, remind the owner to read it, invite questions, then ask for the section 4 answers (unlock script; rewards decisions D5 to D10). Only then start new work.
 - [2026-10-29 22:40 SGT] State: spec v1.9 (in progress). Code unchanged since session 3 apart from data: 84 app tests and the database checks pass. All 9 nudges unlocked in the seed file; the live Supabase change waits for the owner to run `supabase/content/2026-10-29_unlock_all_nudges.sql`.
