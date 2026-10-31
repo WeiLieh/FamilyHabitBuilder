@@ -1,7 +1,21 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 10:22 SGT] HANDOFF: session 5 paused (read this first)
+### Where we are
+- [2026-10-31 10:22 SGT] **Restructure Step 1 complete** (PRs 0 to 9 merged into `main`, GitHub PRs #1 to #10): `shared/` renamed `src/`; every module has `src/<slug>/SPEC.md` next to its code; `supabase/` moved to `src/datastore/supabase/`; one diagram `docs/ARCHITECTURE.md`; master spec `docs/SPEC.md` holds the Module table (all 8 migrated), cross-cutting rules 1.1 to 1.3 and the structure rules; drift test (`tests/docs-drift.test.ts`) runs in `npm run check`; habits H1 to H5 in `CLAUDE.md`. 106 tests pass.
+- [2026-10-31 10:22 SGT] **Step 2 open for the owner's review:** PR https://github.com/WeiLieh/FamilyHabitBuilder/pull/11 (two read-only review agents in `.claude/agents/`). CI green. Claude is watching it.
+### Waiting on the owner
+1. [2026-10-31 10:22 SGT] Review and merge PR #11.
+2. [2026-10-31 10:22 SGT] Decide which review findings go into `docs/KNOWN-ISSUES.md` (Claude suggested the two new ones): (a) future Supabase tables get broad default access unless each new migration repeats the revoke-and-grant steps of migration 002; (b) no real families should send photos until photo consent and "delete my data" are built.
+3. [2026-10-31 10:22 SGT] Run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in Supabase (expect 3 rows).
+4. [2026-10-31 10:22 SGT] Rewards decisions D5 to D10 (`src/variable-rewards/DESIGN.md`, section 1).
+### Next steps (after the above)
+- [2026-10-31 10:22 SGT] Start of next session: habit H1 (run the drift check), then the catch-up recap. From the next session the two review agents can be called by name.
+- [2026-10-31 10:22 SGT] Then: the Datastore build (step 2 of the development order), starting with table mock-ups.
+
 ## [2026-10-31 09:29 SGT] Session 5
 ### Done
+- [2026-10-31 10:19 SGT] PR 9 merged: Step 1 (restructure) complete. Step 2: two read-only review agents created in `.claude/agents/`; habit H3 in `CLAUDE.md` now links them.
 - [2026-10-31 10:17 SGT] PR 8 merged (all 8 modules migrated). PR 9: rules 1.1 to 1.3 and the structure rules written into `docs/SPEC.md`; habits H1 to H5 in `CLAUDE.md`; catch-up page sections 2 and 3 now links only.
 - [2026-10-31 10:12 SGT] PR 7 merged. PR 8 (Telegram bot, Photo check, Web app): three flags flipped first (drift red: three specs missing); spec-only folders written. All 8 modules migrated.
 - [2026-10-31 10:09 SGT] PR 6 merged. PR 7 (Telemetry): flag flipped first (drift red: no spec); metrics spreadsheet moved to `src/telemetry/`; spec written (rules 5.2, 10.1, not yet tested).

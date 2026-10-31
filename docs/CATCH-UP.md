@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-29 22:40 SGT]** (end of session 4). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-10-31 10:22 SGT]** (session 5 paused). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -55,19 +55,13 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-10-29 22:40 SGT] Answer whenever you have a moment; each has a suggestion, so "agree" is enough. Full details are in section 1 of `src/variable-rewards/DESIGN.md`.
+[2026-10-31 10:22 SGT] "Agree" is enough where there's a suggestion.
+1. **Merge the Step 2 pull request** (two read-only review agents): https://github.com/WeiLieh/FamilyHabitBuilder/pull/11
+2. **Which review findings go into known issues?** Suggested, both new: (a) every future Supabase table must repeat migration 002's lock-down steps, or it starts with broad default access; (b) no real families send photos until photo consent and "delete my data" are built.
+3. **Run the unlock script** in Supabase: `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` (expect 3 rows).
+4. **Rewards decisions D5 to D10:** see section 1 of [src/variable-rewards/DESIGN.md](../src/variable-rewards/DESIGN.md) (repair pass, surprise ideas, weekly album prompt, album photos, trial length, snapshot timing).
 
-**First, one task:** run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD unlocked).
-
-**Variable rewards, parked decisions D5 to D10**
-- **D5 Repair pass** (a free "missed day" pass): *suggestion:* not in the MVP; slack in steady weeks (rule 7.6) and logging up to yesterday (rule 5.4) cover forgetful days.
-- **D6 Surprise ideas:** *suggestion:* each nudge message uses a fresh example (no repeats until all are used); your v0.1 cards become new example rows; add an **"Another idea"** button, once per message.
-- **D7 Weekly album prompt:** *suggestion:* once a week, in your last Sunday slot, only if you logged that week; counts as one of that day's nudge messages.
-- **D8 Album photos:** *suggestion:* the weekly prompt can take a photo or line about any moment, saved as an album entry (not a log).
-- **D9 Trial:** *suggestion:* 5 weeks, 5 to 10 friends' families.
-- **D10 Snapshot timing:** *suggestion:* weekly snapshot combined with the D7 album prompt (Sunday); monthly on the 1st, in the parent's first slot.
-
-**After the rewards design:** the Datastore (step 2 of the development order), starting with table mock-ups for your agreement.
+**After that:** the Datastore build (development order step 2), starting with table mock-ups for your agreement.
 
 ---
 

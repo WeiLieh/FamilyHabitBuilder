@@ -3,6 +3,7 @@
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
 ## [2026-10-31 09:29 SGT] Session 5 (2026-10-31 morning)
+- [2026-10-31 10:22 SGT] **Paused by the owner.** About 1 h 45 min (08:42 to about 10:25 SGT), all active. Owner's restructure task: plan (Phase A), then 10 pull requests merged in about 55 minutes (PR 0 to PR 9) plus Step 2 opened. Timeboxing note: small pull requests with a test-first ratchet kept each one to about 5 minutes; the owner merged each within minutes.
 - **Started:** 08:42 SGT
 - **Plan:** documentation restructure so docs can't drift from code (owner's task): Phase A plan approved (with rule S7); Phase B as a sequence of small pull requests, starting with PR 0 (merge existing work into `main`).
 

@@ -139,7 +139,8 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 
 #### During work
 - [2026-10-31 10:17 SGT] **Where things live:** each module's rules are in its own spec next to its code, `src/<slug>/SPEC.md`; cross-cutting rules, the Module table and the structure rules (S, R, D, B, P) are in [docs/SPEC.md](docs/SPEC.md), "Modules and structure"; the one diagram is [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The drift test (`npm run check`) enforces them.
-- [2026-10-31 10:17 SGT] **H3, before each pull request:** run both review agents (privacy and security; spec compliance) and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. (Until the agents exist, say so.)
+- [2026-10-31 10:19 SGT] **H3, before each pull request:** run both review agents, [privacy-security-reviewer](.claude/agents/privacy-security-reviewer.md) and [spec-compliance-checker](.claude/agents/spec-compliance-checker.md), and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. Give the spec-compliance checker the latest `npm run check` output; it never runs tests itself. Each works in its own context window and returns at most 300 words.
+- [2026-10-31 10:17 SGT] **H3, before each pull request:** run both review agents (privacy and security; spec compliance) and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. (Until the agents exist, say so.) SUPERSEDED [2026-10-31 10:19 SGT]: the agents now exist, see the line above.
 - [2026-10-31 10:17 SGT] **H4, one module per pull request** where possible; each pull request lists the rule IDs it adds or changes, and the test count before and after (it must never drop below the minimum in `docs/SPEC.md`).
 - [2026-10-31 10:17 SGT] **H5, never weaken the drift test** to make it pass. Changing what it checks needs my approval, like any other test.
 - Before debugging an error, check `docs/ERROR-LOG.md` to see if we have solved it before.

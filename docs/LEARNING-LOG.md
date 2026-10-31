@@ -2,6 +2,19 @@
 
 ## Notebook
 
+### [2026-10-31 10:19 SGT] Sub-agents (specialist reviewers with their own desk)
+- **Concept:** Sub-agents: separate Claude helpers, each with its own instructions, a limited set of tools and its own context window (working memory).
+- **In plain English:** Instead of the main Claude reading every file itself (and filling its memory), it hands a focused job to a specialist, for example "check privacy", which reads widely on its own and returns only a short report. Giving it read-only tools means it cannot change anything.
+- **Analogy:** An auditor who goes through the filing cabinets in a separate room and comes back with a one-page memo, instead of piling every file on your desk.
+- **Why and when to use it:** Repeated, wide reviews (before every pull request). Not for small, quick questions, where starting a specialist costs more than it saves.
+- **Best practices:**
+  - Give each agent the fewest tools it needs (least privilege).
+  - Cap the report length so it stays useful.
+  - Never let a reviewer claim results it did not see (our checker never claims tests passed).
+- **Where it showed up in this project:** `.claude/agents/privacy-security-reviewer.md` and `.claude/agents/spec-compliance-checker.md`, run before each pull request (habit H3).
+- **Explain it to others:** "Before every change goes in, two read-only reviewers check privacy and whether our rules are really tested, and each hands back a short memo; nobody can edit code during the review."
+- **Governance angle:** A reviewer would ask what the agents can do: only read and search, so they cannot leak by changing code or running commands; their findings go to the owner, who decides.
+
 ### [2026-10-31 09:41 SGT] Drift test with a ratchet
 - **Concept:** A drift test (an automatic check that documentation still matches the code), switched on step by step with a "ratchet".
 - **In plain English:** Documents go out of date silently. The drift test reads the repo on every pull request and fails if, for example, the diagram names a module that doesn't exist, a link is broken, or code uses another module without an arrow in the diagram. The ratchet means each module's checks switch on only when that module has been moved into the new structure, and once on they never switch off.
