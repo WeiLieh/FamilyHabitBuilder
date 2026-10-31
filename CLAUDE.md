@@ -125,7 +125,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). SUPERSEDED [2026-10-31 09:40 SGT]: moved to `docs/archive/`; the only diagram is now `docs/ARCHITECTURE.md`. |
 | `docs/CATCH-UP.md` | [2026-10-28 22:37 SGT] One-page catch-up after time away: module progress map, what each module and file does, current rules recap, questions to think about before the next session. A snapshot, rewritten each session (history stays in Git and `docs/SPEC.md`). |
 | `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |
-| `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |
+| `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. SUPERSEDED [2026-10-31 10:09 SGT]: moved to [src/telemetry/Family_Habit_App_Success_Metrics.xlsx](src/telemetry/Family_Habit_App_Success_Metrics.xlsx), next to the Telemetry spec. |
 
 #### Setup (first session of a new project)
 If any of the files above are missing, create them (in a `docs/` folder, except `CLAUDE.md`) using the structures below, then tell me what you created. Do not overwrite a file that already exists.

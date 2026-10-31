@@ -63,7 +63,6 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 ### 5. Logging (Telegram bot and Datastore)
 - **5.1** Parents can log **any time**: tap ✅ Done on a nudge message, a "Log something" button, or free text Claude understands. *(decided 28 Oct)*
-- **5.2** **Unprompted** = no nudge message in the 4 hours before (metric 7). *(decided 28 Oct)*
 - **5.3** Optional **description** (up to 280 characters) = the Hooked "Investment". Over 280: the bot asks to shorten it. Shown in the web app and snapshot, and given to Claude for future nudges. *(decided 24 Oct)*
 - **5.4** Logging a behaviour not chosen: **accepted with thanks**, doesn't count toward targets. Logging late: **back to yesterday only**. Twice in a day: counts once for targets and streaks, but **should still be celebrated (WIP)**. *(decided 28 Oct)*
 
@@ -80,7 +79,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **9.1** Plain, unstyled pages that show the right data; **the look comes from you later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)*
 
 ### 10. Telemetry
-- **10.1** The **10 metrics** in `docs/Family_Habit_App_Success_Metrics.xlsx` (activation, adoption, stickiness, churn, drop-off, target-hit, unprompted, nudge-to-action, mute/stop, connection rating). "Not today" is its own event, not part of mute/stop. *(decided 24 Oct, 28 Oct)*
+[2026-10-31 10:09 SGT] Rules 10.1 and 5.2 now live in one place: **[src/telemetry/SPEC.md](../src/telemetry/SPEC.md)**, next to the metrics spreadsheet.
 
 ### Retired rule IDs
 - None yet.
