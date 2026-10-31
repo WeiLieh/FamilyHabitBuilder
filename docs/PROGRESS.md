@@ -2,6 +2,7 @@
 
 ## [2026-10-31 09:29 SGT] Session 5
 ### Done
+- [2026-10-31 09:56 SGT] PR 3 merged. PR 4 (Nudge repository): flag flipped first (drift red: file in src root, no spec); code moved into `src/nudge-repository/`, 2 tests renamed to the slug, spreadsheet archived; the drift test then caught a broken link in the Nudge engine spec and a test reaching into another module (fixed via the helper); spec written. 
 - [2026-10-31 09:43 SGT] PR 2 merged. PR 3 (Nudge engine): ratchet flag flipped first (drift test red: no spec), then `src/nudge-engine/SPEC.md` written (rules 2.x and 3.x, each with Tested by) and `NUDGE-CONTEXT.md` moved next to the code; `CLAUDE.md` and the catch-up page point to the new places.
 - [2026-10-31 09:41 SGT] PR 0 and PR 1 merged by the owner. PR 2 built test-first: 21 example tests (each check proven on a broken example) + 1 real-repo test that first found 25 drift problems; fixed by adding "Modules and structure" to `docs/SPEC.md`, `docs/ARCHITECTURE.md`, links in `CLAUDE.md` and `README.md`, catch-up linking to the diagram, PNG to `docs/archive/`. 106 tests pass.
 - [2026-10-31 09:30 SGT] PR 0 opened (https://github.com/WeiLieh/FamilyHabitBuilder/pull/1). PR 1 prepared locally: `shared/` → `src/` with `git mv`; configs, 16 test imports and header comments updated; 84 tests pass. Waiting for PR 0 to merge before pushing.

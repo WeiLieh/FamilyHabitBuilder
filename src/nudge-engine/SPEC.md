@@ -12,14 +12,14 @@
 - [2026-10-31 09:43 SGT] `schedule.ts`: school or non-school day; checks slots; which times the setup screen greys out (rules 3.1 to 3.3).
 - [2026-10-31 09:43 SGT] `due.ts`: is a behaviour still to do (rules 2.4, 3.7).
 - [2026-10-31 09:43 SGT] `planner.ts`: the decision "send a nudge about X now" or "don't send", with the reason (rules 3.4 to 3.11).
-- Uses: the [Nudge repository](../nudge-repository.ts) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../../docs/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
+- Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../../docs/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
 
 ## Rules at a glance
 2.1 limits · 2.2 active and unlocked · 2.3 frequencies · 2.4 nudge only while due · 3.1 slots · 3.2 two schedules · 3.3 defaults · 3.4 caps · 3.5 Done / Not today · 3.6 when nothing is sent · 3.7 due · 3.8 priority · 3.9 rest after 7 days · 3.10 deliberate on Friday and Sunday · 3.11 any slot, Claude adds context
 
 ## Rules: what a parent picks
 - **2.1** Up to **2 quick and 1 deliberate** behaviour, at least 1 in total. *(decided 25 Oct)* Tested by: tests/nudge-engine-choices.test.ts
-- **2.2** Only **active** and **unlocked** nudges can be picked. **In the MVP all 9 start unlocked** (unlocks are out of the MVP); the "starts unlocked" setting stays on each nudge for later. *(decided 25 Oct, changed 29 Oct)* Tested by: tests/nudge-engine-choices.test.ts (locked and retired nudges), tests/nudges-first-load.test.ts (all 9 unlocked)
+- **2.2** Only **active** and **unlocked** nudges can be picked. **In the MVP all 9 start unlocked** (unlocks are out of the MVP); the "starts unlocked" setting stays on each nudge for later. *(decided 25 Oct, changed 29 Oct)* Tested by: tests/nudge-engine-choices.test.ts (locked and retired nudges), tests/nudge-repository-first-load.test.ts (all 9 unlocked)
 - **2.3** Quick: **every day** or **every 2 days**. Deliberate: **1 or 2 times a week**, at most 2 in total. *(decided 24 Oct)* Tested by: tests/nudge-engine-choices.test.ts
 - **2.4** The frequency is how often the parent wants to **do** it. We only nudge while it is still undone ("due"). *(decided 28 Oct)* Tested by: tests/nudge-engine-due.test.ts, tests/nudge-engine-planner.test.ts
 

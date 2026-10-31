@@ -31,8 +31,8 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | | | | | `src/nudge-engine/planner.ts`: the decision: "send a nudge about X now" or "don't send", with the reason | 22 |
 | | | | | `src/settings.ts`: all the numbers in one place (3 a day, slot times, limits); mirrors `docs/EXPERIMENTS.md` | (used by all) |
 | | | | | `src/sgt.ts`: Singapore time helpers (days, weekdays, time of day) | (used by all) |
-| 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `src/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
-| | | | | `supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done) | 6 |
+| 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `src/nudge-repository/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
+| | | | | `supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done); tested by `tests/nudge-repository-first-load.test.ts` | 6 |
 | | | | | `supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
 | | | | | `supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
 | 4 | **Photo check** | Claude looks at a photo and judges whether it fits the behaviour | Not started | (none yet) | |
@@ -59,12 +59,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 [2026-10-31 09:43 SGT] Rules 2.1 to 2.4 (what a parent picks) and 3.1 to 3.11 (when and what to nudge) now live in one place: **[src/nudge-engine/SPEC.md](../src/nudge-engine/SPEC.md)** (with a "rules at a glance" list at the top).
 
 ### 4. Nudge repository
-- **4.1** Two tables you edit in Supabase: **nudges** (9 rows, settings written once, short codes TWC, SAF, DPR, GAT, SQT, IAC, SGE, ITE, ASD) and **examples** (unlimited, linked by code). *(decided 25 Oct)*
-- **4.2** **4 quick:** Talking with children, Showing affection, Descriptive praise, Giving attention. **5 deliberate:** Spending quality time, Interesting activities, Setting a good example, Incidental teaching, Ask-say-do. *(decided 24 Oct)*
-- **4.3** Each nudge has these settings: self-report allowed (yes/no), photo upload allowed (yes/no, plus a photo idea), description limit (280), active (yes/no), and **starts unlocked (yes/no)**. Which nudges are set to start unlocked is rule 2.2. *(decided 24 Oct, 25 Oct; reworded 29 Oct)*
-- **4.4** At least **3 active examples** per nudge: the database blocks edits that go below 3; the app flags new nudges below 3 (the nudge keeps working). *(decided 25 Oct)*
-- **4.5** Examples are **time-agnostic** (no "at dinner", "before bedtime"). *(decided 28 Oct)*
-- **4.6** Never delete: **retire** (active = no). A broken row is left out and reported; the rest keeps working. *(decided 25 Oct)*
+[2026-10-31 09:56 SGT] Rules 4.1 to 4.6 now live in one place: **[src/nudge-repository/SPEC.md](../src/nudge-repository/SPEC.md)**.
 
 ### 5. Logging (Telegram bot and Datastore)
 - **5.1** Parents can log **any time**: tap ✅ Done on a nudge message, a "Log something" button, or free text Claude understands. *(decided 28 Oct)*

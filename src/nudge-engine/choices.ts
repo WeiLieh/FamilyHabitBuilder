@@ -20,7 +20,7 @@
 // give a parent different limits later without changing this code.
 // =============================================================================
 
-import type { Nudge, NudgeCategory } from "../nudge-repository.js";
+import type { Nudge, NudgeCategory } from "../nudge-repository/nudge-repository.js";
 import { MAX_DELIBERATE_TIMES_PER_WEEK, type ChoiceLimits } from "../settings.js";
 
 // How often a parent wants to do a behaviour.

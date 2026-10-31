@@ -1,15 +1,15 @@
 // =============================================================================
-// tests/helpers/nudge-rows.ts: ready-made test rows for the Nudge repository
+// tests/helpers/nudge-repository-rows.ts: ready-made test rows for the Nudge repository
 //
 // The real nudges live in two Supabase tables the owner edits (spec v1.6):
 //   nudges   - one row per nudge, with its settings and a short code (e.g. TWC)
 //   examples - one row per example, naming its nudge by that code
 // Tests must not depend on that live content, so they use these made-up rows.
-// Column names match the Supabase tables (see src/nudge-repository.ts).
+// Column names match the Supabase tables (see src/nudge-repository/nudge-repository.ts).
 // =============================================================================
 
-import type { Nudge } from "../../src/nudge-repository.js";
-import { readNudgeRows } from "../../src/nudge-repository.js";
+import type { Nudge } from "../../src/nudge-repository/nudge-repository.js";
+import { readNudgeRows } from "../../src/nudge-repository/nudge-repository.js";
 
 // One complete, valid nudge row. Pass "overrides" to change just the fields a
 // test cares about, for example validNudgeRow({ category: "medium" }).
@@ -79,4 +79,13 @@ export function nineTestTables(): {
 export function nineTestNudges(): Nudge[] {
   const { nudgeRows, exampleRows } = nineTestTables();
   return readNudgeRows(nudgeRows, exampleRows).nudges;
+}
+
+// The same 9 test nudges, with one nudge row changed first (e.g. retired).
+// Lets other modules' tests get test nudges without reaching into the Nudge
+// repository's code themselves (drift rule S5).
+export function nineTestNudgesWith(nudgeId: number, changes: Record<string, unknown>): Nudge[] {
+  const { nudgeRows, exampleRows } = nineTestTables();
+  const changed = nudgeRows.map((row) => (row["id"] === nudgeId ? { ...row, ...changes } : row));
+  return readNudgeRows(changed, exampleRows).nudges;
 }
