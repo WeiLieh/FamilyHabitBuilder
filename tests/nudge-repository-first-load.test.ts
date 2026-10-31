@@ -4,7 +4,7 @@
 // src/datastore/supabase/seed/nudges-first-load.csv and examples-first-load.csv were made
 // from docs/archive/Nudge_Repository.xlsx. The owner imports them into Supabase once
 // (nudges first, then examples). The database has its own rules (tested by
-// src/datastore/src/datastore/supabase/tests/); this test checks the APP's rules accept the same data, so
+// src/datastore/supabase/tests/); this test checks the APP's rules accept the same data, so
 // the two sets of rules agree.
 // =============================================================================
 
