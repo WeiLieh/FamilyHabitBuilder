@@ -2,7 +2,7 @@
 
 [2026-10-31 19:18 SGT] **Moved** from `docs/EXPERIMENTS.md` to this folder, next to the module's rules ([SPEC.md](SPEC.md)), on the owner's decision.
 
-[2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](SPEC.md). The paragraph below is history (SUPERSEDED [2026-10-31 19:06 SGT]).
+[2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](SPEC.md). The paragraph below is history (marked SUPERSEDED).
 
 SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
 
@@ -10,7 +10,7 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 - [2026-10-24 18:26 SGT] Each experiment tests one thing (for example, a nudge wording, a reward or the surprise rate) by giving different **variants** to different parents.
 - SUPERSEDED [2026-10-31 19:09 SGT] (now rule 11.6 in src/experiments/SPEC.md) [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
 - [2026-10-31 19:09 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`.
-- [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
+- SUPERSEDED [2026-10-31 19:20 SGT] (path corrected above) [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
