@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-31 21:28 SGT] Build "delete my data" once, with a non-personal deletion log
+- **Item:** [2026-10-31 21:28 SGT] One app-wide "delete my data" (rule 1.5) that reaches every store (Supabase tables and Storage, Upstash chat memory, experiment records) through one narrow database function, and writes a deletion log with no personal details.
+- **Why it matters:** [2026-10-31 21:28 SGT] Required before real families send photos (`docs/KNOWN-ISSUES.md`) and by the Singapore Personal Data Protection Act (PDPA); the log shows deletions happen without keeping who was deleted (privacy review of the Experiments pull request, owner agreed).
+- **Priority:** [2026-10-31 21:28 SGT] High (before real families join)
+- **Status:** [2026-10-31 21:28 SGT] Not started
+
 ## [2026-10-31 19:06 SGT] Alpha and beta stages
 - **Item:** [2026-10-31 19:06 SGT] After the week-one trial (about 12 parents, rule 10.3): **alpha**, 50 to 100 parents growing to about 1,000, with the first real experiment (suggestion: message style); then **beta**, limited publicity, up to about 5,000 parents, still experimenting.
 - **Why it matters:** [2026-10-31 19:06 SGT] The owner's expected growth path (31 Oct). Experiments need bigger groups than week one can give (rule 11.3).

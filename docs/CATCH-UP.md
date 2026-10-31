@@ -57,7 +57,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ## 4. Questions to think about before next session
 
 [2026-10-31 19:06 SGT] "Agree" is enough where there's a suggestion.
-1. **Review and merge the Experiments pull request** (the module on paper: rules 11.1 to 11.11 and 1.4, diagram, Module table).
+1. **Review and merge the Experiments pull request** (the module on paper: rules 11.1 to 11.12, 1.4 and 1.5, diagram, Module table, `EXPERIMENTS.md` moved next to the module). [2026-10-31 21:29 SGT]
 2. **Delete the `claude/festive-einstein-nf623s-pr-b` branch on GitHub** (the "Delete branch" button on PR #13). Claude Code can't delete branches from its session.
 3. **Still open from PR A's review:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
 4. **Experiments, next round in Claude Chat (not blocking):** the first alpha experiment (suggestion: message style).

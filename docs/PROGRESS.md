@@ -6,7 +6,8 @@
 - [2026-10-31 19:06 SGT] Claude Chat handoff on Experiments checked against the files; owner agreed: week one = the rule 10.3 trial (about 12 parents); alpha and beta in the backlog; stack checked before alpha; Definition of done reworded; B1 to B5 agreed (three lever kinds, guardrails, sign-up date and cohort, first experiment later, numbers live in code).
 - [2026-10-31 19:06 SGT] Experiments module opened on paper: `src/experiments/SPEC.md` (rules 11.1 to 11.11), Module table row, diagram box and arrows, rule 1.4, rule 10.3 changed, Telemetry future work, Datastore planned tables, `docs/EXPERIMENTS.md` and `src/settings.ts` headers (numbers live in code), learning-log entry. Tests unchanged at 129.
 ### In progress
-- [2026-10-31 19:06 SGT] The Experiments pull request (both review agents first, habit H3).
+- [2026-10-31 21:29 SGT] Experiments pull request opened after two review rounds; owner agreed every finding: rules 11.12 and 1.5 ("delete my data" covers every store, non-personal deletion log), 11.6, 11.7, 11.8, 11.9, 11.11 changed, `docs/EXPERIMENTS.md` moved to `src/experiments/EXPERIMENTS.md`, `CLAUDE.md` row updated. Waiting for the owner's review.
+- SUPERSEDED [2026-10-31 21:29 SGT] [2026-10-31 19:06 SGT] The Experiments pull request (both review agents first, habit H3).
 ### Next steps
 - [2026-10-31 19:06 SGT] Datastore table mock-ups in plain English for the owner's agreement (parents with sign-up date and cohort, picks, slots, Wrap Up settings, logs, events with settings and variant stamps, Wrap Ups sent, settings versions, experiment definitions, assignments). Then tests first, then the build. Later: one reader function for all tunable values.
 ### Blockers
