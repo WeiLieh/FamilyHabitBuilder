@@ -44,3 +44,35 @@ ASD,"Ask: ""Shall we tidy your room?"" Say: ""Toys go in the box, books on the s
 ASD,"Ask: ""Can you pack your bag for tomorrow?"" Say: ""Check your timetable."" Do: go through the list side by side the first time."
 ASD,"Ask: ""Want to learn to fold laundry?"" Say: ""Fold it in half, then in thirds."" Do: demonstrate with one shirt."
 ASD,"Ask: ""Can you help water the plants?"" Say: ""Just enough to wet the soil."" Do: water one pot together, then let them try."
+TWC,"Ask your child to teach you something they learned this week, and ask a follow-up question."
+TWC,Tell your child about something you were proud of when you were their age.
+TWC,Pick a song together and each say what it reminds you of.
+SGE,Share one small thing that was tricky for you today and what you did about it.
+SQT,"Play three rounds of ""would you rather"" with silly choices."
+IAC,"Take turns drawing each other in 60 seconds, with no judging."
+IAC,"Build a three-sentence story together, one sentence each."
+SAF,Give a long hug and count to ten before letting go.
+SAF,"Hold their hand while you walk together, even for a short stretch."
+SAF,Invent a secret handshake or special wave that's just for the two of you.
+SAF,Give a thumbs-up and a big smile across the room when they catch your eye.
+SAF,Offer a gentle back rub or head scratch while they relax.
+DPR,"""You kept your voice down while your sister was resting. That was thoughtful."""
+DPR,"""You helped your friend work it out instead of just giving the answer. That was patient."""
+DPR,"""I saw you put your shoes neatly on the rack. Thank you for taking care of our home."""
+DPR,"""You tried a new food even though you weren't sure. That was brave."""
+DPR,"""You said sorry and meant it. That takes courage."""
+GAT,Stop what you're doing and turn your whole body towards them when they speak.
+GAT,Crouch or sit at their eye level when they want to show you something.
+GAT,"Say back what they told you in your own words (""So you felt left out when..."") to show you were listening."
+GAT,"Look closely at their drawing, homework or toy and name one detail you like."
+GAT,"Let them finish their whole story without interrupting, even if it wanders."
+ITE,"At the hawker centre, let them read the menu board and work out the total cost of your order (maths and money skills)."
+ITE,"When you see a long word on a sign, ask them to sound it out and guess what it means (reading)."
+ITE,"At a pedestrian crossing, ask them why we wait for the green man (safety and rules)."
+ITE,"When something breaks at home, ask them to guess the cause and what to try first (problem solving)."
+ITE,"When you look at the sky together, ask what shape a cloud looks like and what it might do next (curiosity)."
+ASD,"Ask: ""Can you help me wipe the table?"" Say: ""Wipe one way, then the other way."" Do: wipe one half together, then let them do the rest."
+ASD,"Ask: ""Want to help sort the recycling?"" Say: ""Clean paper, plastic bottles and cans go in the blue bin."" Do: sort the first few items together."
+ASD,"Ask: ""Can you help me pack your sports bag?"" Say: ""Tick off each item on the list."" Do: pack the first item together."
+ASD,"Ask: ""Shall we make your bed together?"" Say: ""Pull the sheet flat, then the blanket."" Do: fix one side together, then let them do the other."
+ASD,"Ask: ""Can you help carry the groceries?"" Say: ""Hold the bag with both hands."" Do: carry one bag side by side."

@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-31 17:44 SGT] Content review of the examples approved "for now"
+- **Item:** [2026-10-31 17:44 SGT] The owner reviews the wording of the 25 drafted examples added on 31 Oct (5 each for SAF, DPR, GAT, ITE, ASD), plus the 7 from the v0.1 surprise cards, as part of a wider content design pass. Edits happen in Supabase (retire, never delete, rule 4.6) and are mirrored in the seed file.
+- **Why it matters:** [2026-10-31 17:44 SGT] The owner approved them "for now" (decision D6) so the trial has variety; they have not had a full content design review.
+- **Priority:** [2026-10-31 17:44 SGT] Medium (before the trial)
+- **Status:** [2026-10-31 17:44 SGT] Not started
+
 ## [2026-10-29 20:58 SGT] WIP: Design the Variable rewards (all categories)
 - **Why it matters:** Rewards are the "Variable Reward" step of the Hooked model, but so far we only have a list of types. Each category needs rules, content and variety before it can be built (owner, session 4). Known so far:
   - **Encouraging phrases:** wording and variety, defined with the nudge personality (`docs/NUDGE-CONTEXT.md`)

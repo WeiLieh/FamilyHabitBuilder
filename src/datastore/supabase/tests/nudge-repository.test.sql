@@ -2,7 +2,7 @@
 -- src/datastore/supabase/tests/nudge-repository.test.sql: tests for the nudges and examples tables
 --
 -- What it checks: that src/datastore/supabase/migrations/001_create_nudge_repository.sql
--- (plus 002_service_role_read_only.sql) builds tables which (1) accept the owner's 9 nudges and 45 examples from the
+-- (plus 002_service_role_read_only.sql) builds tables which (1) accept the owner's 9 nudges and 77 examples from the
 -- first-load CSVs, (2) refuse each kind of bad row, (3) refuse edits that
 -- would leave a nudge with fewer than 3 active examples, and (4) keep the
 -- public locked out. Run on a throwaway local PostgreSQL database via
@@ -46,11 +46,14 @@ begin
   assert (select string_agg(code, ',' order by id) from public.nudges) = 'TWC,SAF,DPR,GAT,SQT,IAC,SGE,ITE,ASD', 'expected the agreed codes';
   assert (select count(*) from public.nudges where category = 'quick') = 4, 'expected 4 quick';
   assert (select count(*) from public.nudges where starts_unlocked) = 9, 'expected all 9 unlocked at start (rule 2.2)';
-  assert (select count(*) from public.examples) = 45, 'expected 45 examples';
-  assert not exists (select nudge_code from public.examples group by nudge_code having count(*) <> 5), 'expected 5 examples per nudge';
-  assert (select count(*) from public.examples where active) = 45, 'expected examples to be active by default';
-  assert (select count(*) from public.nudge_examples_view) = 45, 'expected the combined view to show 45 rows';
-  raise notice 'PASS: first load (9 nudges with agreed codes, 45 examples, 5 each, view shows all 45)';
+  -- [2026-10-31 17:43 SGT] 45 first examples plus 32 approved on 31 Oct (D6).
+  assert (select count(*) from public.examples) = 77, 'expected 77 examples';
+  assert (select string_agg(nudge_code || ':' || n, ',' order by nudge_code)
+          from (select nudge_code, count(*) as n from public.examples group by nudge_code) c)
+         = 'ASD:10,DPR:10,GAT:10,IAC:7,ITE:10,SAF:10,SGE:6,SQT:6,TWC:8', 'expected the agreed number of examples per nudge';
+  assert (select count(*) from public.examples where active) = 77, 'expected examples to be active by default';
+  assert (select count(*) from public.nudge_examples_view) = 77, 'expected the combined view to show 77 rows';
+  raise notice 'PASS: first load (9 nudges with agreed codes, 77 examples, agreed count per nudge, view shows all 77)';
 end $$;
 
 -- Helper: try one SQL statement and expect the database to refuse it. If a
@@ -106,11 +109,11 @@ select pg_temp.expect_refused('typing your own example ID (IDs are generated)',
   $q$insert into public.examples (id, nudge_code, example) values (999, 'TWC', 'A new idea')$q$);
 
 -- ---- The 3-example guard (block) ----
--- TWC starts with 5 active examples. Retiring 2 leaves 3: allowed.
+-- TWC starts with 8 active examples (5 before 31 Oct). Retiring 5 leaves 3: allowed.
 do $$
 begin
   update public.examples set active = false
-  where id in (select id from public.examples where nudge_code = 'TWC' order by id limit 2);
+  where id in (select id from public.examples where nudge_code = 'TWC' order by id limit 5);
   assert (select count(*) from public.examples where nudge_code = 'TWC' and active) = 3, 'expected 3 left';
   raise notice 'PASS: retiring examples down to exactly 3 is allowed';
 end $$;
@@ -125,8 +128,9 @@ select pg_temp.expect_refused('deleting an example that would leave TWC with 2',
 select pg_temp.expect_refused('moving an example from TWC to SAF (TWC would have 2)',
   $q$update public.examples set nudge_code = 'SAF' where id = (select max(id) from public.examples where nudge_code = 'TWC' and active)$q$,
   'TWC would have only 2');
-select pg_temp.expect_refused('deleting 2 of SAF''s 5 examples, then 1 more in the same change',
-  $q$delete from public.examples where id in (select id from public.examples where nudge_code = 'SAF' order by id limit 3)$q$,
+-- SAF starts with 10 (5 before 31 Oct): deleting 8 in one change would leave 2.
+select pg_temp.expect_refused('deleting 8 of SAF''s 10 examples in one change',
+  $q$delete from public.examples where id in (select id from public.examples where nudge_code = 'SAF' order by id limit 8)$q$,
   'SAF would have only 2');
 
 do $$
