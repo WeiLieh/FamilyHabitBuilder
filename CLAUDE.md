@@ -94,7 +94,8 @@ A task is only complete when all of these are true:
 - I will create a GitHub repository. In the first session, ask me for its address. Once it exists, merge by branch plus pull request into main, and record the workflow under "Git and release workflow" in `docs/CONTEXT.md`.
 
 #### 11. The app's own prompt stays separate
-- `docs/NUDGE-CONTEXT.md` holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the nudge engine.
+- `docs/NUDGE-CONTEXT.md` holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the nudge engine. SUPERSEDED [2026-10-31 09:43 SGT]: moved, see the next line.
+- [2026-10-31 09:43 SGT] [src/nudge-engine/NUDGE-CONTEXT.md](src/nudge-engine/NUDGE-CONTEXT.md) holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the Nudge engine.
 - Nudges (the 9 actions) live as rows in the nudge repository, never inside a prompt.
 
 ---
@@ -113,7 +114,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `CLAUDE.md` | This file. The only master prompt. Standing rules. Keep it short. |
 | [docs/SPEC.md](docs/SPEC.md) | [2026-10-31 09:40 SGT] **Start here for structure:** section "Modules and structure" holds the document index (links to every file), the Module table, cross-cutting files and the drift-test facts. The one diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). |
 | `docs/SPEC.md` | What we are building: goal, users, constraints, what "done" looks like. Version 1 is already written. |
-| `docs/NUDGE-CONTEXT.md` | The app's own AI prompt: personality, tone and rules for the nudge engine. Not instructions for you. Read only when working on the nudge engine. |
+| `docs/NUDGE-CONTEXT.md` | The app's own AI prompt: personality, tone and rules for the nudge engine. Not instructions for you. Read only when working on the nudge engine. SUPERSEDED [2026-10-31 09:43 SGT]: moved to `src/nudge-engine/NUDGE-CONTEXT.md`. |
 | `docs/CONTEXT.md` | The current state: purpose, how to run and test, architecture, key decisions and why. |
 | `docs/PROGRESS.md` | Handoff note between sessions: done, in progress, next steps, blockers. |
 | `docs/ERROR-LOG.md` | History of what broke, the cause, and the fix. |

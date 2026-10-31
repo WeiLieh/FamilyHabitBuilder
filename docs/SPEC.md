@@ -57,7 +57,8 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Master prompt: [CLAUDE.md](../CLAUDE.md) · Read-me: [README.md](../README.md)
 - The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](EXPERIMENTS.md)
-- Module documents not yet moved to their module folders: [NUDGE-CONTEXT.md](NUDGE-CONTEXT.md), [VARIABLE-REWARDS-SPEC.md](VARIABLE-REWARDS-SPEC.md), [variable-rewards-spec-v0.1-original.md](variable-rewards-spec-v0.1-original.md)
+- Module specs: [Nudge engine](../src/nudge-engine/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
+- Module documents not yet moved to their module folders: [VARIABLE-REWARDS-SPEC.md](VARIABLE-REWARDS-SPEC.md), [variable-rewards-spec-v0.1-original.md](variable-rewards-spec-v0.1-original.md)
 - History lives in `docs/archive/` (exempt from the checks).
 
 ### Module table
@@ -66,7 +67,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Module | Slug | Folder | Spec | Status | Migrated |
 |---|---|---|---|---|---|
 | Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Not started | no |
-| Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | no |
+| Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | yes |
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | no |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | no |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | no |
@@ -96,6 +97,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 09:43 SGT] **Restructure PR 3 (Nudge engine migrated):** rules 2.1 to 2.4 and 3.1 to 3.11 now live in `src/nudge-engine/SPEC.md` (unchanged wording, each with "Tested by:"). Path-move map: `docs/NUDGE-CONTEXT.md` → `src/nudge-engine/NUDGE-CONTEXT.md`. Module table: Nudge engine "migrated: yes".
 - [2026-10-31 09:40 SGT] **Restructure PR 2 (drift test):** added the "Modules and structure" section (document index, Module table with all modules "migrated: no", cross-cutting files, retired names, retired rule IDs, minimum test count 106) and the one diagram `docs/ARCHITECTURE.md`. Path-move map: `docs/architecture-diagram.png` → `docs/archive/architecture-diagram.png`. The catch-up page now links to the diagram instead of keeping its own copy.
 - [2026-10-31 09:30 SGT] **Path-move map, restructure PR 1** (no rules changed): `shared/` → `src/` (`shared/nudge-engine/*` → `src/nudge-engine/*`; `shared/nudge-repository.ts` → `src/nudge-repository.ts`; `shared/settings.ts` → `src/settings.ts`; `shared/sgt.ts` → `src/sgt.ts`). Older notes keep the old paths as written.
 - [2026-10-29 22:37 SGT] Version 1.9 (in progress), D2 to D4 (owner): **D2** validation replies: honest receipt first, then Claude's reply (rule 7.5). **D3** streaks are weekly (rule 7.3 changed). **D4** steady week = the parent's own chosen frequency with slack: every day 6 of 7, every 2 days 3, deliberate 1 or 2 as chosen; the joining week doesn't count against them (rule 7.6; bars to tune after the trial). D5 to D9 and D10 timing remain parked.
