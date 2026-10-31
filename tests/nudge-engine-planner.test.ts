@@ -13,10 +13,10 @@
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
-import { planNudge, type PlannerInput, type SentMessage } from "../shared/nudge-engine/planner.js";
-import type { Target } from "../shared/nudge-engine/choices.js";
-import { sgtInstant } from "../shared/sgt.js";
-import { DEFAULT_SCHEDULES } from "../shared/settings.js";
+import { planNudge, type PlannerInput, type SentMessage } from "../src/nudge-engine/planner.js";
+import type { Target } from "../src/nudge-engine/choices.js";
+import { sgtInstant } from "../src/sgt.js";
+import { DEFAULT_SCHEDULES } from "../src/settings.js";
 
 const A: Target = { nudgeId: 1, category: "quick", frequency: "every_day" };
 const B: Target = { nudgeId: 2, category: "quick", frequency: "every_day" };

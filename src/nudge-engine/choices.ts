@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/nudge-engine/choices.ts: Nudge engine guardrails on a parent's choices
+// src/nudge-engine/choices.ts: Nudge engine guardrails on a parent's choices
 //
 // What it does: a parent picks which nudges to work on and how often (the app
 // is user-led). This function checks those picks against the app's guardrails

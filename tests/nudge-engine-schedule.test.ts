@@ -8,8 +8,8 @@
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
-import { availableSlotStarts, checkSchedules, dayTypeFor } from "../shared/nudge-engine/schedule.js";
-import { DEFAULT_SCHEDULES, SLOT_STARTS } from "../shared/settings.js";
+import { availableSlotStarts, checkSchedules, dayTypeFor } from "../src/nudge-engine/schedule.js";
+import { DEFAULT_SCHEDULES, SLOT_STARTS } from "../src/settings.js";
 
 const noHolidays = { publicHolidays: [], schoolHolidays: [] };
 

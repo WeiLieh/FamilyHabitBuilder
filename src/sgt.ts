@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/sgt.ts: Singapore time helpers
+// src/sgt.ts: Singapore time helpers
 //
 // What it does: converts between a moment in time and a Singapore calendar day
 // plus "minutes after midnight", and does simple calendar maths on days.

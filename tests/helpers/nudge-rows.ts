@@ -5,11 +5,11 @@
 //   nudges   - one row per nudge, with its settings and a short code (e.g. TWC)
 //   examples - one row per example, naming its nudge by that code
 // Tests must not depend on that live content, so they use these made-up rows.
-// Column names match the Supabase tables (see shared/nudge-repository.ts).
+// Column names match the Supabase tables (see src/nudge-repository.ts).
 // =============================================================================
 
-import type { Nudge } from "../../shared/nudge-repository.js";
-import { readNudgeRows } from "../../shared/nudge-repository.js";
+import type { Nudge } from "../../src/nudge-repository.js";
+import { readNudgeRows } from "../../src/nudge-repository.js";
 
 // One complete, valid nudge row. Pass "overrides" to change just the fields a
 // test cares about, for example validNudgeRow({ category: "medium" }).

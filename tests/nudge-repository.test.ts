@@ -10,8 +10,8 @@
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
-import { readNudgeRows } from "../shared/nudge-repository.js";
-import { MIN_EXAMPLES_PER_NUDGE } from "../shared/settings.js";
+import { readNudgeRows } from "../src/nudge-repository.js";
+import { MIN_EXAMPLES_PER_NUDGE } from "../src/settings.js";
 import { nineTestTables, threeExamples, validExampleRow, validNudgeRow } from "./helpers/nudge-rows.js";
 
 // Helper: read one nudge (with its 3 examples) after changing some of its fields.

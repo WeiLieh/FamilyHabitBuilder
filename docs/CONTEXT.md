@@ -25,6 +25,7 @@
 - [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
+- [2026-10-31 09:30 SGT] **`shared/` renamed to `src/`** (restructure PR 1; owner's decision). All app code now lives under `src/`: `src/nudge-engine/`, `src/nudge-repository.ts`, `src/settings.ts`, `src/sgt.ts`. Older entries below still say `shared/`; they are history and are not rewritten. Path-move map: `docs/SPEC.md`, change notes.
 - [2026-10-28 22:23 SGT] **Batch 2 code (Nudge engine, decisions half, spec v1.7):**
   - `shared/sgt.ts`: Singapore time helpers (a moment <-> Singapore day and minutes after midnight; add days, weekday, Monday of the week).
   - `shared/nudge-engine/schedule.ts`: `dayTypeFor` (school / non-school day from weekday plus uploaded public and MOE school holidays), `checkSchedules` (0 to 3 slots per schedule, at least 1 in total, valid half-hour starts 7:00am to 9:30pm, at least 1 hour apart), `availableSlotStarts` (which times the setup screen greys out).

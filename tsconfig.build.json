@@ -12,5 +12,5 @@
     // and put the compiled files in dist/ (Git ignores this folder).
     "outDir": "dist"
   },
-  "include": ["api", "shared"]
+  "include": ["api", "src"]
 }

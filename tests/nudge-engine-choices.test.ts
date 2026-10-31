@@ -3,16 +3,16 @@
 //
 // The parent chooses which nudges to work on and how often (user-led), within
 // guardrails set by the app (spec v1.1 to v1.4). The limits are starting values
-// recorded in docs/EXPERIMENTS.md and kept in shared/settings.ts.
+// recorded in docs/EXPERIMENTS.md and kept in src/settings.ts.
 // Test-run IDs: quick nudges are 1 to 4, deliberate nudges are 5 to 9.
 // Unlocked from the start: 1 to 4 (quick) and 5, 6 (deliberate). Locked: 7, 8, 9.
 // An unlock opens more of the menu; it never raises how many a parent picks.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
-import { checkChoices, type Choice } from "../shared/nudge-engine/choices.js";
-import { STARTING_CHOICE_LIMITS } from "../shared/settings.js";
-import { readNudgeRows } from "../shared/nudge-repository.js";
+import { checkChoices, type Choice } from "../src/nudge-engine/choices.js";
+import { STARTING_CHOICE_LIMITS } from "../src/settings.js";
+import { readNudgeRows } from "../src/nudge-repository.js";
 import { nineTestNudges, nineTestTables } from "./helpers/nudge-rows.js";
 
 const nudges = nineTestNudges();

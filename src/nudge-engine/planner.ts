@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/nudge-engine/planner.ts: the Nudge engine's "decisions" brain
+// src/nudge-engine/planner.ts: the Nudge engine's "decisions" brain
 //
 // What it does: every few minutes the scheduler (Supabase Cron) asks, for each
 // parent, "should we send a nudge message right now, and about which
