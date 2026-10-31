@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/nudge-engine/schedule.ts: school/non-school days and nudge slots
+// src/nudge-engine/schedule.ts: school/non-school days and nudge slots
 //
 // What it does (spec v1.7):
 //   - dayTypeFor: is a day a school day or a non-school day?

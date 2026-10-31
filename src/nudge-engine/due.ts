@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/nudge-engine/due.ts: is a behaviour "due"?
+// src/nudge-engine/due.ts: is a behaviour "due"?
 //
 // A behaviour is due when the parent hasn't done it yet within the frequency
 // THEY chose (spec v1.7). The frequency is how often they want to DO it; we

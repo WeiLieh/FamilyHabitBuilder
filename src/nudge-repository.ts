@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/nudge-repository.ts: the Nudge repository's row checks
+// src/nudge-repository.ts: the Nudge repository's row checks
 //
 // What it does: takes the raw rows read from the two Supabase tables the owner
 // edits by hand (spec v1.6):

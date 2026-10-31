@@ -49,13 +49,13 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | # | Module | What it does (plain English) | Status | Files and what each one does | Tests |
 |---|---|---|---|---|---|
 | 1 | **Telegram bot** | The chat with the parent: sends nudge messages, receives logs, photos, ✅ Done and 😴 Not today | Not started | `api/health.ts`: an "I'm alive" web address, to check a deployment works | 2 |
-| 2 | **Nudge engine** | The brain: checks what a parent picks, works out what is still to do, and decides when to nudge and about which behaviour. Later: Claude writes the words | Decisions half built | `shared/nudge-engine/choices.ts`: checks a parent's picks (2 quick + 1 deliberate, unlocked, frequencies) | 16 |
-| | | | | `shared/nudge-engine/schedule.ts`: school day or non-school day; checks a parent's nudge times (slots); which times to grey out on screen | 8 |
-| | | | | `shared/nudge-engine/due.ts`: is a behaviour still to do, given the frequency the parent chose? | 7 |
-| | | | | `shared/nudge-engine/planner.ts`: the decision: "send a nudge about X now" or "don't send", with the reason | 22 |
-| | | | | `shared/settings.ts`: all the numbers in one place (3 a day, slot times, limits); mirrors `docs/EXPERIMENTS.md` | (used by all) |
-| | | | | `shared/sgt.ts`: Singapore time helpers (days, weekdays, time of day) | (used by all) |
-| 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `shared/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
+| 2 | **Nudge engine** | The brain: checks what a parent picks, works out what is still to do, and decides when to nudge and about which behaviour. Later: Claude writes the words | Decisions half built | `src/nudge-engine/choices.ts`: checks a parent's picks (2 quick + 1 deliberate, unlocked, frequencies) | 16 |
+| | | | | `src/nudge-engine/schedule.ts`: school day or non-school day; checks a parent's nudge times (slots); which times to grey out on screen | 8 |
+| | | | | `src/nudge-engine/due.ts`: is a behaviour still to do, given the frequency the parent chose? | 7 |
+| | | | | `src/nudge-engine/planner.ts`: the decision: "send a nudge about X now" or "don't send", with the reason | 22 |
+| | | | | `src/settings.ts`: all the numbers in one place (3 a day, slot times, limits); mirrors `docs/EXPERIMENTS.md` | (used by all) |
+| | | | | `src/sgt.ts`: Singapore time helpers (days, weekdays, time of day) | (used by all) |
+| 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `src/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
 | | | | | `supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done) | 6 |
 | | | | | `supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
 | | | | | `supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |

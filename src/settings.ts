@@ -1,5 +1,5 @@
 // =============================================================================
-// shared/settings.ts: starting values (hypotheses) used by the Nudge engine
+// src/settings.ts: starting values (hypotheses) used by the Nudge engine
 //
 // The source of truth for these numbers is docs/EXPERIMENTS.md, under
 // "Starting values". If you change a number here, change it there too (and the

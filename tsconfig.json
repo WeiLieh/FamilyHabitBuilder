@@ -21,6 +21,6 @@
     // Load the type descriptions for Node.js itself.
     "types": ["node"]
   },
-  // Folders to check: web addresses, shared logic, and tests.
-  "include": ["api", "shared", "tests"]
+  // Folders to check: web addresses (api), app code (src), and tests.
+  "include": ["api", "src", "tests"]
 }

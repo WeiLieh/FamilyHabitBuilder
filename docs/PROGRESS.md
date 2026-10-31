@@ -2,6 +2,7 @@
 
 ## [2026-10-31 09:29 SGT] Session 5
 ### Done
+- [2026-10-31 09:30 SGT] PR 0 opened (https://github.com/WeiLieh/FamilyHabitBuilder/pull/1). PR 1 prepared locally: `shared/` → `src/` with `git mv`; configs, 16 test imports and header comments updated; 84 tests pass. Waiting for PR 0 to merge before pushing.
 - [2026-10-31 09:29 SGT] Owner's restructure task: Phase A plan approved (module folders `src/<slug>/` with SPEC.md next to code; `shared/` renamed `src/`; Datastore owns `src/datastore/supabase/`; one Mermaid diagram `docs/ARCHITECTURE.md`; drift test with rules S1 to S7, R1 to R4, D1 to D3, B1, B2, P1, P2; habits H1 to H5 in CLAUDE.md; PRs 0 to 9 with a ratchet).
 ### In progress
 - [2026-10-31 09:29 SGT] PR 0: merge all existing work into `main` (waiting for the owner's review and approval).

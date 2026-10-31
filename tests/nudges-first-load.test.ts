@@ -10,7 +10,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { readNudgeRows } from "../shared/nudge-repository.js";
+import { readNudgeRows } from "../src/nudge-repository.js";
 import { csvToObjects } from "./helpers/csv.js";
 
 // Read a CSV and shape each row the way Supabase will return it: IDs 1, 2, 3...

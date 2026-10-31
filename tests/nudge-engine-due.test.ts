@@ -7,8 +7,8 @@
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
-import { isDue } from "../shared/nudge-engine/due.js";
-import type { Target } from "../shared/nudge-engine/choices.js";
+import { isDue } from "../src/nudge-engine/due.js";
+import type { Target } from "../src/nudge-engine/choices.js";
 
 const WEDNESDAY = "2026-11-04";
 const quickDaily: Target = { nudgeId: 1, category: "quick", frequency: "every_day" };
