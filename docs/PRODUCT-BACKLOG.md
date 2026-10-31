@@ -2,6 +2,24 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-10-31 19:06 SGT] Alpha and beta stages
+- **Item:** [2026-10-31 19:06 SGT] After the week-one trial (about 12 parents, rule 10.3): **alpha**, 50 to 100 parents growing to about 1,000, with the first real experiment (suggestion: message style); then **beta**, limited publicity, up to about 5,000 parents, still experimenting.
+- **Why it matters:** [2026-10-31 19:06 SGT] The owner's expected growth path (31 Oct). Experiments need bigger groups than week one can give (rule 11.3).
+- **Priority:** [2026-10-31 19:06 SGT] Medium (after the MVP)
+- **Status:** [2026-10-31 19:06 SGT] Not started
+
+## [2026-10-31 19:06 SGT] Check the technology stack holds at 1,000 to 5,000 parents, before alpha
+- **Item:** [2026-10-31 19:06 SGT] The stack was chosen for about 50 trial users (Supabase Free plan, Vercel, Upstash). Before alpha, check limits, costs and the scheduler at 1,000 to 5,000 parents.
+- **Why it matters:** [2026-10-31 19:06 SGT] Scaling problems are cheaper to find before strangers rely on the app.
+- **Priority:** [2026-10-31 19:06 SGT] Medium (before alpha)
+- **Status:** [2026-10-31 19:06 SGT] Not started
+
+## [2026-10-31 19:06 SGT] Experiments: live start and stop, and splitting metrics by variant
+- **Item:** [2026-10-31 19:06 SGT] Build the owner-only start and stop for experiments (rules 11.7, 11.10), choose the first experiment, and split the 10 metrics by variant in Telemetry (reward experiments also read against metric 10).
+- **Why it matters:** [2026-10-31 19:06 SGT] Needed before alpha; week one runs on `baseline` only (rule 11.3).
+- **Priority:** [2026-10-31 19:06 SGT] Medium (before alpha)
+- **Status:** [2026-10-31 19:06 SGT] Not started
+
 ## [2026-10-31 18:04 SGT] See whether the Weekly Wrap Up makes parents mute the bot
 - **Item:** [2026-10-31 18:04 SGT] In Telemetry, track mutes and stops within 24 hours of a Weekly Wrap Up, as well as metric 9 (which never counts the Wrap Up as a nudge, rule 10.2).
 - **Why it matters:** [2026-10-31 18:04 SGT] Otherwise we can't tell whether the Wrap Up itself drives opt-outs (privacy and security review of PR B, low finding; owner agreed).

@@ -12,7 +12,8 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 17:24 SGT] Start with about 10 friends, capacity for 50 trial users, modular so it can scale later.
 
 ## Constraints
-- [2026-10-24 17:24 SGT] **Modules:** Telegram bot; nudge engine ("brain" plus experiments); nudge repository (the 9 actions as data rows, never inside a prompt); photo check (AI vision model); variable rewards; datastore (history, targets, photos; fastest to build, least effort); web app; telemetry. The engine reads each parent's history from the datastore and decides rewards row 5 and experiment variants.
+- [2026-10-31 19:06 SGT] **Modules (update):** a ninth module, **Experiments**, approved by the owner on 31 Oct; experiments are no longer part of the Nudge engine. The official list is the Module table below.
+- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-24 17:24 SGT] **Modules:** Telegram bot; nudge engine ("brain" plus experiments); nudge repository (the 9 actions as data rows, never inside a prompt); photo check (AI vision model); variable rewards; datastore (history, targets, photos; fastest to build, least effort); web app; telemetry. The engine reads each parent's history from the datastore and decides rewards row 5 and experiment variants.
 - [2026-10-24 17:24 SGT] **User-led, never pushy:** parents choose which behaviours to do more of, within guardrails set by the app. The app privately compares them against a hidden objective level that is never shown.
 - [2026-10-24 22:09 SGT] **Nudges (the 9 rows of the Nudge repository, from Triple P (Positive Parenting Program)), aligned with the owner's Nudge Repository spreadsheet:**
   - **Quick** (1 to 2 minutes): talking with children, showing affection, descriptive praise, giving attention. Parent picks every day or every 2 days for each. Hidden ideal 1 per day, floor 1 per 2 days.
@@ -29,8 +30,9 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - [2026-10-24 18:26 SGT] **Verification (update):** sending a photo is always optional. Parents give consent to photo storage once, when they join. No guidance is given about what may appear in a photo.
 - [2026-10-24 17:24 SGT] **Verification:** photo evidence is checked automatically by an AI vision model; photos are stored in the datastore. Actions that cannot be photographed are self-reported. If the photo check fails, the bot asks for self-report and labels it as self-reported.
 - [2026-10-24 17:24 SGT] **Variable rewards (5 types):** (1) encouraging phrases, (2) XP and leveling, (3) progress visualization including streaks (a streak stays alive across a 2-day gap), (4) "look how far you've come" snapshot of photos, numbers and trends, sent weekly and monthly as a bot preview with a one-tap sign-in link to the web app, (5) unpredictable discovery (surprise bonus on 20% of logged actions). Rows 1 to 4 fire on fixed rules. Every reward that fires is logged as an event.
-- [2026-10-24 18:26 SGT] **Experiments (update):** experiments are defined in `docs/EXPERIMENTS.md` (no admin screen). Each parent is randomly assigned to a variant once and stays in it.
-- [2026-10-24 17:24 SGT] **Experiments:** the nudge engine can define experiments that serve different variants (nudges, rewards, surprise rate) to different parents and compare outcomes.
+- [2026-10-31 19:06 SGT] **Experiments (update 2):** experiments are run by the **Experiments** module ([src/experiments/SPEC.md](../src/experiments/SPEC.md)): settings versions, experiment definitions and each parent's variant live in the Datastore, recorded from day one; week one uses one set of values for everyone (`baseline`); the owner starts and stops experiments before alpha. `docs/EXPERIMENTS.md` describes the experiments; the numbers live in code (rule 1.4).
+- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-24 18:26 SGT] **Experiments (update):** experiments are defined in `docs/EXPERIMENTS.md` (no admin screen). Each parent is randomly assigned to a variant once and stays in it.
+- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-24 17:24 SGT] **Experiments:** the nudge engine can define experiments that serve different variants (nudges, rewards, surprise rate) to different parents and compare outcomes.
 - [2026-10-24 18:26 SGT] **Telemetry:** the 10 metrics, definitions, windows and targets in `docs/Family_Habit_App_Success_Metrics.xlsx` (5 Usage metrics and 5 Habit formation metrics; success tests X, Y, Z at trial end).
 - [2026-10-24 18:34 SGT] **Bot features needed by the metrics:** weekly optional connection question (1 to 5), mute/stop option, "too many nudges" button.
 - [2026-10-24 17:24 SGT] **Telemetry:** activation rate, feature adoption rate, active users and stickiness, churn rate, drop-off rate. SUPERSEDED [2026-10-24 18:26 SGT]
@@ -46,7 +48,8 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 ## Definition of done
 - [2026-10-24 17:24 SGT] A parent can pick behaviours and frequency in Telegram, receives no more than 3 nudges a day, logs actions by photo or self-report, and gets rewards that are logged as events.
 - [2026-10-24 17:24 SGT] The weekly and monthly snapshot arrives with a one-tap link to a web page showing history, progress, rewards and XP.
-- [2026-10-24 18:26 SGT] The engine can run an experiment (read from `docs/EXPERIMENTS.md`), telemetry shows the 10 metrics in `docs/Family_Habit_App_Success_Metrics.xlsx`, and the system works for 50 trial users.
+- [2026-10-31 19:06 SGT] Every event records the parent's **settings version and variant from day one**, the app **can run an experiment before alpha** (Experiments module), telemetry shows the 10 metrics in `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`, and the system works for the **week-one trial (about 12 parents, rule 10.3)**. Whether the stack holds at 1,000 to 5,000 parents is checked before alpha (backlog).
+- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-24 18:26 SGT] The engine can run an experiment (read from `docs/EXPERIMENTS.md`), telemetry shows the 10 metrics in `docs/Family_Habit_App_Success_Metrics.xlsx`, and the system works for 50 trial users.
 - [2026-10-24 17:24 SGT] The engine can run an experiment, telemetry shows the five metrics, and the system works for 50 trial users. SUPERSEDED [2026-10-24 18:26 SGT]
 
 ## Modules and structure
@@ -57,7 +60,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Master prompt: [CLAUDE.md](../CLAUDE.md) · Read-me: [README.md](../README.md)
 - The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](EXPERIMENTS.md)
-- Module specs: [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md), [Variable rewards](../src/variable-rewards/SPEC.md) (with its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)), [Telemetry](../src/telemetry/SPEC.md), [Telegram bot](../src/telegram-bot/SPEC.md), [Photo check](../src/photo-check/SPEC.md), [Web app](../src/web-app/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
+- Module specs: [Experiments](../src/experiments/SPEC.md), [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md), [Variable rewards](../src/variable-rewards/SPEC.md) (with its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)), [Telemetry](../src/telemetry/SPEC.md), [Telegram bot](../src/telegram-bot/SPEC.md), [Photo check](../src/photo-check/SPEC.md), [Web app](../src/web-app/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
 - History lives in `docs/archive/` (exempt from the checks).
 
 ### Cross-cutting rules
@@ -65,6 +68,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - **1.1** Parents of children aged 7 to 12; each parent is a separate user. **Invite-only.** English only. Channel: Telegram. *(decided 24 Oct)* Not yet tested (invite-only sign-up is not built).
 - **1.2** All times and days are **Singapore time**, midnight to midnight. A week is **Monday to Sunday**. *(decided 24 Oct, 28 Oct)* Tested by: tests/nudge-engine-schedule.test.ts, tests/nudge-engine-due.test.ts, tests/nudge-engine-planner.test.ts (Singapore days, Monday-to-Sunday weeks).
 - **1.3** **No fallbacks:** a failure is shown as a failure, never filled with made-up values. Exception: if the photo check fails, the parent self-reports. *(decided 24 Oct)* Tested by: tests/nudge-repository.test.ts (broken rows are reported, never patched). Not yet tested elsewhere (nothing else that calls outside services is built).
+- **1.4** [2026-10-31 19:06 SGT] **Every adjustable number lives once, in code** (`src/settings.ts` for now), labelled as a **guardrail**, a **tunable value** or a **trial-plan value**. `docs/EXPERIMENTS.md` describes experiments and links to the code; it no longer holds its own copy. *(decided 31 Oct)* Tested by: tests/nudge-engine-choices.test.ts (the choice limits match the agreed numbers). The labels are not yet in the code.
 
 ### Structure rules (checked by the drift test)
 [2026-10-31 10:17 SGT] Agreed on 31 Oct (restructure plan). Enforced by `tests/docs-drift.test.ts` on every pull request unless marked otherwise. "Per module" rules apply only to modules marked "migrated: yes" (the ratchet).
@@ -101,6 +105,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Nudge tables live | yes |
 | Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | yes |
+| Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Not started | yes |
 
 ### Cross-cutting files
 Files that belong to no module (exempt from the slug rules). Documented here and in `docs/CONTEXT.md`.
@@ -125,6 +130,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-10-31 19:06 SGT] **Version 1.11, Experiments module (owner, from a Claude Chat design, 31 Oct):** **Experiments** becomes the ninth module (own folder, spec, diagram box; status Not started; arrows Nudge engine → Experiments, Experiments → Datastore, and Telemetry listening). Built in stages: paperwork and Datastore table design now; owner-run start and stop before alpha. New rules 11.1 to 11.11 (settings versions, event stamps, `baseline` in week one, guardrails, parent's choice wins, sticky variants, append-only definitions, empty values, consent sentence, three lever kinds, sign-up date and cohort) and cross-cutting rule 1.4 (numbers live once, in code; `docs/EXPERIMENTS.md` describes). **Scale:** week one is the rule 10.3 trial, about 12 parents (was "5 to 10 families"); alpha (50 to about 1,000) and beta (up to about 5,000) recorded in the backlog; the stack is checked before alpha. Definition of done and the Constraints lines on modules and experiments updated (old lines marked SUPERSEDED). Variable rewards gets its reward settings through the Nudge engine (no new arrow).
 - [2026-10-31 18:00 SGT] **Version 1.10 (in progress), D8 to D10 (owner):** **D8** option A: from the Weekly Wrap Up a parent may save one photo and/or one line about any moment that week, as an album entry, not a log (new rule 7.7). **D9** trial = 5 full weeks per family from its first full Monday, 5 to 10 families (new rule 10.3; known issue resolved). **D10** weekly snapshot = the Weekly Wrap Up (5 items); monthly = a "last month" section in the first Wrap Up of each calendar month (new rule 7.8). Rules 3.12 and 7.1 updated to point at them. All Variable rewards decisions D1 to D11 are now answered. No code; the new rules are "not yet tested".
 - [2026-10-31 17:53 SGT] **Version 1.10 (in progress), D5 to D7 (owner, from a design chat, 31 Oct about 17:20 SGT; built test-first in PR B):**
   - **D5:** no repair pass in the MVP (DESIGN.md "Later").

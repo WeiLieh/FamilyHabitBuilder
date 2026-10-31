@@ -12,6 +12,7 @@
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
 
 ## Planned for the Datastore build
+- [2026-10-31 19:06 SGT] For the [Experiments](../experiments/SPEC.md) module (rules 11.1 to 11.11), to show in the table mock-ups: (1) **settings versions**, append-only: version number, effective from (Singapore time), plain-English note, and the labelled list of values (JSON); (2) **experiment definitions**, append-only (for before alpha): name, lever, variants and values, deciding metric, status, start, end; each change is a new row; (3) **parent assignments**: parent, experiment, variant, assigned at; never changed (week one holds only `baseline`); (4) **stamps on every event** (nudge message sent, log received, reward given, Weekly Wrap Up sent, "Not today", mute): settings version plus the list of experiments and variants, never empty; (5) **sign-up date and cohort** on each parent (rule 11.11). Every new table repeats migration 002's lock-down steps (`docs/KNOWN-ISSUES.md`).
 - [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
 
 ## Applied migrations (rule B1)

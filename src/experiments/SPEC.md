@@ -1,0 +1,29 @@
+# Experiments: module spec
+
+[2026-10-31 19:06 SGT] The **current rules** of the Experiments module: which settings each parent experiences, how that is recorded, and (before alpha) how the owner runs a test that gives different parents different versions. Rule IDs are permanent. The dated history of each decision is in the change notes of the master spec, [docs/SPEC.md](../../docs/SPEC.md). The ideas for what could be tested are listed in [docs/EXPERIMENTS.md](../../docs/EXPERIMENTS.md).
+
+## Purpose
+[2026-10-31 19:06 SGT] Make the app an experiment platform without risking the parents' trust or the meaning of the results. Approved by the owner on 31 Oct as its own module (it was part of the Nudge engine, "brain plus experiments"). Built in stages:
+- **Now (week one, about 12 parents, rule 10.3):** one set of values for everyone (variant `baseline`), and **every event records which settings and variants were in force**, from day one. Only the paperwork and the Datastore table design are done now.
+- **Before alpha (50 to 100 parents, growing to about 1,000):** the owner (the only operator) can start and stop an experiment; parents are split at random.
+- **Beta (up to about 5,000 parents):** still experimenting (see `docs/PRODUCT-BACKLOG.md`).
+- Uses: the [Datastore](../datastore/SPEC.md) (settings versions, experiment definitions, assignments). Used by: the [Nudge engine](../nudge-engine/SPEC.md) (which passes reward settings on to [Variable rewards](../variable-rewards/SPEC.md)) and [Telemetry](../telemetry/SPEC.md) (results split by variant), per the arrows in [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+
+## Code in this folder
+- [2026-10-31 19:06 SGT] None yet. The adjustable numbers are still in the cross-cutting file `src/settings.ts` (rule 1.4).
+
+## Rules at a glance
+11.1 settings versions, never edited · 11.2 every event stamped · 11.3 week one is `baseline` · 11.4 only tunable values, within guardrails · 11.5 never override a parent's choice · 11.6 a parent's variant never changes · 11.7 one experiment per lever, definitions never edited · 11.8 when an empty value is allowed · 11.9 tell parents before alpha · 11.10 three kinds of lever · 11.11 sign-up date and cohort
+
+## Rules
+- **11.1** Every change to the settings creates a **new settings version** (number, effective from, a dated plain-English note). Versions are **never edited or deleted**. Variable-reward settings are stored as a **labelled list** (name and value pairs, JSON (JavaScript Object Notation)) inside the version, so a new setting is a new name, not a table change. Because the database can't check a flexible list, **code validates a new version before it is saved**. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.2** Every logged event (nudge message sent, log received, reward given, Weekly Wrap Up sent, "Not today", mute) is **stamped** with the settings version in force and the list of experiments and variants the parent was in at that moment. The stamps are never empty; if either can't be found, that is a **failure, shown as one** (rule 1.3). *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.3** **Week one:** every parent has the variant **`baseline`**; no random split. A random split starts only when the owner decides a stage is big enough. Week-one friends are **never compared** with alpha parents. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.4** An experiment may change **only tunable values**, and only **within the guardrails**: the 3-a-day cap and the gap between slots may be tested **downward only** (never raised without the owner's approval); the 280-character description limit, Singapore time and "at least 1 slot" never change. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.5** An experiment **never overrides what a parent chose** (rule 2.1): it changes defaults and app behaviour only. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.6** Once a parent is given a variant, it **never changes**. Restarting an experiment means a **new experiment name**. *(decided 24 Oct, 31 Oct)* Not yet tested (nothing built).
+- **11.7** (Before alpha.) **One running experiment per lever.** Experiment definitions are **append-only**: starting, changing or stopping one adds a new row; nothing is overwritten. The owner is the only operator. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.8** An **empty value** in an older settings version is allowed **only if that setting didn't exist yet** when the version was written. Each setting name carries an "introduced on" date, so the code can tell "didn't exist yet" (normal, handled in one place) from "missing" (a failure, rule 1.3, never filled in). *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.9** Before the 50-parent alpha, the **invite and sign-up message** includes one plain sentence such as "we may test small changes in how nudges work". *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.10** Levers come in **three kinds**: **number** levers (a variant is a value), **named style** levers such as message tone (a variant is a name like `warm` or `playful`), and **named rule** levers such as the rest after a 7-day streak (a variant is a named behaviour). Styles and rules are **written in code through a pull request**, so the words sent to parents are always reviewed; a live experiment only chooses between versions already reviewed. *(decided 31 Oct)* Not yet tested (nothing built).
+- **11.11** Every parent has a **sign-up date** (also needed by rules 7.6 and 10.3: counting starts at the first full Monday) and a **cohort** label (for example `week-one-friends`, `alpha-1`), so Telemetry compares like with like. *(decided 31 Oct)* Not yet tested (nothing built).

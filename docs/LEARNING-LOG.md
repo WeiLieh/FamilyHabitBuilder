@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-10-31 19:06 SGT] A/B testing with versioned settings (the Experiments module)
+- **Concept:** A/B testing (giving two groups different versions and comparing results), with **sticky assignment** (a parent's version never changes) and **versioned settings** (every change to the numbers is a new, dated version that is never edited)
+- **In plain English:** To learn whether a change helps, some parents get version A and some get version B, chosen at random, and we compare how each group does. For the result to mean anything, each parent stays in their group, and every event records which settings and version were in force at the time.
+- **Analogy:** A clinical trial: patients are randomly given the medicine or a placebo, they never switch halfway, and every visit is written down with which treatment they were on. Without that label on each visit, the results can't be read afterwards.
+- **Why and when to use it:** When you want evidence, not opinion, about which version works, and you have enough people in each group. **Not** with tiny groups: with 12 parents, a split gives 6 per side, too few to tell a real difference from luck. That's why week one runs everyone on one version (`baseline`) but still records it.
+- **Best practices:** record the version from day one (you can't add it to old data later); never change someone's group mid-test; never edit a past settings version, add a new one; set guardrails on what a test may change (here: never more than 3 nudges a day).
+- **Where it showed up in this project:** the owner made Experiments the ninth module (rules 11.1 to 11.11): week one is `baseline` only, every event is stamped with its settings version and variant, and the owner-run start and stop comes before alpha (50 to about 1,000 parents).
+- **Explain it to others:** "We built the app as a testing platform from day one. Every action a parent takes is labelled with the exact settings they had, so when we have enough users we can fairly compare two versions, and we'll never have to guess what someone experienced."
+- **Governance angle:** a reviewer would ask whether parents know they may be part of tests (rule 11.9: a plain sentence in the invite before alpha), whether a test could ever push parents harder (rule 11.4: the cap can only go down), and who can start a test (rule 11.7: only the owner).
+
 ### [2026-10-31 10:19 SGT] Sub-agents (specialist reviewers with their own desk)
 - **Concept:** Sub-agents: separate Claude helpers, each with its own instructions, a limited set of tools and its own context window (working memory).
 - **In plain English:** Instead of the main Claude reading every file itself (and filling its memory), it hands a focused job to a specialist, for example "check privacy", which reads widely on its own and returns only a short report. Giving it read-only tools means it cannot change anything.

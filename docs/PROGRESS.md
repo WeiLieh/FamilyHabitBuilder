@@ -1,5 +1,17 @@
 # Progress (handoff between sessions)
 
+## [2026-10-31 19:06 SGT] Session 6, evening: Experiments module on paper (read this first)
+### Done
+- [2026-10-31 19:06 SGT] PR B (#13) merged; examples script applied in Supabase (32 rows); `-pr-b` branch removed locally (the owner deletes it on GitHub, from #13's page).
+- [2026-10-31 19:06 SGT] Claude Chat handoff on Experiments checked against the files; owner agreed: week one = the rule 10.3 trial (about 12 parents); alpha and beta in the backlog; stack checked before alpha; Definition of done reworded; B1 to B5 agreed (three lever kinds, guardrails, sign-up date and cohort, first experiment later, numbers live in code).
+- [2026-10-31 19:06 SGT] Experiments module opened on paper: `src/experiments/SPEC.md` (rules 11.1 to 11.11), Module table row, diagram box and arrows, rule 1.4, rule 10.3 changed, Telemetry future work, Datastore planned tables, `docs/EXPERIMENTS.md` and `src/settings.ts` headers (numbers live in code), learning-log entry. Tests unchanged at 129.
+### In progress
+- [2026-10-31 19:06 SGT] The Experiments pull request (both review agents first, habit H3).
+### Next steps
+- [2026-10-31 19:06 SGT] Datastore table mock-ups in plain English for the owner's agreement (parents with sign-up date and cohort, picks, slots, Wrap Up settings, logs, events with settings and variant stamps, Wrap Ups sent, settings versions, experiment definitions, assignments). Then tests first, then the build. Later: one reader function for all tunable values.
+### Blockers
+- [2026-10-31 19:06 SGT] None.
+
 ## [2026-10-31 18:04 SGT] Session 6, later: PR B built (read this first)
 ### Done
 - [2026-10-31 18:04 SGT] **PR B built test-first** on branch `claude/festive-einstein-nf623s-pr-b` (owner approved a second branch so PR A, #12, stays separate): Weekly Wrap Up (rule 3.12, `src/nudge-engine/wrap-up.ts`), rule 3.4 changed, week close at midnight Sunday (rule 7.6, `src/variable-rewards/week.ts`), new rules 3.13, 3.14, 10.2, rule 7.1 changed, D5 to D7 in DESIGN.md. Tests 106 → 129 (minimum raised to 129). Both review agents ran; owner agreed all suggestions (one known issue, one backlog item, a stronger "Not today" test).

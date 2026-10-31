@@ -1,5 +1,7 @@
 # Experiments
 
+[2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](../src/experiments/SPEC.md). The paragraph below is history (SUPERSEDED [2026-10-31 19:06 SGT]).
+
 The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
 
 ## How experiments work
@@ -9,7 +11,8 @@ The single place where experiments are defined. The nudge engine reads its exper
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
-- [2026-10-31 18:00 SGT] Trial length (D9, rule 10.3): 5 full weeks per family from its first full Monday; 5 to 10 friends' families.
+- [2026-10-31 19:06 SGT] Trial length (D9, rule 10.3): 5 full weeks per parent from their first full Monday; the week-one friends group, about 12 parents.
+- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-31 18:00 SGT] Trial length (D9, rule 10.3): 5 full weeks per family from its first full Monday; 5 to 10 friends' families.
 - [2026-10-31 17:53 SGT] Weekly Wrap Up (rule 3.12): Sunday, default 8:00pm, on by default; the parent can change the time (any 30-minute block, 7:00am to 9:30pm) or turn it off. Not a nudge message: no slot, not counted toward the 3-a-day cap. In `src/settings.ts` (`WEEKLY_WRAP_UP_WEEKDAY`, `DEFAULT_WEEKLY_WRAP_UP`). Possible future experiment: another day or default time.
 - [2026-10-28 22:23 SGT] Nudge slots: 30-minute blocks from 7:00am to 9:30pm (last start), up to 3 per schedule, at least 1 hour apart, at least 1 in total. Defaults: school days 7:00am, 7:00pm, 9:00pm; non-school days 9:00am, 12:30pm, 7:00pm.
 - [2026-10-28 22:23 SGT] Deliberate behaviours are nudged on Friday (planning) and Sunday (only if still due). Possible future experiment: other patterns (e.g. a midweek nudge).
