@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-10-31 09:41 SGT] "One diagram" means one architecture diagram
+- **Issue:** [2026-10-31 09:41 SGT] The drift test counts as a diagram: any image file, or a Mermaid block that names 2 or more official modules, outside `docs/archive/`. The "hook loop" Mermaid flows in the two rewards specs name no modules, so they are allowed.
+- **Impact:** [2026-10-31 09:41 SGT] If the owner meant "no other diagrams at all", the rewards specs' flow diagrams would need moving or removing.
+- **Workaround:** [2026-10-31 09:41 SGT] Owner to confirm the reading at PR 2 review.
+
 ### [2026-10-28 22:23 SGT] Deliberate nudges can be crowded out on Friday and Sunday
 - **Issue:** [2026-10-28 22:23 SGT] Deliberate behaviours are only nudged on Friday and Sunday, and come after due quick behaviours in priority. A parent with few slots on those days (e.g. 1) and a due quick behaviour may never get a deliberate nudge that week.
 - **Impact:** [2026-10-28 22:23 SGT] Deliberate behaviours (the bigger family activities) could be under-nudged for some parents.

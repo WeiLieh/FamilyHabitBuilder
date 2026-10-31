@@ -111,6 +111,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | File | Purpose |
 |---|---|
 | `CLAUDE.md` | This file. The only master prompt. Standing rules. Keep it short. |
+| [docs/SPEC.md](docs/SPEC.md) | [2026-10-31 09:40 SGT] **Start here for structure:** section "Modules and structure" holds the document index (links to every file), the Module table, cross-cutting files and the drift-test facts. The one diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). |
 | `docs/SPEC.md` | What we are building: goal, users, constraints, what "done" looks like. Version 1 is already written. |
 | `docs/NUDGE-CONTEXT.md` | The app's own AI prompt: personality, tone and rules for the nudge engine. Not instructions for you. Read only when working on the nudge engine. |
 | `docs/CONTEXT.md` | The current state: purpose, how to run and test, architecture, key decisions and why. |
@@ -120,7 +121,7 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `docs/KNOWN-ISSUES.md` | Problems that are still open, with workarounds. |
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
 | `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. |
-| `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). |
+| `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). SUPERSEDED [2026-10-31 09:40 SGT]: moved to `docs/archive/`; the only diagram is now `docs/ARCHITECTURE.md`. |
 | `docs/CATCH-UP.md` | [2026-10-28 22:37 SGT] One-page catch-up after time away: module progress map, what each module and file does, current rules recap, questions to think about before the next session. A snapshot, rewritten each session (history stays in Git and `docs/SPEC.md`). |
 | `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |
 | `docs/Family_Habit_App_Success_Metrics.xlsx` | [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. |

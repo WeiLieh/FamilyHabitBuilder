@@ -10,31 +10,7 @@ Contents: 1. Module map · 2. What each module does, and its files · 3. Rules r
 
 The 8 modules from your architecture diagram, coloured by progress. Numbers match the table in section 2.
 
-```mermaid
-flowchart LR
-    telegram["1. Telegram bot<br/>NOT STARTED"]:::todo
-    engine["2. Nudge engine<br/>decisions: BUILT<br/>words: WAITING"]:::part
-    repository["3. Nudge repository<br/>BUILT and LIVE"]:::done
-    photo["4. Photo check<br/>NOT STARTED"]:::todo
-    rewards["5. Variable rewards<br/>DESIGN in progress<br/>(spec v0.2, D5 to D10 open)"]:::part
-    datastore["6. Datastore<br/>nudge tables LIVE<br/>parent tables NOT STARTED"]:::part
-    webapp["7. Web app<br/>NOT STARTED"]:::todo
-    telemetry["8. Telemetry<br/>NOT STARTED"]:::todo
-
-    telegram <--> engine
-    repository --> engine
-    engine --> rewards
-    engine <--> datastore
-    telegram --> photo
-    photo --> datastore
-    telegram --> datastore
-    datastore --> webapp
-    telemetry -. listens to all .- datastore
-
-    classDef done fill:#2e7d32,color:#ffffff
-    classDef part fill:#f9a825,color:#000000
-    classDef todo fill:#9e9e9e,color:#000000
-```
+[2026-10-31 09:40 SGT] The module map now lives in one place: **[docs/ARCHITECTURE.md](ARCHITECTURE.md)** (also the source of each module's status, checked by the drift test).
 
 **Colours:** green = built and tested; yellow = partly built; grey = not started.
 
@@ -66,7 +42,7 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | 7 | **Web app** | Plain pages: history, progress, rewards, XP, "delete my data" | Not started | (none yet) | |
 | 8 | **Telemetry** | Records events from every module and calculates your 10 success metrics | Not started | (none yet) | |
 
-**Totals:** 84 app tests (`npm run check`) and 25 database checks (`npm run test:db`), all passing.
+**Totals:** 106 app tests (84 + 22 drift tests) (`npm run check`) and 25 database checks (`npm run test:db`), all passing.
 
 ---
 

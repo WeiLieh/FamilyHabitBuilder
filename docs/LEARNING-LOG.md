@@ -2,6 +2,19 @@
 
 ## Notebook
 
+### [2026-10-31 09:41 SGT] Drift test with a ratchet
+- **Concept:** A drift test (an automatic check that documentation still matches the code), switched on step by step with a "ratchet".
+- **In plain English:** Documents go out of date silently. The drift test reads the repo on every pull request and fails if, for example, the diagram names a module that doesn't exist, a link is broken, or code uses another module without an arrow in the diagram. The ratchet means each module's checks switch on only when that module has been moved into the new structure, and once on they never switch off.
+- **Analogy:** A building inspector who checks every renovation against the floor plan; the ratchet is like certifying one floor at a time, and a certified floor stays under inspection.
+- **Why and when to use it:** When several documents describe the same system and people (or AIs) edit both. Overkill for a tiny project with one document.
+- **Best practices:**
+  - Prove each check works by breaking a small example on purpose.
+  - Keep the facts the test reads in one place (the Module table).
+  - Never weaken the test to make it pass (rule H5).
+- **Where it showed up in this project:** Restructure PR 2: 22 tests (21 examples + 1 on the real repo); it found 25 drift problems, which were then fixed.
+- **Explain it to others:** "Our docs can't quietly go stale: every pull request runs a test that compares the docs, the diagram and the code, and fails if they disagree."
+- **Governance angle:** A reviewer can trust the architecture diagram, because the build fails if it stops matching the code.
+
 ### [2026-10-28 22:23 SGT] Passing "now" in (testing time-based rules)
 - **Concept:** A pure function with the current time passed in as an input ("injecting the clock").
 - **In plain English:** The nudge planner never looks at the real clock. Whoever calls it says "it is Friday 7:05pm"; the planner answers what to do. So a test can check Friday evening, a public holiday or a Sunday at any time of day, instantly and exactly.
