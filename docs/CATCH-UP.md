@@ -32,13 +32,13 @@ A **module** is one box in the map. A **file** is a piece of code inside a modul
 | | | | | `src/settings.ts`: all the numbers in one place (3 a day, slot times, limits); mirrors `docs/EXPERIMENTS.md` | (used by all) |
 | | | | | `src/sgt.ts`: Singapore time helpers (days, weekdays, time of day) | (used by all) |
 | 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `src/nudge-repository/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
-| | | | | `supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done); tested by `tests/nudge-repository-first-load.test.ts` | 6 |
-| | | | | `supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
-| | | | | `supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
+| | | | | `src/datastore/supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done); tested by `tests/nudge-repository-first-load.test.ts` | 6 |
+| | | | | `src/datastore/supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
+| | | | | `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
 | 4 | **Photo check** | Claude looks at a photo and judges whether it fits the behaviour | Not started | (none yet) | |
 | 5 | **Variable rewards** | Rewards after logging: validation reply (receipt + Claude), varied ideas, weekly streak and steady weeks, one-tap logging, family memory album with snapshots, 3 milestone badges | Design in progress (no code yet) | `docs/VARIABLE-REWARDS-SPEC.md`: the design (v0.2): universe of rewards, MVP scope, decisions D1 to D11 | (design only) |
-| 6 | **Datastore** | Where everything is kept: Supabase (Singapore) for permanent records and photos, Upstash Redis for short-term chat memory | Nudge tables live | `supabase/migrations/001_create_nudge_repository.sql`: creates the nudges and examples tables, the 3-example guard and the browsing view | 25 database checks |
-| | | | | `supabase/migrations/002_service_role_read_only.sql`: makes our server read-only on those tables | (in the 25) |
+| 6 | **Datastore** | Where everything is kept: Supabase (Singapore) for permanent records and photos, Upstash Redis for short-term chat memory | Nudge tables live | `src/datastore/supabase/migrations/001_create_nudge_repository.sql`: creates the nudges and examples tables, the 3-example guard and the browsing view | 25 database checks |
+| | | | | `src/datastore/supabase/migrations/002_service_role_read_only.sql`: makes our server read-only on those tables | (in the 25) |
 | 7 | **Web app** | Plain pages: history, progress, rewards, XP, "delete my data" | Not started | (none yet) | |
 | 8 | **Telemetry** | Records events from every module and calculates your 10 success metrics | Not started | (none yet) | |
 
@@ -66,7 +66,6 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **5.2** **Unprompted** = no nudge message in the 4 hours before (metric 7). *(decided 28 Oct)*
 - **5.3** Optional **description** (up to 280 characters) = the Hooked "Investment". Over 280: the bot asks to shorten it. Shown in the web app and snapshot, and given to Claude for future nudges. *(decided 24 Oct)*
 - **5.4** Logging a behaviour not chosen: **accepted with thanks**, doesn't count toward targets. Logging late: **back to yesterday only**. Twice in a day: counts once for targets and streaks, but **should still be celebrated (WIP)**. *(decided 28 Oct)*
-- **5.5** **Photos:** always optional; consent once at sign-up; kept until the parent deletes their data. *(decided 24 Oct)*
 
 ### 6. Photo check
 - **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)*
@@ -80,8 +79,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 - **7.6** **Steady week** (D4) = every behaviour the parent chose met its weekly bar, with some slack: every day = 6 of 7 days; every 2 days = 3 days; deliberate once a week = 1; twice a week = 2. The week a parent joins doesn't count against them (their streak starts with their first full week). Picks in place on Sunday are the ones judged. *(decided 29 Oct; bars are starting values, tune after the trial)*
 
 ### 8. Datastore
-- **8.1** Supabase in **Singapore**; Upstash Redis (Singapore) for chat memory; Vercel functions in Singapore. *(decided 24 Oct)*
-- **8.2** New tables start **locked** (Row Level Security on, no public access); our server can only read the nudge tables. *(decided 25 Oct)*
+[2026-10-31 09:59 SGT] Rules 8.1, 8.2 and 5.5 (photo storage) now live in one place: **[src/datastore/SPEC.md](../src/datastore/SPEC.md)**.
 
 ### 9. Web app
 - **9.1** Plain, unstyled pages that show the right data; **the look comes from you later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)*
@@ -98,7 +96,7 @@ Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **ID
 
 [2026-10-29 22:40 SGT] Answer whenever you have a moment; each has a suggestion, so "agree" is enough. Full details are in section 1 of `docs/VARIABLE-REWARDS-SPEC.md`.
 
-**First, one task:** run `supabase/content/2026-10-29_unlock_all_nudges.sql` in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD unlocked).
+**First, one task:** run `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql` in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD unlocked).
 
 **Variable rewards, parked decisions D5 to D10**
 - **D5 Repair pass** (a free "missed day" pass): *suggestion:* not in the MVP; slack in steady weeks (rule 7.6) and logging up to yesterday (rule 5.4) cover forgetful days.

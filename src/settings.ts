@@ -27,7 +27,7 @@ export const MAX_DELIBERATE_TIMES_PER_WEEK = 2;
 // Fewest active examples a nudge should have (spec v1.6). Below this the
 // nudge keeps working but is flagged to the owner, and the database refuses
 // edits that would drop a nudge below it. The database copy of this number is
-// in supabase/migrations/001_create_nudge_repository.sql: change both together.
+// in src/datastore/supabase/migrations/001_create_nudge_repository.sql: change both together.
 export const MIN_EXAMPLES_PER_NUDGE = 3;
 
 // ---- Nudge slots and timing (spec v1.7) --------------------------------------

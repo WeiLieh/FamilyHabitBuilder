@@ -1,10 +1,10 @@
 // =============================================================================
 // tests/nudge-repository-first-load.test.ts: the owner's first-load CSVs pass the app's rules
 //
-// supabase/seed/nudges-first-load.csv and examples-first-load.csv were made
+// src/datastore/supabase/seed/nudges-first-load.csv and examples-first-load.csv were made
 // from docs/archive/Nudge_Repository.xlsx. The owner imports them into Supabase once
 // (nudges first, then examples). The database has its own rules (tested by
-// supabase/tests/); this test checks the APP's rules accept the same data, so
+// src/datastore/src/datastore/supabase/tests/); this test checks the APP's rules accept the same data, so
 // the two sets of rules agree.
 // =============================================================================
 
@@ -32,8 +32,8 @@ function rowsAsSupabaseReturnsThem(file: string, defaults: Record<string, unknow
 
 describe("First-load CSVs for the Supabase nudges and examples tables", () => {
   const result = readNudgeRows(
-    rowsAsSupabaseReturnsThem("supabase/seed/nudges-first-load.csv"),
-    rowsAsSupabaseReturnsThem("supabase/seed/examples-first-load.csv", { active: true }),
+    rowsAsSupabaseReturnsThem("src/datastore/supabase/seed/nudges-first-load.csv"),
+    rowsAsSupabaseReturnsThem("src/datastore/supabase/seed/examples-first-load.csv", { active: true }),
   );
 
   it("has 9 nudges, every one passes the app's checks, and none is short of examples", () => {
