@@ -2,7 +2,7 @@
 
 **Last updated: [2026-10-29 22:40 SGT]** (end of session 4). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
-Contents: 1. Module map · 2. What each module does, and its files · 3. Rules recap (with rule IDs) · 4. Questions to think about before next session · 5. Waiting on you
+Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
 ---
 
@@ -18,66 +18,38 @@ The 8 modules from your architecture diagram, coloured by progress. Numbers matc
 
 ---
 
-## 2. What each module does, and its files
+## 2. Modules: purpose, files and tests
 
-A **module** is one box in the map. A **file** is a piece of code inside a module. Tests check that each file does what we agreed.
+[2026-10-31 10:17 SGT] Each module's purpose, its files and what each one does, and which tests check it are in the module's own spec, next to its code. Status is in the diagram ([docs/ARCHITECTURE.md](ARCHITECTURE.md)).
 
-| # | Module | What it does (plain English) | Status | Files and what each one does | Tests |
-|---|---|---|---|---|---|
-| 1 | **Telegram bot** | The chat with the parent: sends nudge messages, receives logs, photos, ✅ Done and 😴 Not today | Not started | `api/health.ts`: an "I'm alive" web address, to check a deployment works | 2 |
-| 2 | **Nudge engine** | The brain: checks what a parent picks, works out what is still to do, and decides when to nudge and about which behaviour. Later: Claude writes the words | Decisions half built | `src/nudge-engine/choices.ts`: checks a parent's picks (2 quick + 1 deliberate, unlocked, frequencies) | 16 |
-| | | | | `src/nudge-engine/schedule.ts`: school day or non-school day; checks a parent's nudge times (slots); which times to grey out on screen | 8 |
-| | | | | `src/nudge-engine/due.ts`: is a behaviour still to do, given the frequency the parent chose? | 7 |
-| | | | | `src/nudge-engine/planner.ts`: the decision: "send a nudge about X now" or "don't send", with the reason | 22 |
-| | | | | `src/settings.ts`: all the numbers in one place (3 a day, slot times, limits); mirrors `docs/EXPERIMENTS.md` | (used by all) |
-| | | | | `src/sgt.ts`: Singapore time helpers (days, weekdays, time of day) | (used by all) |
-| 3 | **Nudge repository** | The 9 nudges and their examples, which you edit in Supabase | Built and live | `src/nudge-repository/nudge-repository.ts`: checks every nudge and example row the app reads; leaves out broken ones and reports them | 23 |
-| | | | | `src/datastore/supabase/seed/*.csv`: your 9 nudges and 45 examples (first load, done); tested by `tests/nudge-repository-first-load.test.ts` | 6 |
-| | | | | `src/datastore/supabase/content/2026-10-28_time_agnostic_examples.sql`: the 10 example rewrites (applied live) | checked |
-| | | | | `src/datastore/supabase/content/2026-10-29_unlock_all_nudges.sql`: unlocks SGE, ITE, ASD (rule 2.2). **Waiting for you to run it** | checked |
-| 4 | **Photo check** | Claude looks at a photo and judges whether it fits the behaviour | Not started | (none yet) | |
-| 5 | **Variable rewards** | Rewards after logging: validation reply (receipt + Claude), varied ideas, weekly streak and steady weeks, one-tap logging, family memory album with snapshots, 3 milestone badges | Design in progress (no code yet) | `src/variable-rewards/DESIGN.md`: the design (v0.2): universe of rewards, MVP scope, decisions D1 to D11 | (design only) |
-| 6 | **Datastore** | Where everything is kept: Supabase (Singapore) for permanent records and photos, Upstash Redis for short-term chat memory | Nudge tables live | `src/datastore/supabase/migrations/001_create_nudge_repository.sql`: creates the nudges and examples tables, the 3-example guard and the browsing view | 25 database checks |
-| | | | | `src/datastore/supabase/migrations/002_service_role_read_only.sql`: makes our server read-only on those tables | (in the 25) |
-| 7 | **Web app** | Plain pages: history, progress, rewards, XP, "delete my data" | Not started | (none yet) | |
-| 8 | **Telemetry** | Records events from every module and calculates your 10 success metrics | Not started | (none yet) | |
+| Module | Spec |
+|---|---|
+| Telegram bot | [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md) |
+| Nudge engine | [src/nudge-engine/SPEC.md](../src/nudge-engine/SPEC.md) (and its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) |
+| Nudge repository | [src/nudge-repository/SPEC.md](../src/nudge-repository/SPEC.md) |
+| Photo check | [src/photo-check/SPEC.md](../src/photo-check/SPEC.md) |
+| Variable rewards | [src/variable-rewards/SPEC.md](../src/variable-rewards/SPEC.md) (and its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)) |
+| Datastore | [src/datastore/SPEC.md](../src/datastore/SPEC.md) |
+| Web app | [src/web-app/SPEC.md](../src/web-app/SPEC.md) |
+| Telemetry | [src/telemetry/SPEC.md](../src/telemetry/SPEC.md) |
 
-**Totals:** 106 app tests (84 + 22 drift tests) (`npm run check`) and 25 database checks (`npm run test:db`), all passing.
+Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the test helpers) are listed in [docs/SPEC.md](SPEC.md), section "Modules and structure".
 
 ---
 
-## 3. Rules recap (current rules only)
+## 3. Rules: where each one lives
 
-Each rule has a **rule ID** (e.g. **3.4**) so we can refer to it precisely. **IDs never change and are never reused:** a new rule gets the next free number in its section; a changed rule keeps its ID (with a new date); a dropped rule's ID is retired and listed at the end. Grouped by topic. The date in brackets after each rule, e.g. *(decided 24 Oct)*, is when you decided it (all dates 2026; two dates mean it was decided, then updated). The full history is in `docs/SPEC.md`.
-
-### 1. Everyone and everything
-- **1.1** Parents of children aged 7 to 12; each parent is a separate user. **Invite-only.** English only. Channel: Telegram. *(decided 24 Oct)*
-- **1.2** All times and days are **Singapore time**, midnight to midnight. A week is **Monday to Sunday**. *(decided 24 Oct, 28 Oct)*
-- **1.3** **No fallbacks:** a failure is shown as a failure, never filled with made-up values. Exception: if the photo check fails, the parent self-reports. *(decided 24 Oct)*
-
-### 2. and 3. Nudge engine
-[2026-10-31 09:43 SGT] Rules 2.1 to 2.4 (what a parent picks) and 3.1 to 3.11 (when and what to nudge) now live in one place: **[src/nudge-engine/SPEC.md](../src/nudge-engine/SPEC.md)** (with a "rules at a glance" list at the top).
-
-### 4. Nudge repository
-[2026-10-31 09:56 SGT] Rules 4.1 to 4.6 now live in one place: **[src/nudge-repository/SPEC.md](../src/nudge-repository/SPEC.md)**.
-
-### 5. Logging and 6. Photo check
-[2026-10-31 10:12 SGT] Rules 5.1, 5.3 and 5.4 (logging) now live in **[src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)**; rule 6.1 in **[src/photo-check/SPEC.md](../src/photo-check/SPEC.md)**. (Rule 5.2 is in Telemetry, 5.5 in Datastore.)
-
-### 7. Variable rewards
-[2026-10-31 10:05 SGT] Rules 7.1 to 7.6 now live in one place: **[src/variable-rewards/SPEC.md](../src/variable-rewards/SPEC.md)**; open decisions D5 to D10 are in its [DESIGN.md](../src/variable-rewards/DESIGN.md).
-
-### 8. Datastore
-[2026-10-31 09:59 SGT] Rules 8.1, 8.2 and 5.5 (photo storage) now live in one place: **[src/datastore/SPEC.md](../src/datastore/SPEC.md)**.
-
-### 9. Web app
-[2026-10-31 10:12 SGT] Rule 9.1 now lives in **[src/web-app/SPEC.md](../src/web-app/SPEC.md)**.
-
-### 10. Telemetry
-[2026-10-31 10:09 SGT] Rules 10.1 and 5.2 now live in one place: **[src/telemetry/SPEC.md](../src/telemetry/SPEC.md)**, next to the metrics spreadsheet.
-
-### Retired rule IDs
-- None yet.
+[2026-10-31 10:17 SGT] Every rule is written **once**, with its permanent ID, and each module spec starts with a "rules at a glance" list.
+- **1.1 to 1.3** (users, Singapore time, no fallbacks): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
+- **2.1 to 2.4, 3.1 to 3.11**: [Nudge engine](../src/nudge-engine/SPEC.md)
+- **4.1 to 4.6**: [Nudge repository](../src/nudge-repository/SPEC.md)
+- **5.1, 5.3, 5.4**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2**: [Telemetry](../src/telemetry/SPEC.md) · **5.5**: [Datastore](../src/datastore/SPEC.md)
+- **6.1**: [Photo check](../src/photo-check/SPEC.md)
+- **7.1 to 7.6**: [Variable rewards](../src/variable-rewards/SPEC.md)
+- **8.1, 8.2**: [Datastore](../src/datastore/SPEC.md)
+- **9.1**: [Web app](../src/web-app/SPEC.md)
+- **10.1**: [Telemetry](../src/telemetry/SPEC.md)
+- Structure rules (S, R, D, B, P) and retired rule IDs: [docs/SPEC.md](SPEC.md), "Modules and structure"
 
 ---
 
