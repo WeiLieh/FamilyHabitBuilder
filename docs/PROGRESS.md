@@ -6,6 +6,7 @@
 - [2026-11-01 16:38 SGT] **Datastore designed with the owner** over three drafts and a side-chat schema review (preview pages: "Datastore tables, draft 3" and "Datastore spec review", both claude.ai artifacts). Decisions A to M, child birth year, photos that fail the check are kept, five kinds of value (Tuneable, Named style, Named rule, Guardrail, Fixed), 31 values in `src/experiments/EXPERIMENTS.md`.
 - [2026-11-01 16:38 SGT] **Built test-first and merged (PR #15):** rules 8.3 to 8.12, 5.6, 6.2, 10.4, 11.13 (1.4, 8.4, 11.10 changed); migration 003 (14 tables, all-or-nothing functions, Telemetry views, lock-down); database tests T1 to T41 plus 7 review-fix tests; `src/datastore/children.ts` and `consents.ts`; decision L (two numbers moved into `src/settings.ts`). App tests 129 → 139. Both review agents ran; 7 fixes applied, 4 known issues logged.
 - [2026-11-01 16:38 SGT] **Migration 003 applied on Supabase by the owner;** check query matched; fingerprint recorded (rule B1). Datastore status: "Tables live".
+- [2026-11-01 16:56 SGT] Housekeeping (owner): Datastore design pages saved as PDFs in `src/datastore/design/` for the owner only; Claude blocked from reading them (`.claude/settings.json`, habit H8); new habit H9 (end-of-session pull request); H7 handoff files come from the branch just pushed.
 ### In progress
 - [2026-11-01 16:38 SGT] None.
 ### Next steps

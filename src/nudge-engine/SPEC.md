@@ -8,6 +8,7 @@
 - **Words** (not built yet): Claude writes the nudge message, guided by [NUDGE-CONTEXT.md](NUDGE-CONTEXT.md) (the app's own AI personality; not instructions for Claude Code).
 
 ## Code in this folder
+- [2026-11-01 16:56 SGT] Decision L (1 Nov, rule 1.4): `choices.ts` now reads the frequency choices and `planner.ts` the 2-day floor from `src/settings.ts` (`QUICK_FREQUENCIES`, `DELIBERATE_FREQUENCY_TIMES_PER_WEEK`, `QUICK_FLOOR_DAYS`). Same behaviour; tests unchanged.
 - [2026-10-31 19:18 SGT] Comments in `choices.ts` now point to `src/settings.ts` for the values (rule 1.4); no rule changed.
 - [2026-10-31 09:43 SGT] `choices.ts`: checks a parent's picks (rules 2.1 to 2.3).
 - [2026-10-31 09:43 SGT] `schedule.ts`: school or non-school day; checks slots; which times the setup screen greys out (rules 3.1 to 3.3).
