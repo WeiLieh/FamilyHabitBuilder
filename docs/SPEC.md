@@ -104,7 +104,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | yes |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | yes |
-| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Nudge tables live | yes |
+| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables built, migration waiting | yes |
 | Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | yes |
 | Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Not started | yes |
@@ -127,8 +127,9 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
+- [2026-11-01 16:14 SGT] Minimum test count: 139
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
-- [2026-10-31 17:53 SGT] Minimum test count: 129
+- SUPERSEDED [2026-11-01 16:14 SGT] [2026-10-31 17:53 SGT] Minimum test count: 129
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes

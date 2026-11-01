@@ -75,3 +75,23 @@ export const DELIBERATE_NUDGE_WEEKDAYS = [5, 0];
 export const WEEKLY_WRAP_UP_WEEKDAY = 0;
 // Every new parent starts with it on, at 8:00pm (20 x 60 = 1200 minutes).
 export const DEFAULT_WEEKLY_WRAP_UP = { enabled: true, minutes: 20 * 60 };
+
+// ---- Moved here on 1 Nov (decision L, rule 1.4): numbers that lived in the Nudge engine ----
+// Frequencies a parent can choose for a quick behaviour (value 8 in src/experiments/EXPERIMENTS.md).
+export const QUICK_FREQUENCIES: readonly string[] = ["every_day", "every_2_days"];
+// Frequencies for a deliberate behaviour, and how many times a week each one means.
+export const DELIBERATE_FREQUENCY_TIMES_PER_WEEK: Readonly<Record<string, number>> = {
+  once_a_week: 1,
+  twice_a_week: 2,
+};
+// The floor for quick behaviours (value 9): not logged for this many days or more
+// (that is, not today or yesterday) puts the behaviour first in line for a nudge.
+export const QUICK_FLOOR_DAYS = 2;
+
+// ---- Children's ages (rules 8.10 and 10.4, decided 1 Nov) ----------------------
+// A birth year is accepted if the child is 0 to 25 (a year in the future, or more
+// than 25 years ago, is refused). Children outside the app's 7 to 12 range are
+// accepted but flagged for Telemetry, never turned away at sign-up.
+export const CHILD_AGE_ACCEPTED = { youngest: 0, oldest: 25 };
+export const CHILD_AGE_TARGET = { youngest: 7, oldest: 12 };
+

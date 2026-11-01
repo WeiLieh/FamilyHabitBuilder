@@ -13,4 +13,4 @@
 
 ## Rules
 - **6.1** Claude judges the photo, using the nudge's photo idea **for now** (risk: too strict, logged in docs/KNOWN-ISSUES.md). If the check fails, the parent self-reports and the log is labelled "self-reported". *(decided 24 Oct)* Not yet tested (nothing built).
-- **6.2** [2026-11-01 16:07 SGT] **A photo that fails the check is kept.** It is stored and shown to the parent in the Web app (it is what they uploaded; we don't decide for them). The parent is asked to self-report, and the log is recorded as self-reported (rule 1.3). *(decided 1 Nov)* Not yet tested (being built now: the database side only; photo storage comes with the Photo check).
+- **6.2** [2026-11-01 16:07 SGT] **A photo that fails the check is kept.** It is stored and shown to the parent in the Web app (it is what they uploaded; we don't decide for them). The parent is asked to self-report, and the log is recorded as self-reported (rule 1.3). *(decided 1 Nov)* Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T24, the database side). Photo storage and showing it in the Web app are not built yet.
