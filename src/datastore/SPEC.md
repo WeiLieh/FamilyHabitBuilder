@@ -9,11 +9,14 @@
 - [2026-10-31 09:59 SGT] `supabase/migrations/`: table structure changes, numbered, run once each in order in the Supabase SQL Editor (owner). **Never edit one after it has run** (rule B1, checked by fingerprint below).
 - [2026-10-31 09:59 SGT] `supabase/seed/`: first-load data (already imported).
 - [2026-10-31 09:59 SGT] `supabase/content/`: one-off content changes to live data, named `YYYY-MM-DD_what.sql` (rule B2).
-- [2026-11-01 16:14 SGT] `supabase/migrations/003_create_datastore_tables.sql`: the 14 Datastore tables, their all-or-nothing functions and Telemetry views (rules 8.3 to 8.12). **Not yet applied:** the owner runs it in the Supabase SQL Editor after the pull request is merged; then its fingerprint is added below.
+- [2026-11-01 16:38 SGT] `supabase/migrations/003_create_datastore_tables.sql`: the 14 Datastore tables, their all-or-nothing functions and Telemetry views (rules 8.3 to 8.12). **Applied** by the owner on 1 Nov after pull request #15; the owner's check query showed 14 tables, all 14 locked, no public access, the server limited to INSERT and SELECT, and 13 event types. Never edit it (rule B1).
+- SUPERSEDED [2026-11-01 16:38 SGT] [2026-11-01 16:14 SGT] `supabase/migrations/003_create_datastore_tables.sql`: the 14 Datastore tables, their all-or-nothing functions and Telemetry views (rules 8.3 to 8.12). **Not yet applied:** the owner runs it in the Supabase SQL Editor after the pull request is merged; then its fingerprint is added below.
 - [2026-11-01 16:14 SGT] `children.ts`: checks a child's birth year before saving (rule 8.10). Tests: tests/datastore-children.test.ts.
 - [2026-11-01 16:14 SGT] `consents.ts`: works out which consent answer counts, the latest per topic (rule 11.13). Tests: tests/datastore-consents.test.ts.
 - [2026-11-01 16:14 SGT] `supabase/tests/datastore-tables.test.sql`: database tests T1 to T41 for migration 003 (run with `npm run test:db`).
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
+
+- [2026-11-01 16:56 SGT] `design/`: the owner's reading copies of the Datastore design pages (PDF), explained in [design/README.md](design/README.md). **Claude never reads them** (habit H8); the rules are in this spec.
 
 ## Planned for the Datastore build
 - SUPERSEDED [2026-11-01 16:07 SGT] (now rules 8.3 to 8.12 and "Tables" below) [2026-10-31 19:09 SGT] For the [Experiments](../experiments/SPEC.md) module, to show in the table mock-ups: **settings versions** (rules 11.1, 11.8), **experiment definitions** (rule 11.7), **parent assignments** (rules 11.3, 11.6), **stamps on every event** (rule 11.2), **sign-up date and cohort** on each parent (rule 11.11), the parent's **recorded agreement** and, before alpha, an **opt-out of experiments** (rule 11.9); "delete my data" must be able to remove all of a parent's rows (rule 11.12). "Delete my data" (rule 1.5) goes through **one narrow database function** that can remove only one parent's data and write the non-personal deletion log; apart from that, the server may only add rows to these tables. Every new table gets **only the access it needs**, spelled out per table in the mock-ups (for example: the server may add rows but never edit or delete them, except for "delete my data"), following migration 002's lock-down (`docs/KNOWN-ISSUES.md`).
@@ -53,6 +56,7 @@
 |---|---|
 | 001_create_nudge_repository.sql | 61812ba8c145 |
 | 002_service_role_read_only.sql | 99f8e46eec97 |
+| 003_create_datastore_tables.sql | c47a978db826 |
 
 ## Content scripts
 - [2026-10-31 18:12 SGT] `2026-10-31_more_examples.sql`: applied by the owner on 31 Oct (32 rows). Live Supabase now has 77 examples, matching the seed file.

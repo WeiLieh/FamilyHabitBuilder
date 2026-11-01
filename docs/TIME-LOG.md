@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-01 16:38 SGT] Session 7 (2026-11-01)
+- [2026-11-01 16:38 SGT] **Ended (handoff).** About 6 h 55 min elapsed (09:49 to about 16:45 SGT). Active time is hard to estimate from commits, because most of the work was reviewing preview pages in conversation; probably about 5 h. Start-of-session routine and PR A leftovers (about 15 min); Datastore drafts 1 to 3, refinement packs, the side-chat review and decisions A to M (most of the session); spec review and approval; build test-first (about 30 min); two review agents and 7 fixes (about 20 min); PR #15 merged and migration 003 applied.
+- **Notes for timeboxing:** visual preview pages helped the owner understand the design, but several rounds were spent on wording and layout of one section (2.4); agreeing the vocabulary first (Control, Test, version) would have saved rounds. The build itself was fast once the tests were agreed.
+- **Started:** 09:49 SGT
+
 ## [2026-10-31 17:46 SGT] Session 6 (2026-10-31 afternoon)
 - [2026-10-31 21:32 SGT] **Ended by the owner.** About 6 h 50 min elapsed (14:41 to about 21:35 SGT), about 2 h 30 min active (away 15:10 to 16:45, about 18:15 to 18:55 and 19:20 to 21:28). After the earlier pause: PR B built test-first (Weekly Wrap Up, week close; 23 new tests), D8 to D10 answered, PRs #12 and #13 merged, the Experiments module designed in Claude Chat and opened on paper after two review rounds (#14 merged).
 - **Notes for timeboxing:** the Chat-to-Code handoff worked well (a design round in Chat, then about 40 minutes to check, record and review in Code). Two review rounds on a docs-only pull request found real privacy gaps (deletion, consent) cheaply, before any tables exist.
