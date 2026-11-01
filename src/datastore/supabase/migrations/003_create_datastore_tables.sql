@@ -105,8 +105,10 @@ create table public.parents (
   signed_up_on date not null default public.sgt_today(),
   cohort text not null check (cohort ~ '^cohort-[0-9]+$'),
   paused boolean not null default false,
-  wrap_up_on boolean not null default true,
-  wrap_up_minute smallint not null default 1200 check (wrap_up_minute between 0 and 1439),
+  -- No defaults here: the app always gives these from src/settings.ts, so the
+  -- numbers live once, in code (rules 1.4, 8.8).
+  wrap_up_on boolean not null,
+  wrap_up_minute smallint not null check (wrap_up_minute between 0 and 1439),
   created_at timestamptz not null default now()
 );
 comment on table public.parents is 'One parent. The server adds parents and changes only paused and the Wrap Up settings, through update_parent_settings (rule 8.4).';
@@ -116,8 +118,8 @@ comment on column public.parents.first_name is 'For friendly messages.';
 comment on column public.parents.signed_up_on is 'Singapore date of sign-up; starts the 5-week count (rules 10.3, 11.11).';
 comment on column public.parents.cohort is 'Neutral group label such as cohort-1, never a personal tie (rule 11.11).';
 comment on column public.parents.paused is 'Paused (= muted): no nudge messages or Wrap Up.';
-comment on column public.parents.wrap_up_on is 'Whether the Weekly Wrap Up is sent (rule 3.12); on by default.';
-comment on column public.parents.wrap_up_minute is 'Wrap Up time as minutes after midnight; 1200 = 8:00pm. The allowed range is checked in code.';
+comment on column public.parents.wrap_up_on is 'Whether the Weekly Wrap Up is sent (rule 3.12). The default (on) is in src/settings.ts.';
+comment on column public.parents.wrap_up_minute is 'Wrap Up time as minutes after midnight, e.g. 1200 = 8:00pm. The default and allowed range are in src/settings.ts.';
 comment on column public.parents.created_at is 'When the row was added.';
 
 create table public.children (
@@ -232,7 +234,8 @@ create table public.habit_logs (
   from_message_id bigint references public.messages_sent (id) on delete cascade,
   description text check (char_length(description) <= 280),
   photo_path text,
-  photo_check text not null check (photo_check in ('passed', 'failed', 'none')),
+  -- error = the check could not run (an outage): never recorded as failed (rule 1.3).
+  photo_check text not null check (photo_check in ('passed', 'failed', 'error', 'none')),
   recorded_as text not null check (recorded_as in ('photo_verified', 'self_reported')),
   telegram_update_id bigint unique,
   created_at timestamptz not null default now(),
@@ -252,7 +255,7 @@ comment on column public.habit_logs.logged_at is 'When the parent told us.';
 comment on column public.habit_logs.from_message_id is 'The nudge message the Done tap came from; empty means not from a tap.';
 comment on column public.habit_logs.description is 'Optional note, up to 280 characters. Free text: may mention a child, so never shown to Telemetry.';
 comment on column public.habit_logs.photo_path is 'Link to the photo in storage, if any. Kept even if the check failed (rule 6.2).';
-comment on column public.habit_logs.photo_check is 'passed, failed or none (no photo).';
+comment on column public.habit_logs.photo_check is 'passed, failed (Claude judged it did not fit), error (the check could not run) or none (no photo).';
 comment on column public.habit_logs.recorded_as is 'photo_verified or self_reported.';
 comment on column public.habit_logs.telegram_update_id is 'Telegram''s message number; unique, so a resent message is saved once.';
 comment on column public.habit_logs.created_at is 'When the row was added.';
@@ -357,6 +360,17 @@ begin
 end $$;
 create trigger habit_logs_same_parent before insert on public.habit_logs for each row execute function public.guard_log_message();
 
+-- A child correction must replace a child of the same parent.
+create function public.guard_child_replaces() returns trigger language plpgsql as $$
+begin
+  if new.replaces_id is not null and not exists (
+    select 1 from public.children c where c.id = new.replaces_id and c.parent_id = new.parent_id) then
+    raise exception 'A correction can only replace a child of the same parent.';
+  end if;
+  return new;
+end $$;
+create trigger children_same_parent before insert on public.children for each row execute function public.guard_child_replaces();
+
 -- =============================================================================
 -- All-or-nothing functions (rule 8.7). Each runs as one step: if any part
 -- fails, nothing is saved. They run with the owner's rights ("security
@@ -365,7 +379,7 @@ create trigger habit_logs_same_parent before insert on public.habit_logs for eac
 
 -- Write one event with its stamp. Used inside the functions below.
 create function public.write_event(p_parent bigint, p_type text, p_version bigint, p_variants jsonb, p_update bigint default null)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 declare t smallint := (select id from event_types where name = p_type);
 begin
   if t is null then raise exception 'Unknown event type %', p_type; end if;
@@ -375,7 +389,7 @@ end $$;
 
 -- Save a new settings version, or return the existing one if the values are the same.
 create function public.record_settings_version(p_note text, p_settings jsonb)
-returns bigint language plpgsql security definer set search_path = public as $$
+returns bigint language plpgsql security definer set search_path = public, pg_temp as $$
 declare v bigint;
 begin
   -- Look first, so version numbers stay 1, 2, 3 without gaps.
@@ -394,7 +408,7 @@ end $$;
 -- Change a parent's paused and Wrap Up settings (narrow edit 1), with an event.
 create function public.update_parent_settings(p_parent bigint, p_paused boolean, p_wrap_up_on boolean, p_wrap_up_minute integer,
                                               p_version bigint, p_variants jsonb)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   update parents set paused = p_paused, wrap_up_on = p_wrap_up_on, wrap_up_minute = p_wrap_up_minute where id = p_parent;
   if not found then raise exception 'No parent %', p_parent; end if;
@@ -402,18 +416,20 @@ begin
 end $$;
 
 -- Stop a pick (narrow edit 2), with an event.
-create function public.stop_pick(p_pick bigint, p_version bigint, p_variants jsonb)
-returns void language plpgsql security definer set search_path = public as $$
-declare who bigint;
+-- The parent is given too, so a bug in the app can't stop another parent's pick.
+create function public.stop_pick(p_parent bigint, p_pick bigint, p_version bigint, p_variants jsonb)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
-  update picks set stopped_at = now() where id = p_pick returning parent_id into who;
-  if who is null then raise exception 'No pick %', p_pick; end if;
-  perform write_event(who, 'pick_stopped', p_version, p_variants);
+  if not exists (select 1 from picks where id = p_pick and parent_id = p_parent) then
+    raise exception 'Pick % is not this parent''s.', p_pick;
+  end if;
+  update picks set stopped_at = now() where id = p_pick;
+  perform write_event(p_parent, 'pick_stopped', p_version, p_variants);
 end $$;
 
 -- Replace a parent's slots on one schedule (narrow edit 3), with an event.
 create function public.replace_slots(p_parent bigint, p_schedule text, p_minutes integer[], p_version bigint, p_variants jsonb)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   delete from slots where parent_id = p_parent and schedule = p_schedule;
   insert into slots (parent_id, schedule, start_minute) select p_parent, p_schedule, unnest(p_minutes);
@@ -423,7 +439,7 @@ end $$;
 -- Record a message the bot sent, with its event.
 create function public.record_message_sent(p_parent bigint, p_kind text, p_nudge bigint, p_example bigint, p_day date, p_slot integer,
                                            p_version bigint, p_variants jsonb)
-returns bigint language plpgsql security definer set search_path = public as $$
+returns bigint language plpgsql security definer set search_path = public, pg_temp as $$
 declare m bigint;
 begin
   insert into messages_sent (parent_id, kind, nudge_id, example_id, for_day, slot_minute)
@@ -437,11 +453,17 @@ end $$;
 create function public.save_habit_log(p_parent bigint, p_nudge bigint, p_day date, p_from_message bigint, p_description text,
                                       p_photo_path text, p_photo_check text, p_recorded_as text, p_update bigint,
                                       p_version bigint, p_variants jsonb)
-returns bigint language plpgsql security definer set search_path = public as $$
+returns bigint language plpgsql security definer set search_path = public, pg_temp as $$
 declare l bigint;
 begin
   if p_day not in (sgt_today(), sgt_today() - 1) then
     raise exception 'A log can only be for today or yesterday (rule 5.4).';
+  end if;
+  -- A photo is kept only if the parent's latest photo consent is "agreed" (rule 5.5).
+  if p_photo_path is not null and coalesce((
+       select answer from consents where parent_id = p_parent and topic = 'photos'
+       order by created_at desc, id desc limit 1), 'missing') <> 'agreed' then
+    raise exception 'No photo consent from this parent, so the photo can''t be saved.';
   end if;
   insert into habit_logs (parent_id, nudge_id, for_day, from_message_id, description, photo_path, photo_check, recorded_as, telegram_update_id)
   values (p_parent, p_nudge, p_day, p_from_message, p_description, p_photo_path, p_photo_check, p_recorded_as, p_update)
@@ -455,7 +477,7 @@ end $$;
 -- parent already answered this week (the first counts, rule 5.6).
 create function public.save_connection_answer(p_parent bigint, p_week date, p_score integer, p_update bigint,
                                               p_version bigint, p_variants jsonb)
-returns boolean language plpgsql security definer set search_path = public as $$
+returns boolean language plpgsql security definer set search_path = public, pg_temp as $$
 declare a bigint;
 begin
   insert into connection_answers (parent_id, week_starting, score, telegram_update_id)
@@ -468,7 +490,7 @@ end $$;
 
 -- Mark an invite as used. Each code works once.
 create function public.use_invite(p_code text, p_parent bigint)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   update invites set used_by = p_parent, used_at = now() where code = p_code and used_at is null;
   if not found then raise exception 'This invite code is unknown or already used.'; end if;
@@ -478,7 +500,7 @@ end $$;
 -- one of their rows; then write one deletion-log row with no name or ID. The
 -- app deletes photos and chat memory first (rule 8.5).
 create function public.delete_my_data(p_parent bigint)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
   delete from parents where id = p_parent;
   if not found then raise exception 'No parent %', p_parent; end if;
@@ -526,13 +548,16 @@ revoke all on public.parents, public.children, public.consents, public.picks, pu
   from public, anon, authenticated, service_role;
 revoke all on function public.sgt_today(), public.write_event(bigint, text, bigint, jsonb, bigint),
   public.record_settings_version(text, jsonb), public.update_parent_settings(bigint, boolean, boolean, integer, bigint, jsonb),
-  public.stop_pick(bigint, bigint, jsonb), public.replace_slots(bigint, text, integer[], bigint, jsonb),
+  public.stop_pick(bigint, bigint, bigint, jsonb), public.replace_slots(bigint, text, integer[], bigint, jsonb),
   public.record_message_sent(bigint, text, bigint, bigint, date, integer, bigint, jsonb),
   public.save_habit_log(bigint, bigint, date, bigint, text, text, text, text, bigint, bigint, jsonb),
   public.save_connection_answer(bigint, date, integer, bigint, bigint, jsonb),
   public.use_invite(text, bigint), public.delete_my_data(bigint),
-  public.guard_pick_update(), public.guard_log_message()
+  public.guard_pick_update(), public.guard_log_message(), public.guard_child_replaces()
   from public, anon, authenticated, service_role;
+
+-- ID counters (sequences): signed-out visitors and the public can't use them (Supabase grants this by default).
+revoke all on all sequences in schema public from public, anon, authenticated;
 
 -- ...then give our server only what the app needs.
 -- Read every table (the app reads its own data).
@@ -544,7 +569,7 @@ grant insert on public.parents, public.children, public.consents, public.picks, 
 -- Everything else goes through the all-or-nothing functions.
 grant execute on function public.sgt_today(),
   public.record_settings_version(text, jsonb), public.update_parent_settings(bigint, boolean, boolean, integer, bigint, jsonb),
-  public.stop_pick(bigint, bigint, jsonb), public.replace_slots(bigint, text, integer[], bigint, jsonb),
+  public.stop_pick(bigint, bigint, bigint, jsonb), public.replace_slots(bigint, text, integer[], bigint, jsonb),
   public.record_message_sent(bigint, text, bigint, bigint, date, integer, bigint, jsonb),
   public.save_habit_log(bigint, bigint, date, bigint, text, text, text, text, bigint, bigint, jsonb),
   public.save_connection_answer(bigint, date, integer, bigint, bigint, jsonb),

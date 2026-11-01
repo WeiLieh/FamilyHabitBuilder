@@ -2,6 +2,21 @@
 
 ## Open
 
+### [2026-11-01 16:32 SGT] Telemetry's limited views are a convention until Telemetry has its own role
+- **Issue:** [2026-11-01 16:32 SGT] Rule 8.11: the Telemetry views hide names, Telegram IDs, descriptions and photo links, but Telemetry currently reads through our server's role, which can also read the full tables (privacy review of the Datastore build; owner agreed to log it).
+- **Impact:** [2026-11-01 16:32 SGT] Low now (nothing reads Telemetry yet). If Telemetry code queried the full tables, the database would not stop it.
+- **Workaround:** [2026-11-01 16:32 SGT] When building Telemetry, give it its own database role that can read only the `telemetry_` views, with a test.
+
+### [2026-11-01 16:32 SGT] "Delete my data" doesn't yet remove photos and chat memory
+- **Issue:** [2026-11-01 16:32 SGT] Rule 8.5 order is photos, then chat memory, then rows, then the log. The database function only does the rows and the log; the photo store and chat memory are not built yet (both reviews).
+- **Impact:** [2026-11-01 16:32 SGT] None yet (no photos or chat memory exist). If the rows were deleted first, photos would be left with no owner.
+- **Workaround:** [2026-11-01 16:32 SGT] Build the photo and chat-memory steps with the Photo check and Telegram bot, before any real photos (already in the backlog: "delete my data" built once).
+
+### [2026-11-01 16:32 SGT] Migration 001 repeats a number from settings.ts
+- **Issue:** [2026-11-01 16:32 SGT] `001_create_nudge_repository.sql` repeats "at least 3 examples per nudge" (`MIN_EXAMPLES_PER_NUDGE`) and its comment points to the old path `shared/settings.ts` (spec review). Applied migrations can't be edited (rule B1).
+- **Impact:** [2026-11-01 16:32 SGT] If the number changes in `src/settings.ts`, the database keeps the old one until a new migration changes it.
+- **Workaround:** [2026-11-01 16:32 SGT] Change both together, as the comment in `src/settings.ts` already says; a future migration can move the check into code if wanted.
+
 ### [2026-11-01 09:56 SGT] The database doesn't block the same example twice for one nudge
 - **Issue:** [2026-11-01 09:56 SGT] The examples table has no database rule against the same example text appearing twice for one nudge. Only the content scripts check for this before adding rows (low note from the PR A review, #12; owner agreed to log it).
 - **Impact:** [2026-11-01 09:56 SGT] If the owner adds an example by hand in the Supabase dashboard that already exists, a parent could see the same idea twice before all examples are used (rule 3.13 rotation would treat them as two examples).
@@ -81,6 +96,7 @@
 - [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
 ### [2026-10-24 18:26 SGT] Photos kept with no time limit
+- [2026-11-01 16:32 SGT] Also: photos that fail the check are kept too (rule 6.2), and from alpha a child's birth year plus sign-up date and cohort could identify a family in a small group (privacy review, 1 Nov). Revisit both before alpha.
 - **Issue:** [2026-10-24 18:26 SGT] Photos (which may show children) are kept until the parent deletes their data. The PDPA expects organisations to stop keeping personal data once it is no longer needed.
 - **Impact:** [2026-10-24 18:26 SGT] Fine for a friends trial with consent; a reviewer would question it before opening to the public.
 - **Workaround:** [2026-10-24 18:26 SGT] Consent at sign-up plus the "delete my data" function. Revisit before any public launch.

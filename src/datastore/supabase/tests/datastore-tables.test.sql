@@ -42,7 +42,8 @@ end $$;
 -- ---- Test data, added as the owner (the database's admin role) ----
 -- One settings version, two parents, one invite.
 select public.record_settings_version('Starting values', '{"max_nudges_per_day": 3}'::jsonb);
-insert into public.parents (telegram_id, first_name, cohort) values (1001, 'Ann', 'cohort-1'), (1002, 'Ben', 'cohort-1');
+-- The app always gives the Wrap Up settings from src/settings.ts (fix 4: no copy of them in the database).
+insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1001, 'Ann', 'cohort-1', true, 1200), (1002, 'Ben', 'cohort-1', true, 1200);
 insert into public.invites (code) values ('WELCOME-1');
 -- A test nudge with no examples, so deleting it is otherwise allowed (T17).
 insert into public.nudges (code, name, category, self_report_allowed, photo_upload_allowed, starts_unlocked)
@@ -83,7 +84,7 @@ set role service_role;
 -- T2: the server can add a parent and change only paused and the Wrap Up settings.
 do $$
 begin
-  insert into public.parents (telegram_id, first_name, cohort) values (1003, 'Cai', 'cohort-1');
+  insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1003, 'Cai', 'cohort-1', true, 1200);
   perform public.update_parent_settings((select id from public.parents where telegram_id = 1003), true, false, 1170, pg_temp.v(), '["baseline"]');
   assert (select paused and not wrap_up_on and wrap_up_minute = 1170 from public.parents where telegram_id = 1003), 'settings not changed';
   assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
@@ -136,10 +137,13 @@ set role service_role;
 
 -- T7: two parents with the same Telegram ID are refused.
 select pg_temp.expect_refused('T7 a second parent with the same Telegram ID',
-  $q$insert into public.parents (telegram_id, first_name, cohort) values (1001, 'Copy', 'cohort-1')$q$);
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1001, 'Copy', 'cohort-1', true, 1200)$q$);
 -- (rule 11.11) cohort labels are neutral.
 select pg_temp.expect_refused('a cohort label that is not neutral',
-  $q$insert into public.parents (telegram_id, first_name, cohort) values (1009, 'Dee', 'friends')$q$);
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1009, 'Dee', 'friends', true, 1200)$q$);
+-- Fix 4 (rule 8.8): the database holds no copy of the Wrap Up defaults, so a parent without them is refused.
+select pg_temp.expect_refused('fix 4: a parent with no Wrap Up settings (no defaults stored in the database)',
+  $q$insert into public.parents (telegram_id, first_name, cohort) values (1010, 'Eve', 'cohort-1')$q$);
 
 -- T8: a parent with no children rows is normal; nothing is guessed.
 do $$
@@ -157,6 +161,9 @@ begin
   assert not exists (select 1 from information_schema.columns where table_name = 'children' and column_name ilike '%name%'), 'children has a name column';
   raise notice 'PASS: T9 a child is a parent plus a birth year, with no name column';
 end $$;
+insert into public.children (parent_id, birth_year) values (pg_temp.ben(), 2016);
+select pg_temp.expect_refused('fix 1: a child correction pointing at another parent''s child',
+  $q$insert into public.children (parent_id, birth_year, replaces_id) values (pg_temp.ann(), 2018, (select id from public.children where parent_id = pg_temp.ben()))$q$, 'same parent');
 
 -- =============================================================================
 -- Consents (rules 8.4, 11.13)
@@ -191,14 +198,16 @@ select pg_temp.expect_refused('T16 a pick stopped before it was chosen',
 do $$
 declare pick bigint := (select id from public.picks where parent_id = pg_temp.ann() and nudge_id = pg_temp.twc());
 begin
-  perform public.stop_pick(pick, pg_temp.v(), '["baseline"]');
+  perform public.stop_pick(pg_temp.ann(), pick, pg_temp.v(), '["baseline"]');
   assert (select stopped_at is not null from public.picks where id = pick), 'pick not stopped';
   -- After stopping, the same nudge can be picked again (a new row; the old one stays as history).
   insert into public.picks (parent_id, nudge_id, frequency) values (pg_temp.ann(), pg_temp.twc(), 'every_2_days');
   raise notice 'PASS: T16 a pick is stopped once (with an event) and the nudge can be picked again as a new row';
 end $$;
 select pg_temp.expect_refused('T16 stopping the same pick a second time',
-  $q$select public.stop_pick((select min(id) from public.picks where parent_id = pg_temp.ann()), pg_temp.v(), '["baseline"]')$q$, 'already stopped');
+  $q$select public.stop_pick(pg_temp.ann(), (select min(id) from public.picks where parent_id = pg_temp.ann()), pg_temp.v(), '["baseline"]')$q$, 'already stopped');
+select pg_temp.expect_refused('fix 1: one parent stopping another parent''s pick',
+  $q$select public.stop_pick(pg_temp.ben(), (select max(id) from public.picks where parent_id = pg_temp.ann()), pg_temp.v(), '["baseline"]')$q$, 'not this parent');
 
 -- T17: a nudge that any parent has picked can't be deleted.
 reset role;
@@ -263,6 +272,12 @@ end $$;
 select pg_temp.expect_refused('T23 a log pointing at another parent''s nudge message',
   $q$select public.save_habit_log(pg_temp.ann(), pg_temp.twc(), pg_temp.today(), (select max(id) from public.messages_sent where parent_id = pg_temp.ben()), null, null, 'none', 'self_reported', 505, pg_temp.v(), '["baseline"]')$q$, 'same parent');
 
+-- Fix 2 (rule 5.5): a photo is refused unless the parent's latest photo consent is "agreed". Ben never agreed.
+select pg_temp.expect_refused('fix 2: a photo from a parent who has not agreed to photos',
+  $q$select public.save_habit_log(pg_temp.ben(), pg_temp.twc(), pg_temp.today(), null, null, 'photos/ben/1.jpg', 'passed', 'photo_verified', 509, pg_temp.v(), '["baseline"]')$q$, 'photo consent');
+-- Ann agrees to photos, so her photos can be saved from here on.
+insert into public.consents (parent_id, topic, answer, wording_version) values (pg_temp.ann(), 'photos', 'agreed', 'v1');
+
 -- T24: a photo that failed the check is stored, and the log is recorded as self-reported (rule 6.2).
 do $$
 declare log bigint;
@@ -271,6 +286,16 @@ begin
   assert (select photo_path = 'photos/ann/1.jpg' and recorded_as = 'self_reported' from public.habit_logs where id = log), 'photo not kept';
   raise notice 'PASS: T24 a photo that failed the check is kept, and the log is self-reported';
 end $$;
+-- Fix 3 (rule 1.3): "the check couldn't run" is its own value, error, never recorded as failed.
+do $$
+declare log bigint;
+begin
+  log := public.save_habit_log(pg_temp.ann(), pg_temp.twc(), pg_temp.today(), null, null, 'photos/ann/3.jpg', 'error', 'self_reported', 510, pg_temp.v(), '["baseline"]');
+  assert (select photo_check = 'error' and recorded_as = 'self_reported' from public.habit_logs where id = log), 'error not recorded';
+  raise notice 'PASS: fix 3 a photo check that could not run is recorded as error, and the log is self-reported';
+end $$;
+select pg_temp.expect_refused('fix 3: a photo whose check errored recorded as photo-verified',
+  $q$select public.save_habit_log(pg_temp.ann(), pg_temp.twc(), pg_temp.today(), null, null, 'photos/ann/4.jpg', 'error', 'photo_verified', 511, pg_temp.v(), '["baseline"]')$q$);
 select pg_temp.expect_refused('T24 a failed photo recorded as photo-verified',
   $q$select public.save_habit_log(pg_temp.ann(), pg_temp.twc(), pg_temp.today(), null, null, 'photos/ann/2.jpg', 'failed', 'photo_verified', 507, pg_temp.v(), '["baseline"]')$q$);
 
@@ -445,6 +470,37 @@ begin
   assert (select count(*) from pg_class c where c.relnamespace = 'public'::regnamespace and c.relkind = 'r'
           and c.relname not in ('nudges', 'examples')) = 14, 'expected 14 new tables (rule 8.3)';
   raise notice 'PASS: rules 8.3 and 8.12 there are 14 new tables, each with created_at and a comment on every column';
+end $$;
+
+-- Fix 6: signed-out visitors can't use any ID counter, and every all-or-nothing
+-- function looks for tables only in "public", then "pg_temp" last.
+do $$
+declare bad text;
+begin
+  select string_agg(c.relname, ', ') into bad from pg_class c
+  where c.relnamespace = 'public'::regnamespace and c.relkind = 'S'
+    and (has_sequence_privilege('anon', c.oid, 'usage,select,update') or has_sequence_privilege('authenticated', c.oid, 'usage,select,update'));
+  assert bad is null, 'public roles can use ID counters: ' || bad;
+  select string_agg(p.proname, ', ') into bad from pg_proc p
+  where p.pronamespace = 'public'::regnamespace and p.prosecdef
+    and not coalesce(p.proconfig @> array['search_path=public, pg_temp'], false);
+  assert bad is null, 'functions without a safe search path: ' || bad;
+  raise notice 'PASS: fix 6 no public use of ID counters; every all-or-nothing function has a safe search path';
+end $$;
+
+-- Fix 7 (rule 8.12): times are stored one way. A moment = time with time zone,
+-- a Singapore day = a date, a slot or Wrap Up time = minutes after midnight.
+do $$
+declare bad text;
+begin
+  select string_agg(table_name || '.' || column_name || ' (' || data_type || ')', ', ') into bad
+  from information_schema.columns
+  where table_schema = 'public' and table_name not in ('nudges', 'examples') and table_name not like 'telemetry\_%'
+    and ((column_name like '%\_at' and data_type <> 'timestamp with time zone')
+      or (column_name in ('for_day', 'signed_up_on', 'week_starting', 'on_day', 'day') and data_type <> 'date')
+      or (column_name in ('start_minute', 'slot_minute', 'wrap_up_minute') and data_type <> 'smallint'));
+  assert bad is null, 'columns stored the wrong way: ' || bad;
+  raise notice 'PASS: fix 7 every moment, day and minute column uses the agreed type';
 end $$;
 
 \echo ALL DATASTORE TABLE TESTS PASSED
