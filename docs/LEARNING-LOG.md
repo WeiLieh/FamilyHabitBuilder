@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-01 16:07 SGT] Designing database tables: add-only diaries, Control and Test, settings versions
+- **Concept:** Database **schema design** (deciding the tables, their columns and the rules the database itself enforces), with **add-only** (append-only) tables, **Control and Test** groups, and **settings versions**.
+- **In plain English:** Each table holds one kind of thing, one row per item. Diaries such as logs and events are only ever added to, never changed, so history can be trusted. The everyday values (Control, Option A) are saved as numbered versions; an experiment gives some parents a Test option (B) on top, and every event is stamped with both, so results can be split later.
+- **Analogy:** A bank statement: transactions are only ever added, a mistake is fixed with a new correcting line, and each line says which account rules applied at the time.
+- **Why and when to use it:** When you will need to analyse or audit history later, or when several things can happen at once (Telegram resends, two scheduler runs). Not for things a person simply changes, like their own nudge times: those are edited, with an event recording the change.
+- **Best practices:** Let the database enforce structure (links, no duplicates, required fields), keep tuneable numbers in code; give each table only the permissions it needs; make "delete my data" follow the parent automatically; write each multi-step action as one all-or-nothing step.
+- **Where it showed up in this project:** The Datastore design (1 Nov): 14 tables now, rules 8.3 to 8.12, after three drafts and a schema review.
+- **Explain it to others:** "Our database keeps diaries that are only ever added to, so we can trust the history. Every event is stamped with the settings version and the experiment group the parent was in, so we can compare Control and Test fairly. The database itself blocks duplicates and wrong links, and deleting a parent removes everything about them in one go."
+- **Governance angle:** A reviewer would ask who can change or delete data (only three narrow edits and one deletion function, enforced by database permissions and tested), what personal data is held (no child names; an optional birth year), and whether deletion is complete (a test fails if any personal table isn't covered).
+
 ### [2026-10-31 19:06 SGT] A/B testing with versioned settings (the Experiments module)
 - **Concept:** A/B testing (giving two groups different versions and comparing results), with **sticky assignment** (a parent's version never changes) and **versioned settings** (every change to the numbers is a new, dated version that is never edited)
 - **In plain English:** To learn whether a change helps, some parents get version A and some get version B, chosen at random, and we compare how each group does. For the result to mean anything, each parent stays in their group, and every event records which settings and version were in force at the time.

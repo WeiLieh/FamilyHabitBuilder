@@ -12,8 +12,35 @@
 - [2026-10-31 09:59 SGT] `supabase/tests/`: database tests; run with `npm run test:db` against a local PostgreSQL (not part of `npm run check` yet; see docs/KNOWN-ISSUES.md).
 
 ## Planned for the Datastore build
-- [2026-10-31 19:09 SGT] For the [Experiments](../experiments/SPEC.md) module, to show in the table mock-ups: **settings versions** (rules 11.1, 11.8), **experiment definitions** (rule 11.7), **parent assignments** (rules 11.3, 11.6), **stamps on every event** (rule 11.2), **sign-up date and cohort** on each parent (rule 11.11), the parent's **recorded agreement** and, before alpha, an **opt-out of experiments** (rule 11.9); "delete my data" must be able to remove all of a parent's rows (rule 11.12). "Delete my data" (rule 1.5) goes through **one narrow database function** that can remove only one parent's data and write the non-personal deletion log; apart from that, the server may only add rows to these tables. Every new table gets **only the access it needs**, spelled out per table in the mock-ups (for example: the server may add rows but never edit or delete them, except for "delete my data"), following migration 002's lock-down (`docs/KNOWN-ISSUES.md`).
-- [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
+- SUPERSEDED [2026-11-01 16:07 SGT] (now rules 8.3 to 8.12 and "Tables" below) [2026-10-31 19:09 SGT] For the [Experiments](../experiments/SPEC.md) module, to show in the table mock-ups: **settings versions** (rules 11.1, 11.8), **experiment definitions** (rule 11.7), **parent assignments** (rules 11.3, 11.6), **stamps on every event** (rule 11.2), **sign-up date and cohort** on each parent (rule 11.11), the parent's **recorded agreement** and, before alpha, an **opt-out of experiments** (rule 11.9); "delete my data" must be able to remove all of a parent's rows (rule 11.12). "Delete my data" (rule 1.5) goes through **one narrow database function** that can remove only one parent's data and write the non-personal deletion log; apart from that, the server may only add rows to these tables. Every new table gets **only the access it needs**, spelled out per table in the mock-ups (for example: the server may add rows but never edit or delete them, except for "delete my data"), following migration 002's lock-down (`docs/KNOWN-ISSUES.md`).
+- SUPERSEDED [2026-11-01 16:07 SGT] (now rules 8.3 to 8.12 and "Tables" below) [2026-10-31 17:53 SGT] Two new values per parent for the Weekly Wrap Up (Nudge engine rule 3.12): **wrap-up time** (default 8:00pm) and **wrap-up on or off** (default on). Include them in the table mock-ups. A record of each Wrap Up sent is also needed ("never twice in a week", and Telemetry rule 10.2).
+
+## Tables (design agreed 2026-11-01)
+[2026-11-01 16:07 SGT] Agreed with the owner on 1 Nov after three drafts and a schema review (rules 8.3 to 8.12). Every table also has `created_at` and a plain-English comment on each column (rule 8.12). "Server" = our app's server role. "Personal" = deleted with the parent (rule 8.5).
+
+**About each parent** (personal)
+- `parents`: id, telegram_id (unique), first_name, signed_up_on, cohort (neutral label, rule 11.11), paused, wrap_up_on (default on), wrap_up_minute (default 1200 = 8:00pm). Server: add; change only paused, wrap_up_on, wrap_up_minute (each change also writes an event).
+- `children`: id, parent_id, birth_year, replaces_id (a correction points at the row it replaces; the latest counts). No name, month or school. Created now, empty in week one; asked from alpha (rule 8.10). Server: add only.
+- `consents`: parent_id, topic (recording, photos, experiments), answer (agreed, opted out), wording_version. The latest answer per topic counts; opting out of experiments lives here (rule 11.13). Server: add only.
+- `picks`: parent_id, nudge_id, frequency (a plain name such as every_day, checked in code), chosen_at, stopped_at. One current pick per parent per nudge. Server: add; fill in stopped_at once (also writes an event).
+- `slots`: parent_id, schedule (school, non_school), start_minute. No duplicate time per schedule. Server: replace a parent's slots (also writes an event).
+
+**What happened** (personal, add-only)
+- `habit_logs`: parent_id, nudge_id, for_day, logged_at, from_message_id (the nudge message the Done tap came from; empty = unprompted by a tap), description (up to 280), photo_path, photo_check (passed, failed, none), recorded_as (photo_verified, self_reported), telegram_update_id (unique). "Counts for which week" is not stored: `src/variable-rewards/week.ts` works it out (one copy of rule 7.6).
+- `messages_sent`: parent_id, kind (nudge, wrap_up), nudge_id and example_id (required for a nudge message, empty for a Wrap Up), for_day, slot_minute, sent_at.
+- `connection_answers`: parent_id, week_starting (a Monday), score (1 to 5), telegram_update_id (unique). One per parent per week; the first counts (rule 5.6).
+- `events`: parent_id, event_type_id, occurred_at, settings_version, variants (structured; `baseline` in week one), telegram_update_id (unique when present).
+
+**App look up settings** (nothing personal; kept when a parent is deleted)
+- `settings_versions`: version, in_force_from, note, settings (labelled list, rule 11.1), fingerprint (unique). Server: add only.
+- `event_types`: id, name, meaning, metric. Server: read only; the owner adds rows by reviewed script.
+- `holiday_dates`: day (unique), kind (school holiday, public holiday), name. Server: read only; the owner uploads dates before launch.
+
+**Housekeeping**
+- `invites`: code (unique), used_by (cleared if that parent deletes their data), used_at. Each code works once. The owner creates codes; the server marks one used.
+- `deletion_log`: on_day, how_many. No name or ID. Only the "delete my data" function writes here.
+
+**Later:** `experiments`, `experiment_options`, `experiment_changes`, `assignments` (before alpha, designed with the owner's start and stop flow); `album_entries`, `badges_earned` (with Variable rewards).
 
 ## Applied migrations (rule B1)
 [2026-10-31 09:59 SGT] Migrations that have run on the real Supabase project, with a fingerprint (the first 12 characters of the SHA-256 code of the file's contents). The drift test recomputes each fingerprint on every pull request and fails if a file was edited. To change the database, add a new numbered migration instead.
@@ -31,9 +58,19 @@
 - SUPERSEDED [2026-10-31 17:45 SGT] [2026-10-31 09:59 SGT] `2026-10-29_unlock_all_nudges.sql`: **waiting for the owner to run it** in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD).
 
 ## Rules at a glance
-5.5 photos: optional, consent, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default
+5.5 photos: optional, consent, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default · 8.3 the tables · 8.4 add only, three narrow edits · 8.5 delete follows the parent · 8.6 no duplicates · 8.7 all or nothing · 8.8 structure only · 8.9 links by nudge ID · 8.10 children's birth year · 8.11 least access for Telemetry · 8.12 labelled and timed
 
 ## Rules
 - **5.5** **Photos:** always optional; consent once at sign-up; kept until the parent deletes their data. *(decided 24 Oct)* Not yet tested (photo storage is not built yet; the retention risk is in docs/KNOWN-ISSUES.md).
 - **8.1** Supabase in **Singapore**; Upstash Redis (Singapore) for chat memory; Vercel functions in Singapore. *(decided 24 Oct)* Not yet tested (dashboard settings, confirmed by the owner for Supabase; `vercel.json` sets the Vercel region `sin1`; Upstash not created yet).
 - **8.2** New tables start **locked** (Row Level Security on, no public access); our server can only read the nudge tables. *(decided 25 Oct)* Tested by: src/datastore/supabase/tests/nudge-repository.test.sql (permissions and Row Level Security), confirmed on the live project by the owner's permission check.
+- **8.3** [2026-11-01 16:07 SGT] **The tables.** 14 tables are built now, in four groups: About each parent (`parents`, `children`, `consents`, `picks`, `slots`); What happened (`habit_logs`, `messages_sent`, `connection_answers`, `events`); App look up settings (`settings_versions`, `event_types`, `holiday_dates`); Housekeeping (`invites`, `deletion_log`). Six come later. Columns are listed under "Tables" above. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.4** [2026-11-01 16:07 SGT] **Add only, with three narrow edits.** Our server may only add rows, except: (1) change a parent's paused, Wrap Up on or off, and Wrap Up time; (2) fill in a pick's "stopped at" once; (3) replace a parent's slots. Each edit also writes an event. Only "delete my data" removes a parent's rows. `event_types` and `holiday_dates` are read only. Enforced by database permissions, not just code. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.5** [2026-11-01 16:07 SGT] **Delete follows the parent.** Every personal table links to `parents`, so deleting a parent deletes all their rows; a test fails if a table with a parent link isn't covered. Order: photos, then chat memory, then rows, then one deletion-log row (rule 1.5). *(decided 1 Nov)* Not yet tested (being built now).
+- **8.6** [2026-11-01 16:07 SGT] **No duplicates.** A Telegram message is saved once only; one nudge message per parent, day and slot; one Weekly Wrap Up per parent per week; one connection answer per parent per week (the first counts); one current pick per parent per nudge; no duplicate slot; one settings version per set of values. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.7** [2026-11-01 16:07 SGT] **All or nothing.** Each action that touches more than one table (for example saving a log and its event) runs as one database step: it all happens, or none of it does. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.8** [2026-11-01 16:07 SGT] **Structure only.** The database checks links, required fields, duplicates and Fixed limits (280 characters). Tuneable numbers such as "3 a day" are never repeated in the database (rule 1.4). *(decided 1 Nov)* Not yet tested (being built now).
+- **8.9** [2026-11-01 16:07 SGT] **Links use the nudge's ID number** (v1.6). A nudge that any parent has picked can't be deleted, only retired (v1.5 answer 2). *(decided 1 Nov)* Not yet tested (being built now).
+- **8.10** [2026-11-01 16:07 SGT] **Children.** Optional: one row per child with a **birth year** only (no name, month or school). A year in the future or more than 25 years ago is refused at sign-up and again in the saving code. Ages 0 to 6 and 13 to 25 are accepted and flagged (rule 10.4). Created now, empty in week one; parents are asked from alpha. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.11** [2026-11-01 16:07 SGT] **Least access for Telemetry.** Telemetry reads through views with no first names, Telegram IDs or descriptions. *(decided 1 Nov)* Not yet tested (being built now).
+- **8.12** [2026-11-01 16:07 SGT] **Labelled and timed.** Every table has a "created at" time and a plain-English comment on every column. A moment is stored as a time with time zone, a Singapore day as a date, a slot as minutes after midnight. *(decided 1 Nov)* Not yet tested (being built now).
