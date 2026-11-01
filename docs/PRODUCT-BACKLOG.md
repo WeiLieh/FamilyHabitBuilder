@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-01 16:07 SGT] "What's running" timeline for experiments
+- **Item:** [2026-11-01 16:07 SGT] An owner-only page showing each value as a row and each experiment as a bar over time (Control and Test, start and stop), plus the settings versions. Owned by the Experiments module, with a link from Telemetry's results.
+- **Why it matters:** [2026-11-01 16:07 SGT] Lets the owner see at a glance when two or more experiments run at once (Datastore draft, 1 Nov). Week one has no experiments.
+- **Priority:** [2026-11-01 16:07 SGT] Medium (before alpha)
+- **Status:** [2026-11-01 16:07 SGT] Not started
+
 ## [2026-10-31 21:28 SGT] Build "delete my data" once, with a non-personal deletion log
 - **Item:** [2026-10-31 21:28 SGT] One app-wide "delete my data" (rule 1.5) that reaches every store (Supabase tables and Storage, Upstash chat memory, experiment records) through one narrow database function, and writes a deletion log with no personal details.
 - **Why it matters:** [2026-10-31 21:28 SGT] Required before real families send photos (`docs/KNOWN-ISSUES.md`) and by the Singapore Personal Data Protection Act (PDPA); the log shows deletions happen without keeping who was deleted (privacy review of the Experiments pull request, owner agreed).

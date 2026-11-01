@@ -1,5 +1,30 @@
 # Progress (handoff between sessions)
 
+## [2026-11-01 09:56 SGT] Session 7
+### Done
+- [2026-11-01 09:56 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up recap shown.
+- [2026-11-01 09:56 SGT] Catch-up question 2 (owner: do it): known issue logged ("the database doesn't block the same example twice for one nudge"); "today" stays out of the time-word test, recorded as a dated clarification of rule 4.5 and in the test comment.
+- [2026-11-01 09:56 SGT] Catch-up question 3 (owner: do it): the choice-limits test title and header now point to `src/experiments/EXPERIMENTS.md`. Same check, same numbers; test count unchanged at 129.
+- [2026-11-01 09:56 SGT] `docs/CATCH-UP.md` section 3 brought up to date (rules 1.4, 1.5, 3.12 to 3.14, 7.7, 7.8, 10.2, 10.3, 11.1 to 11.12 were missing).
+### In progress
+- [2026-11-01 09:56 SGT] Owner reviewing the planned Datastore tables (catch-up question 1) before Claude drafts the mock-ups.
+### Next steps
+- [2026-11-01 09:56 SGT] Datastore table mock-ups in plain English, then tests first, then the build. First alpha experiment kept for later (Claude Chat).
+### Blockers
+- [2026-11-01 09:56 SGT] None.
+
+## [2026-10-31 21:32 SGT] HANDOFF: session 6 ended (read this first)
+### Where we are
+- [2026-10-31 21:32 SGT] **Merged today:** PR #11 (review agents), #12 (32 examples, applied in Supabase: 77 live), #13 (Weekly Wrap Up, week closes at midnight Sunday, rewards decisions D5 to D10; all of D1 to D11 now answered), #14 (Experiments module on paper: rules 11.1 to 11.12, 1.4, 1.5; `src/experiments/EXPERIMENTS.md`). 129 tests pass; drift check clean. The `-pr-b` branch is deleted; only `main` and `claude/festive-einstein-nf623s` remain.
+- [2026-10-31 21:32 SGT] **Modules:** 9 (Experiments added). Nudge engine: decisions built (now including the Weekly Wrap Up). Variable rewards: design complete, `week.ts` built. Experiments: on paper.
+### Next session
+- [2026-10-31 21:32 SGT] Start-of-session routine (drift check, catch-up recap, section 4 questions).
+- [2026-10-31 21:32 SGT] Then the **Datastore table mock-ups** in plain English for the owner's agreement (development order step 2): parents (sign-up date, neutral cohort, consent record, Wrap Up time and on/off), picks, slots, logs with descriptions, events stamped with settings version and variants (rule 11.2), Wrap Ups sent, settings versions, experiment definitions, assignments and opt-outs, the non-personal deletion log; minimum access per table; the one narrow "delete my data" function (rule 1.5). See `src/datastore/SPEC.md`, "Planned for the Datastore build". Then tests first, then the build.
+### Waiting on the owner (not blocking)
+- [2026-10-31 21:32 SGT] PR A review leftovers: log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, yes.)
+- [2026-10-31 21:32 SGT] First alpha experiment (Claude Chat; suggestion: message style).
+- [2026-10-31 21:32 SGT] Later, a small pull request: reword the test title in `tests/nudge-engine-choices.test.ts` that still mentions `docs/EXPERIMENTS.md` (owner to approve, rule H5 spirit).
+
 ## [2026-10-31 19:06 SGT] Session 6, evening: Experiments module on paper (read this first)
 ### Done
 - [2026-10-31 19:06 SGT] PR B (#13) merged; examples script applied in Supabase (32 rows); `-pr-b` branch removed locally (the owner deletes it on GitHub, from #13's page).

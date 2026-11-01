@@ -35,6 +35,7 @@ import { dayTypeFor, type Holidays, type Schedules } from "./schedule.js";
 import {
   DELIBERATE_NUDGE_WEEKDAYS,
   MAX_NUDGES_PER_DAY,
+  QUICK_FLOOR_DAYS,
   SLOT_LENGTH_MINUTES,
   STREAK_DAYS_FOR_FEWER_NUDGES,
 } from "../settings.js";
@@ -124,8 +125,9 @@ export function planNudge(input: PlannerInput): PlannerResult {
       const streak = Array.from({ length: STREAK_DAYS_FOR_FEWER_NUDGES }, (_, i) => addDays(today, -(i + 1)));
       const onStreak = streak.every((day) => logDates.includes(day));
       if (onStreak && nudgedOn(yesterday, target.nudgeId)) return;
-      // Below the floor = not logged today or yesterday.
-      const belowFloor = daysSince >= 2;
+      // Below the floor = not logged for QUICK_FLOOR_DAYS (2) days or more,
+      // that is, not today or yesterday. The number lives in src/settings.ts.
+      const belowFloor = daysSince >= QUICK_FLOOR_DAYS;
       candidates.push({ target, pickedOrder, group: belowFloor ? 0 : 1, daysSince });
     } else {
       // Deliberate: Friday (planning) and Sunday (if still due) only.

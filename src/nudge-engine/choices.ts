@@ -21,7 +21,12 @@
 // =============================================================================
 
 import type { Nudge, NudgeCategory } from "../nudge-repository/nudge-repository.js";
-import { MAX_DELIBERATE_TIMES_PER_WEEK, type ChoiceLimits } from "../settings.js";
+import {
+  DELIBERATE_FREQUENCY_TIMES_PER_WEEK,
+  MAX_DELIBERATE_TIMES_PER_WEEK,
+  QUICK_FREQUENCIES,
+  type ChoiceLimits,
+} from "../settings.js";
 
 // How often a parent wants to do a behaviour.
 export type Frequency = "every_day" | "every_2_days" | "once_a_week" | "twice_a_week";
@@ -35,12 +40,9 @@ export type Target = { nudgeId: number; category: NudgeCategory; frequency: Freq
 // The answer is either "ok, here are the targets" or "not ok, here's why".
 export type ChoiceResult = { ok: true; targets: Target[] } | { ok: false; reasons: string[] };
 
-// Which frequencies fit which category.
-const QUICK_FREQUENCIES: Frequency[] = ["every_day", "every_2_days"];
-const DELIBERATE_TIMES_PER_WEEK: Partial<Record<Frequency, number>> = {
-  once_a_week: 1,
-  twice_a_week: 2,
-};
+// Which frequencies fit which category: the lists live in src/settings.ts
+// (moved there on 1 Nov, rule 1.4).
+const DELIBERATE_TIMES_PER_WEEK = DELIBERATE_FREQUENCY_TIMES_PER_WEEK;
 
 // "1 behaviour" / "2 behaviours"
 function behaviours(count: number): string {

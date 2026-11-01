@@ -20,3 +20,5 @@ cleanup() {
 trap cleanup EXIT
 
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/nudge-repository.test.sql
+# [2026-11-01] The 14 Datastore tables (migration 003), on top of the nudge tables.
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/datastore-tables.test.sql

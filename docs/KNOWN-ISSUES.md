@@ -2,6 +2,26 @@
 
 ## Open
 
+### [2026-11-01 16:32 SGT] Telemetry's limited views are a convention until Telemetry has its own role
+- **Issue:** [2026-11-01 16:32 SGT] Rule 8.11: the Telemetry views hide names, Telegram IDs, descriptions and photo links, but Telemetry currently reads through our server's role, which can also read the full tables (privacy review of the Datastore build; owner agreed to log it).
+- **Impact:** [2026-11-01 16:32 SGT] Low now (nothing reads Telemetry yet). If Telemetry code queried the full tables, the database would not stop it.
+- **Workaround:** [2026-11-01 16:32 SGT] When building Telemetry, give it its own database role that can read only the `telemetry_` views, with a test.
+
+### [2026-11-01 16:32 SGT] "Delete my data" doesn't yet remove photos and chat memory
+- **Issue:** [2026-11-01 16:32 SGT] Rule 8.5 order is photos, then chat memory, then rows, then the log. The database function only does the rows and the log; the photo store and chat memory are not built yet (both reviews).
+- **Impact:** [2026-11-01 16:32 SGT] None yet (no photos or chat memory exist). If the rows were deleted first, photos would be left with no owner.
+- **Workaround:** [2026-11-01 16:32 SGT] Build the photo and chat-memory steps with the Photo check and Telegram bot, before any real photos (already in the backlog: "delete my data" built once).
+
+### [2026-11-01 16:32 SGT] Migration 001 repeats a number from settings.ts
+- **Issue:** [2026-11-01 16:32 SGT] `001_create_nudge_repository.sql` repeats "at least 3 examples per nudge" (`MIN_EXAMPLES_PER_NUDGE`) and its comment points to the old path `shared/settings.ts` (spec review). Applied migrations can't be edited (rule B1).
+- **Impact:** [2026-11-01 16:32 SGT] If the number changes in `src/settings.ts`, the database keeps the old one until a new migration changes it.
+- **Workaround:** [2026-11-01 16:32 SGT] Change both together, as the comment in `src/settings.ts` already says; a future migration can move the check into code if wanted.
+
+### [2026-11-01 09:56 SGT] The database doesn't block the same example twice for one nudge
+- **Issue:** [2026-11-01 09:56 SGT] The examples table has no database rule against the same example text appearing twice for one nudge. Only the content scripts check for this before adding rows (low note from the PR A review, #12; owner agreed to log it).
+- **Impact:** [2026-11-01 09:56 SGT] If the owner adds an example by hand in the Supabase dashboard that already exists, a parent could see the same idea twice before all examples are used (rule 3.13 rotation would treat them as two examples).
+- **Workaround:** [2026-11-01 09:56 SGT] Check the list before adding by hand, or add examples through a content script. Option later: a database "unique" rule on nudge plus text (ask the owner first; it is a migration).
+
 ### [2026-10-31 18:04 SGT] A failed history read could look like "nothing happened"
 - **Issue:** [2026-10-31 18:04 SGT] The Weekly Wrap Up decision (`src/nudge-engine/wrap-up.ts`) and the nudge planner trust the lists of logs and sent messages they are given. If reading them from the Datastore fails and the caller passes empty lists, a failure would look like "never sent" (the Wrap Up could go out twice) or "nothing logged" (silently skipped). Found by the privacy and security review of PR B; owner agreed to log it.
 - **Impact:** [2026-10-31 18:04 SGT] None yet (nothing is sent). Once the scheduler is wired up, this would break rule 1.3 (no fallbacks).
@@ -14,6 +34,7 @@
 
 ### [2026-10-31 14:47 SGT] New Supabase tables start with broad default access
 - [2026-10-31 15:07 SGT] Lower risk than first written: the project was created with "Automatically expose new tables" off and "Enable automatic RLS" on (`docs/CONTEXT.md`, 25 Oct), so new tables start locked from the Data API. Database-level grants can still be wider than needed, so the lock-down steps and permission tests remain the rule.
+- [2026-11-01 16:14 SGT] Migration 003 (the 14 Datastore tables) repeats the lock-down for every new table and function, and its database tests check the permissions (T1 to T5). The issue stays open for future migrations.
 - **Issue:** [2026-10-31 14:47 SGT] Supabase gives every new table wide default permissions. Migration 002 removed them for the nudge tables only. Each future migration must repeat the same "revoke, then grant only what is needed" steps (found by the privacy and security review of PR #11; owner agreed to log it).
 - **Impact:** [2026-10-31 14:47 SGT] A table created without those steps (for example parents' data in the Datastore build) could be readable or writable by more roles than intended.
 - **Workaround:** [2026-10-31 14:47 SGT] Every new migration copies the lock-down steps of migration 002, and its database tests check the permissions. Consider a drift or database test that fails if any table lacks them (ask the owner first).
@@ -75,6 +96,7 @@
 - [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
 
 ### [2026-10-24 18:26 SGT] Photos kept with no time limit
+- [2026-11-01 16:32 SGT] Also: photos that fail the check are kept too (rule 6.2), and from alpha a child's birth year plus sign-up date and cohort could identify a family in a small group (privacy review, 1 Nov). Revisit both before alpha.
 - **Issue:** [2026-10-24 18:26 SGT] Photos (which may show children) are kept until the parent deletes their data. The PDPA expects organisations to stop keeping personal data once it is no longer needed.
 - **Impact:** [2026-10-24 18:26 SGT] Fine for a friends trial with consent; a reviewer would question it before opening to the public.
 - **Workaround:** [2026-10-24 18:26 SGT] Consent at sign-up plus the "delete my data" function. Revisit before any public launch.

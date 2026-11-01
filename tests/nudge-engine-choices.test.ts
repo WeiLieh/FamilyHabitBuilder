@@ -3,7 +3,8 @@
 //
 // The parent chooses which nudges to work on and how often (user-led), within
 // guardrails set by the app (spec v1.1 to v1.4). The limits are starting values
-// recorded in docs/EXPERIMENTS.md and kept in src/settings.ts.
+// described in src/experiments/EXPERIMENTS.md and kept in src/settings.ts.
+// [2026-11-01 09:56 SGT] Path updated (was docs/EXPERIMENTS.md, moved 31 Oct); owner approved.
 // Test-run IDs: quick nudges are 1 to 4, deliberate nudges are 5 to 9.
 // Unlocked from the start: 1 to 4 (quick) and 5, 6 (deliberate). Locked: 7, 8, 9.
 // An unlock opens more of the menu; it never raises how many a parent picks.
@@ -23,7 +24,7 @@ function check(choices: Choice[], unlockedByParent: number[] = []) {
 }
 
 describe("Nudge engine: starting limits", () => {
-  it("match docs/EXPERIMENTS.md: up to 2 quick, up to 1 deliberate, at least 1 in total", () => {
+  it("match src/experiments/EXPERIMENTS.md: up to 2 quick, up to 1 deliberate, at least 1 in total", () => {
     expect(STARTING_CHOICE_LIMITS).toEqual({ maxQuick: 2, maxDeliberate: 1, minTotal: 1 });
   });
 });

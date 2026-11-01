@@ -13,6 +13,43 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 - SUPERSEDED [2026-10-31 19:20 SGT] (path corrected above) [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
+## The 31 values (agreed 1 Nov)
+- [2026-11-01 16:07 SGT] Every value in the app an experiment could touch, with its **kind** (rule 1.4): **Tuneable** (a number that can be tested higher or lower), **Named style** (a choice between reviewed wordings or tones), **Named rule** (a choice between reviewed behaviours), **Guardrail** (a safety limit an experiment may only make stricter), **Fixed** (never changes, rule 11.4). An experiment gives Control (Option A, the everyday value) and Test options (B, C…) approved in code (rule 11.10). Rows 1 to 29 come from the owner's side chat, checked against the code on 1 Nov; rows 30 and 31 were added by decision J. Trial-plan values (such as the 5-week trial) are deliberately left out (decision I). Rows 8 and 9 move into `src/settings.ts` in the Datastore pull request (decision L).
+
+| # | Kind | Value: what it means | Values it can take (today) | In the code today |
+|---|---|---|---|---|
+| 1 | Tuneable | Default slot times: the nudge times a new parent starts with. Parents can always change their own. | Any 30-minute start from 7:00am to 9:30pm. Today: 7:00am, 7:00pm and 9:00pm on school days; 9:00am, 12:30pm and 7:00pm on other days | settings.ts |
+| 2 | Tuneable | Behaviours a parent may pick: how many habits a parent works on at once. | Numbers for quick, deliberate and the minimum in total. Today: up to 2 quick, up to 1 deliberate, at least 1 | settings.ts |
+| 3 | Tuneable | Weekly Wrap Up default time: when the Sunday summary is sent unless the parent changes it. | Any 30-minute start from 7:00am to 9:30pm. Today: 8:00pm | settings.ts |
+| 4 | Tuneable | Slots per schedule: how many nudge times a parent can set for each kind of day. | A number, at least 1. Today: up to 3 | settings.ts |
+| 5 | Tuneable | Slot length and range: how long each nudge window lasts, and the earliest and latest start times. | Minutes and times. Today: 30 minutes, 7:00am to 9:30pm | settings.ts |
+| 6 | Tuneable | Times a week for deliberate behaviours: how many reminders a week for the bigger family activities. | A number. Today: 2 | settings.ts |
+| 7 | Tuneable | Examples in a message: how many ideas a nudge includes. | 0, 1 or 2. Added when the message words are built (rule 3.13 says 1 for now) | Not built yet |
+| 8 | Tuneable | Frequencies offered: the choices parents see for how often to do a habit. | Sets of choices. Today: every day or every 2 days (quick); 1 or 2 times a week (deliberate) | choices.ts |
+| 9 | Tuneable | Hidden ideal and floor: the behind-the-scenes target, and the minimum before the app nudges that habit first. | Numbers. Floor today: a quick habit not logged today or yesterday is nudged first; deliberate habits have no floor. Ideal: not used in the code yet (written only in EXPERIMENTS.md) | planner.ts (floor) |
+| 10 | Tuneable | Reward numbers: points per log, the bonus for logging without a nudge, and how many points each level needs. | Numbers. Added when Variable rewards is built (the 2x bonus is in the spec, not the code) | Not built yet |
+| 11 | Named style | Message style: the tone of nudge messages. | Named styles, for example warm or playful. Added when the message words are built | Not built yet |
+| 12 | Named style | Framing: whether messages ask the parent to plan ahead or act now. | plan ahead / do now. Added when the message words are built | Not built yet |
+| 13 | Named style | Message length and emoji: how long messages are and whether they use emoji. | Named styles. Added when the message words are built | Not built yet |
+| 14 | Named style | Button wording: the words on the reply buttons. | Named sets. Added when the Telegram bot is built ("Done" and "Not today" are agreed in rule 3.5) | Not built yet |
+| 15 | Named style | Thank-you style: how the bot thanks the parent after a log. | Named styles. Added when Variable rewards is built | Not built yet |
+| 16 | Named rule | Days deliberate behaviours are nudged: which days the bot reminds about bigger activities. | Named patterns. Today: Friday and Sunday | settings.ts |
+| 17 | Named rule | Rest after a streak: after a quick habit is done several days in a row, the bot nudges about it less often. | Named rules. Today: after 7 days in a row, not nudged two days running | settings.ts (7) + planner.ts |
+| 18 | Named rule | Defaults pre-selected or not: whether new parents start with suggested times or pick their own. | pre-selected / pick from scratch. Added when the setup screen is built (agreed: pre-selected) | Not built yet |
+| 19 | Named rule | Priority order: which habit gets nudged first when slots are limited. | Named orders. Today: quick habits below the floor first (the one not logged for longest goes first), then other quick, then deliberate; a tie goes to the habit picked first | planner.ts |
+| 20 | Named rule | Timing within a slot: when, inside the 30-minute window, the nudge arrives. | at the start / a random minute. Added when the message sender is built | Not built yet |
+| 21 | Named rule | Use of the parent's own context: whether messages mention the parent's past notes or their child's interests. | on / off. Added when the message words are built | Not built yet |
+| 22 | Named rule | Photo or description prompt: what the bot asks for after a log. | photo / description / both / neither. Added when the Telegram bot is built | Not built yet |
+| 23 | Named rule | Claude model used: which AI model writes the messages, a trade-off between cost and quality. | Named models. Added when the message words are built | Not built yet |
+| 24 | Named rule | Badges and streak rules: how badges are earned and how many missed days a streak survives. | Named rules. Added when Variable rewards is built (spec: a streak survives 2 missed days) | Not built yet |
+| 25 | Guardrail | Nudge messages per day: the most nudge messages a parent can get in one day. Replies and the Weekly Wrap Up don't count. | A number, 3 or fewer (stricter = fewer). Today: 3 | settings.ts |
+| 26 | Guardrail | Gap between slots: the shortest time allowed between two nudge times on the same kind of day. | 1 hour or longer (stricter = longer). Today: 1 hour | settings.ts |
+| 27 | Fixed | Note length limit: the longest description a parent can write when logging. | Always 280 characters | database (nudges table) |
+| 28 | Fixed | Time zone: every day, week and time in the app follows Singapore time. | Always Singapore time, midnight to midnight, Monday to Sunday weeks | sgt.ts |
+| 29 | Fixed | At least 1 slot: every parent must have at least one nudge time. | Always at least 1 | schedule.ts |
+| 30 | Tuneable | Weekly Wrap Up on by default: whether a new parent starts with the Weekly Wrap Up turned on. | on / off. Today: on | settings.ts |
+| 31 | Named rule | Wrap Up day: the day the Weekly Wrap Up is sent. | A day of the week. Today: Sunday | settings.ts |
+
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
 - [2026-10-31 19:06 SGT] Trial length (D9, rule 10.3): 5 full weeks per parent from their first full Monday; the week-one friends group, about 12 parents.

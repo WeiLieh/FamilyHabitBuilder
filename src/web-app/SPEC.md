@@ -8,6 +8,10 @@
 ## Code in this folder
 - [2026-10-31 10:12 SGT] None yet (development order, step 7).
 
+## Parked questions (decide when designing the Web app)
+- [2026-11-01 16:07 SGT] How the Web app reaches the database: through the server with the master key, or with limited per-parent access (rule 11.7 already bars the master key for starting and stopping experiments).
+- [2026-11-01 16:07 SGT] Parents' descriptions and Claude: whether descriptions are sent to Claude to write messages, and what sign-up tells parents about it.
+
 ## Rules at a glance
 9.1 plain pages, the owner's look, "delete my data"
 
