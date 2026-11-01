@@ -1,5 +1,18 @@
 # Progress (handoff between sessions)
 
+## [2026-11-01 09:56 SGT] Session 7
+### Done
+- [2026-11-01 09:56 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up recap shown.
+- [2026-11-01 09:56 SGT] Catch-up question 2 (owner: do it): known issue logged ("the database doesn't block the same example twice for one nudge"); "today" stays out of the time-word test, recorded as a dated clarification of rule 4.5 and in the test comment.
+- [2026-11-01 09:56 SGT] Catch-up question 3 (owner: do it): the choice-limits test title and header now point to `src/experiments/EXPERIMENTS.md`. Same check, same numbers; test count unchanged at 129.
+- [2026-11-01 09:56 SGT] `docs/CATCH-UP.md` section 3 brought up to date (rules 1.4, 1.5, 3.12 to 3.14, 7.7, 7.8, 10.2, 10.3, 11.1 to 11.12 were missing).
+### In progress
+- [2026-11-01 09:56 SGT] Owner reviewing the planned Datastore tables (catch-up question 1) before Claude drafts the mock-ups.
+### Next steps
+- [2026-11-01 09:56 SGT] Datastore table mock-ups in plain English, then tests first, then the build. First alpha experiment kept for later (Claude Chat).
+### Blockers
+- [2026-11-01 09:56 SGT] None.
+
 ## [2026-10-31 21:32 SGT] HANDOFF: session 6 ended (read this first)
 ### Where we are
 - [2026-10-31 21:32 SGT] **Merged today:** PR #11 (review agents), #12 (32 examples, applied in Supabase: 77 live), #13 (Weekly Wrap Up, week closes at midnight Sunday, rewards decisions D5 to D10; all of D1 to D11 now answered), #14 (Experiments module on paper: rules 11.1 to 11.12, 1.4, 1.5; `src/experiments/EXPERIMENTS.md`). 129 tests pass; drift check clean. The `-pr-b` branch is deleted; only `main` and `claude/festive-einstein-nf623s` remain.

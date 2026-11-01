@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-11-01 09:56 SGT] The database doesn't block the same example twice for one nudge
+- **Issue:** [2026-11-01 09:56 SGT] The examples table has no database rule against the same example text appearing twice for one nudge. Only the content scripts check for this before adding rows (low note from the PR A review, #12; owner agreed to log it).
+- **Impact:** [2026-11-01 09:56 SGT] If the owner adds an example by hand in the Supabase dashboard that already exists, a parent could see the same idea twice before all examples are used (rule 3.13 rotation would treat them as two examples).
+- **Workaround:** [2026-11-01 09:56 SGT] Check the list before adding by hand, or add examples through a content script. Option later: a database "unique" rule on nudge plus text (ask the owner first; it is a migration).
+
 ### [2026-10-31 18:04 SGT] A failed history read could look like "nothing happened"
 - **Issue:** [2026-10-31 18:04 SGT] The Weekly Wrap Up decision (`src/nudge-engine/wrap-up.ts`) and the nudge planner trust the lists of logs and sent messages they are given. If reading them from the Datastore fails and the caller passes empty lists, a failure would look like "never sent" (the Wrap Up could go out twice) or "nothing logged" (silently skipped). Found by the privacy and security review of PR B; owner agreed to log it.
 - **Impact:** [2026-10-31 18:04 SGT] None yet (nothing is sent). Once the scheduler is wired up, this would break rule 1.3 (no fallbacks).

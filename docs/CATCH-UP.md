@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-10-31 21:32 SGT]** (session 6 ended). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-11-01 09:56 SGT]** (session 7 started). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -41,26 +41,25 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ## 3. Rules: where each one lives
 
 [2026-10-31 10:17 SGT] Every rule is written **once**, with its permanent ID, and each module spec starts with a "rules at a glance" list.
-- **1.1 to 1.3** (users, Singapore time, no fallbacks): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
-- **2.1 to 2.4, 3.1 to 3.11**: [Nudge engine](../src/nudge-engine/SPEC.md)
+- **1.1 to 1.5** (users, Singapore time, no fallbacks, numbers live once in code, "delete my data" reaches every store): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
+- **2.1 to 2.4, 3.1 to 3.13**: [Nudge engine](../src/nudge-engine/SPEC.md)
 - **4.1 to 4.6**: [Nudge repository](../src/nudge-repository/SPEC.md)
-- **5.1, 5.3, 5.4**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2**: [Telemetry](../src/telemetry/SPEC.md) · **5.5**: [Datastore](../src/datastore/SPEC.md)
+- **5.1, 5.3, 5.4, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2**: [Telemetry](../src/telemetry/SPEC.md) · **5.5**: [Datastore](../src/datastore/SPEC.md)
 - **6.1**: [Photo check](../src/photo-check/SPEC.md)
-- **7.1 to 7.6**: [Variable rewards](../src/variable-rewards/SPEC.md)
+- **7.1 to 7.8**: [Variable rewards](../src/variable-rewards/SPEC.md)
 - **8.1, 8.2**: [Datastore](../src/datastore/SPEC.md)
 - **9.1**: [Web app](../src/web-app/SPEC.md)
-- **10.1**: [Telemetry](../src/telemetry/SPEC.md)
+- **10.1 to 10.3**: [Telemetry](../src/telemetry/SPEC.md)
+- **11.1 to 11.12**: [Experiments](../src/experiments/SPEC.md)
 - Structure rules (S, R, D, B, P) and retired rule IDs: [docs/SPEC.md](SPEC.md), "Modules and structure"
 
 ---
 
 ## 4. Questions to think about before next session
 
-[2026-10-31 21:32 SGT] "Agree" is enough where there's a suggestion. (Done in session 6: PRs #11 to #14 merged, examples applied, the `-pr-b` branch deleted.)
-1. **Datastore table mock-ups (next in code):** anything you want in or out before I draft them? The planned list is in [src/datastore/SPEC.md](../src/datastore/SPEC.md), "Planned for the Datastore build".
-2. **PR A review leftovers:** log "the database doesn't block the same example twice for one nudge" as a known issue? Leave "today" out of the time-word test? (Suggested: yes, and yes.)
-3. **Test title wording:** may I reword the title of the choice-limits test (`tests/nudge-engine-choices.test.ts`), which still mentions the old `docs/EXPERIMENTS.md`, in a small pull request? It checks the same numbers. (Suggested: yes.)
-4. **Claude Chat, not blocking:** the first alpha experiment (suggestion: message style).
+[2026-11-01 09:56 SGT] Session 7 so far: the PR A leftovers are settled (known issue logged; "today" stays out of the time-word test, noted in rule 4.5) and the choice-limits test title now points to `src/experiments/EXPERIMENTS.md`.
+1. **Datastore table mock-ups (next in code):** you are reviewing the planned list in [src/datastore/SPEC.md](../src/datastore/SPEC.md), "Planned for the Datastore build". Anything in or out before I draft them?
+2. **Claude Chat, kept for later:** the first alpha experiment (suggestion: message style).
 
 ---
 

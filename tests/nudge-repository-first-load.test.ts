@@ -68,6 +68,8 @@ describe("First-load CSVs for the Supabase nudges and examples tables", () => {
   it("has examples with no time of day baked in, so Claude can fit them to any nudge slot (spec v1.7)", () => {
     // Words that tie an example to one part of the day. Claude adds timing
     // context itself, based on when the nudge message is sent.
+    // [2026-11-01 09:56 SGT] "today" is deliberately not on this list: it fits any slot
+    // (owner decision, 1 Nov).
     const timeWords = /\b(morning|breakfast|lunch|lunchbox|dinner|supper|evening|tonight|night|bedtime|after homework|on the way home|leaves for school)\b/i;
     const timeBound = result.nudges
       .flatMap((n) => n.examples)
