@@ -9,7 +9,7 @@ flowchart LR
     repository["Nudge repository<br/>Built and live"]:::done
     photo["Photo check<br/>Not started"]:::todo
     rewards["Variable rewards<br/>Design in progress"]:::part
-    datastore["Datastore<br/>Tables built, migration waiting"]:::part
+    datastore["Datastore<br/>Tables live"]:::part
     webapp["Web app<br/>Not started"]:::todo
     telemetry["Telemetry<br/>Not started"]:::todo
     experiments["Experiments<br/>Not started"]:::todo

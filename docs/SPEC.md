@@ -104,7 +104,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | yes |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | yes |
-| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables built, migration waiting | yes |
+| Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables live | yes |
 | Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | yes |
 | Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Not started | yes |
