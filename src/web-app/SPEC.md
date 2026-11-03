@@ -12,6 +12,14 @@
 - [2026-11-01 16:07 SGT] How the Web app reaches the database: through the server with the master key, or with limited per-parent access (rule 11.7 already bars the master key for starting and stopping experiments).
 - [2026-11-01 16:07 SGT] Parents' descriptions and Claude: whether descriptions are sent to Claude to write messages, and what sign-up tells parents about it.
 
+## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
+[2026-11-03 22:27 SGT] From the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current text stays in force until approved.
+- [2026-11-03 22:27 SGT] **Proposed change to rule 9.1:** the Web app gains a **settings page** and **"delete a photo"**.
+  - Old: "Plain, unstyled pages that show the right data; the look comes from the owner later. 'Delete my data' lives here (WIP until UI design)."
+  - New (draft): "... 'Delete my data' and **'delete a photo'** live here, and the **settings page** (choose behaviours and times, reusing the Telegram onboarding conversations; Weekly Wrap Up; **pause**). `/pause` and `/settings` in Telegram link here (the pause speed bump); resume stays in Telegram."
+  - Why: the sign-up wording promises "you can delete photos any time in Settings" (rule 5.5 change), and pausing is done here on purpose.
+- [2026-11-03 22:27 SGT] For group C: "Open my page" needs a one-tap sign-in tied to the parent (unverified idea: a Telegram Mini App identifies the parent automatically). Until the Web app exists, the link goes to a placeholder.
+
 ## Rules at a glance
 9.1 plain pages, the owner's look, "delete my data"
 

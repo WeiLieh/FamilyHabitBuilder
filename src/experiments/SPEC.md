@@ -12,6 +12,12 @@
 ## Code in this folder
 - [2026-10-31 19:06 SGT] None yet. The adjustable numbers are still in the cross-cutting file `src/settings.ts` (rule 1.4).
 
+## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
+- [2026-11-03 22:27 SGT] **Proposed change to rule 11.9 (telling parents)**, from the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)), pending Q1 (PDPA) and Q8 (wording). The current text stays in force until approved.
+  - Old: "the sign-up message says in one plain sentence what is recorded and why ..., **next to the photo consent** (rule 5.5), and the parent's agreement is recorded."
+  - New (draft): "the **last sign-up step before the first action** ('Before we start') says in one plain sentence what is recorded and why, and the photo sentence (rule 5.5). **One checkbox** agrees to both, then DONE; each agreement is recorded as its own row in `consents`."
+  - Unchanged: agreeing is a condition of joining; withdrawing means "delete my data"; the opt-out before alpha.
+
 ## Rules at a glance
 11.1 settings versions, never edited · 11.2 every event stamped · 11.3 week one is `baseline` · 11.4 only tunable values, within guardrails · 11.5 never override a parent's choice · 11.6 a parent's variant never changes (except opt-out, deletion) · 11.7 one experiment per lever, definitions never edited · 11.8 when an empty value is allowed · 11.9 tell parents from week one; opt-out before alpha · 11.10 five kinds; Control and Test options in code · 11.11 sign-up date and cohort · 11.12 "delete my data" and experiment records (see 1.5) · 11.13 opt-out lives in consents
 
