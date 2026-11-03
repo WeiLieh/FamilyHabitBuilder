@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-03 22:42 SGT] Session 8 (2026-11-01 evening and 2026-11-03 evening)
+- [2026-11-03 22:42 SGT] **Ended by the owner.** Two parts. 1 Nov, about 17:00 SGT: start-of-session routine and the Claude Chat handoff files (about 15 min). 3 Nov, about 22:20 to 22:45 SGT (about 25 min, all active): a question on reminders (rule 3.8), then the Telegram onboarding handoff recorded into 7 specs as notes and 8 proposed rule changes, open questions on the catch-up page, one drift fix.
+- **Notes for timeboxing:** recording a well-structured Chat handoff took about 15 minutes; explaining "old versus new text" took two more rounds, so the side-by-side table is now the default way to show proposed rule changes.
+- **Started:** about 17:00 SGT on 1 Nov (resumed 22:20 SGT on 3 Nov)
+
 ## [2026-11-01 16:38 SGT] Session 7 (2026-11-01)
 - [2026-11-01 16:38 SGT] **Ended (handoff).** About 6 h 55 min elapsed (09:49 to about 16:45 SGT). Active time is hard to estimate from commits, because most of the work was reviewing preview pages in conversation; probably about 5 h. Start-of-session routine and PR A leftovers (about 15 min); Datastore drafts 1 to 3, refinement packs, the side-chat review and decisions A to M (most of the session); spec review and approval; build test-first (about 30 min); two review agents and 7 fixes (about 20 min); PR #15 merged and migration 003 applied.
 - **Notes for timeboxing:** visual preview pages helped the owner understand the design, but several rounds were spent on wording and layout of one section (2.4); agreeing the vocabulary first (Control, Test, version) would have saved rounds. The build itself was fast once the tests were agreed.

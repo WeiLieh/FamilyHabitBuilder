@@ -1,6 +1,9 @@
 # Progress (handoff between sessions)
 
-## [2026-11-03 22:27 SGT] Session 8: Telegram onboarding design recorded (read this first)
+## [2026-11-03 22:42 SGT] HANDOFF: session 8 ended (read this first)
+- [2026-11-03 22:42 SGT] **Owner will answer next session:** the 8 proposed rule changes (table in `docs/CATCH-UP.md` section 4a) and Q1 to Q13. **Remind the owner first thing**, before any building.
+
+## [2026-11-03 22:27 SGT] Session 8: Telegram onboarding design recorded
 ### Done
 - [2026-11-03 22:27 SGT] Start-of-session routine (1 Nov): drift check and 139 tests passed. Answered the owner's question on reminders (each behaviour is nudged at most once a day, rule 3.8; nothing changed).
 - [2026-11-03 22:27 SGT] Followed section 0 of the [Telegram onboarding handoff](handoffs/2026-11-03-telegram-onboarding-handoff.md) (owner decision, design chat, 2026-11-03): **recorded, not built.** The flow, principles and decisions are in `src/telegram-bot/SPEC.md`. Rules that would change are written as **proposed changes with old and new text**, awaiting owner approval: 8.10, 5.5 (Datastore), 11.9 (Experiments), 9.1 (Web app), 3.4 (Nudge engine), 7.8 (Variable rewards), 10.2 (Telemetry), 5.6 (Telegram bot). No rule text changed. Version 1.13 change note in `docs/SPEC.md`.
