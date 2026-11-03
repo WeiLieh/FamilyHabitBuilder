@@ -14,7 +14,7 @@
 
 ## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
 - [2026-11-03 22:27 SGT] **Proposed change to rule 10.2**, from the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); see [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current text stays in force until approved.
-  - Old: "**'Weekly Wrap Up sent'** is recorded as its own event. Metrics 8 and 9 never count it as a nudge message."
+  - Old (shortened): "**'Weekly Wrap Up sent'** (rule 3.12) is recorded as **its own event**. Metrics 8 (nudge-to-action) and 9 (mute and stop rate) **never count it as a nudge message**."
   - New (draft): "'Weekly Wrap Up sent' and **'connection question sent on its own'** (the Sunday rhythm, proposed change to rule 3.4) are each recorded as their own event. Metrics 8 and 9 never count them as nudge messages." If Q3 is accepted, add a **'first action at sign-up'** event, also never counted in metric 8 (nudge-to-action).
   - The new event types need rows in `event_types` (a reviewed script by the owner, rule 8.4).
 

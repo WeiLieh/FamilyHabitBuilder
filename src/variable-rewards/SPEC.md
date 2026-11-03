@@ -13,7 +13,7 @@
 
 ## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
 - [2026-11-03 22:27 SGT] **Proposed change to rule 7.8 (weekly snapshot)**, from the Sunday rhythm decision ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); see [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current text stays in force until approved.
-  - Old: the Weekly Wrap Up shows items (1) to (5): days logged, steady weeks, photos and lines saved, a link to the Web app, "Want to save one moment from this week?".
+  - Old (summary, not a quote): the Weekly Wrap Up shows items (1) to (5): days logged, steady weeks, photos and lines saved, a link to the Web app, "Want to save one moment from this week?".
   - New (draft): add item **(6) the weekly connection question** (rule 5.6), so a parent who logged gets one Sunday message. A parent who did not log gets no Wrap Up, only the connection question on its own (proposed change to rule 3.4).
 - [2026-11-03 22:27 SGT] **Pending, not decided (Q3):** whether the "start right now" log at the end of sign-up counts toward the joining week (rule 7.6). The joining week already doesn't count against the parent.
 
