@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-01 16:38 SGT]** (session 7 ended). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+**Last updated: [2026-11-03 22:27 SGT]** (session 8: Telegram onboarding design recorded). Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -14,7 +14,7 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** green = built and tested; yellow = partly built; grey = not started.
 
-**Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **next** → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
+**Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **design in progress** (group A onboarding designed 3 Nov; next B1 daily loop, B2 Sunday rhythm, C settings on the Web app with the photo store; then a thin-slice build) → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
 
 ---
 
@@ -55,15 +55,37 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-11-01 16:38 SGT] Done in session 7: PR #15 merged (14 Datastore tables, test-first, 7 review fixes) and migration 003 applied on Supabase. Next in code: step 3, the **Telegram bot and first deploy**.
-1. **Sign-up flow:** what the bot says when a parent joins with an invite code: the recording sentence (rule 11.9, a condition of joining), the photo consent question (rule 5.5), and the first name. Draft the wording in Claude Chat, or shall I draft it?
-2. **Choosing behaviours and nudge times in Telegram:** these are screens, so they need your look and feel first (rule 6: "UI decisions" in `docs/CONTEXT.md` is empty). Plain Telegram buttons for now, or design first?
-3. **Accounts to create before the first deploy:** a Telegram bot (via BotFather), the Vercel project, and Upstash Redis (Singapore). I'll guide each step; ready to do them next session?
-4. **Claude Chat, not blocking:** the first alpha experiment (suggestion: message style).
+[2026-11-03 22:27 SGT] Session 8 recorded the **Telegram onboarding design (group A)** from Claude Chat into the specs, without building ([handoff](handoffs/2026-11-03-telegram-onboarding-handoff.md); the flow is in [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)). Full detail of every question below is in the handoff, section 3.
+
+**4a. Approve or change the proposed rule changes** (old and new text are in each spec, under "Proposed rule changes"; nothing changes until you approve):
+- 8.10 child name ([Datastore](../src/datastore/SPEC.md)) · 5.5 photo consent required to join ([Datastore](../src/datastore/SPEC.md), waits for Q1) · 11.9 one checkbox, last step ([Experiments](../src/experiments/SPEC.md)) · 9.1 settings page and "delete a photo" ([Web app](../src/web-app/SPEC.md)) · 3.4 a third kind of message ([Nudge engine](../src/nudge-engine/SPEC.md)) · 7.8 connection question in the Wrap Up ([Variable rewards](../src/variable-rewards/SPEC.md)) · 10.2 new events ([Telemetry](../src/telemetry/SPEC.md)) · 5.6 when the connection question is sent ([Telegram bot](../src/telegram-bot/SPEC.md))
+
+**4b. Open questions for group A** (you decide):
+- **Q1 PDPA:** may photo consent be required to join? (Singapore's Personal Data Protection Act, section 14(2)(a).) You are taking it to your PDPA reviewer. Alternative: ask photo consent at the first photo.
+- **Q2:** screen 8 is too long; how to shorten it (no suggestion yet).
+- **Q3:** the "start right now" first action: wording ("proven" needs a source), which behaviour, Not now reply, not a slot and not counted in the cap or metric 8, and whether it counts toward the joining week.
+- **Q4:** what the child's name is for, which name a nudge uses with 2 children, and whether it goes to Claude.
+- **Q5:** rename the nine behaviours (parking lot).
+- **Q6:** "at least 1 hour apart" left the note on screens 6 and 7: intentional? (Rule 3.1 still applies in the Change picker.)
+- **Q7:** flows behind the buttons: Change name, Change times, Change Wrap Up time, continuing with zero behaviours.
+- **Q8:** agreement wording on screen 9 (must include the rule 11.9 sentence).
+- **Q9:** bot name and one-line description.
+- **Q10:** invite code edge cases: invalid, already used, no code.
+- **Q11:** a parent who stops halfway through sign-up.
+- **Q12:** when to ask the child's birth year and the experiments opt-out; does birth year stay now that a name is collected?
+- **Q13:** confirm the Menu commands; should plain "pause" or "resume" (no slash) also work? (Also: the Menu has no "log" command, rule 5.1.)
+
+**4c. Needed before the build or group B:** the Wrap Up setting on screen 8 matches the Web app setting (rule 3.14); where "Open my page" goes before the Web app exists, and how the parent is signed in; Claude's response time and slow first starts on Vercel, tested in the thin slice. Still from session 7: create the Telegram bot (BotFather), the Vercel project and Upstash Redis before the thin slice.
+
+**4d. Parked (you asked me not to raise these first):** the stand-alone check-in's time, cap and paused behaviour; "pause" versus "stop"; pausing before the Web app exists (you pause the week-one group by hand?); whether stopping is as easy as starting (governance); Web app sign-in; the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); the first alpha experiment (Claude Chat).
+
+[2026-11-03 22:27 SGT] Session 7's questions: 1 (sign-up wording) and 2 (buttons or designed screens) are now being designed in Claude Chat (above); 3 (accounts) moved to 4c; 4 (first alpha experiment) moved to 4d.
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-03 22:27 SGT] Take Q1 (mandatory photo consent) to your PDPA reviewer.
+- [2026-11-03 22:27 SGT] Continue the Telegram design in Claude Chat: groups B1, B2, C.
 - [2026-11-01 16:38 SGT] DONE: run migration 003 in Supabase (check query matched: 14, 14, 0, INSERT and SELECT, 13).
 - [2026-11-01 16:38 SGT] When designing the Web app: the two parked questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md).
 - [2026-10-31 16:47 SGT] DONE: Run the unlock script (section 4)

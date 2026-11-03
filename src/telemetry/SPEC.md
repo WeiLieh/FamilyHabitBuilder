@@ -12,6 +12,12 @@
 ## Future work
 - [2026-10-31 19:06 SGT] With the [Experiments](../experiments/SPEC.md) module: each of the 10 metrics must be split by variant, allowing for different group sizes, different join dates and parents in several experiments at once. Reward experiments are read against **metric 10** (weekly connection rating) as well as the usage metrics. Not before alpha (`docs/PRODUCT-BACKLOG.md`).
 
+## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
+- [2026-11-03 22:27 SGT] **Proposed change to rule 10.2**, from the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); see [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current text stays in force until approved.
+  - Old: "**'Weekly Wrap Up sent'** is recorded as its own event. Metrics 8 and 9 never count it as a nudge message."
+  - New (draft): "'Weekly Wrap Up sent' and **'connection question sent on its own'** (the Sunday rhythm, proposed change to rule 3.4) are each recorded as their own event. Metrics 8 and 9 never count them as nudge messages." If Q3 is accepted, add a **'first action at sign-up'** event, also never counted in metric 8 (nudge-to-action).
+  - The new event types need rows in `event_types` (a reviewed script by the owner, rule 8.4).
+
 ## Rules at a glance
 5.2 what "unprompted" means · 10.1 the 10 metrics, and "Not today" as its own event · 10.2 the Weekly Wrap Up is not a nudge · 10.3 trial length · 10.4 flag children outside 7 to 12
 

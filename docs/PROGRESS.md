@@ -1,5 +1,18 @@
 # Progress (handoff between sessions)
 
+## [2026-11-03 22:27 SGT] Session 8: Telegram onboarding design recorded (read this first)
+### Done
+- [2026-11-03 22:27 SGT] Start-of-session routine (1 Nov): drift check and 139 tests passed. Answered the owner's question on reminders (each behaviour is nudged at most once a day, rule 3.8; nothing changed).
+- [2026-11-03 22:27 SGT] Followed section 0 of the [Telegram onboarding handoff](handoffs/2026-11-03-telegram-onboarding-handoff.md) (owner decision, design chat, 2026-11-03): **recorded, not built.** The flow, principles and decisions are in `src/telegram-bot/SPEC.md`. Rules that would change are written as **proposed changes with old and new text**, awaiting owner approval: 8.10, 5.5 (Datastore), 11.9 (Experiments), 9.1 (Web app), 3.4 (Nudge engine), 7.8 (Variable rewards), 10.2 (Telemetry), 5.6 (Telegram bot). No rule text changed. Version 1.13 change note in `docs/SPEC.md`.
+- [2026-11-03 22:27 SGT] Open questions Q1 to Q13, the before-build list and the parked list are in `docs/CATCH-UP.md` section 4.
+- [2026-11-03 22:27 SGT] Drift fix: pull request #17 added the handoff file without a link (rule D1); it is now in the document index of `docs/SPEC.md`.
+### In progress
+- [2026-11-03 22:27 SGT] Telegram bot design in Claude Chat: group A done except Q1 to Q13; groups B1, B2, C next.
+### Next steps
+- [2026-11-03 22:27 SGT] Owner: approve or change the proposed rule changes (CATCH-UP 4a); answer Q1 to Q13 in Claude Chat; design B1, B2, C. Then the thin-slice build (sign-up, one fixed nudge, ✅ Done, receipt), test-first.
+### Blockers
+- [2026-11-03 22:27 SGT] None for design. Building waits until groups A to C are designed (owner's order). Q1 (PDPA) blocks the photo-consent wording.
+
 ## [2026-11-01 16:38 SGT] HANDOFF: session 7 ended (read this first)
 ### Done
 - [2026-11-01 16:38 SGT] Start-of-session routine; PR A leftovers settled (known issue, rule 4.5 clarified); choice-limits test title fixed.

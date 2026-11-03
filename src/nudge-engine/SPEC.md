@@ -18,6 +18,15 @@
 - [2026-10-31 19:06 SGT] Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), the [Experiments](../experiments/SPEC.md) module (which settings and variant each parent has; the engine passes reward settings on to Variable rewards), and the cross-cutting files `src/settings.ts` (the numbers, rule 1.4) and `src/sgt.ts` (Singapore time).
 - SUPERSEDED [2026-10-31 19:06 SGT] Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../experiments/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
 
+## Design notes and proposed rule changes (owner decision, design chat, 2026-11-03)
+[2026-11-03 22:27 SGT] From the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)).
+- [2026-11-03 22:27 SGT] **Confirmed, no change:** the onboarding follows rules 2.1, 2.3 and 3.1 to 3.4 (up to 3 times per schedule, shared by all behaviours, two schedules with the rule 3.3 defaults, frequency asked per behaviour). The owner's earlier sketch ("max twice a day", times per behaviour) is dropped. Q6: the onboarding note no longer says "at least 1 hour apart"; rule 3.1 still applies inside the Change picker (to confirm).
+- [2026-11-03 22:27 SGT] **Proposed change to rule 3.4** (awaiting owner approval; the current text stays in force): the Sunday rhythm adds a **third kind of bot-initiated message**, the stand-alone weekly connection question (rule 5.6), sent when the parent did not log that week.
+  - Old: "Two kinds of bot-initiated message: a **nudge message** ... and the **Weekly Wrap Up** (rule 3.12)."
+  - New (draft): "Three kinds: a nudge message, the Weekly Wrap Up (which then also carries the connection question), and the **stand-alone connection question** (rule 5.6). ... Replies, the Weekly Wrap Up and [**open:** the stand-alone question] never count."
+  - Open before approval (parked questions 1 and 2): its time on Sunday, whether it counts toward the cap, and whether it is sent when paused (rule 3.12 says paused = muted).
+- [2026-11-03 22:27 SGT] **Pending, not decided (Q3):** the "start right now" first action at the end of sign-up. The recommendation (not yet accepted) is that it is **not a slot** and **not counted** toward the 3-a-day cap or metric 8. Recorded here so rule 3.4 is updated with it if accepted.
+
 ## Rules at a glance
 2.1 limits · 2.2 active and unlocked · 2.3 frequencies · 2.4 nudge only while due · 3.1 slots · 3.2 two schedules · 3.3 defaults · 3.4 caps · 3.5 Done / Not today · 3.6 when nothing is sent · 3.7 due · 3.8 priority · 3.9 rest after 7 days · 3.10 deliberate on Friday and Sunday · 3.11 any slot, Claude adds context · 3.12 Weekly Wrap Up · 3.13 a fresh example in each nudge message
 

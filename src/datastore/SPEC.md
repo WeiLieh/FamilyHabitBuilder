@@ -65,6 +65,17 @@
 - [2026-10-31 09:59 SGT] `2026-10-28_time_agnostic_examples.sql`: applied by the owner on 28 Oct (10 rows).
 - SUPERSEDED [2026-10-31 17:45 SGT] [2026-10-31 09:59 SGT] `2026-10-29_unlock_all_nudges.sql`: **waiting for the owner to run it** in the Supabase SQL Editor (expect 3 rows: SGE, ITE, ASD).
 
+## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
+[2026-11-03 22:27 SGT] From the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current rule text stays in force until the owner approves. Any table change is a **new migration** (rule B1), written test-first at build time.
+- [2026-11-03 22:27 SGT] **Proposed change to rule 8.10 (children):** the owner decided to collect each child's **first name or nickname**, with more than one child allowed.
+  - Old: "Optional: one row per child with a **birth year** only (no name, month or school)."
+  - New (draft): "One row per child with a **first name or nickname** (asked at sign-up, one or more children) and an optional **birth year** (no month or school)."
+  - To decide with it: what the name is for (Q4), whether the birth year stays (Q12). The name is personal data: it is deleted with the parent (rule 8.5, already covered by the link to `parents`) and must stay out of the Telemetry views (rule 8.11).
+- [2026-11-03 22:27 SGT] **Proposed change to rule 5.5 (photos), pending Q1 (PDPA):** photo consent becomes a **condition of joining**, given with the recording agreement in one tap (two rows in `consents`). Sending photos stays optional.
+  - Old: "**Photos:** always optional; consent once at sign-up; kept until the parent deletes their data."
+  - New (draft): "**Photos:** sending one is always optional. Photo consent is **required to join** and given once at sign-up, in the same tap as the recording agreement (rule 11.9). Photos are kept until the parent **deletes a photo** (rule 9.1) or their data."
+  - Risk: Singapore's Personal Data Protection Act (PDPA) section 14(2)(a) bars requiring consent beyond what is reasonable for the service. Since photos are optional, a reviewer will ask why photo consent is required. The owner is taking this to their PDPA reviewer; the alternative is to ask photo consent at the first photo.
+
 ## Rules at a glance
 5.5 photos: optional, consent, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default · 8.3 the tables · 8.4 add only, four narrow edits · 8.5 delete follows the parent · 8.6 no duplicates · 8.7 all or nothing · 8.8 structure only · 8.9 links by nudge ID · 8.10 children's birth year · 8.11 least access for Telemetry · 8.12 labelled and timed
 
