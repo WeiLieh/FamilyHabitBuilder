@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-08 22:34 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved).
+**Last updated: [2026-11-08 23:08 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded, 3 defaults to confirm).
 
 > [2026-11-08 22:34 SGT] **Where we are:** you answered Q1 to Q13 and approved 9 rule changes (section 4a). Next: design the daily loop (B1), the Sunday rhythm (B2) and Settings on the Web app (C) in Claude Chat, then the first small build. Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
@@ -60,11 +60,13 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
 
 **4a. Rule changes**
+- [2026-11-08 23:08 SGT] **Screen edits, 8 Nov:** 3.14 now has one button (OK); 11.9 now has one button ("✅ I agree"). **To confirm (defaults chosen):** screen 3 "What's your child's name?"; screen 10 uses the child's name, no pronoun; screen 11's receipt "✅ Saved: `<behaviour>` today." is fixed and "You're off to a great start." is Claude's reply.
 - **Approved on 8 Nov (9):** 5.5 photo consent at the first photo · 11.9 one checkbox at the end of sign-up, recording only · 8.10 child's name, birth year later · 8.13 *(new)* unfinished sign-up keeps only the Telegram ID and last step · 2.5 *(new)* default frequencies: quick every 2 days, deliberate once a week · 3.14 screen 8 is one plan summary · 5.7 *(new)* the Menu, plain words work too · 9.1 My page is the dashboard, Settings lives inside it · 7.8 the connection question is item 6 of the Wrap Up.
 - **Still waiting (3), on the parked questions in 4d:** 3.4 (a third kind of bot message), 5.6 (when the connection question is sent), 10.2 (new tracking events; also needs Q3).
 
 **4b. Open questions, kept as work in progress (WIP)**
-- **Q3:** the "start right now" first action ("proven" is dropped): which behaviour, the Not now reply, not counted as a nudge, and whether it counts toward the joining week.
+- [2026-11-08 23:08 SGT] **Q3 (partly answered 8 Nov):** screen 10's draft wording is in, and "the scoreboard" means My page and the Weekly Wrap Up (the first action is logged). **Still open:** which behaviour when two were picked; the Not now reply; prompted or unprompted log (rule 5.2, metric 7); whether it counts toward the joining week (rule 7.6) and metric 8; whether it uses a slot or counts in the 3-a-day cap (rule 3.4); its telemetry event (rule 10.2).
+- SUPERSEDED [2026-11-08 23:08 SGT] **Q3:** the "start right now" first action ("proven" is dropped): which behaviour, the Not now reply, not counted as a nudge, and whether it counts toward the joining week.
 - **Q4:** the child's name is for relevance; nudges for families with 2 or more children need a design discussion, including whether the name goes to Claude.
 - **Q5** rename the nine behaviours · **Q7** flows behind the buttons · **Q8** agreement wording · **Q9** bot name and description · **Q10** invite code edge cases · **Q11** stopping halfway (what is kept is now rule 8.13).
 - **Q12:** how and when the birth year is collected in the engagement journey.

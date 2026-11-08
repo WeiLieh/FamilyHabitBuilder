@@ -2,6 +2,7 @@
 
 ## [2026-11-08 22:34 SGT] Session 9: owner's answers to the onboarding questions recorded
 ### Done
+- [2026-11-08 23:08 SGT] Recorded the owner's 8 Nov screen edits (handoff `docs/handoffs/2026-11-08-telegram-onboarding-screen-edits.md`, merged in from branch `design/telegram-screen-edits-2026-11-08`): rules 3.14 and 11.9 changed (one button each), screens 3 and 6 to 11 updated, Q3 partly answered, change note 1.15. Three defaults shown to the owner for confirmation. `npm run check` passed (139). Nothing built.
 - [2026-11-08 22:34 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up page and Telegram flow shown. Experiment 1 ignored this session (owner).
 - [2026-11-08 22:34 SGT] Owner answered Q1 to Q13 and the privacy-review findings, and approved 9 rule changes (previewed as an old/new table): 5.5, 11.9, 8.10, new 8.13, new 2.5, 3.14, new 5.7, 9.1, 7.8. Written into the module specs (old text marked SUPERSEDED), change note 1.14 in `docs/SPEC.md`, 5 known issues logged, `docs/CATCH-UP.md` section 4 rewritten. `npm run check` passed (139 tests). No code changed.
 ### In progress
