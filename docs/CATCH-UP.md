@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-08 23:08 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded, 3 defaults to confirm).
+**Last updated: [2026-11-08 23:42 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded and defaults confirmed; B1 daily loop recorded).
 
 > [2026-11-08 22:34 SGT] **Where we are:** you answered Q1 to Q13 and approved 9 rule changes (section 4a). Next: design the daily loop (B1), the Sunday rhythm (B2) and Settings on the Web app (C) in Claude Chat, then the first small build. Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
@@ -70,6 +70,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - **Q4:** the child's name is for relevance; nudges for families with 2 or more children need a design discussion, including whether the name goes to Claude.
 - **Q5** rename the nine behaviours · **Q7** flows behind the buttons · **Q8** agreement wording · **Q9** bot name and description · **Q10** invite code edge cases · **Q11** stopping halfway (what is kept is now rule 8.13).
 - **Q12:** how and when the birth year is collected in the engagement journey.
+- [2026-11-08 23:42 SGT] **B1 daily loop (recorded 8 Nov):** Q-B1-1 a keyboard tap while a nudge is waiting: prompted or unprompted? · Q-B1-2 Undo window (5 minutes proposed) · Q-B1-3 a one-button keyboard is fine? · approve proposed rule 5.8 (Undo) and the 8.4 edit · confirm the two default wordings ("How did it feel? Type a line…" and "✅ Added to today's log.") · still to design in B1: Not today, the first-photo consent question, photo check pass and fail, withdrawing photo consent, unchosen, yesterday and repeat logs, a line over 280 characters, the "week has closed" receipt, Claude failing, free-text logging. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B1.
 - **Rule 8.13 details:** how long before an unfinished sign-up's data is thrown away, and how the re-engagement message works.
 
 **4c. Needed before the build or group B:** where "Open my page" goes before the Web app exists, and how the parent is signed in; Claude's response time and slow first starts on Vercel, tested in the thin slice; create the Telegram bot (BotFather), the Vercel project and Upstash Redis before the thin slice. (Done: the screen 8 settings are the same as the Web app's, rule 3.14.)
@@ -81,7 +82,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- [2026-11-08 22:34 SGT] Design B1 (daily loop), B2 (Sunday rhythm) and C (Settings on the Web app, with the photo store) in Claude Chat; bring back the parked questions (4d) when ready.
+- [2026-11-08 23:42 SGT] Answer the B1 questions (section 4b), then design B2 (Sunday rhythm) and C in Claude Chat.
+- SUPERSEDED [2026-11-08 23:42 SGT] [2026-11-08 22:34 SGT] Design B1 (daily loop), B2 (Sunday rhythm) and C (Settings on the Web app, with the photo store) in Claude Chat; bring back the parked questions (4d) when ready.
 - [2026-11-08 22:34 SGT] DONE: answered the proposed rule changes and Q1 to Q13 (8 Nov).
 - SUPERSEDED [2026-11-08 22:34 SGT] [2026-11-03 22:42 SGT] **Next session, first:** answer the 8 proposed rule changes (section 4a) and Q1 to Q13 (section 4b).
 - [2026-11-08 22:34 SGT] Take PDPA section 16 (withdrawing photo consent) to your PDPA reviewer (see docs/KNOWN-ISSUES.md).

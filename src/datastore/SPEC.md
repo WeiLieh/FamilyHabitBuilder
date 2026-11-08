@@ -77,6 +77,8 @@
   - New (draft): "**Photos:** sending one is always optional. Photo consent is **required to join** and given once at sign-up, in the same tap as the recording agreement (rule 11.9). Photos are kept until the parent **deletes a photo** (rule 9.1) or their data."
   - Risk: Singapore's Personal Data Protection Act (PDPA) section 14(2)(a) bars requiring consent beyond what is reasonable for the service. Since photos are optional, a reviewer will ask why photo consent is required. The owner is taking this to their PDPA reviewer; the alternative is to ask photo consent at the first photo.
 
+- [2026-11-08 23:42 SGT] **Proposed change to rule 8.4, Undo** (B1 daily loop, [B1 handoff](../../docs/handoffs/2026-11-08-telegram-b1-daily-loop.md); awaiting owner approval and Q-B1-2): a **fifth narrow edit**: within a short window after a keyboard log (5 minutes proposed), the server may mark that one log as **undone**. The row is kept and flagged, never deleted; an event is written; the edit checks it acts on the right parent's log. Undone logs never count toward days, targets, streaks, steady weeks or the Weekly Wrap Up. A new migration, test-first, at build time (rule B1). Note: "delete a photo" (rule 9.1, docs/KNOWN-ISSUES.md) also needs a narrow edit, so 8.4 would grow to six.
+
 ## Rules at a glance
 5.5 photos: optional, consent at the first photo, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default · 8.3 the tables · 8.4 add only, four narrow edits · 8.5 delete follows the parent · 8.6 no duplicates · 8.7 all or nothing · 8.8 structure only · 8.9 links by nudge ID · 8.10 children: name, birth year later · 8.11 least access for Telemetry · 8.12 labelled and timed · 8.13 unfinished sign-up: Telegram ID and last step only
 
