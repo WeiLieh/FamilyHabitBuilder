@@ -2,6 +2,31 @@
 
 ## Open
 
+### [2026-11-08 22:34 SGT] "Delete a photo" needs a fifth narrow edit to the add-only rule
+- **Issue:** [2026-11-08 22:34 SGT] Rule 9.1 now promises "delete a photo", but rule 8.4 allows only four narrow edits and logs are add-only (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
+- **Impact:** [2026-11-08 22:34 SGT] None yet (no photos are stored). Without it, the promise in the photo consent can't be kept.
+- **Workaround:** [2026-11-08 22:34 SGT] When building the photo store: a new migration with a fifth narrow edit (remove one photo link from one parent's log), plus removing the file from storage, test-first, with an approved change to rule 8.4.
+
+### [2026-11-08 22:34 SGT] Withdrawing photo consent has no flow yet
+- **Issue:** [2026-11-08 22:34 SGT] Photo consent is now asked at the first photo (rule 5.5), so it can be withdrawn on its own, without leaving the app. There is no design for withdrawing it (stop asking for photos; keep or delete the photos already sent). Singapore's Personal Data Protection Act (PDPA) section 16 (withdrawing consent) applies (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
+- **Impact:** [2026-11-08 22:34 SGT] None yet (no photos). Needed before real families send photos.
+- **Workaround:** [2026-11-08 22:34 SGT] Design it with group C (Settings on the Web app, with the photo store); take PDPA section 16 to the owner's PDPA reviewer.
+
+### [2026-11-08 22:34 SGT] A child's name reaches more places than the database
+- **Issue:** [2026-11-08 22:34 SGT] A child's name (rule 8.10) will also appear in the Telegram chat, in the Upstash chat memory and possibly in what is sent to Claude (Q4). Rule 8.11 (Telemetry views) names first names, Telegram IDs and descriptions, but not children's names (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
+- **Impact:** [2026-11-08 22:34 SGT] None yet (no name column). If missed, children's names could reach Telemetry or third parties without a decision.
+- **Workaround:** [2026-11-08 22:34 SGT] When building the name column: keep children's names out of the Telemetry views, with a test, and update rule 8.11. Decide in the Q4 design discussion whether the name is sent to Claude.
+
+### [2026-11-08 22:34 SGT] A family could be recognised in a small group
+- **Issue:** [2026-11-08 22:34 SGT] A child's name together with the birth year, sign-up date and cohort makes a family easier to identify among about 12 to 50 parents (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
+- **Impact:** [2026-11-08 22:34 SGT] Low for the database (locked). Higher if exports or Telemetry reports combine these fields.
+- **Workaround:** [2026-11-08 22:34 SGT] Keep names out of Telemetry and exports; report ages as bands, not years, when sharing results.
+
+### [2026-11-08 22:34 SGT] The 3 Nov design handoff file holds the owner's full name and a private link
+- **Issue:** [2026-11-08 22:34 SGT] `docs/handoffs/2026-11-03-telegram-onboarding-handoff.md` contains the owner's full name and a link to the private preview artifact (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
+- **Impact:** [2026-11-08 22:34 SGT] Low: the repository is private and these are the owner's own details; it would matter if the repository were ever made public.
+- **Workaround:** [2026-11-08 22:34 SGT] Leave out full names and private links in future handoff files; review before any repository is made public.
+
 ### [2026-11-01 16:32 SGT] Telemetry's limited views are a convention until Telemetry has its own role
 - **Issue:** [2026-11-01 16:32 SGT] Rule 8.11: the Telemetry views hide names, Telegram IDs, descriptions and photo links, but Telemetry currently reads through our server's role, which can also read the full tables (privacy review of the Datastore build; owner agreed to log it).
 - **Impact:** [2026-11-01 16:32 SGT] Low now (nothing reads Telemetry yet). If Telemetry code queried the full tables, the database would not stop it.

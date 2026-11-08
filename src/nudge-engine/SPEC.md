@@ -19,6 +19,7 @@
 - SUPERSEDED [2026-10-31 19:06 SGT] Uses: the [Nudge repository](../nudge-repository/SPEC.md) (nudge rows), and the cross-cutting files `src/settings.ts` (numbers, mirrored in [docs/EXPERIMENTS.md](../experiments/EXPERIMENTS.md)) and `src/sgt.ts` (Singapore time).
 
 ## Design notes and proposed rule changes (owner decision, design chat, 2026-11-03)
+- [2026-11-08 22:34 SGT] **Owner answers (8 Nov, start of session 9):** Q6 confirmed: leaving "at least 1 hour apart" off screens 6 and 7 is intentional (rule 3.1 still applies when changing times). New rule **2.5** (default frequencies, from the new screen 8). Q3 (the first action): the word "proven" is dropped; the rest stays work in progress. Rule 3.4 still waits on the parked questions.
 [2026-11-03 22:27 SGT] From the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)).
 - [2026-11-03 22:27 SGT] **Confirmed, no change:** the onboarding follows rules 2.1, 2.3 and 3.1 to 3.4 (up to 3 times per schedule, shared by all behaviours, two schedules with the rule 3.3 defaults, frequency asked per behaviour). The owner's earlier sketch ("max twice a day", times per behaviour) is dropped. Q6: the onboarding note no longer says "at least 1 hour apart"; rule 3.1 still applies inside the Change picker (to confirm).
 - [2026-11-03 22:27 SGT] **Proposed change to rule 3.4** (awaiting owner approval; the current text stays in force): the Sunday rhythm adds a **third kind of bot-initiated message**, the stand-alone weekly connection question (rule 5.6), sent when the parent did not log that week.
@@ -28,13 +29,14 @@
 - [2026-11-03 22:27 SGT] **Pending, not decided (Q3):** the "start right now" first action at the end of sign-up. The recommendation (not yet accepted) is that it is **not a slot** and **not counted** toward the 3-a-day cap or metric 8. Recorded here so rule 3.4 is updated with it if accepted.
 
 ## Rules at a glance
-2.1 limits · 2.2 active and unlocked · 2.3 frequencies · 2.4 nudge only while due · 3.1 slots · 3.2 two schedules · 3.3 defaults · 3.4 caps · 3.5 Done / Not today · 3.6 when nothing is sent · 3.7 due · 3.8 priority · 3.9 rest after 7 days · 3.10 deliberate on Friday and Sunday · 3.11 any slot, Claude adds context · 3.12 Weekly Wrap Up · 3.13 a fresh example in each nudge message
+2.1 limits · 2.2 active and unlocked · 2.3 frequencies · 2.4 nudge only while due · 2.5 default frequencies · 3.1 slots · 3.2 two schedules · 3.3 defaults · 3.4 caps · 3.5 Done / Not today · 3.6 when nothing is sent · 3.7 due · 3.8 priority · 3.9 rest after 7 days · 3.10 deliberate on Friday and Sunday · 3.11 any slot, Claude adds context · 3.12 Weekly Wrap Up · 3.13 a fresh example in each nudge message
 
 ## Rules: what a parent picks
 - **2.1** Up to **2 quick and 1 deliberate** behaviour, at least 1 in total. *(decided 25 Oct)* Tested by: tests/nudge-engine-choices.test.ts
 - **2.2** Only **active** and **unlocked** nudges can be picked. **In the MVP all 9 start unlocked** (unlocks are out of the MVP); the "starts unlocked" setting stays on each nudge for later. *(decided 25 Oct, changed 29 Oct)* Tested by: tests/nudge-engine-choices.test.ts (locked and retired nudges), tests/nudge-repository-first-load.test.ts (all 9 unlocked)
 - **2.3** Quick: **every day** or **every 2 days**. Deliberate: **1 or 2 times a week**, at most 2 in total. *(decided 24 Oct)* Tested by: tests/nudge-engine-choices.test.ts
 - **2.4** The frequency is how often the parent wants to **do** it. We only nudge while it is still undone ("due"). *(decided 28 Oct)* Tested by: tests/nudge-engine-due.test.ts, tests/nudge-engine-planner.test.ts
+- **2.5** [2026-11-08 22:34 SGT] **Default frequencies** (pre-selected at sign-up, shown on screen 8): each quick behaviour **every 2 days**; the deliberate behaviour **once a week**. The parent changes them in Settings (rule 9.1). The numbers will live once in `src/settings.ts` (rule 1.4). *(decided 8 Nov)* Not yet tested (nothing built).
 
 ## Rules: when and what to nudge
 - **3.1** **Nudge slots:** 30-minute blocks the parent picks, from 7:00am to the last one at 9:30pm. Up to **3 per schedule**, at least **1 hour apart**, at least **1 in total**. Slots are shared by all the parent's behaviours. *(decided 28 Oct)* Tested by: tests/nudge-engine-schedule.test.ts, tests/nudge-engine-planner.test.ts (sharing)

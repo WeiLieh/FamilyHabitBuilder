@@ -13,6 +13,7 @@
 - [2026-11-01 16:07 SGT] Parents' descriptions and Claude: whether descriptions are sent to Claude to write messages, and what sign-up tells parents about it.
 
 ## Proposed rule changes (owner decision, design chat, 2026-11-03; awaiting owner approval)
+- [2026-11-08 22:34 SGT] **Approved by the owner (8 Nov, start of session 9).** Rule 9.1 changed: My page is the parent's dashboard, and Settings lives inside it. The draft below is kept as history.
 [2026-11-03 22:27 SGT] From the Telegram onboarding design ([handoff](../../docs/handoffs/2026-11-03-telegram-onboarding-handoff.md); flow in [src/telegram-bot/SPEC.md](../telegram-bot/SPEC.md)). The current text stays in force until approved.
 - [2026-11-03 22:27 SGT] **Proposed change to rule 9.1:** the Web app gains a **settings page** and **"delete a photo"**.
   - Old: "Plain, unstyled pages that show the right data; the look comes from the owner later. 'Delete my data' lives here (WIP until UI design)."
@@ -21,7 +22,8 @@
 - [2026-11-03 22:27 SGT] For group C: "Open my page" needs a one-tap sign-in tied to the parent (unverified idea: a Telegram Mini App identifies the parent automatically). Until the Web app exists, the link goes to a placeholder.
 
 ## Rules at a glance
-9.1 plain pages, the owner's look, "delete my data"
+9.1 plain pages, the owner's look; My page with Settings, "delete my data" and "delete a photo"
 
 ## Rules
-- **9.1** Plain, unstyled pages that show the right data; **the look comes from the owner later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)* Not yet tested (nothing built).
+- **9.1** [2026-11-08 22:34 SGT] Plain, unstyled pages that show the right data; **the look comes from the owner later**. **My page** is the parent's dashboard (`/mypage` in Telegram). **Settings lives inside My page**: behaviours, how often (rule 2.5), times, Weekly Wrap Up and **pause**, reusing the Telegram sign-up conversations; these are the same settings as sign-up screen 8 (rule 3.14). "Delete my data" and **"delete a photo"** live here too. `/pause` and `/settings` in Telegram link here (the pause speed bump); resume stays in Telegram (rule 5.7). *(decided 24 Oct, changed 8 Nov)* Not yet tested (nothing built).
+- SUPERSEDED [2026-11-08 22:34 SGT] **9.1** Plain, unstyled pages that show the right data; **the look comes from the owner later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)* Not yet tested (nothing built).

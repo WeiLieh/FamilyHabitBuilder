@@ -2,6 +2,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-08 23:12 SGT] Design-handoff pull request failed the drift check (second time)
+- **What broke:** [2026-11-08 23:12 SGT] Pull request #19 (branch `design/telegram-screen-edits-2026-11-08`) failed `npm run check` in GitHub: "docs/handoffs/2026-11-08-telegram-onboarding-screen-edits.md is not reachable by links from CLAUDE.md or docs/SPEC.md" (rule D1). The same happened with pull request #17 on 3 Nov.
+- **Cause:** [2026-11-08 23:12 SGT] A handoff branch adds a new file but not the link to it in the document index of `docs/SPEC.md`. The handoff itself asks Claude Code to add the link later, so the handoff branch on its own is never green.
+- **Fix:** [2026-11-08 23:12 SGT] The link was added on `claude/festive-einstein-nf623s` (commit ed9d681), which also contains the handoff commit. Merging that branch's pull request brings both in; pull request #19 can be closed without merging.
+- **How to prevent it:** [2026-11-08 23:12 SGT] A handoff branch adds the file **and** its link in the document index of `docs/SPEC.md` (under "Design handoffs from Claude Chat") in the same commit. If this happens a third time, propose a one-line rule for `CLAUDE.md` (practice 4).
+
 ## [2026-10-25 08:11 SGT] Our server's role had more than read-only access on the real Supabase
 - **What broke:** [2026-10-25 08:11 SGT] The owner's permission check on the live project showed `service_role` with TRUNCATE, TRIGGER and REFERENCES on `nudges`, `examples` and the view, not just SELECT.
 - **Cause:** [2026-10-25 08:11 SGT] Supabase's default permissions give `service_role` these on new tables. Our local test database has no such defaults, so the test passed locally while the real project differed.
