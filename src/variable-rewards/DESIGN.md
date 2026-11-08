@@ -123,6 +123,7 @@ The Telegram bot carries steps 1 to 3 so the action stays one tap; the Web app m
 - SUPERSEDED [2026-10-31 17:52 SGT]: **Variety:** never repeat a variant within the parent's last 10 replies (tune).
 - [2026-10-31 17:52 SGT] **Special replies (written by Claude, guided by these cases):**
 - SUPERSEDED [2026-10-31 17:52 SGT]: **Special replies (still from the library):**
+  - [2026-11-09 00:14 SGT] Correction: "unprompted" now means that behaviour was **not nudged earlier the same Singapore day** (rule 5.2 changed on 9 Nov); the 4-hour wording on the next line is SUPERSEDED.
   - **Unprompted log** (no nudge message in the 4 hours before, rule 5.2): a variant that notices they did it on their own (replaces double XP if D1 is agreed).
   - **Repeat log** of the same nudge in a day, or a **behaviour they didn't choose** (rule 5.4): a variant that celebrates the extra effort (closes the "celebrate repeat logs" WIP item).
 - **Rules:** praise the action, not the parent as a person; no points; no comparison; never mention a missed day.

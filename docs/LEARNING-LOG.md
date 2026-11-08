@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-09 00:14 SGT] Metrics that don't double count (mutually exclusive definitions)
+- **Concept:** mutually exclusive metric definitions: each event counts toward exactly one of two related metrics.
+- **In plain English:** metric 7 asks "did parents do it without a reminder?" and metric 8 asks "did the reminder work?". Before, a log at 2 pm after a 7 am nudge counted as both, so the two numbers contradicted each other. Now one test decides: was that behaviour nudged earlier the same day? Yes, so it is the nudge's success (metric 8). No, so it is unprompted (metric 7).
+- **Analogy:** a goal in football is credited to the scorer or to an own goal, never to both. A sale is credited to the ad or to word of mouth, not both.
+- **Why and when to use it:** whenever two metrics are meant to explain the same outcome from opposite sides. When not: metrics that measure different things (for example stickiness and connection rating) can and should overlap.
+- **Best practices:** define both metrics with the same rule, written once (rule 5.2); test the edge cases (midnight, a different behaviour, Not today); record the change in the spreadsheet's change notes, keep the old version deprecated, never deleted.
+- **Where it showed up in this project:** rule 5.2 and metric 8, 9 Nov, after the persistent keyboard made "late answers" to a nudge common.
+- **Explain it to others:** "We made sure each logged action counts once: either the reminder gets the credit, or the parent does. Otherwise our 'habit is forming' number and our 'reminders work' number could both look good for the same action."
+- **Governance angle:** a reviewer will ask whether a metric definition changed during the trial, and which version a report used. Hence version 2 of the spreadsheet with dated change notes, and version 1 kept in the archive.
+
 ### [2026-11-01 16:07 SGT] Designing database tables: add-only diaries, Control and Test, settings versions
 - **Concept:** Database **schema design** (deciding the tables, their columns and the rules the database itself enforces), with **add-only** (append-only) tables, **Control and Test** groups, and **settings versions**.
 - **In plain English:** Each table holds one kind of thing, one row per item. Diaries such as logs and events are only ever added to, never changed, so history can be trusted. The everyday values (Control, Option A) are saved as numbered versions; an experiment gives some parents a Test option (B) on top, and every event is stamped with both, so results can be split later.

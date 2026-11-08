@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-09 00:14 SGT] Session 9 (2026-11-08 evening to 2026-11-09 00:15)
+- [2026-11-09 00:14 SGT] **Ended by the owner.** About 2 h 55 min elapsed (about 21:20 SGT on 8 Nov to 00:15 SGT on 9 Nov); about 2 h active (the owner spent about 30 minutes in Claude Chat between 22:36 and 23:07). Start-of-session routine and recap; group A answers and 9 rule changes approved through an old/new table; the 8 Nov screen edits handoff (3 defaults confirmed); two design pull requests that failed the drift check (#19, #21; habit H10 added); the B1 daily-loop handoff and its answers (Undo, 30 seconds); rule 5.2 and metric 8 reworked with a timeline preview page; metrics spreadsheet version 2; review agents; end-of-session pull request.
+- **Notes for timeboxing:** recording a Chat handoff now takes about 10 minutes. The timeline preview page settled the "unprompted" question in one round. Handoff branches without their index link cost a round each time (fixed by H10).
+- **Started:** about 21:20 SGT on 8 Nov
+
 ## [2026-11-03 22:42 SGT] Session 8 (2026-11-01 evening and 2026-11-03 evening)
 - [2026-11-03 22:42 SGT] **Ended by the owner.** Two parts. 1 Nov, about 17:00 SGT: start-of-session routine and the Claude Chat handoff files (about 15 min). 3 Nov, about 22:20 to 22:45 SGT (about 25 min, all active): a question on reminders (rule 3.8), then the Telegram onboarding handoff recorded into 7 specs as notes and 8 proposed rule changes, open questions on the catch-up page, one drift fix.
 - **Notes for timeboxing:** recording a well-structured Chat handoff took about 15 minutes; explaining "old versus new text" took two more rounds, so the side-by-side table is now the default way to show proposed rule changes.

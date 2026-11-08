@@ -3,6 +3,7 @@
 ## Open
 
 ### [2026-11-08 22:34 SGT] "Delete a photo" needs a fifth narrow edit to the add-only rule
+- [2026-11-09 00:14 SGT] Update: Undo (rule 5.8) became edit 5 of rule 8.4 on 8 Nov, so "delete a photo" would be **edit 6**.
 - **Issue:** [2026-11-08 22:34 SGT] Rule 9.1 now promises "delete a photo", but rule 8.4 allows only four narrow edits and logs are add-only (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no photos are stored). Without it, the promise in the photo consent can't be kept.
 - **Workaround:** [2026-11-08 22:34 SGT] When building the photo store: a new migration with a fifth narrow edit (remove one photo link from one parent's log), plus removing the file from storage, test-first, with an approved change to rule 8.4.

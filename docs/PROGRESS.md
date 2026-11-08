@@ -1,5 +1,11 @@
 # Progress (handoff between sessions)
 
+## [2026-11-09 00:14 SGT] HANDOFF: session 9 ended (read this first)
+- [2026-11-09 00:14 SGT] **Resume tomorrow.** First: decide the privacy-review findings (CATCH-UP section 4e), then B2 (Sunday rhythm) in Claude Chat. Experiment 1 was ignored this session (owner); it stays out until the owner brings it back.
+- [2026-11-09 00:14 SGT] State: all of tonight's work is on `claude/festive-einstein-nf623s` and in the end-of-session pull request (habit H9). `npm run check` passes (139 tests, drift clean). Nothing built; specs only, plus the metrics spreadsheet version 2.
+- [2026-11-09 00:14 SGT] Review agents (H3) ran before the pull request: spec checker found 3 stale references (fixed: `docs/SPEC.md` metrics paths, the 4-hour wording in `src/variable-rewards/DESIGN.md`); privacy reviewer's 5 findings wait for the owner (CATCH-UP 4e). Known issue "delete a photo" updated (it would now be edit 6 of rule 8.4).
+- [2026-11-09 00:14 SGT] `docs/PROGRESS.md` is now over 300 lines: proposed to the owner to summarise the oldest entries into `docs/archive/` (waiting for approval).
+
 ## [2026-11-08 22:34 SGT] Session 9: owner's answers to the onboarding questions recorded
 ### Done
 - [2026-11-09 00:10 SGT] Success metrics spreadsheet: version 2 created (metrics 7 and 8, the two window settings, a Change notes sheet); version 1 deprecated and moved to `docs/archive/` with a DEPRECATED banner sheet. References updated.
