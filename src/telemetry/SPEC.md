@@ -18,6 +18,8 @@
   - New (draft): "'Weekly Wrap Up sent' and **'connection question sent on its own'** (the Sunday rhythm, proposed change to rule 3.4) are each recorded as their own event. Metrics 8 and 9 never count them as nudge messages." If Q3 is accepted, add a **'first action at sign-up'** event, also never counted in metric 8 (nudge-to-action).
   - The new event types need rows in `event_types` (a reviewed script by the owner, rule 8.4).
 
+- [2026-11-08 23:51 SGT] **To add with the B1 build** (owner approved Undo, rule 5.8): a **'log undone'** event type, and every metric that counts logs excludes undone logs. A keyboard tap that answers a waiting nudge counts as answering that nudge (rule 5.1); how this fits the 4-hour definition of rule 5.2 is an open question (CATCH-UP section 4).
+
 ## Rules at a glance
 5.2 what "unprompted" means · 10.1 the 10 metrics, and "Not today" as its own event · 10.2 the Weekly Wrap Up is not a nudge · 10.3 trial length · 10.4 flag children outside 7 to 12
 

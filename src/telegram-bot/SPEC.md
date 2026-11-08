@@ -74,6 +74,9 @@
 ## Design in progress: group B1, the daily loop (owner decision, design chat, 2026-11-08)
 [2026-11-08 23:42 SGT] Recorded from the [handoff of 8 Nov](../../docs/handoffs/2026-11-08-telegram-b1-daily-loop.md) (previews: the private canvas "Onboarding: Telegram previews (low fidelity)", row 4, boards B1-1 to B1-5). **Recorded, not built.** The sample words on the boards (nudge ideas, warm replies) are examples; Claude writes the real ones within [NUDGE-CONTEXT.md](../nudge-engine/NUDGE-CONTEXT.md). Rules 3.4, 5.4, 7.5 and 7.6 are used as they stand.
 
+**Owner answers (8 Nov, 23:51)**
+- [2026-11-08 23:51 SGT] **Undo approved** with a window of **30 seconds** (Q-B1-2): rule 5.8 below and the fifth narrow edit to rule 8.4. **Q-B1-1:** a keyboard tap while a nudge for the same behaviour is still waiting **answers that nudge**: the nudge is edited into the receipt (rule 5.1). **Q-B1-3:** a one-button keyboard is fine. **Both default wordings confirmed.**
+
 **Owner confirmed (8 Nov, 23:36)**
 - [2026-11-08 23:42 SGT] **Nudge message (B1-1):** two buttons, **✅ Done** and **😴 Not today** (rules 3.4, 3.5, 3.13).
 - [2026-11-08 23:42 SGT] **Tapping ✅ Done** edits the nudge message **in place into the receipt** (Telegram principle 4); Claude's warm reply arrives as a **new message** (rule 7.5).
@@ -86,15 +89,16 @@
 
 **How the keyboard works** (from the handoff; checked in the thin slice)
 - [2026-11-08 23:42 SGT] The bot sets a persistent reply keyboard (Telegram `ReplyKeyboardMarkup` with `is_persistent` and `resize_keyboard`). Label = "✅ " + the behaviour's display name. A tap arrives as an ordinary text message, and the bot matches it **exactly** against the labels it set, so no Claude call is needed.
-- [2026-11-08 23:42 SGT] A keyboard log is an **unprompted log** (rule 5.2) unless a nudge for that behaviour is still waiting for an answer (Q-B1-1).
+- [2026-11-08 23:51 SGT] A keyboard tap while a nudge for that behaviour is still waiting **answers that nudge** (Q-B1-1, owner): the nudge is edited into the receipt, as if ✅ Done was tapped. Otherwise it is a log on the parent's own initiative (rule 5.2).
+- SUPERSEDED [2026-11-08 23:51 SGT] [2026-11-08 23:42 SGT] A keyboard log is an **unprompted log** (rule 5.2) unless a nudge for that behaviour is still waiting for an answer (Q-B1-1).
 - [2026-11-08 23:42 SGT] When the parent's picks change, the keyboard is sent again. A parent can hide it in Telegram itself.
 - [2026-11-08 23:42 SGT] Not verified: how it looks on small phones, and whether accidental taps are common.
 
-**Default chosen (awaiting the owner's confirmation)**
+**Default chosen** ([2026-11-08 23:51 SGT] confirmed by the owner)
 - [2026-11-08 23:42 SGT] The "Add how you felt" prompt: "How did it feel? Type a line (up to 280 characters), or ignore this to skip." (The earlier preview GIF said "What happened?"; out of date.)
 - [2026-11-08 23:42 SGT] Confirmation after the line: "✅ Added to today's log."
 
-**Proposed new rule 5.8, Undo** (awaiting owner approval and Q-B1-2; not in force)
+**Proposed new rule 5.8, Undo** ([2026-11-08 23:51 SGT] approved with a 30-second window; the rule is under Rules below, and the draft stays as history)
 - [2026-11-08 23:42 SGT] Draft: "Under the receipt of a keyboard log, an **Undo** button lets the parent mark that one log as **undone** within [5 minutes] of logging. The log row is **kept and flagged**, never deleted, and an event is written. An undone log does not count toward days, targets, streaks, steady weeks or the Weekly Wrap Up; the bot replies "Undone. It won't count." After the window, the bot edits the message to remove the button." Needs a fifth narrow edit to rule 8.4 (Datastore) and a new telemetry event (rule 10.2); metrics that count logs must exclude undone ones.
 
 **Open questions (B1)**
@@ -104,10 +108,11 @@
 - [2026-11-08 23:42 SGT] **Still to design in B1:** 😴 Not today (the reply, and whether it counts); the photo consent question at the first photo; photo check pass and fail (self-reported, rules 6.1, 6.2, 1.3); withdrawing photo consent; logging an unchosen behaviour; logging for yesterday; repeat logs; a line over 280 characters; the "week has closed" receipt; what the parent sees if Claude fails (the receipt stands, rule 7.5); free-text logging matched by Claude.
 
 ## Rules at a glance
-5.1 log any time: Done, keyboard, /log · 5.3 optional description (the Investment) · 5.4 unchosen, late and repeat logs · 3.14 the plan summary on sign-up screen 8 · 5.6 weekly connection question: one tap · 5.7 the Menu, with /log
+5.1 log any time: Done, keyboard, /log · 5.3 optional description (the Investment) · 5.4 unchosen, late and repeat logs · 3.14 the plan summary on sign-up screen 8 · 5.6 weekly connection question: one tap · 5.7 the Menu, with /log · 5.8 Undo within 30 seconds
 
 ## Rules
-- **5.1** [2026-11-08 23:42 SGT] Parents can log **any time**: tap ✅ Done on a nudge message; tap a behaviour on the **persistent keyboard** (one button per chosen behaviour, up to 3); use **/log** in the Menu (the same behaviour choice); or free text Claude understands (still to design). *(decided 28 Oct, changed 8 Nov)* Not yet tested (nothing built).
+- **5.1** [2026-11-08 23:51 SGT] Parents can log **any time**: tap ✅ Done on a nudge message; tap a behaviour on the **persistent keyboard** (one button per chosen behaviour, up to 3; one button is fine); use **/log** in the Menu (the same behaviour choice); or free text Claude understands (still to design). A keyboard tap while a nudge for that behaviour is still waiting **answers that nudge**, and the nudge is edited into the receipt. *(decided 28 Oct, changed 8 Nov, changed 8 Nov)* Not yet tested (nothing built).
+- SUPERSEDED [2026-11-08 23:51 SGT] **5.1** [2026-11-08 23:42 SGT] Parents can log **any time**: tap ✅ Done on a nudge message; tap a behaviour on the **persistent keyboard** (one button per chosen behaviour, up to 3); use **/log** in the Menu (the same behaviour choice); or free text Claude understands (still to design). *(decided 28 Oct, changed 8 Nov)* Not yet tested (nothing built).
 - SUPERSEDED [2026-11-08 23:42 SGT] **5.1** Parents can log **any time**: tap ✅ Done on a nudge message, a "Log something" button, or free text Claude understands. *(decided 28 Oct)* Not yet tested (nothing built).
 - **5.3** Optional **description** (up to 280 characters) = the Hooked "Investment". Over 280: the bot asks to shorten it. Shown in the web app and snapshot, and given to Claude for future nudges. *(decided 24 Oct)* Not yet tested (nothing built; the 280 limit per nudge is checked by the Nudge repository tests).
 - **5.4** Logging a behaviour not chosen: **accepted with thanks**, doesn't count toward targets. Logging late: **back to yesterday only**. Twice in a day: counts once for targets and streaks, but **should still be celebrated (WIP)**. *(decided 28 Oct)* Tested by: tests/nudge-engine-due.test.ts and tests/nudge-engine-planner.test.ts (how such logs affect what is due). The bot side (accepting, thanking, refusing older dates) is not built yet.
@@ -117,3 +122,4 @@
 - **5.6** [2026-11-01 16:07 SGT] **Weekly connection question** ("How connected did you feel with your child?", 1 to 5, metric 10). After the first tap, the bot removes the buttons and shows "Thanks, you answered 4". Any extra tap that still arrives is ignored and the first answer counts (database backstop, rule 8.6). A parent can't change the answer that week. *(decided 1 Nov)* Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T30, the database backstop). Removing the buttons is not built yet (Telegram bot).
 - **5.7** [2026-11-08 23:42 SGT] **The Menu.** The Menu button next to the message box offers `/mypage` (open My page, the parent's dashboard on the Web app), `/settings` (open Settings, which lives inside My page), `/log` (log a behaviour: the same choice as the persistent keyboard, rule 5.1), `/pause` (pause reminders: links to Settings), `/resume` (restart reminders: confirm with buttons, done in Telegram) and `/help` (how this works). Commands never take extra words. Plain words without the slash (for example "pause" or "resume") work too, to reduce friction. *(decided 8 Nov, changed 8 Nov)* Not yet tested (nothing built).
 - SUPERSEDED [2026-11-08 23:42 SGT] **5.7** [2026-11-08 22:34 SGT] **The Menu.** The Menu button next to the message box offers `/mypage` (open My page, the parent's dashboard on the Web app), `/settings` (open Settings, which lives inside My page), `/pause` (pause reminders: links to Settings), `/resume` (restart reminders: confirm with buttons, done in Telegram) and `/help` (how this works). Commands never take extra words. Plain words without the slash (for example "pause" or "resume") work too, to reduce friction. *(decided 8 Nov)* Not yet tested (nothing built).
+- **5.8** [2026-11-08 23:51 SGT] **Undo.** Under the receipt of a keyboard log (rule 5.1), an **Undo** button lets the parent mark that one log as **undone** within **30 seconds** of logging. The log row is **kept and flagged**, never deleted, and an event is written. An undone log never counts toward days, targets, streaks, steady weeks or the Weekly Wrap Up; the bot replies "Undone. It won't count." After the window, the bot edits the message to remove the button. The 30 seconds will live once in `src/settings.ts` (rule 1.4). *(decided 8 Nov)* Not yet tested (nothing built; needs edit 5 of rule 8.4).
