@@ -1,5 +1,16 @@
 # Progress (handoff between sessions)
 
+## [2026-11-08 22:34 SGT] Session 9: owner's answers to the onboarding questions recorded
+### Done
+- [2026-11-08 22:34 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up page and Telegram flow shown. Experiment 1 ignored this session (owner).
+- [2026-11-08 22:34 SGT] Owner answered Q1 to Q13 and the privacy-review findings, and approved 9 rule changes (previewed as an old/new table): 5.5, 11.9, 8.10, new 8.13, new 2.5, 3.14, new 5.7, 9.1, 7.8. Written into the module specs (old text marked SUPERSEDED), change note 1.14 in `docs/SPEC.md`, 5 known issues logged, `docs/CATCH-UP.md` section 4 rewritten. `npm run check` passed (139 tests). No code changed.
+### In progress
+- [2026-11-08 22:34 SGT] None.
+### Next steps
+- [2026-11-08 22:34 SGT] Owner: design B1, B2 and C in Claude Chat; parked questions (CATCH-UP 4d) unblock 3.4, 5.6, 10.2. Then the thin-slice build, test-first (it now includes rules 2.5, 3.14, 5.7, 8.10's name column and 8.13).
+### Blockers
+- [2026-11-08 22:34 SGT] None for design. Building waits until groups A to C are designed.
+
 ## [2026-11-03 22:42 SGT] HANDOFF: session 8 ended (read this first)
 - [2026-11-03 22:42 SGT] **Owner will answer next session:** the 8 proposed rule changes (table in `docs/CATCH-UP.md` section 4a) and Q1 to Q13. **Remind the owner first thing**, before any building.
 
