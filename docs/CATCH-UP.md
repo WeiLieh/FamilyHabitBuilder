@@ -60,7 +60,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
 
 **4a. Rule changes**
-- [2026-11-08 23:08 SGT] **Screen edits, 8 Nov:** 3.14 now has one button (OK); 11.9 now has one button ("✅ I agree"). **To confirm (defaults chosen):** screen 3 "What's your child's name?"; screen 10 uses the child's name, no pronoun; screen 11's receipt "✅ Saved: `<behaviour>` today." is fixed and "You're off to a great start." is Claude's reply.
+- [2026-11-08 23:08 SGT] **Screen edits, 8 Nov:** 3.14 now has one button (OK); 11.9 now has one button ("✅ I agree"). **Defaults confirmed by you [2026-11-08 23:09 SGT]:** screen 3 "What's your child's name?"; screen 10 uses the child's name, no pronoun; screen 11's receipt "✅ Saved: `<behaviour>` today." is fixed and "You're off to a great start." is Claude's reply.
 - **Approved on 8 Nov (9):** 5.5 photo consent at the first photo · 11.9 one checkbox at the end of sign-up, recording only · 8.10 child's name, birth year later · 8.13 *(new)* unfinished sign-up keeps only the Telegram ID and last step · 2.5 *(new)* default frequencies: quick every 2 days, deliberate once a week · 3.14 screen 8 is one plan summary · 5.7 *(new)* the Menu, plain words work too · 9.1 My page is the dashboard, Settings lives inside it · 7.8 the connection question is item 6 of the Wrap Up.
 - **Still waiting (3), on the parked questions in 4d:** 3.4 (a third kind of bot message), 5.6 (when the connection question is sent), 10.2 (new tracking events; also needs Q3).
 
