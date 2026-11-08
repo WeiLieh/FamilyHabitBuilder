@@ -2,6 +2,7 @@
 
 ## [2026-11-08 22:34 SGT] Session 9: owner's answers to the onboarding questions recorded
 ### Done
+- [2026-11-09 00:10 SGT] Success metrics spreadsheet: version 2 created (metrics 7 and 8, the two window settings, a Change notes sheet); version 1 deprecated and moved to `docs/archive/` with a DEPRECATED banner sheet. References updated.
 - [2026-11-09 00:08 SGT] Owner approved (after an old/new preview page): rule 5.2 "prompted = same behaviour nudged earlier the same day" (4-hour window dropped; a different behaviour's nudge does not count) and metric 8's window "same behaviour, same day". Spreadsheet update left to the owner.
 - [2026-11-08 23:51 SGT] Owner answered the B1 questions: rule 5.8 Undo (30 seconds) and rule 8.4 edit 5 approved; rule 5.1 changed (a keyboard tap answers a waiting nudge); one-button keyboard fine; two wordings confirmed. New small question on rule 5.2's 4-hour window (CATCH-UP 4b).
 - [2026-11-08 23:42 SGT] Opened pull request #21 for the B1 handoff; it failed the drift check (third time), the owner closed it, and habit **H10** was added to `CLAUDE.md`. Recorded the **B1 daily loop** (handoff `docs/handoffs/2026-11-08-telegram-b1-daily-loop.md`): rules 5.1 and 5.7 changed, proposed rule 5.8 (Undo) and the 8.4 edit, Q-B1-1 to Q-B1-3, change note 1.16. Nothing built.

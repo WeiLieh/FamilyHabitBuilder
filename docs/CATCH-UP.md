@@ -1,6 +1,6 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-09 00:08 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded and defaults confirmed; B1 daily loop recorded and answered; rule 5.2 and metric 8 changed).
+**Last updated: [2026-11-09 00:10 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded and defaults confirmed; B1 daily loop recorded and answered; rule 5.2 and metric 8 changed).
 
 > [2026-11-08 22:34 SGT] **Where we are:** you answered Q1 to Q13 and approved 9 rule changes (section 4a). Next: design the daily loop (B1), the Sunday rhythm (B2) and Settings on the Web app (C) in Claude Chat, then the first small build. Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
@@ -84,7 +84,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- [2026-11-09 00:08 SGT] Update the success metrics spreadsheet (`src/telemetry/Family_Habit_App_Success_Metrics.xlsx`): metric 7 and metric 8 definitions, and the settings "Unprompted log window" (same behaviour, same day) and "Nudge-to-action window" (same behaviour, same day). Or ask Claude to do it.
+- [2026-11-09 00:10 SGT] DONE: success metrics spreadsheet updated to version 2 (`src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx`); version 1 deprecated in `docs/archive/`.
+- SUPERSEDED [2026-11-09 00:10 SGT] [2026-11-09 00:08 SGT] Update the success metrics spreadsheet (`src/telemetry/Family_Habit_App_Success_Metrics.xlsx`): metric 7 and metric 8 definitions, and the settings "Unprompted log window" (same behaviour, same day) and "Nudge-to-action window" (same behaviour, same day). Or ask Claude to do it.
 - [2026-11-08 23:42 SGT] Answer the B1 questions (section 4b), then design B2 (Sunday rhythm) and C in Claude Chat.
 - SUPERSEDED [2026-11-08 23:42 SGT] [2026-11-08 22:34 SGT] Design B1 (daily loop), B2 (Sunday rhythm) and C (Settings on the Web app, with the photo store) in Claude Chat; bring back the parked questions (4d) when ready.
 - [2026-11-08 22:34 SGT] DONE: answered the proposed rule changes and Q1 to Q13 (8 Nov).

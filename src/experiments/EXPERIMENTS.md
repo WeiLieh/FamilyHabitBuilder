@@ -9,7 +9,8 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 ## How experiments work
 - [2026-10-24 18:26 SGT] Each experiment tests one thing (for example, a nudge wording, a reward or the surprise rate) by giving different **variants** to different parents.
 - SUPERSEDED [2026-10-31 19:09 SGT] (now rule 11.6 in src/experiments/SPEC.md) [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
-- [2026-10-31 19:09 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`.
+- [2026-11-09 00:10 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx` (version 1 deprecated, in `docs/archive/`).
+- SUPERSEDED [2026-11-09 00:10 SGT] [2026-10-31 19:09 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`.
 - SUPERSEDED [2026-10-31 19:20 SGT] (path corrected above) [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
