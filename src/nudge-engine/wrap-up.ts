@@ -14,7 +14,8 @@
 // toward the 3-a-day cap or the 1-per-slot limit (rule 3.4).
 //
 // Rules, in the order they are checked:
-//   1. Not sent if the parent turned it off, or paused (muted) the bot.
+//   1. Not sent if the parent paused the bot. There is one Pause switch and
+//      the Wrap Up has no on/off switch of its own (owner, 9 Nov).
 //      ("Not today" stops nudge messages only, so it is not an input here.)
 //   2. Only on Sunday, from the parent's chosen time until midnight. If the
 //      scheduler is late, it still goes out later that Sunday, never Monday.

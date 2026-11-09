@@ -9,6 +9,8 @@
 --   * the old settings function that wrote it, replaced by one that changes
 --     only paused and the Wrap Up time (narrow edit 1 of rule 8.4);
 --   * the column from the Telemetry view telemetry_parents (rebuilt without it).
+-- It also updates the description of parents.paused: it now stops the
+-- connection question too.
 --
 -- Why it is built this way:
 --   * Migration 003 has already run on the real project, so it is never
@@ -35,6 +37,7 @@ drop function public.update_parent_settings(bigint, boolean, boolean, integer, b
 
 -- ---- 2. Remove the switch itself ----
 alter table public.parents drop column wrap_up_on;
+comment on column public.parents.paused is 'The one Pause switch (rule 3.12): no nudge messages, Wrap Up or connection question.';
 comment on table public.parents is 'One parent. The server adds parents and changes only paused and the Wrap Up time, through update_parent_settings (rule 8.4). One Pause switch stops every message the bot starts (rule 3.12).';
 
 -- ---- 3. The new settings function: paused and the Wrap Up time only ----
