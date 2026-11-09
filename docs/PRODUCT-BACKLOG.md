@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-09 21:49 SGT] Grace period after midnight for logging
+- **Item:** [2026-11-09 21:49 SGT] A short grace period after midnight, for example a log before 3 am still counts as the previous day (B1 part 2 handoff, backlog idea).
+- **Why it matters:** [2026-11-09 21:49 SGT] Logging is now for today only (rule 5.4); a parent who logs at 12:30 am about the evening would otherwise lose it.
+- **Priority:** [2026-11-09 21:49 SGT] Low (review after the trial)
+- **Status:** [2026-11-09 21:49 SGT] Not started
+
 ## [2026-11-01 16:07 SGT] "What's running" timeline for experiments
 - **Item:** [2026-11-01 16:07 SGT] An owner-only page showing each value as a row and each experiment as a bar over time (Control and Test, start and stop), plus the settings versions. Owned by the Experiments module, with a link from Telemetry's results.
 - **Why it matters:** [2026-11-01 16:07 SGT] Lets the owner see at a glance when two or more experiments run at once (Datastore draft, 1 Nov). Week one has no experiments.

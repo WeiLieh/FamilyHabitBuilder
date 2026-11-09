@@ -8,6 +8,10 @@
 ## Code in this folder
 - [2026-10-31 10:12 SGT] None yet (development order, step 5).
 
+## Design notes (owner, design chat, 2026-11-09)
+- [2026-11-09 21:48 SGT] **The photo check is an add-on** ([B1 part 2 handoff](../../docs/handoffs/2026-11-09-telegram-b1-not-today-photos-and-logs.md)): the log is already saved and counts; the check only adds a label. Match: photo-checked. No match, or the check could not run: one tap "✅ Yes, I did it" and the log is self-reported. Nothing is removed or blocked; no invented results (rule 1.3). Rules 6.1 and 6.2 already say this in substance. Saving a photo onto a saved log needs a Datastore change (proposal in [src/datastore/SPEC.md](../datastore/SPEC.md)).
+- [2026-11-09 21:48 SGT] **Saved moments are not checked** ([B2 handoff](../../docs/handoffs/2026-11-09-telegram-b2-answering-and-saving.md)): rules 6.1 and 6.2 apply to logs only.
+
 ## Rules at a glance
 6.1 Claude judges the photo; if the check fails, the parent self-reports · 6.2 a photo that fails is kept
 
