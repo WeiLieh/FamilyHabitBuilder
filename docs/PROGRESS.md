@@ -1,5 +1,10 @@
 # Progress (handoff between sessions)
 
+## [2026-11-09 21:57 SGT] HANDOFF: session 10 ended (read this first)
+- [2026-11-09 21:57 SGT] **State:** everything is in `main` (pull request #29 merged) plus this end-of-session pull request (habit H9). `npm run check` passes (139 tests, drift clean); database tests T1 to T42 pass locally. Migration 004 is applied on Supabase and fingerprinted.
+- [2026-11-09 21:57 SGT] **Owner answers needed first, next session** (also in `docs/CATCH-UP.md`, top): (1) the yesterday test, Option A (turn all four yesterday tests into today-only checks, 139 stays) or B; (2) question 12 and rule 10.2 (Claude's recommended events; nudge, then summary, then question); (3) the `/log` default for an unchosen habit; (4) go-ahead to update the texts of rules 5.6 and 7.7; (5) the Datastore proposal (Option 1 or 2 and its two questions).
+- [2026-11-09 21:57 SGT] Screen previews belong in Claude Chat (the owner found the Code preview not good enough).
+
 ## [2026-11-09 17:45 SGT] Session 10
 ### Done
 - [2026-11-09 17:45 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); catch-up page shown. Pull request #22 (session 9) still open for the owner to merge.

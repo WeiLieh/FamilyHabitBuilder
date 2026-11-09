@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-09 21:57 SGT] Changing a live database safely: migration, transaction, check query, fingerprint
+- **Concept:** a database **migration** (a numbered change script), run inside a **transaction** (all or nothing), confirmed with a **check query**, then sealed with a **fingerprint** (a short code computed from the file).
+- **In plain English:** once a database is live, you never edit the old change scripts. You add a new one (004) that makes the change. It runs as one block, so if any step fails nothing changes. Afterwards a small read-only query proves the result, and the file's fingerprint is recorded so any later edit to it is caught.
+- **Analogy:** a signed contract is changed by an addendum, not by crossing out lines. The addendum is signed in one sitting (all or nothing), a witness checks it, and a notary's seal shows if anyone tampers with it later.
+- **Why and when to use it:** for every change to a live database's structure (tables, columns, permissions, functions). Not for everyday data, which the app adds itself, or for one-off content fixes (those are content scripts, rule B2).
+- **Best practices:** write the database test first and watch it fail for the right reason; repeat the lock-down of permissions for anything new; test the check query on a local copy before the owner runs it; record the fingerprint only after the owner confirms.
+- **Where it showed up in this project:** migration 004 (9 Nov) removed the Wrap Up's own on/off switch. Test T42 was written first; the owner ran it in Supabase, the check query matched every expected value, and fingerprint `a4f1cede096b` was recorded (rule B1).
+- **Explain it to others:** "We never rewrite history in our database scripts. Each change is a new numbered script that either fully works or changes nothing, we prove the result with a check, and the drift test raises the alarm if anyone edits a script after it has run."
+- **Governance angle:** a Change Advisory Board (CAB) will ask: is it reversible, was it tested, who ran it, how was success confirmed, and can it be tampered with afterwards? Here: tested locally first, all or nothing, owner-run, check query recorded, fingerprint in the spec.
+
 ### [2026-11-09 00:14 SGT] Metrics that don't double count (mutually exclusive definitions)
 - **Concept:** mutually exclusive metric definitions: each event counts toward exactly one of two related metrics.
 - **In plain English:** metric 7 asks "did parents do it without a reminder?" and metric 8 asks "did the reminder work?". Before, a log at 2 pm after a 7 am nudge counted as both, so the two numbers contradicted each other. Now one test decides: was that behaviour nudged earlier the same day? Yes, so it is the nudge's success (metric 8). No, so it is unprompted (metric 7).
