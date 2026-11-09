@@ -11,7 +11,8 @@
 - [2026-10-31 09:59 SGT] `supabase/content/`: one-off content changes to live data, named `YYYY-MM-DD_what.sql` (rule B2).
 - [2026-11-01 16:38 SGT] `supabase/migrations/003_create_datastore_tables.sql`: the 14 Datastore tables, their all-or-nothing functions and Telemetry views (rules 8.3 to 8.12). **Applied** by the owner on 1 Nov after pull request #15; the owner's check query showed 14 tables, all 14 locked, no public access, the server limited to INSERT and SELECT, and 13 event types. Never edit it (rule B1).
 - SUPERSEDED [2026-11-01 16:38 SGT] [2026-11-01 16:14 SGT] `supabase/migrations/003_create_datastore_tables.sql`: the 14 Datastore tables, their all-or-nothing functions and Telemetry views (rules 8.3 to 8.12). **Not yet applied:** the owner runs it in the Supabase SQL Editor after the pull request is merged; then its fingerprint is added below.
-- [2026-11-09 18:16 SGT] `supabase/migrations/004_remove_wrap_up_switch.sql`: removes the Wrap Up's own on/off switch (`parents.wrap_up_on`), replaces `update_parent_settings` with a version that changes only paused and the Wrap Up time, and rebuilds `telemetry_parents` without the column (rules 3.12, 8.4). **Not yet applied:** the owner runs it in the Supabase SQL Editor after the pull request is merged; then its fingerprint is added below (rule B1).
+- [2026-11-09 18:23 SGT] `supabase/migrations/004_remove_wrap_up_switch.sql`: removes the Wrap Up's own on/off switch (`parents.wrap_up_on`), replaces `update_parent_settings` with a version that changes only paused and the Wrap Up time, rebuilds `telemetry_parents` without the column, and updates the description of `paused` (rules 3.12, 8.4). **Applied** by the owner on 9 Nov after pull request #22; the owner's check query matched (no switch column left, one new settings function, outsiders locked out, server allowed, new description); fingerprint recorded below (rule B1).
+- SUPERSEDED [2026-11-09 18:23 SGT] [2026-11-09 18:16 SGT] `supabase/migrations/004_remove_wrap_up_switch.sql`: removes the Wrap Up's own on/off switch (`parents.wrap_up_on`), replaces `update_parent_settings` with a version that changes only paused and the Wrap Up time, and rebuilds `telemetry_parents` without the column (rules 3.12, 8.4). **Not yet applied:** the owner runs it in the Supabase SQL Editor after the pull request is merged; then its fingerprint is added below (rule B1).
 - [2026-11-01 16:14 SGT] `children.ts`: checks a child's birth year before saving (rule 8.10). Tests: tests/datastore-children.test.ts.
 - [2026-11-01 16:14 SGT] `consents.ts`: works out which consent answer counts, the latest per topic (rule 11.13). Tests: tests/datastore-consents.test.ts.
 - [2026-11-09 18:16 SGT] `supabase/tests/datastore-tables.test.sql`: database tests T1 to T42 for migrations 003 and 004 (run with `npm run test:db`). T42 checks the Wrap Up switch is gone and the new function and view are locked down.
@@ -60,6 +61,7 @@
 | 001_create_nudge_repository.sql | 61812ba8c145 |
 | 002_service_role_read_only.sql | 99f8e46eec97 |
 | 003_create_datastore_tables.sql | c47a978db826 |
+| 004_remove_wrap_up_switch.sql | a4f1cede096b |
 
 ## Content scripts
 - [2026-10-31 18:12 SGT] `2026-10-31_more_examples.sql`: applied by the owner on 31 Oct (32 rows). Live Supabase now has 77 examples, matching the seed file.

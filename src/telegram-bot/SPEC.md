@@ -110,14 +110,15 @@
 - [2026-11-08 23:42 SGT] **Still to design in B1:** 😴 Not today (the reply, and whether it counts); the photo consent question at the first photo; photo check pass and fail (self-reported, rules 6.1, 6.2, 1.3); withdrawing photo consent; logging an unchosen behaviour; logging for yesterday; repeat logs; a line over 280 characters; the "week has closed" receipt; what the parent sees if Claude fails (the receipt stands, rule 7.5); free-text logging matched by Claude.
 
 ## Design in progress: group B2, the Sunday rhythm (owner, in Claude Code, 2026-11-09)
-[2026-11-09 18:16 SGT] Designed with the owner in this repo (no handoff file). **Group A settled; groups B to D open.**
+[2026-11-09 18:16 SGT] Designed with the owner in this repo (no handoff file). **Groups A and B settled; groups C and D open.** [2026-11-09 19:25 SGT] Group C (questions 9 to 11) goes to Claude Chat with the [brief of 9 Nov](../../docs/handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md) (owner: the Code preview screens were not good enough); D12 stays in Claude Code.
 
 **Group A, the connection question sent on its own (settled 9 Nov)**
 - [2026-11-09 18:16 SGT] Sent at the **same time as the parent's Wrap Up** (default 8:00 pm). **Never counts** toward the 3-a-day cap (rule 3.4: a third kind of bot message). **Not sent while paused.** **Same fixed words every week, never written by Claude.** Rules 3.4, 3.12, 5.6 and 7.8 changed (change note 1.17 in [docs/SPEC.md](../../docs/SPEC.md)).
 - [2026-11-09 18:16 SGT] **One Pause switch** (owner): it stops nudges, the Wrap Up and the connection question. The Wrap Up has **no switch of its own** (removed in code and by migration 004). A paused parent still sees everything in the Web app, photos included.
 
 **Open (groups B to D), with Claude's recommendations**
-- [2026-11-09 18:16 SGT] **B6** Wrap Up words: a fixed template with real numbers, no Claude in the first version (recommended). **B7** joining week: "Your streak starts next week" instead of "0 steady weeks". **B8** monthly section: last month's days logged, steady weeks, moments saved; no comparison with other parents.
+- [2026-11-09 18:26 SGT] **Group B settled (owner, 9 Nov):** **B6** the Wrap Up is a fixed template with real numbers, never written by Claude. **B7** in the joining week it says "Your streak starts next week" instead of a count. **B8** monthly section, for now: last month's days logged, steady weeks and moments saved, no comparison with other parents; detailed design with the Web app pages. Written into rule 7.8.
+- SUPERSEDED [2026-11-09 18:26 SGT] [2026-11-09 18:16 SGT] **B6** Wrap Up words: a fixed template with real numbers, no Claude in the first version (recommended). **B7** joining week: "Your streak starts next week" instead of "0 steady weeks". **B8** monthly section: last month's days logged, steady weeks, moments saved; no comparison with other parents.
 - [2026-11-09 18:16 SGT] **C9** connection question answerable until the next Sunday's question, no reminder; a later tap gets "This week's question has closed." **C10** the answer counts for the week it was asked. **C11** "Save a moment": photo or line; photo consent first if it is the first photo (rule 5.5); no AI photo check (an album entry, not a log).
 - [2026-11-09 18:16 SGT] **D12** approve the proposed change to rule 10.2 (the stand-alone question is its own event, never a nudge); a Sunday nudge and the Wrap Up in the same 30 minutes: nudge first, Wrap Up right after.
 
