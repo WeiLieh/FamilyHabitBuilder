@@ -51,9 +51,9 @@ Claude Code listed seven conflicts and gaps. The owner confirmed they are correc
 2. **Unchosen habit: decided, one rule for both.** An unchosen habit logged by `/log` or typed is saved as a **reflection**, never a habit log and never toward targets. **Rule 5.4 changes** from "accepted with thanks" to "saved as a reflection, with thanks". Detail for Claude Code to propose (my default, owner to confirm): a `/log` tap on an unchosen habit has no words yet, so the bot thanks the parent and offers "Add how you felt"; the reflection is saved once a line is added.
 3. **Wrap Up for reflection-only parents: decided yes.** Anyone with any activity (a log, a reflection or a moment) gets the Wrap Up. **Rule 3.12 changes.**
 4. **Retiring the yesterday test: approved.** Claude Code may remove the test "a log made on Monday for Sunday... the receipt says so" and replace it at build time with "a log for any day but today is refused". The minimum test count must still hold.
-5. **Database (add-only blocks three designs): not yet answered by the owner.** Claude Code recommends one Datastore proposal (photo added to a saved log, reflections, moments, and the planned photo delete). Treat as recommended; owner to confirm.
-6. **Privacy of typed text: not yet answered.** Claude Code recommends logging it as known issues for the privacy reviewer (nicknames, typos and a sibling's name get past the name removal; health details; the 24-hour moment window). I agree.
-7. **B2 defaults: not yet confirmed.** "Saved to your album", "That photo wasn't saved...", the Add a moment button staying on the summary, and the "This question has closed." pop-up.
+5. **Database (add-only blocks three designs): owner confirmed OK, 9 Nov 21:36.** Claude Code recommends one Datastore proposal (photo added to a saved log, reflections, moments, and the planned photo delete). Go ahead and design it before the build.
+6. **Privacy of typed text: owner confirmed OK, 9 Nov 21:36.** Claude Code recommends logging it as known issues for the privacy reviewer (nicknames, typos and a sibling's name get past the name removal; health details; the 24-hour moment window). I agree.
+7. **B2 defaults: owner confirmed OK, 9 Nov 21:36.** "Saved to your album", "That photo wasn't saved...", the Add a moment button staying on the summary, and the "This question has closed." pop-up.
 
 ## 5. Where I got this
 The owner's answers in Claude Chat on 9 Nov 2026, 21:15 to 21:22 SGT, and the specs. I did not edit any spec.
