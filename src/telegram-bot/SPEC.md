@@ -110,7 +110,7 @@
 - [2026-11-08 23:42 SGT] **Still to design in B1:** 😴 Not today (the reply, and whether it counts); the photo consent question at the first photo; photo check pass and fail (self-reported, rules 6.1, 6.2, 1.3); withdrawing photo consent; logging an unchosen behaviour; logging for yesterday; repeat logs; a line over 280 characters; the "week has closed" receipt; what the parent sees if Claude fails (the receipt stands, rule 7.5); free-text logging matched by Claude.
 
 ## Design in progress: group B2, the Sunday rhythm (owner, in Claude Code, 2026-11-09)
-[2026-11-09 18:16 SGT] Designed with the owner in this repo (no handoff file). **Groups A and B settled; groups C and D open.**
+[2026-11-09 18:16 SGT] Designed with the owner in this repo (no handoff file). **Groups A and B settled; groups C and D open.** [2026-11-09 19:25 SGT] Group C (questions 9 to 11) goes to Claude Chat with the [brief of 9 Nov](../../docs/handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md) (owner: the Code preview screens were not good enough); D12 stays in Claude Code.
 
 **Group A, the connection question sent on its own (settled 9 Nov)**
 - [2026-11-09 18:16 SGT] Sent at the **same time as the parent's Wrap Up** (default 8:00 pm). **Never counts** toward the 3-a-day cap (rule 3.4: a third kind of bot message). **Not sent while paused.** **Same fixed words every week, never written by Claude.** Rules 3.4, 3.12, 5.6 and 7.8 changed (change note 1.17 in [docs/SPEC.md](../../docs/SPEC.md)).

@@ -10,8 +10,10 @@
 - [2026-11-09 18:18 SGT] Review agents (H3) ran on the B2 group A changes. Privacy: no high or medium findings; 2 low ones fixed (the `paused` description now also mentions the connection question, in migration 004; a stale comment in `wrap-up.ts`); the third (Telemetry view columns) is already covered by test T6. Spec checker: 3 mismatches fixed (the same comment, two stale lines in `src/variable-rewards/DESIGN.md`, T42 added to rule 8.4's tests).
 - [2026-11-09 18:23 SGT] Pull request #22 merged by the owner; branch moved up to `main`. **Migration 004 applied on Supabase** by the owner; the check query matched every expected value; fingerprint recorded in `src/datastore/SPEC.md` (rule B1).
 - [2026-11-09 18:26 SGT] **B2 group B settled** (owner): fixed-template Wrap Up, never Claude; "Your streak starts next week" in the joining week; monthly section provisional. Rule 7.8 changed.
+- [2026-11-09 19:25 SGT] Low-fidelity preview of B2 group C made as a private Claude artifact ("B2 Sunday rhythm: answering and saving"); the owner found the Code screens not good enough and is taking questions 9 to 11 to Claude Chat. Brief written: `docs/handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md`, linked in the `docs/SPEC.md` index.
 ### In progress
-- [2026-11-09 18:17 SGT] B2 Sunday rhythm: groups B to D (questions B6 to D12) waiting for the owner's answers.
+- [2026-11-09 19:25 SGT] B2 group C (questions 9 to 11): owner designing in Claude Chat. Question 12: waiting, in Claude Code.
+- SUPERSEDED [2026-11-09 19:25 SGT] [2026-11-09 18:17 SGT] B2 Sunday rhythm: groups B to D (questions B6 to D12) waiting for the owner's answers.
 - SUPERSEDED [2026-11-09 18:17 SGT] [2026-11-09 17:50 SGT] None.
 - SUPERSEDED [2026-11-09 17:50 SGT] [2026-11-09 17:45 SGT] The five 9 Nov privacy findings (CATCH-UP 4e) still need the owner's answers.
 ### Next steps
