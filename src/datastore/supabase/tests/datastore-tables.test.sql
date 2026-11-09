@@ -10,6 +10,9 @@
 --
 -- Runs after nudge-repository.test.sql on the same throwaway local database
 -- (src/datastore/supabase/tests/run.sh), never on the real Supabase project.
+--
+-- [2026-11-09] Also runs migration 004 (the Wrap Up's own on/off switch removed:
+-- one Pause switch stops everything, rule 3.12) and checks it in T42.
 -- =============================================================================
 
 \set ON_ERROR_STOP on
@@ -21,6 +24,7 @@
 alter role service_role bypassrls;
 
 \i src/datastore/supabase/migrations/003_create_datastore_tables.sql
+\i src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql
 
 -- Helper: try one statement and expect the database to refuse it. Same idea as
 -- in nudge-repository.test.sql. It runs as whichever role is active.
@@ -43,7 +47,7 @@ end $$;
 -- One settings version, two parents, one invite.
 select public.record_settings_version('Starting values', '{"max_nudges_per_day": 3}'::jsonb);
 -- The app always gives the Wrap Up settings from src/settings.ts (fix 4: no copy of them in the database).
-insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1001, 'Ann', 'cohort-1', true, 1200), (1002, 'Ben', 'cohort-1', true, 1200);
+insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (1001, 'Ann', 'cohort-1', 1200), (1002, 'Ben', 'cohort-1', 1200);
 insert into public.invites (code) values ('WELCOME-1');
 -- A test nudge with no examples, so deleting it is otherwise allowed (T17).
 insert into public.nudges (code, name, category, self_report_allowed, photo_upload_allowed, starts_unlocked)
@@ -81,21 +85,45 @@ end $$;
 -- From here on, act as our server (service_role), as the app will.
 set role service_role;
 
--- T2: the server can add a parent and change only paused and the Wrap Up settings.
+-- T2: the server can add a parent and change only paused and the Wrap Up time.
 do $$
 begin
-  insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1003, 'Cai', 'cohort-1', true, 1200);
-  perform public.update_parent_settings((select id from public.parents where telegram_id = 1003), true, false, 1170, pg_temp.v(), '["baseline"]');
-  assert (select paused and not wrap_up_on and wrap_up_minute = 1170 from public.parents where telegram_id = 1003), 'settings not changed';
+  insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (1003, 'Cai', 'cohort-1', 1200);
+  perform public.update_parent_settings((select id from public.parents where telegram_id = 1003), true, 1170, pg_temp.v(), '["baseline"]');
+  assert (select paused and wrap_up_minute = 1170 from public.parents where telegram_id = 1003), 'settings not changed';
   assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
           where t.name = 'settings_changed' and e.parent_id = (select id from public.parents where telegram_id = 1003)) = 1,
          'changing settings should also write an event';
-  raise notice 'PASS: T2 the server adds a parent and changes paused / Wrap Up through one function, which also writes an event';
+  raise notice 'PASS: T2 the server adds a parent and changes paused / Wrap Up time through one function, which also writes an event';
 end $$;
 select pg_temp.expect_refused('T2 the server changing a Telegram ID directly',
   $q$update public.parents set telegram_id = 9999 where telegram_id = 1003$q$, 'permission denied');
 select pg_temp.expect_refused('T2 the server changing a cohort directly',
   $q$update public.parents set cohort = 'cohort-2' where telegram_id = 1003$q$, 'permission denied');
+
+-- T42 [2026-11-09]: the Weekly Wrap Up has no on/off switch of its own (rule 3.12,
+-- migration 004): no wrap_up_on column in parents or its Telemetry view, the
+-- settings function takes only paused and the Wrap Up time, the old version is
+-- gone, and the new function and view are locked down like the rest.
+do $$
+begin
+  assert not exists (select 1 from information_schema.columns
+    where table_schema = 'public' and table_name in ('parents', 'telemetry_parents') and column_name = 'wrap_up_on'),
+    'wrap_up_on still exists';
+  assert to_regprocedure('public.update_parent_settings(bigint, boolean, boolean, integer, bigint, jsonb)') is null,
+    'the old settings function (with the on/off switch) still exists';
+  assert has_function_privilege('service_role', 'public.update_parent_settings(bigint, boolean, integer, bigint, jsonb)', 'execute'),
+    'the server cannot run the new settings function';
+  assert not has_function_privilege('anon', 'public.update_parent_settings(bigint, boolean, integer, bigint, jsonb)', 'execute')
+     and not has_function_privilege('authenticated', 'public.update_parent_settings(bigint, boolean, integer, bigint, jsonb)', 'execute'),
+    'signed-out visitors can run the new settings function';
+  assert has_table_privilege('service_role', 'public.telemetry_parents', 'select')
+     and not has_table_privilege('service_role', 'public.telemetry_parents', 'insert,update,delete')
+     and not has_table_privilege('anon', 'public.telemetry_parents', 'select')
+     and not has_table_privilege('authenticated', 'public.telemetry_parents', 'select'),
+    'telemetry_parents has the wrong permissions';
+  raise notice 'PASS: T42 the Wrap Up has no on/off switch; the new settings function and Telemetry view are locked down';
+end $$;
 
 -- T3: the server can't edit or delete rows in the add-only tables.
 do $$
@@ -137,10 +165,10 @@ set role service_role;
 
 -- T7: two parents with the same Telegram ID are refused.
 select pg_temp.expect_refused('T7 a second parent with the same Telegram ID',
-  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1001, 'Copy', 'cohort-1', true, 1200)$q$);
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (1001, 'Copy', 'cohort-1', 1200)$q$);
 -- (rule 11.11) cohort labels are neutral.
 select pg_temp.expect_refused('a cohort label that is not neutral',
-  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_on, wrap_up_minute) values (1009, 'Dee', 'friends', true, 1200)$q$);
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (1009, 'Dee', 'friends', 1200)$q$);
 -- Fix 4 (rule 8.8): the database holds no copy of the Wrap Up defaults, so a parent without them is refused.
 select pg_temp.expect_refused('fix 4: a parent with no Wrap Up settings (no defaults stored in the database)',
   $q$insert into public.parents (telegram_id, first_name, cohort) values (1010, 'Eve', 'cohort-1')$q$);

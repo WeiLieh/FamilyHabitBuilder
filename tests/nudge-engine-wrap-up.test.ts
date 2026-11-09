@@ -8,7 +8,7 @@
 // decides; it doesn't send anything or write the words.
 //
 // Test week: Mon 2 Nov to Sun 8 Nov 2026. The next Monday is 9 Nov.
-// Test parent: default settings (on, Sunday 8:00pm), not paused, logged once
+// Test parent: default settings (Sunday 8:00pm), not paused, logged once
 // this week (Wednesday), and has no Sunday nudge slots at all: the Wrap Up
 // doesn't use slots, so it doesn't need any.
 // =============================================================================
@@ -42,8 +42,10 @@ function input(overrides: Partial<WrapUpInput>): WrapUpInput {
 }
 
 describe("Weekly Wrap Up: the starting settings", () => {
-  it("is on by default, on Sunday at 8:00pm", () => {
-    expect(DEFAULT_WEEKLY_WRAP_UP).toEqual({ enabled: true, minutes: 20 * 60 });
+  // [2026-11-09] The Wrap Up has no on/off switch of its own (rule 3.12, owner
+  // 9 Nov): the only setting is its time. The one Pause switch stops it.
+  it("starts at Sunday 8:00pm, with its time as the only setting (no on/off switch)", () => {
+    expect(DEFAULT_WEEKLY_WRAP_UP).toEqual({ minutes: 20 * 60 });
   });
 
   it("lets the parent pick any 30-minute block from 7:00am to 9:30pm, like nudge slots", () => {
@@ -79,7 +81,7 @@ describe("Weekly Wrap Up: when it is sent (rule 3.12)", () => {
 
   // Agreed test 3
   it("uses the time the parent chose (e.g. 6:30pm)", () => {
-    const wrapUp = { enabled: true, minutes: 18 * 60 + 30 };
+    const wrapUp = { minutes: 18 * 60 + 30 };
     expect(planWeeklyWrapUp(input({ wrapUp, now: at("2026-11-08", "18:29") }))).toEqual({ send: false, reason: "too_early" });
     expect(planWeeklyWrapUp(input({ wrapUp, now: at("2026-11-08", "18:30") }))).toEqual({ send: true });
   });
@@ -140,7 +142,7 @@ describe("Weekly Wrap Up: when it is sent (rule 3.12)", () => {
       reason: "already_sent",
     });
     // Sent at 8:00pm, then moved to 9:30pm: still not sent again.
-    const moved = { enabled: true, minutes: 21 * 60 + 30 };
+    const moved = { minutes: 21 * 60 + 30 };
     expect(planWeeklyWrapUp(input({ messagesSent, wrapUp: moved, now: at("2026-11-08", "21:35") }))).toEqual({
       send: false,
       reason: "already_sent",
@@ -160,11 +162,23 @@ describe("Weekly Wrap Up: when it is sent (rule 3.12)", () => {
     expect(planWeeklyWrapUp(input({ messagesSent }))).toEqual({ send: true });
   });
 
-  // Agreed test 9
-  it("is not sent when the parent has turned it off", () => {
-    expect(planWeeklyWrapUp(input({ wrapUp: { enabled: false, minutes: 20 * 60 } }))).toEqual({
-      send: false,
-      reason: "turned_off",
-    });
+  // [2026-11-09] With no on/off switch (rule 3.12, owner 9 Nov), the Wrap Up is
+  // sent at whatever time the parent chose, unless they paused: every allowed
+  // time works, and pausing is the one thing that stops it.
+  it("is sent at any time the parent may choose, and only pausing stops it", () => {
+    for (const minutes of SLOT_STARTS) {
+      const hh = String(Math.floor(minutes / 60)).padStart(2, "0");
+      const mm = String(minutes % 60).padStart(2, "0");
+      const now = at("2026-11-08", `${hh}:${mm}`); // Sunday, exactly at the chosen time
+      expect(planWeeklyWrapUp(input({ now, wrapUp: { minutes } }))).toEqual({ send: true });
+      expect(planWeeklyWrapUp(input({ now, wrapUp: { minutes }, paused: true }))).toEqual({
+        send: false,
+        reason: "paused",
+      });
+    }
   });
+
+  // [2026-11-09] Agreed test 9 ("not sent when the parent has turned it off")
+  // was removed with the owner's approval: the Wrap Up's own switch no longer
+  // exists (rule 3.12). Pausing, the only way to stop it, is checked above.
 });

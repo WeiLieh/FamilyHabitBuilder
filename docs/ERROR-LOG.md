@@ -3,6 +3,7 @@
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 ## [2026-11-08 23:12 SGT] Design-handoff pull request failed the drift check (second time)
+- [2026-11-08 23:42 SGT] **Third time:** pull request #21 (branch `design/telegram-b1-daily-loop-2026-11-08`) had the same gap. The owner closed it unmerged; the handoff and its link came in on `claude/festive-einstein-nf623s`. New rule **H10** added to `CLAUDE.md` (owner approved).
 - **What broke:** [2026-11-08 23:12 SGT] Pull request #19 (branch `design/telegram-screen-edits-2026-11-08`) failed `npm run check` in GitHub: "docs/handoffs/2026-11-08-telegram-onboarding-screen-edits.md is not reachable by links from CLAUDE.md or docs/SPEC.md" (rule D1). The same happened with pull request #17 on 3 Nov.
 - **Cause:** [2026-11-08 23:12 SGT] A handoff branch adds a new file but not the link to it in the document index of `docs/SPEC.md`. The handoff itself asks Claude Code to add the link later, so the handoff branch on its own is never green.
 - **Fix:** [2026-11-08 23:12 SGT] The link was added on `claude/festive-einstein-nf623s` (commit ed9d681), which also contains the handoff commit. Merging that branch's pull request brings both in; pull request #19 can be closed without merging.

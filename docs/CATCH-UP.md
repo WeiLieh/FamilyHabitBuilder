@@ -1,8 +1,10 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-08 23:08 SGT]** (session 9: your answers to the onboarding questions recorded; 9 rule changes approved; 8 Nov screen edits recorded, 3 defaults to confirm).
+**Last updated: [2026-11-09 00:14 SGT]** (session 9 ended: group A answered, screen edits and B1 daily loop recorded, rule 5.2 and metric 8 changed, metrics spreadsheet version 2).
 
-> [2026-11-08 22:34 SGT] **Where we are:** you answered Q1 to Q13 and approved 9 rule changes (section 4a). Next: design the daily loop (B1), the Sunday rhythm (B2) and Settings on the Web app (C) in Claude Chat, then the first small build. Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
+> [2026-11-09 00:14 SGT] **⏰ Next session, first:** decide the 4 privacy-review findings in section 4e (what goes into `docs/KNOWN-ISSUES.md`), then design **B2 (Sunday rhythm)** in Claude Chat; the rest of B1 and group C come after. Group A and the core of B1 are recorded.
+
+> SUPERSEDED [2026-11-09 00:14 SGT] [2026-11-08 22:34 SGT] **Where we are:** you answered Q1 to Q13 and approved 9 rule changes (section 4a). Next: design the daily loop (B1), the Sunday rhythm (B2) and Settings on the Web app (C) in Claude Chat, then the first small build. Claude updates this page at the end of every session and shows it at the start of the next. Unlike the other project files, this page is a **current snapshot**: it is rewritten each time, and older versions stay in Git history. The dated, never-deleted record of each decision is in `docs/SPEC.md` (Change notes).
 
 Contents: 1. Module map · 2. Modules: purpose, files and tests · 3. Rules: where each one lives · 4. Questions to think about before next session · 5. Waiting on you
 
@@ -46,7 +48,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - **1.1 to 1.5** (users, Singapore time, no fallbacks, numbers live once in code with five kinds, "delete my data" reaches every store): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
 - **2.1 to 2.5, 3.1 to 3.13**: [Nudge engine](../src/nudge-engine/SPEC.md)
 - **4.1 to 4.6**: [Nudge repository](../src/nudge-repository/SPEC.md)
-- **5.1, 5.3, 5.4, 5.6, 5.7, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 14 tables are listed there, under "Tables")
+- **5.1, 5.3, 5.4, 5.6 to 5.8, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 14 tables are listed there, under "Tables")
 - **6.1, 6.2**: [Photo check](../src/photo-check/SPEC.md)
 - **7.1 to 7.8**: [Variable rewards](../src/variable-rewards/SPEC.md)
 - **9.1**: [Web app](../src/web-app/SPEC.md) (plus two parked questions)
@@ -60,28 +62,46 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
 
 **4a. Rule changes**
+- [2026-11-09 18:16 SGT] **Approved 9 Nov (B2 group A):** 3.4 three kinds of bot message, the stand-alone connection question never counts · 3.12 one Pause switch stops everything, the Wrap Up's own switch removed · 5.6 connection question at the Wrap Up time, fixed words, not while paused · 7.8 a paused parent gets nothing on Sunday but sees everything in the Web app · 8.4 edit 1 without the switch. Still waiting: 10.2 (B2 question D12).
 - [2026-11-08 23:08 SGT] **Screen edits, 8 Nov:** 3.14 now has one button (OK); 11.9 now has one button ("✅ I agree"). **Defaults confirmed by you [2026-11-08 23:09 SGT]:** screen 3 "What's your child's name?"; screen 10 uses the child's name, no pronoun; screen 11's receipt "✅ Saved: `<behaviour>` today." is fixed and "You're off to a great start." is Claude's reply.
 - **Approved on 8 Nov (9):** 5.5 photo consent at the first photo · 11.9 one checkbox at the end of sign-up, recording only · 8.10 child's name, birth year later · 8.13 *(new)* unfinished sign-up keeps only the Telegram ID and last step · 2.5 *(new)* default frequencies: quick every 2 days, deliberate once a week · 3.14 screen 8 is one plan summary · 5.7 *(new)* the Menu, plain words work too · 9.1 My page is the dashboard, Settings lives inside it · 7.8 the connection question is item 6 of the Wrap Up.
 - **Still waiting (3), on the parked questions in 4d:** 3.4 (a third kind of bot message), 5.6 (when the connection question is sent), 10.2 (new tracking events; also needs Q3).
 
 **4b. Open questions, kept as work in progress (WIP)**
+- [2026-11-09 18:16 SGT] **B2 Sunday rhythm, groups B to D (open, with recommendations):** B6 Wrap Up words · B7 joining week · B8 monthly section · C9 how long the question can be answered · C10 which week an answer counts for · C11 "Save a moment" and the photo check · D12 rule 10.2 and a nudge in the same 30 minutes as the Wrap Up. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B2.
 - [2026-11-08 23:08 SGT] **Q3 (partly answered 8 Nov):** screen 10's draft wording is in, and "the scoreboard" means My page and the Weekly Wrap Up (the first action is logged). **Still open:** which behaviour when two were picked; the Not now reply; prompted or unprompted log (rule 5.2, metric 7); whether it counts toward the joining week (rule 7.6) and metric 8; whether it uses a slot or counts in the 3-a-day cap (rule 3.4); its telemetry event (rule 10.2).
 - SUPERSEDED [2026-11-08 23:08 SGT] **Q3:** the "start right now" first action ("proven" is dropped): which behaviour, the Not now reply, not counted as a nudge, and whether it counts toward the joining week.
-- **Q4:** the child's name is for relevance; nudges for families with 2 or more children need a design discussion, including whether the name goes to Claude.
+- [2026-11-09 17:44 SGT] **Q4 (partly answered 9 Nov):** the child's name is never sent to Claude; it is only shown in Telegram. Still open: nudges for families with 2 or more children.
+- SUPERSEDED [2026-11-09 17:44 SGT] **Q4:** the child's name is for relevance; nudges for families with 2 or more children need a design discussion, including whether the name goes to Claude.
 - **Q5** rename the nine behaviours · **Q7** flows behind the buttons · **Q8** agreement wording · **Q9** bot name and description · **Q10** invite code edge cases · **Q11** stopping halfway (what is kept is now rule 8.13).
 - **Q12:** how and when the birth year is collected in the engagement journey.
+- [2026-11-09 00:08 SGT] **B1 daily loop:** answered on 8 and 9 Nov (Undo with 30 seconds, rule 5.8; a keyboard tap answers a waiting nudge; one-button keyboard fine; wordings confirmed; "unprompted" now means no nudge for that behaviour earlier the same day, rule 5.2, and metric 8 uses the same day). Still to design in B1: Not today, the first-photo consent question, photo check pass and fail, withdrawing photo consent, unchosen, yesterday and repeat logs, a line over 280 characters, the "week has closed" receipt, Claude failing, free-text logging. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B1.
+- SUPERSEDED [2026-11-09 00:08 SGT] [2026-11-08 23:51 SGT] **B1 daily loop:** answered on 8 Nov (Undo approved with 30 seconds, rule 5.8; a keyboard tap answers a waiting nudge; a one-button keyboard is fine; both wordings confirmed). **New small question:** rule 5.2 calls a log "unprompted" when no nudge was sent in the 4 hours before. A keyboard tap that answers a nudge sent earlier than that (say 7 am, tapped at 2 pm) is "answering the nudge" in the chat but "unprompted" for metric 7. Keep both as they are, or change rule 5.2? · Still to design in B1: Not today, the first-photo consent question, photo check pass and fail, withdrawing photo consent, unchosen, yesterday and repeat logs, a line over 280 characters, the "week has closed" receipt, Claude failing, free-text logging. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B1.
+- SUPERSEDED [2026-11-08 23:51 SGT] [2026-11-08 23:42 SGT] **B1 daily loop (recorded 8 Nov):** Q-B1-1 a keyboard tap while a nudge is waiting: prompted or unprompted? · Q-B1-2 Undo window (5 minutes proposed) · Q-B1-3 a one-button keyboard is fine? · approve proposed rule 5.8 (Undo) and the 8.4 edit · confirm the two default wordings ("How did it feel? Type a line…" and "✅ Added to today's log.") · still to design in B1: Not today, the first-photo consent question, photo check pass and fail, withdrawing photo consent, unchosen, yesterday and repeat logs, a line over 280 characters, the "week has closed" receipt, Claude failing, free-text logging. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B1.
 - **Rule 8.13 details:** how long before an unfinished sign-up's data is thrown away, and how the re-engagement message works.
+
+**4e. Privacy-review findings from 9 Nov (you decide what goes into `docs/KNOWN-ISSUES.md`)**
+- [2026-11-09 17:50 SGT] **DONE:** you decided all five on 9 Nov; they are in [docs/KNOWN-ISSUES.md](KNOWN-ISSUES.md) with your decisions. The 3 Nov findings also have your decisions (names out of Telemetry and exports, birth year shown as bands, name never sent to Claude).
+- [2026-11-09 00:14 SGT] **Medium:** Undo (rule 8.4, edit 5) says it is enforced by the database, but nothing says the database itself checks the 30-second window and "keyboard logs only". If only the code checks them, a bug could quietly undo any old log and change streaks or metrics.
+- [2026-11-09 00:14 SGT] **Medium:** "Add how you felt" is free text that may contain a child's name or health details and goes to Claude (rule 5.3). When a log is undone, the spec does not say what happens to its line or photo.
+- [2026-11-09 00:14 SGT] **Medium:** "ignore this to skip" has no time limit, so a later, unrelated message could be saved as the log's description and sent to Claude.
+- [2026-11-09 00:14 SGT] **Medium:** no spec mentions checking Telegram's webhook secret header, so a forged request could create or undo logs for any parent (to add when building the Telegram bot).
+- [2026-11-09 00:14 SGT] **Low:** keyboard taps leave behaviour names in Telegram's chat history, outside Singapore and outside "delete my data" (mention in the PDPA note).
 
 **4c. Needed before the build or group B:** where "Open my page" goes before the Web app exists, and how the parent is signed in; Claude's response time and slow first starts on Vercel, tested in the thin slice; create the Telegram bot (BotFather), the Vercel project and Upstash Redis before the thin slice. (Done: the screen 8 settings are the same as the Web app's, rule 3.14.)
 
-**4d. Parked (you asked me not to raise these first):** the stand-alone check-in's time, cap and paused behaviour; "pause" versus "stop"; pausing before the Web app exists (you pause the week-one group by hand?); whether stopping is as easy as starting (governance); Web app sign-in; the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); the first alpha experiment (Claude Chat).
+**4d. Parked (you asked me not to raise these first):** [2026-11-09 18:16 SGT] (the stand-alone check-in's time, cap and paused behaviour: decided 9 Nov, B2 group A) "pause" versus "stop"; pausing before the Web app exists (you pause the week-one group by hand?); whether stopping is as easy as starting (governance); Web app sign-in; the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); the first alpha experiment (Claude Chat).
 
 **Privacy-review findings (3 Nov):** you decided on 8 Nov. Finding 1 (data from parents who stop halfway) became rule 8.13; findings 2 to 6 are in [docs/KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- [2026-11-08 22:34 SGT] Design B1 (daily loop), B2 (Sunday rhythm) and C (Settings on the Web app, with the photo store) in Claude Chat; bring back the parked questions (4d) when ready.
+- [2026-11-09 18:16 SGT] **After the pull request is merged:** run `src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql` in the Supabase SQL Editor (removes the Wrap Up's own switch). Then tell Claude, so its fingerprint is recorded (rule B1).
+- [2026-11-09 00:10 SGT] DONE: success metrics spreadsheet updated to version 2 (`src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx`); version 1 deprecated in `docs/archive/`.
+- SUPERSEDED [2026-11-09 00:10 SGT] [2026-11-09 00:08 SGT] Update the success metrics spreadsheet (`src/telemetry/Family_Habit_App_Success_Metrics.xlsx`): metric 7 and metric 8 definitions, and the settings "Unprompted log window" (same behaviour, same day) and "Nudge-to-action window" (same behaviour, same day). Or ask Claude to do it.
+- [2026-11-08 23:42 SGT] Answer the B1 questions (section 4b), then design B2 (Sunday rhythm) and C in Claude Chat.
+- SUPERSEDED [2026-11-08 23:42 SGT] [2026-11-08 22:34 SGT] Design B1 (daily loop), B2 (Sunday rhythm) and C (Settings on the Web app, with the photo store) in Claude Chat; bring back the parked questions (4d) when ready.
 - [2026-11-08 22:34 SGT] DONE: answered the proposed rule changes and Q1 to Q13 (8 Nov).
 - SUPERSEDED [2026-11-08 22:34 SGT] [2026-11-03 22:42 SGT] **Next session, first:** answer the 8 proposed rule changes (section 4a) and Q1 to Q13 (section 4b).
 - [2026-11-08 22:34 SGT] Take PDPA section 16 (withdrawing photo consent) to your PDPA reviewer (see docs/KNOWN-ISSUES.md).
