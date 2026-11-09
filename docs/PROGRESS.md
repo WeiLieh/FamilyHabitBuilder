@@ -11,6 +11,7 @@
 - [2026-11-09 18:23 SGT] Pull request #22 merged by the owner; branch moved up to `main`. **Migration 004 applied on Supabase** by the owner; the check query matched every expected value; fingerprint recorded in `src/datastore/SPEC.md` (rule B1).
 - [2026-11-09 18:26 SGT] **B2 group B settled** (owner): fixed-template Wrap Up, never Claude; "Your streak starts next week" in the joining week; monthly section provisional. Rule 7.8 changed.
 - [2026-11-09 19:25 SGT] Low-fidelity preview of B2 group C made as a private Claude artifact ("B2 Sunday rhythm: answering and saving"); the owner found the Code screens not good enough and is taking questions 9 to 11 to Claude Chat. Brief written: `docs/handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md`, linked in the `docs/SPEC.md` index.
+- [2026-11-09 21:49 SGT] Read the three Chat handoffs (B1 parts 2 and 3, B2) and the owner's answers to the seven points (section 4a). Recorded: rules 5.1, 5.4, 3.12, 7.6, 7.8 changed (old text SUPERSEDED); dated design notes in the Telegram bot, Nudge engine, Variable rewards and Photo check specs; change note 1.18. Drafted the Datastore proposal (`src/datastore/SPEC.md`, "Proposed"). Four typed-text known issues logged. Backlog: grace period after midnight. Nothing built.
 ### In progress
 - [2026-11-09 19:25 SGT] B2 group C (questions 9 to 11): owner designing in Claude Chat. Question 12: waiting, in Claude Code.
 - SUPERSEDED [2026-11-09 19:25 SGT] [2026-11-09 18:17 SGT] B2 Sunday rhythm: groups B to D (questions B6 to D12) waiting for the owner's answers.

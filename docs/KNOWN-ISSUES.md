@@ -2,6 +2,26 @@
 
 ## Open
 
+### [2026-11-09 21:49 SGT] Removing the child's name before Claude can miss names
+- **Issue:** [2026-11-09 21:49 SGT] Typed text goes to Claude with the child's name removed (rule 5.1, Q4). Removing only the stored name misses nicknames, typos, other spellings and a sibling's or friend's name (privacy review of the typed-text design, 9 Nov; owner agreed to log it, handoff of 9 Nov section 4a item 6).
+- **Impact:** [2026-11-09 21:49 SGT] None yet (not built). A child's name could still reach Claude, against the owner's decision that it never does.
+- **Workaround:** [2026-11-09 21:49 SGT] When building typed messages: the privacy reviewer checks the name removal, with tests for nicknames, different capitals and a second child; decide whether other first names are removed too. Send Claude only the text and the list of habits, nothing else about the family.
+
+### [2026-11-09 21:49 SGT] Typed text and reflections may hold health or other sensitive details
+- **Issue:** [2026-11-09 21:49 SGT] What parents type (a reflection, a "how you felt" line) may mention a child's health, school or family problems. It is sent to Claude for matching and stored as a reflection (privacy review of the typed-text design, 9 Nov; owner agreed to log it, handoff of 9 Nov section 4a item 6).
+- **Impact:** [2026-11-09 21:49 SGT] None yet (not built). Sensitive personal data about a child, under Singapore's Personal Data Protection Act (PDPA).
+- **Workaround:** [2026-11-09 21:49 SGT] Before building: decide how long reflection text is kept (Datastore proposal question), keep it out of Telemetry (no text in the views, rule 8.11), and take reflections that mention the child to the owner's PDPA reviewer.
+
+### [2026-11-09 21:49 SGT] The 24-hour moment window can catch a stray message
+- **Issue:** [2026-11-09 21:49 SGT] After "Add a moment", the bot waits 24 hours for a photo or line (B2 handoff, D-e). A later, unrelated message could be saved as a moment. This widens the 9 Nov finding "ignore this to skip has no time limit" (privacy review of the typed-text design, 9 Nov; owner agreed to log it, handoff of 9 Nov section 4a item 6).
+- **Impact:** [2026-11-09 21:49 SGT] Low to medium: an unrelated, possibly private message would show in the album. Moments are not sent to Claude.
+- **Workaround:** [2026-11-09 21:49 SGT] The agreed mitigations, each with a test at build time: other prompts win; keyboard labels, commands and button taps are never saved as moments; the window closes after one photo and one line, or at the next Wrap Up. Review the window length after the trial.
+
+### [2026-11-09 21:49 SGT] No cap on Claude matching calls per parent
+- **Issue:** [2026-11-09 21:49 SGT] Every typed message that is a log attempt calls Claude (B1 part 3 handoff, open question). There is no daily cap per parent.
+- **Impact:** [2026-11-09 21:49 SGT] None yet (not built). Cost and abuse risk once live.
+- **Workaround:** [2026-11-09 21:49 SGT] Design a cap with a starting number in `src/settings.ts` (rule 1.4) before building typed messages.
+
 ### [2026-11-09 17:50 SGT] Undo's 30-second limit must be enforced by the database
 - **Issue:** [2026-11-09 17:50 SGT] Rule 8.4 edit 5 (Undo, rule 5.8) says it is enforced by the database, but nothing says the database itself checks the 30-second window and "keyboard logs only" (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
 - **Impact:** [2026-11-09 17:50 SGT] None yet (Undo is not built). If only the app code checked them, a bug could quietly undo any old log and change streaks and metrics.

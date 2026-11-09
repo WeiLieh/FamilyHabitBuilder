@@ -85,6 +85,32 @@
 - [2026-11-08 23:51 SGT] **Approved by the owner:** the Undo edit below, with a **30-second** window (rule 5.8). Rule 8.4 now lists five narrow edits; the database change is a new migration, test-first, at build time.
 - [2026-11-08 23:42 SGT] **Proposed change to rule 8.4, Undo** (B1 daily loop, [B1 handoff](../../docs/handoffs/2026-11-08-telegram-b1-daily-loop.md); awaiting owner approval and Q-B1-2): a **fifth narrow edit**: within a short window after a keyboard log (5 minutes proposed), the server may mark that one log as **undone**. The row is kept and flagged, never deleted; an event is written; the edit checks it acts on the right parent's log. Undone logs never count toward days, targets, streaks, steady weeks or the Weekly Wrap Up. A new migration, test-first, at build time (rule B1). Note: "delete a photo" (rule 9.1, docs/KNOWN-ISSUES.md) also needs a narrow edit, so 8.4 would grow to six.
 
+## Proposed: one Datastore change for the daily loop and the Sunday rhythm (DRAFT, 2026-11-09, waiting for the owner)
+[2026-11-09 21:48 SGT] **Draft by Claude Code, nothing built.** The 9 Nov designs need four things the add-only tables (rule 8.4) can't do today. The owner asked for one proposal covering all four (handoff of 9 Nov, section 4a, item 5). When agreed: rule changes with old and new text, then **migration 005**, written test-first like 003 and 004, with the same lock-down (known issue of 31 Oct). Analogy: today each log is a page in a diary written in pen. The designs now want to clip a photo to a page after it is written, keep a second notebook of reflections, and keep a scrapbook of moments. The proposal adds the clip and the two notebooks instead of rubbing out pages.
+
+**What is needed and why**
+- [2026-11-09 21:48 SGT] **(A) A photo added to a saved log.** The log is saved first and counts; the photo and its check come later (photo check as an add-on). Today the photo lives inside the log row (`photo_path`, `photo_check`, `recorded_as`), which can't change after it is written.
+- [2026-11-09 21:48 SGT] **(B) Reflections.** Typed text that matches an unchosen habit or no habit, a No tap, or a `/log` on an unchosen habit with a line (rule 5.4). No table holds them.
+- [2026-11-09 21:48 SGT] **(C) Moments.** One photo and/or one line per week from the Wrap Up (rule 7.7). No table holds them.
+- [2026-11-09 21:48 SGT] **(D) Deleting a photo.** Rule 9.1 promises it; the owner's goal: no copy kept anywhere (known issue of 8 Nov, "edit 6"). Also: when a log is undone, its line and photo are deleted (privacy decision of 9 Nov).
+
+**Recommended shape (Option 1: one photo table, two line tables)**
+- [2026-11-09 21:48 SGT] **`photos`** (new): id, parent_id, storage_path, check (passed, failed, error, not_checked), and **exactly one** owner: `log_id` (a habit log) or `moment_week` (a moment). Add-only, except the narrow delete below. One photo per log; one moment photo per parent per week (database backstops, rule 8.6). A moment photo is always `not_checked` (no AI check, B2 Q11).
+- [2026-11-09 21:48 SGT] **`reflections`** (new): id, parent_id, for_day, text (up to 280), nudge_id (the unchosen habit it matched, or empty for a family moment), source (typed, typed_no, log_command), telegram_update_id (unique, so a resent message is saved once). Add-only.
+- [2026-11-09 21:48 SGT] **`moment_lines`** (new): id, parent_id, week_starting (a Monday), text (up to 280), telegram_update_id (unique). One per parent per week (backstop). Add-only.
+- [2026-11-09 21:48 SGT] **`habit_logs` changes:** the photo columns move out to `photos` (no bot exists yet, so the live table should hold no real rows; checked with a query before the migration). Whether a log is **photo-checked** is then read from its photo (a passed check); otherwise it is **self-reported**. The "✅ Yes, I did it" tap is recorded as an event. `description` (the "how you felt" line) stays in the log row.
+- [2026-11-09 21:48 SGT] **Rule 8.4, two new narrow edits:** (6) **delete one photo** of that parent, only after the file is removed from storage (rule 8.5 order), writing a non-personal line in the deletion log; (7) **when a log is undone**, delete its photo and blank its line, in the same all-or-nothing step as the Undo (edit 5).
+- [2026-11-09 21:48 SGT] **Database backstops for the 24-hour windows:** saving a connection answer is refused more than 24 hours after the question was sent (like Undo's 30 seconds, the database checks it, not just the code); a moment is refused after its window closes.
+- [2026-11-09 21:48 SGT] **Feelings logged** (rule 7.8) = lines in `habit_logs.description` + `moment_lines` + `reflections` for that week. **Photos** = rows in `photos` for that week (logs and moments).
+- [2026-11-09 21:48 SGT] **"Delete my data" and Telemetry:** every new table links to `parents`, so test T41 already fails if one is left out of the deletion. New Telemetry views show counts, days and check results only: **no text, no storage paths** (rule 8.11, test T6).
+
+**Option 2 (not recommended): one `entries` table** with a kind column (log line, moment line, reflection) and nullable photo columns. Fewer tables, but each kind has different rules (one per week, matched habit, check result), so the database would need many conditional checks, and a mistake would be easier to miss.
+
+**Questions for the owner before migration 005**
+- [2026-11-09 21:48 SGT] Option 1 (recommended) or Option 2?
+- [2026-11-09 21:48 SGT] When a log is undone, delete its line and photo (your 9 Nov decision): confirm it also covers a photo that was already checked.
+- [2026-11-09 21:48 SGT] Keep the text of reflections for as long as the parent stays (like log lines), or delete it after a set time? (Ties to the typed-text privacy known issue.)
+
 ## Rules at a glance
 5.5 photos: optional, consent at the first photo, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default · 8.3 the tables · 8.4 add only, five narrow edits · 8.5 delete follows the parent · 8.6 no duplicates · 8.7 all or nothing · 8.8 structure only · 8.9 links by nudge ID · 8.10 children: name, birth year later · 8.11 least access for Telemetry · 8.12 labelled and timed · 8.13 unfinished sign-up: Telegram ID and last step only
 
