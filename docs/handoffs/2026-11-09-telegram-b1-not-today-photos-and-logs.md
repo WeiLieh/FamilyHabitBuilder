@@ -32,11 +32,14 @@ A second log of the same behaviour on the same day **counts once** and gets a sp
 There is **no yesterday option**: it added complexity and confusion. Consequences:
 - Rule 5.4's "back to yesterday only" is replaced by "today only". `/log` only picks a behaviour, with no day question.
 - The "Monday log for Sunday" receipt wording of rule 7.6 is retired (the week still closes at midnight Sunday). The 1 to 5 question is unaffected (24 hours, B2 handoff).
-- A tap on an **old nudge's ✅ Done after midnight saves nothing**. Default chosen (owner to confirm): a pop-up, not a new message: "That reminder was from yesterday. Tap a behaviour on the keyboard to log today."
+- A tap on an **old nudge's ✅ Done after midnight saves nothing**. Default chosen (owner to confirm): a pop-up, not a new message. **Owner confirmed the default and changed the words (9 Nov 21:05):** "Reminder has expired. Tap a behaviour on the keyboard to log today."
 - Unchosen behaviours are still accepted with thanks (rule 5.4, unchanged).
 
 ### 2.5 Line over 280 characters (rule 5.3) - default chosen
 Not saved; the bot asks the parent to shorten it and send again (B1-11).
+
+### 2.6 Expired moment (changes the B2 handoff, section 2.4, D-e) - owner confirmed, 9 Nov 21:05
+After 24 hours a late photo or line is not saved. The owner confirmed the default and changed the words to: "Moment has expired. Tap Add a moment from this week to try again." (replaces "That took too long..."). The other D-e defaults are confirmed: other prompts win over a waiting moment prompt; keyboard labels, commands and button taps are never saved as moments; moments are not sent to Claude ("OK for now"). **Open (asked 9 Nov 21:05):** whether this message carries its own "Add a moment from this week" button so the parent can retry in one tap. Until answered, the button stays only on the Wrap Up summary (D-a).
 
 ## 3. Not designed yet
 - Free-text logging (Claude matches what the parent types).
