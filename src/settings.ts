@@ -70,11 +70,12 @@ export const DELIBERATE_NUDGE_WEEKDAYS = [5, 0];
 // Once a week, on Sunday, a summary of "this week so far" plus an invitation to
 // save a moment for the album. It is NOT a nudge message: it doesn't use a slot
 // and doesn't count toward the 3-a-day cap. The day is fixed; the parent can
-// change only the time (any slot start, 7:00am to 9:30pm) or turn it off.
+// change only the time (any slot start, 7:00am to 9:30pm). It has no on/off
+// switch of its own (owner, 9 Nov): the one Pause switch stops it.
 // Day of the week it is sent: 0 = Sunday.
 export const WEEKLY_WRAP_UP_WEEKDAY = 0;
-// Every new parent starts with it on, at 8:00pm (20 x 60 = 1200 minutes).
-export const DEFAULT_WEEKLY_WRAP_UP = { enabled: true, minutes: 20 * 60 };
+// Every new parent starts at 8:00pm (20 x 60 = 1200 minutes).
+export const DEFAULT_WEEKLY_WRAP_UP = { minutes: 20 * 60 };
 
 // ---- Moved here on 1 Nov (decision L, rule 1.4): numbers that lived in the Nudge engine ----
 // Frequencies a parent can choose for a quick behaviour (value 8 in src/experiments/EXPERIMENTS.md).

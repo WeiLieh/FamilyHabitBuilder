@@ -30,27 +30,27 @@ import type { LogEntry, SentMessage } from "./planner.js";
 import { SLOT_STARTS, WEEKLY_WRAP_UP_WEEKDAY } from "../settings.js";
 import { mondayOf, toSgt, weekdayOf } from "../sgt.js";
 
-// The parent's Wrap Up setting: on or off, and the time (minutes after
-// midnight, Singapore time; 1200 = 8:00pm). The day is always Sunday.
-export type WrapUpSettings = { enabled: boolean; minutes: number };
+// The parent's Wrap Up setting: only its time (minutes after midnight,
+// Singapore time; 1200 = 8:00pm). The day is always Sunday. There is no
+// on/off switch of its own (owner, 9 Nov): the one Pause switch stops it.
+export type WrapUpSettings = { minutes: number };
 
 export type WrapUpInput = {
   now: Date;
   wrapUp: WrapUpSettings;
-  paused: boolean; // paused = muted: one setting (owner, 31 Oct)
+  paused: boolean; // the one Pause switch: stops nudges, the Wrap Up and the connection question (owner, 9 Nov)
   logs: LogEntry[]; // every log, chosen behaviour or not
   messagesSent: SentMessage[];
 };
 
-export type NoWrapUpReason = "turned_off" | "paused" | "not_sunday" | "too_early" | "already_sent" | "nothing_logged";
+export type NoWrapUpReason = "paused" | "not_sunday" | "too_early" | "already_sent" | "nothing_logged";
 
 export type WrapUpResult = { send: true } | { send: false; reason: NoWrapUpReason };
 
 export function planWeeklyWrapUp(input: WrapUpInput): WrapUpResult {
   const { date: today, minutes } = toSgt(input.now);
 
-  // ---- 1. The parent's own choices come first ----
-  if (!input.wrapUp.enabled) return { send: false, reason: "turned_off" };
+  // ---- 1. The parent's own choice comes first: paused means nothing is sent ----
   if (input.paused) return { send: false, reason: "paused" };
 
   // ---- 2. Sunday only, from the chosen time until midnight ----

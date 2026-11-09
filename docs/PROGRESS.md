@@ -6,11 +6,14 @@
 - [2026-11-09 17:45 SGT] Owner decided the five 3 Nov privacy findings (already logged): status lines in `docs/KNOWN-ISSUES.md`; Q4 partly answered (the child's name is never sent to Claude, only shown in Telegram); change note in `docs/SPEC.md`. Small-group recognition waits for a clarification.
 - [2026-11-09 17:50 SGT] Owner decided the five 9 Nov privacy findings (all as recommended) and clarified small-group recognition (names out of Telemetry and exports; birth year stored, shown as bands): 5 new known issues, change note in `docs/SPEC.md`.
 - [2026-11-09 17:45 SGT] Owner approved archiving: sessions 1 to 6 moved word for word to `docs/archive/PROGRESS-sessions-1-to-6.md`, short summary left below.
+- [2026-11-09 18:16 SGT] **B2 Sunday rhythm, group A settled** (owner): the stand-alone connection question at the Wrap Up time, never counted, not while paused, fixed words; **one Pause switch** stops everything. Rules 3.4, 3.12, 5.6, 7.8, 8.4 changed (change note 1.17). Owner chose to remove the Wrap Up switch now: code and setting changed test-first (one test removed with approval, one added; 139 → 139), migration 004 written test-first (database test T42; all database tests pass locally), Experiments value 30 retired. **Migration 004 not yet applied** (owner, after merge).
 ### In progress
-- [2026-11-09 17:50 SGT] None.
+- [2026-11-09 18:17 SGT] B2 Sunday rhythm: groups B to D (questions B6 to D12) waiting for the owner's answers.
+- SUPERSEDED [2026-11-09 18:17 SGT] [2026-11-09 17:50 SGT] None.
 - SUPERSEDED [2026-11-09 17:50 SGT] [2026-11-09 17:45 SGT] The five 9 Nov privacy findings (CATCH-UP 4e) still need the owner's answers.
 ### Next steps
-- [2026-11-09 17:45 SGT] B2 (Sunday rhythm) design.
+- [2026-11-09 18:17 SGT] Finish B2 (groups B to D). Owner: merge the pull request, then run migration 004 in Supabase. Then the rest of B1 and group C.
+- SUPERSEDED [2026-11-09 18:17 SGT] [2026-11-09 17:45 SGT] B2 (Sunday rhythm) design.
 ### Blockers
 - [2026-11-09 17:45 SGT] None.
 

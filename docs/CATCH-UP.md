@@ -62,11 +62,13 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
 
 **4a. Rule changes**
+- [2026-11-09 18:16 SGT] **Approved 9 Nov (B2 group A):** 3.4 three kinds of bot message, the stand-alone connection question never counts · 3.12 one Pause switch stops everything, the Wrap Up's own switch removed · 5.6 connection question at the Wrap Up time, fixed words, not while paused · 7.8 a paused parent gets nothing on Sunday but sees everything in the Web app · 8.4 edit 1 without the switch. Still waiting: 10.2 (B2 question D12).
 - [2026-11-08 23:08 SGT] **Screen edits, 8 Nov:** 3.14 now has one button (OK); 11.9 now has one button ("✅ I agree"). **Defaults confirmed by you [2026-11-08 23:09 SGT]:** screen 3 "What's your child's name?"; screen 10 uses the child's name, no pronoun; screen 11's receipt "✅ Saved: `<behaviour>` today." is fixed and "You're off to a great start." is Claude's reply.
 - **Approved on 8 Nov (9):** 5.5 photo consent at the first photo · 11.9 one checkbox at the end of sign-up, recording only · 8.10 child's name, birth year later · 8.13 *(new)* unfinished sign-up keeps only the Telegram ID and last step · 2.5 *(new)* default frequencies: quick every 2 days, deliberate once a week · 3.14 screen 8 is one plan summary · 5.7 *(new)* the Menu, plain words work too · 9.1 My page is the dashboard, Settings lives inside it · 7.8 the connection question is item 6 of the Wrap Up.
 - **Still waiting (3), on the parked questions in 4d:** 3.4 (a third kind of bot message), 5.6 (when the connection question is sent), 10.2 (new tracking events; also needs Q3).
 
 **4b. Open questions, kept as work in progress (WIP)**
+- [2026-11-09 18:16 SGT] **B2 Sunday rhythm, groups B to D (open, with recommendations):** B6 Wrap Up words · B7 joining week · B8 monthly section · C9 how long the question can be answered · C10 which week an answer counts for · C11 "Save a moment" and the photo check · D12 rule 10.2 and a nudge in the same 30 minutes as the Wrap Up. Details: [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md), group B2.
 - [2026-11-08 23:08 SGT] **Q3 (partly answered 8 Nov):** screen 10's draft wording is in, and "the scoreboard" means My page and the Weekly Wrap Up (the first action is logged). **Still open:** which behaviour when two were picked; the Not now reply; prompted or unprompted log (rule 5.2, metric 7); whether it counts toward the joining week (rule 7.6) and metric 8; whether it uses a slot or counts in the 3-a-day cap (rule 3.4); its telemetry event (rule 10.2).
 - SUPERSEDED [2026-11-08 23:08 SGT] **Q3:** the "start right now" first action ("proven" is dropped): which behaviour, the Not now reply, not counted as a nudge, and whether it counts toward the joining week.
 - [2026-11-09 17:44 SGT] **Q4 (partly answered 9 Nov):** the child's name is never sent to Claude; it is only shown in Telegram. Still open: nudges for families with 2 or more children.
@@ -88,13 +90,14 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 **4c. Needed before the build or group B:** where "Open my page" goes before the Web app exists, and how the parent is signed in; Claude's response time and slow first starts on Vercel, tested in the thin slice; create the Telegram bot (BotFather), the Vercel project and Upstash Redis before the thin slice. (Done: the screen 8 settings are the same as the Web app's, rule 3.14.)
 
-**4d. Parked (you asked me not to raise these first):** the stand-alone check-in's time, cap and paused behaviour; "pause" versus "stop"; pausing before the Web app exists (you pause the week-one group by hand?); whether stopping is as easy as starting (governance); Web app sign-in; the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); the first alpha experiment (Claude Chat).
+**4d. Parked (you asked me not to raise these first):** [2026-11-09 18:16 SGT] (the stand-alone check-in's time, cap and paused behaviour: decided 9 Nov, B2 group A) "pause" versus "stop"; pausing before the Web app exists (you pause the week-one group by hand?); whether stopping is as easy as starting (governance); Web app sign-in; the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); the first alpha experiment (Claude Chat).
 
 **Privacy-review findings (3 Nov):** you decided on 8 Nov. Finding 1 (data from parents who stop halfway) became rule 8.13; findings 2 to 6 are in [docs/KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-09 18:16 SGT] **After the pull request is merged:** run `src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql` in the Supabase SQL Editor (removes the Wrap Up's own switch). Then tell Claude, so its fingerprint is recorded (rule B1).
 - [2026-11-09 00:10 SGT] DONE: success metrics spreadsheet updated to version 2 (`src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx`); version 1 deprecated in `docs/archive/`.
 - SUPERSEDED [2026-11-09 00:10 SGT] [2026-11-09 00:08 SGT] Update the success metrics spreadsheet (`src/telemetry/Family_Habit_App_Success_Metrics.xlsx`): metric 7 and metric 8 definitions, and the settings "Unprompted log window" (same behaviour, same day) and "Nudge-to-action window" (same behaviour, same day). Or ask Claude to do it.
 - [2026-11-08 23:42 SGT] Answer the B1 questions (section 4b), then design B2 (Sunday rhythm) and C in Claude Chat.
