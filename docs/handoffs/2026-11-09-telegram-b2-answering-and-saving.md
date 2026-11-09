@@ -19,7 +19,7 @@ Date: 2026-11-09, about 20:30 Singapore Time. Source: design chat in Claude Chat
 | B2-3 On its own | The same question message alone, for a parent who did not log. Same fixed words every week, never written by Claude, no mention of a quiet week (rule 5.6) | owner decided |
 | B2-4 Expired | After 24 hours the bot **edits the question once**: buttons removed, grey line becomes "**Question expired**". No new message | owner decided |
 | B2-5 Add a moment | Tapping the button sends: "Send a photo, or type one line about a moment from this week." plus a fixed status line **"Upload within 5 mins"** | owner decided the 5 minutes and the status line on 9 Nov 20:35; wording mine |
-| B2-6 First photo | After the parent's first photo ever: "[Photo consent wording, awaiting your PDPA reviewer.] We'll save your photos for your weekly wrap up." with buttons **OK** and **Don't save my photos** | owner decided (his wording; consent wording is still a placeholder) |
+| B2-6 First photo | After the parent's first photo ever: "[Photo consent wording, awaiting your PDPA reviewer.] We save your photos so you can see your weekly wrap up." with buttons **OK** and **Don't save my photos** | owner decided (his wording; consent wording is still a placeholder) |
 | B2-7 OK | "✅ Saved to your album." (fixed text, no Claude reply) | default chosen |
 | B2-8 Don't save | The photo is not stored anywhere. "No problem. That photo wasn't saved. You can type one line instead." | default chosen |
 
