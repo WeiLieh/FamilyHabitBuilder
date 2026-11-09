@@ -3,17 +3,20 @@
 ## Open
 
 ### [2026-11-08 22:34 SGT] "Delete a photo" needs a fifth narrow edit to the add-only rule
+- [2026-11-09 17:44 SGT] Owner (9 Nov): workaround agreed. The goal: when a parent deletes a photo, **no copy of it is kept anywhere** (not in the photo store and not as a link in the log).
 - [2026-11-09 00:14 SGT] Update: Undo (rule 5.8) became edit 5 of rule 8.4 on 8 Nov, so "delete a photo" would be **edit 6**.
 - **Issue:** [2026-11-08 22:34 SGT] Rule 9.1 now promises "delete a photo", but rule 8.4 allows only four narrow edits and logs are add-only (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no photos are stored). Without it, the promise in the photo consent can't be kept.
 - **Workaround:** [2026-11-08 22:34 SGT] When building the photo store: a new migration with a fifth narrow edit (remove one photo link from one parent's log), plus removing the file from storage, test-first, with an approved change to rule 8.4.
 
 ### [2026-11-08 22:34 SGT] Withdrawing photo consent has no flow yet
+- [2026-11-09 17:44 SGT] Owner (9 Nov): agreed, design it with group C.
 - **Issue:** [2026-11-08 22:34 SGT] Photo consent is now asked at the first photo (rule 5.5), so it can be withdrawn on its own, without leaving the app. There is no design for withdrawing it (stop asking for photos; keep or delete the photos already sent). Singapore's Personal Data Protection Act (PDPA) section 16 (withdrawing consent) applies (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no photos). Needed before real families send photos.
 - **Workaround:** [2026-11-08 22:34 SGT] Design it with group C (Settings on the Web app, with the photo store); take PDPA section 16 to the owner's PDPA reviewer.
 
 ### [2026-11-08 22:34 SGT] A child's name reaches more places than the database
+- [2026-11-09 17:44 SGT] Owner (9 Nov): keep children's names out of the Telemetry views, **with a test that checks it**. The child's name is **never sent to Claude**; it is only shown in Telegram messages, to make them feel personal (answers part of Q4).
 - **Issue:** [2026-11-08 22:34 SGT] A child's name (rule 8.10) will also appear in the Telegram chat, in the Upstash chat memory and possibly in what is sent to Claude (Q4). Rule 8.11 (Telemetry views) names first names, Telegram IDs and descriptions, but not children's names (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no name column). If missed, children's names could reach Telemetry or third parties without a decision.
 - **Workaround:** [2026-11-08 22:34 SGT] When building the name column: keep children's names out of the Telemetry views, with a test, and update rule 8.11. Decide in the Q4 design discussion whether the name is sent to Claude.
@@ -24,6 +27,7 @@
 - **Workaround:** [2026-11-08 22:34 SGT] Keep names out of Telemetry and exports; report ages as bands, not years, when sharing results.
 
 ### [2026-11-08 22:34 SGT] The 3 Nov design handoff file holds the owner's full name and a private link
+- [2026-11-09 17:44 SGT] Owner (9 Nov): workaround agreed; the handoff is a working file, so leaving it as it is is fine.
 - **Issue:** [2026-11-08 22:34 SGT] `docs/handoffs/2026-11-03-telegram-onboarding-handoff.md` contains the owner's full name and a link to the private preview artifact (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] Low: the repository is private and these are the owner's own details; it would matter if the repository were ever made public.
 - **Workaround:** [2026-11-08 22:34 SGT] Leave out full names and private links in future handoff files; review before any repository is made public.
