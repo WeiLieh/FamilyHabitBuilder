@@ -18,7 +18,7 @@ Date: 2026-11-09, about 20:30 Singapore Time. Source: design chat in Claude Chat
 | B2-2 After the tap | The question message is **edited**: buttons removed, grey line becomes "**Answered: 4, connected**". No bubble from the parent (Telegram does not create one for a button tap) | owner decided (Option A, 9 Nov, "looks neater") |
 | B2-3 On its own | The same question message alone, for a parent who did not log. Same fixed words every week, never written by Claude, no mention of a quiet week (rule 5.6) | owner decided |
 | B2-4 Expired | After 24 hours the bot **edits the question once**: buttons removed, grey line becomes "**Question expired**". No new message | owner decided |
-| B2-5 Add a moment | Tapping the button sends: "Send a photo, or type one line about a moment from this week." plus a fixed status line **"Upload within 5 mins"** | owner decided the 5 minutes and the status line on 9 Nov 20:35; wording mine |
+| B2-5 Add a moment | Tapping the button sends: "Send a photo, or type one line about a moment from this week." plus a fixed status line **"Upload within 24 hrs"** | owner decided the status line (9 Nov 20:35) and then **extended the window from 5 minutes to 24 hours** (9 Nov 20:40: "encourage as many photos and personal lines as possible"); wording mine |
 | B2-6 First photo | After the parent's first photo ever: "[Photo consent wording, awaiting your PDPA reviewer.] We save your photos so you can see your weekly wrap up." with buttons **OK** and **Don't save my photos** | owner decided (his wording; consent wording is still a placeholder) |
 | B2-7 OK | "✅ Saved to your album." (fixed text, no Claude reply) | default chosen |
 | B2-8 Don't save | The photo is not stored anywhere. "No problem. That photo wasn't saved. You can type one line instead." | default chosen |
@@ -43,7 +43,7 @@ Date: 2026-11-09, about 20:30 Singapore Time. Source: design chat in Claude Chat
 - **D-b:** see 2.2.
 - **D-c:** see 2.3.
 - **D-d (owner decided):** if the parent taps **Don't save my photos**, the photo is not stored anywhere and the bot offers a line instead (B2-8). **Consent is asked again at the next photo ("keep asking").**
-- **D-e (owner decided):** the bot stops waiting for the photo or line after **5 minutes** (a starting number, in `src/settings.ts`), and the prompt shows a fixed status line "Upload within 5 mins". Default chosen: at 5 minutes the bot stays quiet (no edit); a photo that arrives later is not saved and gets "That took too long. Tap Add a moment from this week to try again." (owner to confirm).
+- **D-e (owner decided, amended 9 Nov 20:40):** the bot waits for the photo or line for **24 hours** after the parent taps the button (the owner first said 5 minutes, then extended it to encourage more photos and lines; a starting number in `src/settings.ts`), and the prompt shows a fixed status line "Upload within 24 hrs". Default chosen (owner to confirm): after 24 hours a photo or line is not saved as a moment and gets "That took too long. Tap Add a moment from this week to try again." Because the wait is long, **other flows win**: a waiting "Add how you felt" prompt takes the next line first; a behaviour label from the keyboard, a Menu command or a button tap is never saved as a moment; the window closes once both one photo and one line are saved (rule 7.7: one photo and/or one line); the window also ends at the next Wrap Up (rule 7.7). Risk to review (privacy finding of 9 Nov, "no time limit"): a stray message could be saved as a moment and sent to Claude. Moments are not sent to Claude (default; owner to confirm).
 
 ### 2.5 The Wrap Up summary changed (owner's sketch; changes rule 7.8)
 Rule 7.8 lists items (1) days logged, (2) steady weeks, (3) photos and lines saved, (4) a link to the Web app, (5) "Want to save one moment?", (6) the connection question. The owner's sketch changes this:
@@ -56,7 +56,7 @@ Rule 7.8 lists items (1) days logged, (2) steady weeks, (3) photos and lines sav
 Rules 3.4 (the question never counts toward the 3-a-day cap), 5.5 (consent at the first photo), 7.7 (album entry, not a log) and 1.3 (no fallbacks) apply as they stand.
 
 ## 4. Open questions after this handoff
-- **Q-B2-1 and Q-B2-2: answered by the owner on 9 Nov 20:35** (see sections 2.2 to 2.5). One new small default to confirm: what happens to a photo that arrives after the 5 minutes (section 2.4, D-e).
+- **Q-B2-1 and Q-B2-2: answered by the owner on 9 Nov 20:35** (see sections 2.2 to 2.5). Small defaults to confirm: what happens after the 24 hours, which message wins when two prompts are waiting, and that moments are not sent to Claude (section 2.4, D-e).
 - **Q-B2-3 (PDPA reviewer):** the consent text says photos are saved "for your weekly wrap up", but photos from a log (B1-3) also exist. **The owner agrees the phrases need settling** with the reviewer; also withdrawing consent (PDPA section 16).
 - **Question 12** stays with you (rule 10.2, and the order of a Sunday nudge and the Wrap Up).
 - **Telegram detail to check in the thin slice:** two side-by-side buttons with long text ("Add a moment from this week") wrap to two lines on small phones.
