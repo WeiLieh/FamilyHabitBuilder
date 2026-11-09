@@ -97,7 +97,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- [2026-11-09 18:16 SGT] **After the pull request is merged:** run `src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql` in the Supabase SQL Editor (removes the Wrap Up's own switch). Then tell Claude, so its fingerprint is recorded (rule B1).
+- [2026-11-09 18:23 SGT] DONE: migration 004 applied on Supabase (check query matched); fingerprint recorded.
+- SUPERSEDED [2026-11-09 18:23 SGT] [2026-11-09 18:16 SGT] **After the pull request is merged:** run `src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql` in the Supabase SQL Editor (removes the Wrap Up's own switch). Then tell Claude, so its fingerprint is recorded (rule B1).
 - [2026-11-09 00:10 SGT] DONE: success metrics spreadsheet updated to version 2 (`src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx`); version 1 deprecated in `docs/archive/`.
 - SUPERSEDED [2026-11-09 00:10 SGT] [2026-11-09 00:08 SGT] Update the success metrics spreadsheet (`src/telemetry/Family_Habit_App_Success_Metrics.xlsx`): metric 7 and metric 8 definitions, and the settings "Unprompted log window" (same behaviour, same day) and "Nudge-to-action window" (same behaviour, same day). Or ask Claude to do it.
 - [2026-11-08 23:42 SGT] Answer the B1 questions (section 4b), then design B2 (Sunday rhythm) and C in Claude Chat.
