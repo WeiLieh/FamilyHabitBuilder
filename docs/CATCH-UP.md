@@ -79,6 +79,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - **Rule 8.13 details:** how long before an unfinished sign-up's data is thrown away, and how the re-engagement message works.
 
 **4e. Privacy-review findings from 9 Nov (you decide what goes into `docs/KNOWN-ISSUES.md`)**
+- [2026-11-09 17:50 SGT] **DONE:** you decided all five on 9 Nov; they are in [docs/KNOWN-ISSUES.md](KNOWN-ISSUES.md) with your decisions. The 3 Nov findings also have your decisions (names out of Telemetry and exports, birth year shown as bands, name never sent to Claude).
 - [2026-11-09 00:14 SGT] **Medium:** Undo (rule 8.4, edit 5) says it is enforced by the database, but nothing says the database itself checks the 30-second window and "keyboard logs only". If only the code checks them, a bug could quietly undo any old log and change streaks or metrics.
 - [2026-11-09 00:14 SGT] **Medium:** "Add how you felt" is free text that may contain a child's name or health details and goes to Claude (rule 5.3). When a log is undone, the spec does not say what happens to its line or photo.
 - [2026-11-09 00:14 SGT] **Medium:** "ignore this to skip" has no time limit, so a later, unrelated message could be saved as the log's description and sent to Claude.

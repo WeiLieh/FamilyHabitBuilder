@@ -2,6 +2,31 @@
 
 ## Open
 
+### [2026-11-09 17:50 SGT] Undo's 30-second limit must be enforced by the database
+- **Issue:** [2026-11-09 17:50 SGT] Rule 8.4 edit 5 (Undo, rule 5.8) says it is enforced by the database, but nothing says the database itself checks the 30-second window and "keyboard logs only" (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] None yet (Undo is not built). If only the app code checked them, a bug could quietly undo any old log and change streaks and metrics.
+- **Workaround:** [2026-11-09 17:50 SGT] When building Undo: the database function itself refuses an undo after 30 seconds or on a non-keyboard log, with database tests for both.
+
+### [2026-11-09 17:50 SGT] An undone log's "how did it feel" line and photo are not cleaned up
+- **Issue:** [2026-11-09 17:50 SGT] The "Add how you felt" line is free text that may hold a child's name or health details, and it goes to Claude (rule 5.3). The spec does not say what happens to the line or photo when a log is undone (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] None yet (Undo is not built). Personal details could be kept for a log the parent cancelled.
+- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): when a log is undone, **delete its line and any photo**. Write it into rules 5.8 and 8.4 (approved change, test-first) when building Undo.
+
+### [2026-11-09 17:50 SGT] "Ignore this to skip" has no time limit
+- **Issue:** [2026-11-09 17:50 SGT] After a keyboard log the bot waits for a "how did it feel" line with no time limit, so a later, unrelated message could be saved as the log's description and sent to Claude (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] None yet (not built). Wrong or private text could be stored and sent to Claude.
+- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): the bot **stops waiting after a set time** (10 minutes suggested; the exact number is a Tuneable value decided in B1 design and kept in `src/settings.ts`), with a test.
+
+### [2026-11-09 17:50 SGT] No spec requires checking Telegram's webhook secret
+- **Issue:** [2026-11-09 17:50 SGT] No spec says the bot checks Telegram's secret header on each incoming request (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] None yet (the bot is not built). A forged request could create or undo logs for any parent.
+- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): a **must-have for the Telegram bot build**: requests without the right secret are refused, with a test. Add it as a Telegram bot rule at build time.
+
+### [2026-11-09 17:50 SGT] Telegram keeps the chat history outside Singapore
+- **Issue:** [2026-11-09 17:50 SGT] Keyboard taps and messages leave behaviour names (and possibly children's names) in Telegram's own chat history, stored outside Singapore and beyond the reach of "delete my data" (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] Low. Parents may assume "delete my data" removes everything.
+- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): mention it in the PDPA (Personal Data Protection Act) note for parents and the owner's PDPA reviewer (the note is not written yet).
+
 ### [2026-11-08 22:34 SGT] "Delete a photo" needs a fifth narrow edit to the add-only rule
 - [2026-11-09 17:44 SGT] Owner (9 Nov): workaround agreed. The goal: when a parent deletes a photo, **no copy of it is kept anywhere** (not in the photo store and not as a link in the log).
 - [2026-11-09 00:14 SGT] Update: Undo (rule 5.8) became edit 5 of rule 8.4 on 8 Nov, so "delete a photo" would be **edit 6**.
@@ -22,6 +47,7 @@
 - **Workaround:** [2026-11-08 22:34 SGT] When building the name column: keep children's names out of the Telemetry views, with a test, and update rule 8.11. Decide in the Q4 design discussion whether the name is sent to Claude.
 
 ### [2026-11-08 22:34 SGT] A family could be recognised in a small group
+- [2026-11-09 17:50 SGT] Owner (9 Nov): keep children's names **out of** Telemetry and exports. Keep storing the **birth year** (not the age); any report or export shows ages as **bands**, never years.
 - **Issue:** [2026-11-08 22:34 SGT] A child's name together with the birth year, sign-up date and cohort makes a family easier to identify among about 12 to 50 parents (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] Low for the database (locked). Higher if exports or Telemetry reports combine these fields.
 - **Workaround:** [2026-11-08 22:34 SGT] Keep names out of Telemetry and exports; report ages as bands, not years, when sharing results.
