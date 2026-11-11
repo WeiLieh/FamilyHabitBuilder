@@ -5,8 +5,11 @@
 - [2026-11-11 17:15 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); pull request #30 merged by the owner; branch brought level with `main`. Target agreed (2 to 3 hours, Option 1): the five answers, then migration 005.
 - [2026-11-11 17:15 SGT] Owner answered the five questions: (1) Option A, plus a new **CLAUDE.md rule 12** (no dead code or obsolete tests); (2) question 12 as recommended (rule 10.2, new rule 3.15); (3) the `/log` default confirmed (rule 5.4); (4) rules 5.6 and 7.7 rewritten; (5) Datastore Option 1. Change note 1.19.
 - [2026-11-11 17:15 SGT] Yesterday tests rewritten test-first as today-only checks (3 seen failing, then `week.ts` changed to refuse any day but today; the old "week closed" path removed). 139 before, 139 after.
+- [2026-11-11 17:29 SGT] Owner answered the Datastore questions: Undo deletes even a checked photo (keeps everything consistent); reflection text kept as long as the parent stays.
+- [2026-11-11 17:29 SGT] **Migration 005 built test-first** (Option 1): photos, reflections, moment lines; habit_logs today only with logged_via and undone_at; Undo and delete-a-photo (edits 5 to 7); the connection question as its own message with a 24-hour answer window; nine event types; windows read from the settings version. Database tests T43 to T53 added and T20 to T25 rewritten (all pass locally); two window tests added (app tests 139 to 141, minimum raised). Rules 8.3, 8.4, 8.6, 8.11, 5.8 changed; values 32 to 34; three known issues resolved. Both review agents run before the pull request.
 ### In progress
-- [2026-11-11 17:15 SGT] Migration 005 (Datastore proposal, Option 1): waiting for the owner's answers to its two questions (undo and a checked photo; how long reflection text is kept).
+- [2026-11-11 17:29 SGT] Migration 005 built and committed; **waiting for the owner to apply it in Supabase** (after the pull request is merged), then its fingerprint is recorded.
+- SUPERSEDED [2026-11-11 17:29 SGT] [2026-11-11 17:15 SGT] Migration 005 (Datastore proposal, Option 1): waiting for the owner's answers to its two questions (undo and a checked photo; how long reflection text is kept).
 ### Next steps
 - [2026-11-11 17:15 SGT] Build migration 005 test-first; both review agents; the owner applies it in Supabase.
 ### Blockers
