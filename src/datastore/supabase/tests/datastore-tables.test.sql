@@ -1,5 +1,5 @@
 -- =============================================================================
--- src/datastore/supabase/tests/datastore-tables.test.sql: tests for the 14 Datastore tables
+-- src/datastore/supabase/tests/datastore-tables.test.sql: tests for the 17 Datastore tables
 --
 -- What it checks: that migration 003 builds the tables agreed on 1 Nov (rules
 -- 8.3 to 8.12) and that the database itself enforces the agreed rules: who may
@@ -154,7 +154,7 @@ select pg_temp.expect_refused('T4 the server adding a holiday', $q$insert into p
 -- T5: only "delete my data" writes the deletion log.
 select pg_temp.expect_refused('T5 the server writing the deletion log directly', $q$insert into public.deletion_log (on_day, how_many) values (current_date, 1)$q$, 'permission denied');
 
--- T6: Telemetry's views show no first names, Telegram IDs or descriptions (rule 8.11).
+-- T6: Telemetry's views show no first names, Telegram IDs, descriptions, typed text or photo storage paths (rule 8.11).
 reset role;
 do $$
 begin

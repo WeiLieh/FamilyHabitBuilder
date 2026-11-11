@@ -6,8 +6,9 @@
 //   - the weekly connection question: 24 hours after it is sent (rule 5.6)
 //   - "Add a moment": 24 hours after the button is tapped (rule 7.7)
 // The numbers live once, in src/settings.ts (rule 1.4). The database reads the
-// first two from the settings version each event carries (migration 005), so
-// a bug in the app can't quietly stretch them.
+// first two from the settings version each event carries (migration 005) and
+// refuses an action if the version has none. It can't tell whether the number
+// in a version is right: these tests check the values the app sends.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";

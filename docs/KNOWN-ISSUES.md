@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-11-11 17:31 SGT] The app deletes a photo file before the database checks the request
+- **Issue:** [2026-11-11 17:31 SGT] For "delete a photo" and Undo, the app removes the file from storage first (rule 8.5 order), then the database checks the parent and the Undo window (privacy review of migration 005, 11 Nov).
+- **Impact:** [2026-11-11 17:31 SGT] None yet (no app code, no photos). If the app found the file without checking the parent, it could delete another parent's file; if an Undo is refused after the file is gone, the photo row points at a missing file.
+- **Workaround:** [2026-11-11 17:31 SGT] When building the photo store: the app finds the file only through that parent's own photo row, checks the Undo window before touching the file, and records a failure if the file and the row disagree (rule 1.3). Test both.
+
 ### [2026-11-09 21:49 SGT] Removing the child's name before Claude can miss names
 - **Issue:** [2026-11-09 21:49 SGT] Typed text goes to Claude with the child's name removed (rule 5.1, Q4). Removing only the stored name misses nicknames, typos, other spellings and a sibling's or friend's name (privacy review of the typed-text design, 9 Nov; owner agreed to log it, handoff of 9 Nov section 4a item 6).
 - **Impact:** [2026-11-09 21:49 SGT] None yet (not built). A child's name could still reach Claude, against the owner's decision that it never does.

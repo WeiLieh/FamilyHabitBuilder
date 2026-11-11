@@ -25,14 +25,18 @@
 --   * Numbers are not repeated here (rule 1.4): the Undo window and the answer
 --     window are read from the settings version stamped on the event
 --     (src/settings.ts, SETTINGS_KEYS_THE_DATABASE_READS). If the version has
---     no such value, the action is refused rather than guessed (rule 1.3).
+--     no such value, the action is refused rather than guessed (rule 1.3). The
+--     database can't tell whether the app recorded the right number in a
+--     version; that is checked by the app's tests (tests/datastore-windows.test.ts).
 --   * The 24-hour wait after "Add a moment" is checked by the app only: the
 --     database can't see the button tap. The database does refuse a moment for
 --     any week but the latest Wrap Up's, and a second photo or line that week.
 --   * Everything is in one transaction: if any step fails, nothing changes.
 --   * New tables, views and functions get the same lock-down as migration 003.
 --   * No real data is lost: no bot exists yet, so habit_logs holds no real rows
---     (the owner checks this before running it).
+--     (the owner checks this before running it). As a backstop, the migration
+--     refuses to run if any log still holds a photo, so no photo file could be
+--     left without an owner (rule 8.5).
 --
 -- How to apply: Supabase > SQL Editor > paste this file > Run, once, AFTER
 -- migration 004. After it has run on the real project, never edit it (rule B1).
@@ -70,6 +74,12 @@ comment on table public.messages_sent is 'One message the bot started: a nudge m
 comment on column public.messages_sent.kind is 'nudge, wrap_up or connection_question.';
 
 -- ---- 3. habit_logs: today only, how it was made, Undo; photos move out -------
+do $$
+begin
+  if exists (select 1 from public.habit_logs where photo_path is not null) then
+    raise exception 'Some logs hold photos: move them to the photos table before running migration 005.';
+  end if;
+end $$;
 drop view public.telemetry_habit_logs;
 drop function public.save_habit_log(bigint, bigint, date, bigint, text, text, text, text, bigint, bigint, jsonb);
 alter table public.habit_logs drop column photo_path, drop column photo_check, drop column recorded_as;
@@ -308,7 +318,7 @@ begin
   select sent_at into asked from messages_sent
   where parent_id = p_parent and kind = 'connection_question' and date_trunc('week', for_day::timestamp)::date = p_week;
   if asked is null then raise exception 'No connection question was sent to this parent that week.'; end if;
-  if now() > asked + make_interval(hours => window_hours::integer) then
+  if now() > asked + make_interval(secs => window_hours * 3600) then
     raise exception 'This question has closed (rule 5.6).';
   end if;
   insert into connection_answers (parent_id, week_starting, score, telegram_update_id)
@@ -344,6 +354,9 @@ revoke all on function public.setting_number(bigint, text), public.require_photo
   public.record_message_sent(bigint, text, bigint, bigint, date, integer, bigint, jsonb),
   public.save_connection_answer(bigint, date, integer, bigint, bigint, jsonb)
   from public, anon, authenticated, service_role;
+-- ID counters (sequences) of the new tables: signed-out visitors and the public
+-- can't use them (Supabase grants this by default; same as migration 003).
+revoke all on all sequences in schema public from public, anon, authenticated;
 -- Read the new tables (the app reads its own data); write them only through the functions.
 grant select on public.photos, public.reflections, public.moment_lines to service_role;
 grant execute on function
