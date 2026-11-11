@@ -32,6 +32,7 @@ alter role service_role bypassrls;
 \i src/datastore/supabase/migrations/003_create_datastore_tables.sql
 \i src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql
 \i src/datastore/supabase/migrations/005_photos_reflections_moments.sql
+\i src/datastore/supabase/migrations/006_sign_up.sql
 
 -- Helper: try one statement and expect the database to refuse it. Same idea as
 -- in nudge-repository.test.sql. It runs as whichever role is active.
@@ -592,6 +593,51 @@ begin
     if sqlerrm !~* 'undo_window_seconds' then raise exception 'FAIL: T53 refused for the wrong reason: %', sqlerrm; end if;
   end;
   raise notice 'PASS: T53 an Undo is refused when its settings version has no undo window';
+end $$;
+
+-- =============================================================================
+-- [2026-11-11] Sign-up in one step (migration 006, thin slice 1)
+-- =============================================================================
+
+reset role;
+insert into public.invites (code) values ('THIN-1'), ('THIN-2');
+set role service_role;
+
+-- T54: a valid code creates the parent, uses the code and writes a signed_up event, all in one step.
+do $$
+declare p bigint;
+begin
+  p := public.sign_up(5001, 'Wei Lieh', 'THIN-1', 'cohort-1', 1200, 901, pg_temp.v(), '["baseline"]');
+  assert (select first_name = 'Wei Lieh' and cohort = 'cohort-1' and wrap_up_minute = 1200 and not paused
+          from public.parents where id = p), 'parent not created as given';
+  assert (select used_by = p and used_at is not null from public.invites where code = 'THIN-1'), 'invite not used';
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where t.name = 'signed_up' and e.parent_id = p and e.telegram_update_id = 901) = 1, 'expected one signed_up event';
+  raise notice 'PASS: T54 sign-up creates the parent, uses the code and writes its event in one step';
+end $$;
+
+-- T55: an unknown or used code creates no parent and uses no code; a second sign-up is refused.
+select pg_temp.expect_refused('T55 an unknown code',
+  $q$select public.sign_up(5002, 'Kim', 'NOPE', 'cohort-1', 1200, 902, pg_temp.v(), '["baseline"]')$q$, 'unknown or already used');
+select pg_temp.expect_refused('T55 a used code',
+  $q$select public.sign_up(5002, 'Kim', 'THIN-1', 'cohort-1', 1200, 903, pg_temp.v(), '["baseline"]')$q$, 'unknown or already used');
+select pg_temp.expect_refused('T55 the same Telegram account signing up twice',
+  $q$select public.sign_up(5001, 'Wei Lieh', 'THIN-2', 'cohort-1', 1200, 904, pg_temp.v(), '["baseline"]')$q$, 'already signed up');
+do $$
+begin
+  assert not exists (select 1 from public.parents where telegram_id = 5002), 'a parent was created with a bad code';
+  assert (select used_at is null from public.invites where code = 'THIN-2'), 'a code was used up by a refused sign-up';
+  raise notice 'PASS: T55 a refused sign-up leaves no parent and no used code behind';
+end $$;
+
+-- T56: only our server can run sign_up.
+do $$
+begin
+  assert has_function_privilege('service_role', 'public.sign_up(bigint, text, text, text, integer, bigint, bigint, jsonb)', 'execute'), 'server cannot sign up';
+  assert not has_function_privilege('anon', 'public.sign_up(bigint, text, text, text, integer, bigint, bigint, jsonb)', 'execute')
+     and not has_function_privilege('authenticated', 'public.sign_up(bigint, text, text, text, integer, bigint, bigint, jsonb)', 'execute'),
+     'outsiders can sign up';
+  raise notice 'PASS: T56 only the server can run sign_up';
 end $$;
 
 -- =============================================================================
