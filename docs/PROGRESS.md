@@ -17,6 +17,7 @@
 - [2026-11-11 20:42 SGT] Before the owner's Vercel setup (S7): added `public/index.html` and `outputDirectory: public` in `vercel.json`, so the deploy works and only that page (plus `api/`) is public, never the repository's files; UAT case U0 checks it.
 - [2026-11-11 21:03 SGT] Owner's UAT setup: S2 (migration 006), S5, S6, S7 done, cron job confirmed (11:00 UTC). S8 refused the webhook secret (symbols); UAT S4 wording fixed, error log entry added.
 - [2026-11-11 21:31 SGT] Owner's UAT: setup S2 to S8 done (webhook set, no errors); U2, U3 and U4 pass (U4's reply showed in the phone app; Telegram Web was slow to display it, tip added to the checklist).
+- [2026-11-11 21:45 SGT] UAT U5 first attempt: no reply because the webhook had been set again with a typo (`/ape/`); fixed by the owner; error log entry and a getWebhookInfo check added to S8. **To fix after this UAT round (found while tracing):** if the first database question in `/start` ("already signed up?") fails, the person gets no reply; wrap the whole sign-up path so they get "Sorry, that didn't work" (rule 1.3), test-first.
 ### In progress
 - [2026-11-11 17:38 SGT] None.
 - SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] Migration 005 built and committed; **waiting for the owner to apply it in Supabase** (after the pull request is merged), then its fingerprint is recorded.

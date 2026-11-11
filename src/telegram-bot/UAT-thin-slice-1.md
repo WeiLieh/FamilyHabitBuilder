@@ -27,7 +27,7 @@ The automated tests (166, run on every pull request, including the honest "didn'
   `TELEGRAM_BOT_TOKEN` (S3), `TELEGRAM_WEBHOOK_SECRET` (S4), `CRON_SECRET` (S4), `SUPABASE_URL` (S5), `SUPABASE_SERVICE_ROLE_KEY` (S5). Then **Deploy**.
 - [ ] **S8. Tell Telegram where the bot lives.** Open a **private (incognito) browser window**, so the address, which contains two secrets, isn't saved in your history or synced. In its address bar, with your values in place of the `<…>` parts:
   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://<your-project>.vercel.app/api/telegram-bot&secret_token=<WEBHOOK_SECRET>`
-  Expected: `{"ok":true,"result":true,"description":"Webhook was set"}`. Then close the private window.
+  Expected: `{"ok":true,"result":true,"description":"Webhook was set"}`. [2026-11-11 21:45 SGT] **Then check it:** open `https://api.telegram.org/bot<TOKEN>/getWebhookInfo` in the same window: `"url"` must end exactly in `/api/telegram-bot` (a typo such as `/ape/` sends every message to a page that doesn't exist: Telegram then reports `"Wrong response from the webhook: 404 Not Found"` and holds the messages). Then close the private window. If the bot ever stops answering and Vercel's Logs show no requests, run this check first.
 
 ---
 
