@@ -35,6 +35,7 @@ The automated tests (166, run on every pull request, including the honest "didn'
 
 | ID | Do this | You should see | Where to check | Pass |
 |---|---|---|---|---|
+| U0 | Open `https://<your-project>.vercel.app/docs/SPEC.md` and `https://<your-project>.vercel.app/src/settings.ts` | "404: NOT_FOUND" for both: the repository's files are not public | Browser | [ ] |
 | U1 | Open `https://<your-project>.vercel.app/api/health` | `{"ok":true,"service":"family-habit-builder"}` | Browser | [ ] |
 | U2 | Open `https://<your-project>.vercel.app/api/telegram-bot` in a browser | `{"ok":false}`: a stranger can't start the daily nudge | Browser | [ ] |
 | U3 | Open `https://t.me/<bot username>?start=WRONG-CODE` and tap **Start** | "Sorry, that invite code doesn't work. Please check your invite link." | Telegram; `select * from parents;` shows no row | [ ] |

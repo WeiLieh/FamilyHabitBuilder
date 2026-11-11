@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["sin1"],
+  "outputDirectory": "public",
   "crons": [{ "path": "/api/telegram-bot", "schedule": "0 11 * * *" }]
 }
