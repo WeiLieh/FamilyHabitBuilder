@@ -1,8 +1,10 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-11 17:15 SGT]** (session 11: the five answers recorded, yesterday tests rewritten, CLAUDE.md rule 12; next, migration 005).
+**Last updated: [2026-11-11 21:58 SGT]** (session 11: five answers, migrations 005 and 006 live, rule D4, **thin slice 1 built and live**, UAT U2 to U10 pass).
 
-> [2026-11-11 17:15 SGT] **⏰ Now:** the five answers are in (11 Nov). Next: migration 005 (the Datastore change, tests first), then group C (Settings on the Web app) in Claude Chat, then the thin-slice build.
+> [2026-11-11 21:58 SGT] **⏰ Next session, first:** (1) your remaining UAT results (U11 to U14, schedule below); (2) Claude fixes the sign-up gap (an honest reply if the "already signed up?" check fails), test-first; (3) group C (Settings on the Web app) in Claude Chat, or the next slice. The bot is live for you only: no real families until photo consent and "delete my data" are built.
+
+> SUPERSEDED [2026-11-11 21:58 SGT] [2026-11-11 17:15 SGT] **⏰ Now:** the five answers are in (11 Nov). Next: migration 005 (the Datastore change, tests first), then group C (Settings on the Web app) in Claude Chat, then the thin-slice build.
 
 > SUPERSEDED [2026-11-11 17:15 SGT] [2026-11-09 21:49 SGT] **⏰ Next, first:** (1) the yesterday-test question and the `/log` default below (4b); (2) question 12 and rule 10.2; (3) the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed"); (4) go-ahead to change the texts of rules 5.6 and 7.7. Then group C (Settings on the Web app) and the thin-slice build.
 
@@ -24,7 +26,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-**Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **design in progress** (group A onboarding designed 3 Nov; next B1 daily loop, B2 Sunday rhythm, C settings on the Web app with the photo store; then a thin-slice build) → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
+[2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **17 tables live, migrations up to 006** → (3) Telegram bot ⬅ **thin slice 1 built and live (11 Nov)**: sign-up with an invite, the 7:00 pm nudge, ✅ Done and 😴 Not today; groups A, B1 and B2 designed; group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
+
+SUPERSEDED [2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **design in progress** (group A onboarding designed 3 Nov; next B1 daily loop, B2 Sunday rhythm, C settings on the Web app with the photo store; then a thin-slice build) → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
 
 ---
 
@@ -54,7 +58,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - **1.1 to 1.5** (users, Singapore time, no fallbacks, numbers live once in code with five kinds, "delete my data" reaches every store): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
 - **2.1 to 2.5, 3.1 to 3.13**: [Nudge engine](../src/nudge-engine/SPEC.md)
 - **4.1 to 4.6**: [Nudge repository](../src/nudge-repository/SPEC.md)
-- **5.1, 5.3, 5.4, 5.6 to 5.8, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 17 tables are listed there, under "Tables")
+- **5.1, 5.3, 5.4, 5.6 to 5.9, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 17 tables are listed there, under "Tables")
 - **6.1, 6.2**: [Photo check](../src/photo-check/SPEC.md)
 - **7.1 to 7.8**: [Variable rewards](../src/variable-rewards/SPEC.md)
 - **9.1**: [Web app](../src/web-app/SPEC.md) (plus two parked questions)
@@ -111,6 +115,9 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-11 21:58 SGT] **UAT of thin slice 1** ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)): U2 to U10 pass. Remaining, in the quickest order: **12 Nov before 7 pm** U13 (pause, Run, no message, un-pause), then leave the 7 pm nudge untapped; **13 Nov just after midnight** U12 (tap that nudge's ✅ Done: "Reminder has expired"); **13 Nov 7 pm** U11 (😴 Not today); **any time after an hour's quiet** U14 (reply speed).
+- [2026-11-11 21:58 SGT] Vercel: confirm you are the only member of the "Vibe Coding S…" team (others could see the project's secrets); if not, transfer the project to your personal account.
+- [2026-11-11 21:58 SGT] Agreement wording (Q8) is still a draft in the live bot; photo consent wording and withdrawing consent go to your PDPA reviewer.
 - [2026-11-11 17:38 SGT] DONE: migration 005 applied on Supabase (before query 0 logs; check query matched); fingerprint recorded.
 - SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] **After the pull request is merged:** run the "before" query, then `src/datastore/supabase/migrations/005_photos_reflections_moments.sql`, then the check query, in the Supabase SQL Editor (Claude gives both queries in the session), and paste the result back, so its fingerprint is recorded (rule B1).
 - [2026-11-09 21:57 SGT] **Next session, first (5 answers):** the yesterday test (Option A or B); question 12 and rule 10.2; the `/log` default for an unchosen habit; go-ahead for the texts of rules 5.6 and 7.7; the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed").

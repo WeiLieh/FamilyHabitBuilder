@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-11 21:59 SGT] A thin slice, with a webhook and a cron job
+- **Concept:** a **thin slice** (the smallest piece of the real product that works end to end), reached by Telegram through a **webhook** (a web address Telegram calls whenever something happens) protected by a **shared secret**, and woken daily by a **cron job** (a scheduled alarm, here Vercel's).
+- **In plain English:** instead of building each part fully, we built a tiny version of every part at once: sign-up, one nudge, one button, one receipt, on the real Telegram, Vercel and Supabase. Telegram sends each message to our address with a password only it knows; Vercel's alarm wakes the bot at 7 pm with its own password.
+- **Analogy:** opening one route of a new train line, with real track, signals and stations, before building the whole network. And a doorbell that only rings if the visitor says the codeword.
+- **Why and when to use it:** early, to find the problems that only appear when real systems meet (wrong settings, typos, slow starts). Not a replacement for the full design: the thin slice leaves out most features on purpose.
+- **Best practices:** write the setup and checks (UAT) before setting up; keep secrets only in the hosting settings; check each step's result straight away (e.g. getWebhookInfo after setWebhook); when nothing happens, check whether the request arrived at all before suspecting the code.
+- **Where it showed up in this project:** thin slice 1 (11 Nov): tests passed first time, but three setup slips (a migration not applied, a symbol in the secret, `/ape/` instead of `/api/`) were only found live, each traced in one or two rounds and turned into a checklist line.
+- **Explain it to others:** "We got one complete path working on the real systems before building more. The automated tests proved the logic; the live run found the setup mistakes the tests can't see, and each one became a line on our checklist."
+- **Governance angle:** a reviewer will ask who can call the bot's address (only Telegram, by secret), who can trigger the daily job (only Vercel, by secret), where the secrets live (Vercel, never in code or chat) and whether real users are involved (no: owner only until consent and deletion are built).
+
 ### [2026-11-09 21:57 SGT] Changing a live database safely: migration, transaction, check query, fingerprint
 - **Concept:** a database **migration** (a numbered change script), run inside a **transaction** (all or nothing), confirmed with a **check query**, then sealed with a **fingerprint** (a short code computed from the file).
 - **In plain English:** once a database is live, you never edit the old change scripts. You add a new one (004) that makes the change. It runs as one block, so if any step fails nothing changes. Afterwards a small read-only query proves the result, and the file's fingerprint is recorded so any later edit to it is caught.
