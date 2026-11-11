@@ -1,5 +1,21 @@
 # Progress (handoff between sessions)
 
+## [2026-11-11 17:15 SGT] Session 11
+### Done
+- [2026-11-11 17:15 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); pull request #30 merged by the owner; branch brought level with `main`. Target agreed (2 to 3 hours, Option 1): the five answers, then migration 005.
+- [2026-11-11 17:15 SGT] Owner answered the five questions: (1) Option A, plus a new **CLAUDE.md rule 12** (no dead code or obsolete tests); (2) question 12 as recommended (rule 10.2, new rule 3.15); (3) the `/log` default confirmed (rule 5.4); (4) rules 5.6 and 7.7 rewritten; (5) Datastore Option 1. Change note 1.19.
+- [2026-11-11 17:15 SGT] Yesterday tests rewritten test-first as today-only checks (3 seen failing, then `week.ts` changed to refuse any day but today; the old "week closed" path removed). 139 before, 139 after.
+- [2026-11-11 17:29 SGT] Owner answered the Datastore questions: Undo deletes even a checked photo (keeps everything consistent); reflection text kept as long as the parent stays.
+- [2026-11-11 17:29 SGT] **Migration 005 built test-first** (Option 1): photos, reflections, moment lines; habit_logs today only with logged_via and undone_at; Undo and delete-a-photo (edits 5 to 7); the connection question as its own message with a 24-hour answer window; nine event types; windows read from the settings version. Database tests T43 to T53 added and T20 to T25 rewritten (all pass locally); two window tests added (app tests 139 to 141, minimum raised). Rules 8.3, 8.4, 8.6, 8.11, 5.8 changed; values 32 to 34; three known issues resolved. Both review agents run before the pull request.
+- [2026-11-11 17:31 SGT] Review agents (H3) on migration 005. Privacy: no high; fixed in 005: ID counters locked for the new tables, the answer window counted in seconds (no rounding), the migration refuses to run if a log still holds a photo, comments no longer overclaim; logged as a known issue: the app must find a photo file through the parent's own row and check the Undo window before deleting the file. Spec checker: rewrote the yesterday-log test in `tests/nudge-engine-due.test.ts` (rule 12), corrected four Tested-by lines (5.4, 5.6, 7.7, 10.2) and stale "14 tables" and B1 lines.
+### In progress
+- [2026-11-11 17:29 SGT] Migration 005 built and committed; **waiting for the owner to apply it in Supabase** (after the pull request is merged), then its fingerprint is recorded.
+- SUPERSEDED [2026-11-11 17:29 SGT] [2026-11-11 17:15 SGT] Migration 005 (Datastore proposal, Option 1): waiting for the owner's answers to its two questions (undo and a checked photo; how long reflection text is kept).
+### Next steps
+- [2026-11-11 17:15 SGT] Build migration 005 test-first; both review agents; the owner applies it in Supabase.
+### Blockers
+- [2026-11-11 17:15 SGT] None.
+
 ## [2026-11-09 21:57 SGT] HANDOFF: session 10 ended (read this first)
 - [2026-11-09 21:57 SGT] **State:** everything is in `main` (pull request #29 merged) plus this end-of-session pull request (habit H9). `npm run check` passes (139 tests, drift clean); database tests T1 to T42 pass locally. Migration 004 is applied on Supabase and fingerprinted.
 - [2026-11-09 21:57 SGT] **Owner answers needed first, next session** (also in `docs/CATCH-UP.md`, top): (1) the yesterday test, Option A (turn all four yesterday tests into today-only checks, 139 stays) or B; (2) question 12 and rule 10.2 (Claude's recommended events; nudge, then summary, then question); (3) the `/log` default for an unchosen habit; (4) go-ahead to update the texts of rules 5.6 and 7.7; (5) the Datastore proposal (Option 1 or 2 and its two questions).

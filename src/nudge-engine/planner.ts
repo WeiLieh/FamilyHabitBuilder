@@ -52,8 +52,8 @@ export type SentMessage = {
   nudgeId?: number; // which behaviour, for nudge messages
 };
 
-// One logged behaviour, stored under the Singapore day it counts for (which
-// can be yesterday if the parent logged late).
+// One logged behaviour, stored under the Singapore day it counts for (always
+// the day it was logged: logging is for today only, rule 5.4).
 export type LogEntry = { nudgeId: number; date: string };
 
 export type PlannerInput = {

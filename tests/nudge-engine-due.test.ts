@@ -53,9 +53,10 @@ describe("What's due", () => {
   });
 
   // Test 20
-  it("a log for yesterday (entered today) counts for yesterday", () => {
-    // The parent tells the bot today "I did this yesterday": it is stored with
-    // yesterday's date, so an every-2-days behaviour is not due today.
+  // [2026-11-11] Rewritten: logging is for today only (rule 5.4), so a log dated
+  // yesterday was made yesterday; "entered late" no longer exists (CLAUDE.md rule 12).
+  it("a log made yesterday means an every-2-days behaviour is not due today", () => {
+    // Logged on Tuesday: an every-2-days behaviour rests on Wednesday.
     expect(isDue(quickEvery2, ["2026-11-03"], WEDNESDAY)).toBe(false);
     expect(isDue(quickDaily, ["2026-11-03"], WEDNESDAY)).toBe(true); // but every-day still is
   });
