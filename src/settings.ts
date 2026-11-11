@@ -114,3 +114,15 @@ export const SETTINGS_KEYS_THE_DATABASE_READS = {
   undo_window_seconds: UNDO_WINDOW_SECONDS,
   connection_answer_window_hours: CONNECTION_ANSWER_WINDOW_HOURS,
 } as const;
+
+// ---- Thin slice 1 (owner, 11 Nov) -------------------------------------------
+// The cohort every parent joins in week one (rule 11.11: a neutral label).
+export const WEEK_ONE_COHORT = "cohort-1";
+// The experiment stamp on every event in week one (rule 11.3).
+export const WEEK_ONE_VARIANTS: readonly string[] = ["baseline"];
+// The one fixed nudge of thin slice 1: Showing affection, every day at 7:00 pm
+// (19 x 60 = 1140 minutes after midnight, Singapore time). Replaced by the
+// parent's own picks and times in a later slice.
+export const THIN_SLICE_NUDGE = { code: "SAF", slotMinute: 19 * 60 } as const;
+// The wording version of the recording agreement shown at sign-up (still a draft, Q8).
+export const AGREEMENT_WORDING_VERSION = "draft-2026-11-11";

@@ -4,6 +4,7 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-11-11 18:14 SGT] **Thin slice 1 (Telegram bot):** one web address, `api/telegram-bot.ts`: POST = Telegram's webhook (needs `TELEGRAM_WEBHOOK_SECRET`), GET = Vercel's daily alarm (needs `CRON_SECRET`). `vercel.json` now also holds `crons`: `/api/telegram-bot` at `0 11 * * *` (11:00 UTC = 7:00 pm Singapore). Secrets in Vercel only: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `CRON_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (names in `.env.example`). `@supabase/supabase-js` installed (approved 24 Oct). Setup and checks: `src/telegram-bot/UAT-thin-slice-1.md`.
 - [2026-11-01 16:38 SGT] **Migration 003 applied on the real Supabase project (owner, 1 Nov):** the 14 Datastore tables are live. Check query: 14 tables, 14 locked, 0 public access, server INSERT and SELECT only, 13 event types.
 - [2026-11-11 17:28 SGT] **Database tests now T1 to T53** (migration 005 added). Same commands as below.
 - [2026-11-09 18:16 SGT] **Database tests now T1 to T42:** `datastore-tables.test.sql` also runs migration 004 (Wrap Up switch removed). Same commands as below. In this cloud container the PostgreSQL programs are in `/usr/lib/postgresql/16/bin/` (not on the PATH) and must run as the postgres user.
