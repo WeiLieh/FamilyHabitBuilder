@@ -2,6 +2,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-11 20:17 SGT] Migration 006's check said the function didn't exist
+- **What broke:** [2026-11-11 20:17 SGT] After running migration 006 in Supabase, the check query failed: "function public.sign_up(...) does not exist" (UAT step S2).
+- **Cause:** [2026-11-11 20:17 SGT] The migration had not taken effect in Supabase. The file itself was fine: it ran cleanly on a local copy built from migrations 001 to 005. Likely causes: run in another of several open tabs with an error that went unseen, only part of the file copied, or some text highlighted (Supabase then runs only the highlighted part).
+- **Fix:** [2026-11-11 20:17 SGT] The owner re-ran the whole file in a fresh, empty tab, with nothing highlighted; the check then showed true for both.
+- **How to prevent it:** [2026-11-11 20:17 SGT] Run each migration in a new, empty SQL tab, copied from the file's Raw view, with nothing highlighted, and confirm "Success" before running the check.
+
 ## [2026-11-11 17:44 SGT] The architecture diagram showed the Telegram bot as "Not started" a week into its design
 - **What broke:** [2026-11-11 17:44 SGT] The owner noticed the Telegram bot box was still grey ("Not started") on 11 Nov, although its design started on 3 Nov. Photo check, Telemetry and Experiments were also grey although designed.
 - **Cause:** [2026-11-11 17:44 SGT] Habit H2 ("update the Module table and the diagram status" at the end of a session) was missed in sessions 8 to 10. The drift test only checked that the diagram and the Module table agree with each other (rule D2), and both were equally out of date.
