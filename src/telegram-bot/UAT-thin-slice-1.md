@@ -33,6 +33,8 @@ The automated tests (166, run on every pull request, including the honest "didn'
 
 ## Part 2: test cases
 
+[2026-11-11 21:31 SGT] **Tip:** if a bot reply seems missing in **Telegram Web**, refresh the page (F5) or look in the phone app first: Telegram Web can be slow to show new messages. If it is still missing, Vercel's Logs show whether the bot sent it (an outgoing `sendMessage` call, and the Error count stays 0).
+
 | ID | Do this | You should see | Where to check | Pass |
 |---|---|---|---|---|
 | U0 | Open `https://<your-project>.vercel.app/docs/SPEC.md` and `https://<your-project>.vercel.app/src/settings.ts` | "404: NOT_FOUND" for both: the repository's files are not public | Browser | [ ] |
