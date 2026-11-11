@@ -98,6 +98,9 @@ A task is only complete when all of these are true:
 - [2026-10-31 09:43 SGT] [src/nudge-engine/NUDGE-CONTEXT.md](src/nudge-engine/NUDGE-CONTEXT.md) holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the Nudge engine.
 - Nudges (the 9 actions) live as rows in the nudge repository, never inside a prompt.
 
+#### 12. No dead code or obsolete tests
+- [2026-11-11 17:15 SGT] When I drop or change a rule, remove the code and tests that only served the old behaviour, in the same pull request, instead of keeping them. No tech debt: keep the code clean and simple. A test that still has a job under the new rule is rewritten, not removed. The pull request names every removed or rewritten test and the rule that retired it. This is not weakening a test: a test for a rule that still holds is never removed to get a green check (rule 2), and the minimum test count still holds (H4).
+
 ---
 
 ## Extra Context

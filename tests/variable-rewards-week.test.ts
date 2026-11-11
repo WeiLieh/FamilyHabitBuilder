@@ -1,17 +1,21 @@
 // =============================================================================
-// tests/variable-rewards-week.test.ts: when a week closes (rule 7.6, decision D5b)
+// tests/variable-rewards-week.test.ts: which week a log counts for (rules 5.4, 7.6)
 //
 // A week runs Monday to Sunday, Singapore time, and is judged (steady or not)
-// when it CLOSES at midnight on Sunday. Parents may log late, back to yesterday
-// (rule 5.4). So a log made on Monday "for yesterday" (Sunday) is saved in the
-// history and the album, but it arrives after Sunday's week has closed: it
-// counts toward neither that week nor the new one, and the bot's receipt must
-// say so honestly.
+// when it CLOSES at midnight on Sunday (rule 7.6). [2026-11-11] Since 9 Nov a
+// log is for TODAY only (rule 5.4, owner): there is no yesterday option. So a
+// log for any other day is refused, and a log can never arrive for a week that
+// has already closed.
 //
-// weekForLog answers, for one log: which week it belongs to (that week's
-// Monday), and whether it still counts toward that week's result.
+// weekForLog answers, for one log: which week it counts for (that week's
+// Monday), or that it is refused because it is not for today.
 //
-// Test weeks: Mon 26 Oct to Sun 1 Nov 2026, and Mon 2 Nov to Sun 8 Nov 2026.
+// [2026-11-11] The four tests about logging for yesterday (agreed tests 2 to 4
+// and the London time test) were rewritten as today-only checks, with the
+// owner's approval (Option A, 11 Nov): tests for a dropped rule are removed,
+// not kept (CLAUDE.md rule 12). Same number of tests.
+//
+// Test week: Mon 2 Nov to Sun 8 Nov 2026. The next Monday is 9 Nov.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
@@ -24,7 +28,7 @@ function at(date: string, time: string): Date {
   return sgtInstant(date, (h ?? 0) * 60 + (m ?? 0));
 }
 
-describe("When a week closes (rule 7.6): midnight on Sunday, Singapore time", () => {
+describe("Which week a log counts for (rules 5.4 and 7.6): today only, Singapore time", () => {
   // Agreed test 1
   it("counts a log made on Sunday at 11:59pm for Sunday", () => {
     expect(weekForLog({ date: "2026-11-08", loggedAt: at("2026-11-08", "23:59") })).toEqual({
@@ -33,38 +37,35 @@ describe("When a week closes (rule 7.6): midnight on Sunday, Singapore time", ()
     });
   });
 
-  // Agreed test 2
-  it("saves a log made on Monday at 12:01am for Sunday, but it counts toward neither week, and the receipt says so", () => {
-    const result = weekForLog({ date: "2026-11-08", loggedAt: at("2026-11-09", "00:01") });
-    // It still belongs to Sunday's week (that's where the album shows it)...
-    expect(result.week).toBe("2026-11-02");
-    // ...but that week has closed, so it doesn't count toward its result...
-    expect(result.counts).toBe(false);
-    // ...and the bot is told to explain this in the receipt.
-    expect(result).toEqual({ week: "2026-11-02", counts: false, reason: "week_closed" });
-    // It doesn't belong to the new week (Monday 9 Nov) either.
-    expect(result.week).not.toBe("2026-11-09");
+  it("refuses a log made on Monday at 12:01am for Sunday: that was yesterday", () => {
+    expect(weekForLog({ date: "2026-11-08", loggedAt: at("2026-11-09", "00:01") })).toEqual({
+      counts: false,
+      reason: "not_today",
+    });
   });
 
-  // Agreed test 3
-  it("counts a log made on Sunday for Saturday: the week is still open", () => {
-    expect(weekForLog({ date: "2026-11-07", loggedAt: at("2026-11-08", "10:00") })).toEqual({
+  it("refuses a log for an earlier day or a later day, even inside the same week", () => {
+    // Wednesday for Monday (two days back) and Wednesday for Thursday (tomorrow).
+    expect(weekForLog({ date: "2026-11-02", loggedAt: at("2026-11-04", "08:00") })).toEqual({
+      counts: false,
+      reason: "not_today",
+    });
+    expect(weekForLog({ date: "2026-11-05", loggedAt: at("2026-11-04", "08:00") })).toEqual({
+      counts: false,
+      reason: "not_today",
+    });
+  });
+
+  it("counts a log made on Wednesday morning for Wednesday, in that week", () => {
+    expect(weekForLog({ date: "2026-11-04", loggedAt: at("2026-11-04", "08:00") })).toEqual({
       week: "2026-11-02",
       counts: true,
     });
   });
 
-  // Agreed test 4
-  it("counts a log made on Wednesday for Tuesday", () => {
-    expect(weekForLog({ date: "2026-11-03", loggedAt: at("2026-11-04", "08:00") })).toEqual({
-      week: "2026-11-02",
-      counts: true,
-    });
-  });
-
-  it("uses Singapore time: 4:30pm on Sunday in London is already Monday 12:30am in Singapore", () => {
+  it("uses Singapore time: 4:30pm on Sunday in London is already Monday 12:30am in Singapore, so a log for Sunday is refused", () => {
     // 16:30 UTC on Sunday 8 Nov = 00:30 on Monday 9 Nov in Singapore (UTC+8).
     const result = weekForLog({ date: "2026-11-08", loggedAt: new Date("2026-11-08T16:30:00Z") });
-    expect(result).toEqual({ week: "2026-11-02", counts: false, reason: "week_closed" });
+    expect(result).toEqual({ counts: false, reason: "not_today" });
   });
 });

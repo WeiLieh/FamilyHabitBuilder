@@ -106,6 +106,9 @@
 
 **Option 2 (not recommended): one `entries` table** with a kind column (log line, moment line, reflection) and nullable photo columns. Fewer tables, but each kind has different rules (one per week, matched habit, check result), so the database would need many conditional checks, and a mistake would be easier to miss.
 
+**Owner decisions (11 Nov)**
+- [2026-11-11 17:15 SGT] **Option 1 chosen** (one photo table, two line tables). Added from question 12: `messages_sent` gets a third kind, **connection_question** (sent every Sunday, alone or after the Wrap Up), with the time it was sent, so the 24-hour refusal can be checked; and the new event types of rule 10.2 are added to `event_types` in the same migration.
+
 **Questions for the owner before migration 005**
 - [2026-11-09 21:48 SGT] Option 1 (recommended) or Option 2?
 - [2026-11-09 21:48 SGT] When a log is undone, delete its line and photo (your 9 Nov decision): confirm it also covers a photo that was already checked.

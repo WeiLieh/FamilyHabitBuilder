@@ -1,8 +1,10 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-09 21:49 SGT]** (session 10: privacy findings decided, Wrap Up switch removed (migration 004 applied), B2 groups A to C settled, B1 parts 2 and 3 recorded, Datastore proposal drafted).
+**Last updated: [2026-11-11 17:15 SGT]** (session 11: the five answers recorded, yesterday tests rewritten, CLAUDE.md rule 12; next, migration 005).
 
-> [2026-11-09 21:49 SGT] **⏰ Next, first:** (1) the yesterday-test question and the `/log` default below (4b); (2) question 12 and rule 10.2; (3) the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed"); (4) go-ahead to change the texts of rules 5.6 and 7.7. Then group C (Settings on the Web app) and the thin-slice build.
+> [2026-11-11 17:15 SGT] **⏰ Now:** the five answers are in (11 Nov). Next: migration 005 (the Datastore change, tests first), then group C (Settings on the Web app) in Claude Chat, then the thin-slice build.
+
+> SUPERSEDED [2026-11-11 17:15 SGT] [2026-11-09 21:49 SGT] **⏰ Next, first:** (1) the yesterday-test question and the `/log` default below (4b); (2) question 12 and rule 10.2; (3) the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed"); (4) go-ahead to change the texts of rules 5.6 and 7.7. Then group C (Settings on the Web app) and the thin-slice build.
 
 > SUPERSEDED [2026-11-09 21:49 SGT] [2026-11-09 19:25 SGT] **⏰ Next, first:** design B2 group C (questions 9 to 11) in Claude Chat with the [brief](handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md), and bring back a design handoff (habit H10). Then question 12 in Claude Code, then the rest of B1 and group C (Settings on the Web app).
 
