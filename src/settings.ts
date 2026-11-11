@@ -96,3 +96,21 @@ export const QUICK_FLOOR_DAYS = 2;
 export const CHILD_AGE_ACCEPTED = { youngest: 0, oldest: 25 };
 export const CHILD_AGE_TARGET = { youngest: 7, oldest: 12 };
 
+
+// ---- Time windows (rules 5.6, 5.8, 7.7; owner, 8 and 9 Nov; added 11 Nov) ------
+// Undo: a keyboard log can be undone for this many seconds (rule 5.8).
+export const UNDO_WINDOW_SECONDS = 30;
+// The weekly connection question can be answered for this many hours after it
+// is sent (rule 5.6). The message says "Question expires in 24 hrs".
+export const CONNECTION_ANSWER_WINDOW_HOURS = 24;
+// After "Add a moment from this week", the bot waits this many hours for the
+// photo or line (rule 7.7). Checked by the app only: the database can't see
+// the button tap.
+export const MOMENT_WINDOW_HOURS = 24;
+// The database also checks the first two (migration 005): it reads them from
+// the settings version stamped on each event, under exactly these names. So
+// every settings version the app records must include this list.
+export const SETTINGS_KEYS_THE_DATABASE_READS = {
+  undo_window_seconds: UNDO_WINDOW_SECONDS,
+  connection_answer_window_hours: CONNECTION_ANSWER_WINDOW_HOURS,
+} as const;

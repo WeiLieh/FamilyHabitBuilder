@@ -15,6 +15,7 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-11 17:28 SGT] Values 32 to 34 added (the three time windows), so **33 values are in use** (value 30 is retired).
 - [2026-11-09 18:16 SGT] Value 30 retired on 9 Nov (the Wrap Up's own switch removed), so **30 values are in use**; numbers are never reused.
 - [2026-11-01 16:07 SGT] Every value in the app an experiment could touch, with its **kind** (rule 1.4): **Tuneable** (a number that can be tested higher or lower), **Named style** (a choice between reviewed wordings or tones), **Named rule** (a choice between reviewed behaviours), **Guardrail** (a safety limit an experiment may only make stricter), **Fixed** (never changes, rule 11.4). An experiment gives Control (Option A, the everyday value) and Test options (B, C…) approved in code (rule 11.10). Rows 1 to 29 come from the owner's side chat, checked against the code on 1 Nov; rows 30 and 31 were added by decision J. Trial-plan values (such as the 5-week trial) are deliberately left out (decision I). Rows 8 and 9 move into `src/settings.ts` in the Datastore pull request (decision L).
 
@@ -51,6 +52,9 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 | 29 | Fixed | At least 1 slot: every parent must have at least one nudge time. | Always at least 1 | schedule.ts |
 | 30 | RETIRED [2026-11-09 18:16 SGT] | ~~Weekly Wrap Up on by default.~~ The Wrap Up's own on/off switch was removed (owner, 9 Nov, rule 3.12): one Pause switch stops everything. Number 30 is not reused. | n/a | n/a |
 | 31 | Named rule | Wrap Up day: the day the Weekly Wrap Up is sent. | A day of the week. Today: Sunday | settings.ts |
+| 32 | Tuneable | [2026-11-11 17:28 SGT] Undo window: how long a keyboard log can be undone (rule 5.8). | Seconds. Today: 30 | settings.ts |
+| 33 | Tuneable | [2026-11-11 17:28 SGT] Connection question window: how long the weekly question can be answered (rule 5.6). | Hours. Today: 24 | settings.ts |
+| 34 | Tuneable | [2026-11-11 17:28 SGT] Moment window: how long the bot waits for a moment's photo or line after the button (rule 7.7). | Hours. Today: 24 | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
