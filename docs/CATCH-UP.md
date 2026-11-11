@@ -22,7 +22,7 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 [2026-10-31 09:40 SGT] The module map now lives in one place: **[docs/ARCHITECTURE.md](ARCHITECTURE.md)** (also the source of each module's status, checked by the drift test).
 
-**Colours:** green = built and tested; yellow = partly built; grey = not started.
+**Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
 **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **design in progress** (group A onboarding designed 3 Nov; next B1 daily loop, B2 Sunday rhythm, C settings on the Web app with the photo store; then a thin-slice build) → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
 
