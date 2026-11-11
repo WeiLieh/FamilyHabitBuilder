@@ -63,6 +63,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)
 - Module specs: [Experiments](../src/experiments/SPEC.md) (with its plain-English experiment plans, [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)), [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md), [Variable rewards](../src/variable-rewards/SPEC.md) (with its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)), [Telemetry](../src/telemetry/SPEC.md), [Telegram bot](../src/telegram-bot/SPEC.md), [Photo check](../src/photo-check/SPEC.md), [Web app](../src/web-app/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
+- [2026-11-11 18:14 SGT] Owner checklists (UAT): [Telegram bot, thin slice 1](../src/telegram-bot/UAT-thin-slice-1.md)
 - [2026-11-09 19:25 SGT] Briefs for Claude Chat (questions Claude Code sends the owner to design in Chat; not decisions): [B2 answering and saving, questions 9 to 11, 9 Nov](handoffs/2026-11-09-b2-answering-and-saving-brief-for-chat.md)
 - [2026-11-03 22:27 SGT] Design handoffs from Claude Chat (the owner's design decisions and open questions, recorded into the specs): [Telegram onboarding, 3 Nov](handoffs/2026-11-03-telegram-onboarding-handoff.md) · [2026-11-08 23:08 SGT] [Telegram onboarding screen edits, 8 Nov](handoffs/2026-11-08-telegram-onboarding-screen-edits.md) · [2026-11-08 23:42 SGT] [Telegram B1 daily loop, 8 Nov](handoffs/2026-11-08-telegram-b1-daily-loop.md) · [2026-11-09 20:30 SGT] [Telegram B2 answering and saving, 9 Nov](handoffs/2026-11-09-telegram-b2-answering-and-saving.md) · [2026-11-09 21:00 SGT] [Telegram B1 part 2: Not today, photos, repeat and today-only logs, 9 Nov](handoffs/2026-11-09-telegram-b1-not-today-photos-and-logs.md) · [2026-11-09 21:25 SGT] [Telegram B1 part 3: free-text logging, 9 Nov](handoffs/2026-11-09-telegram-b1-free-text-logging.md)
 - History lives in `docs/archive/` (exempt from the checks).
@@ -105,7 +106,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 
 | Module | Slug | Folder | Spec | Status | Migrated |
 |---|---|---|---|---|---|
-| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Design in progress | yes |
+| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Thin slice built | yes |
 | Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | yes |
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, not built | yes |
@@ -133,7 +134,8 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-11 17:44 SGT] Minimum test count: 143 (two drift tests for rule D4, 11 Nov).
+- [2026-11-11 18:14 SGT] Minimum test count: 161 (thin slice 1: 18 bot tests, 11 Nov).
+- SUPERSEDED [2026-11-11 18:14 SGT] [2026-11-11 17:44 SGT] Minimum test count: 143 (two drift tests for rule D4, 11 Nov).
 - SUPERSEDED [2026-11-11 17:44 SGT] [2026-11-11 17:28 SGT] Minimum test count: 141 (two window tests added, 11 Nov).
 - SUPERSEDED [2026-11-11 17:28 SGT] [2026-11-01 16:14 SGT] Minimum test count: 139
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
@@ -141,6 +143,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-11-11 18:14 SGT] **Version 1.23, thin slice 1 built (11 Nov):** the Telegram bot's first code: webhook with its secret (rule **5.9**, tested), minimal sign-up with an invite (migration **006**, not yet applied), the 7:00 pm nudge, ✅ Done with the fixed receipt, 😴 Not today, "Unrecognised text." (owner, 11 Nov). One web address `api/telegram-bot.ts` (POST webhook, GET daily alarm) because `api/` files must be named after a module (rule S3). Values 35 and 36. Telegram bot status: "Thin slice built". App tests 143 to 161; database tests T54 to T56. UAT checklist added.
 - [2026-11-11 17:57 SGT] **Version 1.22, thin slice 1 agreed (owner, 11 Nov):** build now, before group C is designed. Scope in `src/telegram-bot/SPEC.md` ("Build: thin slice 1"): the webhook with its secret (new rule **5.9**), minimal sign-up with an invite (one all-or-nothing database step, migration 006), one fixed nudge (Showing affection at 7:00 pm), ✅ Done with the fixed receipt, 😴 Not today. No Claude reply in this slice (owner's Option A). For the owner only.
 - [2026-11-11 17:44 SGT] **Version 1.21, module statuses and rule D4 (owner, 11 Nov):** the Telegram bot box was still grey after a week of design. Statuses updated: Telegram bot "Design in progress"; Photo check, Telemetry and Experiments "Designed, not built"; Variable rewards "Designed, partly built". New structure rule **D4**, checked by the drift test: a box's colour must fit its status. Drift tests 22 to 24 (two example tests for D4); app tests 141 to 143; minimum raised to 143.
 - [2026-11-11 17:28 SGT] **Version 1.20, migration 005 (Datastore, owner's Option 1, 11 Nov):** built test-first, not yet applied. Tables **photos**, **reflections**, **moment_lines**; `habit_logs` today only, with logged_via and undone_at, photo columns moved to `photos`; `messages_sent` gains the connection question; nine new event types; Telemetry views without text or storage paths. Rules changed: **8.3** (17 tables), **8.4** (seven narrow edits: Undo, delete a photo, Undo deletes the photo), **8.6**, **8.11**, **5.8**. New values 32 to 34 (time windows) in `src/settings.ts`. Database tests T43 to T53 added; T20 to T25, fix 2 and fix 3 rewritten for the new functions, and the two "recorded as photo-verified" refusals removed because that column no longer exists (CLAUDE.md rule 12). App tests 139 before, 141 after; minimum raised to 141.

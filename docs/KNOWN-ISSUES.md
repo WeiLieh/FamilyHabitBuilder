@@ -2,6 +2,11 @@
 
 ## Open
 
+### [2026-11-11 18:14 SGT] The real database connection is checked only by the owner's UAT
+- **Issue:** [2026-11-11 18:14 SGT] `src/datastore/supabase-store.ts` (thin slice 1) talks to the real Supabase project, so the app tests use a pretend store instead. The database functions it calls are tested (T1 to T56), but the connection code itself is not.
+- **Impact:** [2026-11-11 18:14 SGT] A mistake in a column name or a query would show only when the owner runs the UAT (src/telegram-bot/UAT-thin-slice-1.md), not in `npm run check`.
+- **Workaround:** [2026-11-11 18:14 SGT] Run the UAT after each change to `supabase-store.ts`. Later option: a test against a local Supabase (needs approval: new tooling).
+
 ### [2026-11-11 17:31 SGT] The app deletes a photo file before the database checks the request
 - **Issue:** [2026-11-11 17:31 SGT] For "delete a photo" and Undo, the app removes the file from storage first (rule 8.5 order), then the database checks the parent and the Undo window (privacy review of migration 005, 11 Nov).
 - **Impact:** [2026-11-11 17:31 SGT] None yet (no app code, no photos). If the app found the file without checking the parent, it could delete another parent's file; if an Undo is refused after the file is gone, the photo row points at a missing file.
@@ -31,11 +36,6 @@
 - **Issue:** [2026-11-09 17:50 SGT] After a keyboard log the bot waits for a "how did it feel" line with no time limit, so a later, unrelated message could be saved as the log's description and sent to Claude (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
 - **Impact:** [2026-11-09 17:50 SGT] None yet (not built). Wrong or private text could be stored and sent to Claude.
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): the bot **stops waiting after a set time** (10 minutes suggested; the exact number is a Tuneable value decided in B1 design and kept in `src/settings.ts`), with a test.
-
-### [2026-11-09 17:50 SGT] No spec requires checking Telegram's webhook secret
-- **Issue:** [2026-11-09 17:50 SGT] No spec says the bot checks Telegram's secret header on each incoming request (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
-- **Impact:** [2026-11-09 17:50 SGT] None yet (the bot is not built). A forged request could create or undo logs for any parent.
-- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): a **must-have for the Telegram bot build**: requests without the right secret are refused, with a test. Add it as a Telegram bot rule at build time.
 
 ### [2026-11-09 17:50 SGT] Telegram keeps the chat history outside Singapore
 - **Issue:** [2026-11-09 17:50 SGT] Keyboard taps and messages leave behaviour names (and possibly children's names) in Telegram's own chat history, stored outside Singapore and beyond the reach of "delete my data" (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
@@ -167,6 +167,13 @@
 - [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
+
+### [2026-11-09 17:50 SGT] No spec requires checking Telegram's webhook secret
+- [2026-11-11 18:14 SGT] **RESOLVED:** rule 5.9 written and built in thin slice 1; tests/telegram-bot-webhook.test.ts checks a missing or wrong secret is refused and nothing is saved or sent.
+- **Issue:** [2026-11-09 17:50 SGT] No spec says the bot checks Telegram's secret header on each incoming request (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
+- **Impact:** [2026-11-09 17:50 SGT] None yet (the bot is not built). A forged request could create or undo logs for any parent.
+- **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): a **must-have for the Telegram bot build**: requests without the right secret are refused, with a test. Add it as a Telegram bot rule at build time.
+
 
 ### [2026-11-08 22:34 SGT] "Delete a photo" needs a fifth narrow edit to the add-only rule
 - [2026-11-11 17:28 SGT] **RESOLVED:** migration 005 adds edit 6 (`delete_photo`, rule 8.4), with database test T50; photos now live in their own table, so no link is left in the log. Removing the file from storage is built with the photo store (rule 8.5 order).
