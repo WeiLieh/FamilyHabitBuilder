@@ -111,7 +111,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
-- [2026-11-11 17:29 SGT] **After the pull request is merged:** run the "before" query, then `src/datastore/supabase/migrations/005_photos_reflections_moments.sql`, then the check query, in the Supabase SQL Editor (Claude gives both queries in the session), and paste the result back, so its fingerprint is recorded (rule B1).
+- [2026-11-11 17:38 SGT] DONE: migration 005 applied on Supabase (before query 0 logs; check query matched); fingerprint recorded.
+- SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] **After the pull request is merged:** run the "before" query, then `src/datastore/supabase/migrations/005_photos_reflections_moments.sql`, then the check query, in the Supabase SQL Editor (Claude gives both queries in the session), and paste the result back, so its fingerprint is recorded (rule B1).
 - [2026-11-09 21:57 SGT] **Next session, first (5 answers):** the yesterday test (Option A or B); question 12 and rule 10.2; the `/log` default for an unchosen habit; go-ahead for the texts of rules 5.6 and 7.7; the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed").
 - [2026-11-09 21:57 SGT] Take to your PDPA reviewer: the photo consent wording (still a placeholder), withdrawing consent, and reflections that mention the child.
 - [2026-11-09 18:23 SGT] DONE: migration 004 applied on Supabase (check query matched); fingerprint recorded.
