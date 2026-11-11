@@ -30,6 +30,7 @@ import {
   checkRetiredNames,
   checkSingleDiagram,
   checkDiagramStatus,
+  checkDiagramColour,
   checkSrcRoot,
   checkApiNames,
   checkSqlLocation,
@@ -85,8 +86,8 @@ function goodRepo(): Repo {
         "# Architecture",
         "```mermaid",
         "flowchart LR",
-        '  alpha["Alpha engine<br/>Built"]',
-        '  beta["Beta store<br/>Not started"]',
+        '  alpha["Alpha engine<br/>Built"]:::done',
+        '  beta["Beta store<br/>Not started"]:::todo',
         "  alpha --- beta",
         "```",
       ].join("\n"),
@@ -166,7 +167,7 @@ describe("Drift checks: each one catches its problem", () => {
   it("fails when a diagram label isn't an official module name, or a name is missing", () => {
     const wrong = edited("docs/ARCHITECTURE.md", "Beta store<br/>", "Beta storage<br/>");
     expect(checkDiagramNames(wrong, s(wrong)).length).toBeGreaterThan(0);
-    const missing = edited("docs/ARCHITECTURE.md", '  beta["Beta store<br/>Not started"]\n', "");
+    const missing = edited("docs/ARCHITECTURE.md", '  beta["Beta store<br/>Not started"]:::todo\n', "");
     expect(checkDiagramNames(missing, s(missing))).toEqual([expect.stringContaining("Beta store")]);
   });
 
@@ -187,6 +188,27 @@ describe("Drift checks: each one catches its problem", () => {
   it("fails when a diagram status doesn't match the Module table", () => {
     const repo = edited("docs/ARCHITECTURE.md", "Alpha engine<br/>Built", "Alpha engine<br/>Live");
     expect(checkDiagramStatus(repo, s(repo))).toEqual([expect.stringContaining("Alpha engine")]);
+  });
+
+  // [2026-11-11] D4 (owner, 11 Nov): a box's colour must fit its status words, so a
+  // box can't say one thing and show another. Grey = "Not started"; green = a
+  // status starting with "Built"; yellow = anything in between (design, partly built).
+  it("D4: fails when a box's colour doesn't fit its status", () => {
+    expect(checkDiagramColour(goodRepo())).toEqual([]);
+    // "Not started" shown green.
+    const green = edited("docs/ARCHITECTURE.md", "Beta store<br/>Not started\"]:::todo", "Beta store<br/>Not started\"]:::done");
+    expect(checkDiagramColour(green)).toEqual([expect.stringContaining("Beta store")]);
+    // A design status left grey (what happened to the Telegram bot box, 3 to 11 Nov).
+    const grey = edited("docs/ARCHITECTURE.md", "Beta store<br/>Not started\"]:::todo", "Beta store<br/>Design in progress\"]:::todo");
+    expect(checkDiagramColour(grey)).toEqual([expect.stringContaining("Beta store")]);
+    // The same design status shown yellow is fine.
+    const yellow = edited("docs/ARCHITECTURE.md", "Beta store<br/>Not started\"]:::todo", "Beta store<br/>Design in progress\"]:::part");
+    expect(checkDiagramColour(yellow)).toEqual([]);
+  });
+
+  it("D4: fails when a box has no colour", () => {
+    const bare = edited("docs/ARCHITECTURE.md", "Alpha engine<br/>Built\"]:::done", "Alpha engine<br/>Built\"]");
+    expect(checkDiagramColour(bare)).toEqual([expect.stringContaining("Alpha engine")]);
   });
 
   it("S4: fails for a file directly in src/ that isn't cross-cutting", () => {

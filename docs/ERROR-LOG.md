@@ -2,6 +2,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-11 17:44 SGT] The architecture diagram showed the Telegram bot as "Not started" a week into its design
+- **What broke:** [2026-11-11 17:44 SGT] The owner noticed the Telegram bot box was still grey ("Not started") on 11 Nov, although its design started on 3 Nov. Photo check, Telemetry and Experiments were also grey although designed.
+- **Cause:** [2026-11-11 17:44 SGT] Habit H2 ("update the Module table and the diagram status" at the end of a session) was missed in sessions 8 to 10. The drift test only checked that the diagram and the Module table agree with each other (rule D2), and both were equally out of date.
+- **Fix:** [2026-11-11 17:44 SGT] Statuses updated with the owner. New rule D4: the drift test fails if a box's colour doesn't fit its status words (owner chose this, 11 Nov).
+- **How to prevent it:** [2026-11-11 17:44 SGT] At every session end, review each module's status against what the session changed (H2), and name any status change in the handoff note. D4 catches words and colour disagreeing; only the habit catches a status that is no longer true.
+
 ## [2026-11-09 21:57 SGT] Removing a test dropped the count below the minimum
 - **What broke:** [2026-11-09 21:57 SGT] After the owner approved removing the test "not sent when the parent has turned it off", `npm run check` failed: "Only 138 tests; the minimum recorded in docs/SPEC.md is 139" (rule P1, habit H4).
 - **Cause:** [2026-11-09 21:57 SGT] A test removed for a good reason still lowers the count, and the minimum must never drop.

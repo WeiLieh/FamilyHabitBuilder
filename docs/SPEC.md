@@ -92,6 +92,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - **D1** Every `.md` file is reachable by links from `CLAUDE.md` or this spec; history goes only to `docs/archive/`.
 - **D2** One architecture diagram, `docs/ARCHITECTURE.md`; each box's status matches the Module table.
 - **D3** Only official module names; retired names fail.
+- **D4** [2026-11-11 17:44 SGT] Each diagram box's colour fits its status words: grey = "Not started", green = a status starting with "Built", yellow = anything in between (owner, 11 Nov). It can't tell whether a status is true; that stays a habit (H2).
 - **B1** An applied migration is never edited (fingerprints in `src/datastore/SPEC.md`).
 - **B2** Content scripts live in `src/datastore/supabase/content/`, named `YYYY-MM-DD_what.sql`.
 - **P1** The number of tests never drops below the minimum below.
@@ -99,19 +100,20 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Habits H1 to H5 (what Claude does at the start and end of each session and before each pull request) are in [CLAUDE.md](../CLAUDE.md).
 
 ### Module table
+[2026-11-11 17:44 SGT] Statuses brought up to date with the owner (11 Nov): Telegram bot, Photo check, Telemetry and Experiments had stayed "Not started" although designed; Variable rewards is designed and partly built. Rule D4 now checks each box's colour fits its status.
 [2026-10-31 09:40 SGT] Official names (from the owner's diagram), slugs, folders and status. "Migrated" is the ratchet: per-module checks (S1, S5, R3) apply only to rows marked yes; each restructure pull request flips one row. Status must match the diagram.
 
 | Module | Slug | Folder | Spec | Status | Migrated |
 |---|---|---|---|---|---|
-| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Not started | yes |
+| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Design in progress | yes |
 | Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | yes |
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
-| Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Not started | yes |
-| Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Design in progress | yes |
+| Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, not built | yes |
+| Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Designed, partly built | yes |
 | Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables live | yes |
 | Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Not started | yes |
-| Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Not started | yes |
-| Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Not started | yes |
+| Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Designed, not built | yes |
+| Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Designed, not built | yes |
 
 ### Cross-cutting files
 Files that belong to no module (exempt from the slug rules). Documented here and in `docs/CONTEXT.md`.
@@ -131,13 +133,15 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-11 17:28 SGT] Minimum test count: 141 (two window tests added, 11 Nov).
+- [2026-11-11 17:44 SGT] Minimum test count: 143 (two drift tests for rule D4, 11 Nov).
+- SUPERSEDED [2026-11-11 17:44 SGT] [2026-11-11 17:28 SGT] Minimum test count: 141 (two window tests added, 11 Nov).
 - SUPERSEDED [2026-11-11 17:28 SGT] [2026-11-01 16:14 SGT] Minimum test count: 139
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
 - SUPERSEDED [2026-11-01 16:14 SGT] [2026-10-31 17:53 SGT] Minimum test count: 129
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-11-11 17:44 SGT] **Version 1.21, module statuses and rule D4 (owner, 11 Nov):** the Telegram bot box was still grey after a week of design. Statuses updated: Telegram bot "Design in progress"; Photo check, Telemetry and Experiments "Designed, not built"; Variable rewards "Designed, partly built". New structure rule **D4**, checked by the drift test: a box's colour must fit its status. Drift tests 22 to 24 (two example tests for D4); app tests 141 to 143; minimum raised to 143.
 - [2026-11-11 17:28 SGT] **Version 1.20, migration 005 (Datastore, owner's Option 1, 11 Nov):** built test-first, not yet applied. Tables **photos**, **reflections**, **moment_lines**; `habit_logs` today only, with logged_via and undone_at, photo columns moved to `photos`; `messages_sent` gains the connection question; nine new event types; Telemetry views without text or storage paths. Rules changed: **8.3** (17 tables), **8.4** (seven narrow edits: Undo, delete a photo, Undo deletes the photo), **8.6**, **8.11**, **5.8**. New values 32 to 34 (time windows) in `src/settings.ts`. Database tests T43 to T53 added; T20 to T25, fix 2 and fix 3 rewritten for the new functions, and the two "recorded as photo-verified" refusals removed because that column no longer exists (CLAUDE.md rule 12). App tests 139 before, 141 after; minimum raised to 141.
 - [2026-11-11 17:15 SGT] **Version 1.19, owner answers (11 Nov, session 11):** rule **5.4** the `/log` detail for an unchosen habit (thanks, "Add how you felt", saved once a line is added); **5.6** the connection question's 24 hours, labels and own message; **7.7** the moment flow (24-hour window, consent buttons, no photo check); **10.2** every Sunday message and the new moments are their own events, never nudges; new **3.15** Sunday order (nudge, then summary, then question); **7.6** tested by the rewritten week tests. Datastore proposal: Option 1 chosen. New **CLAUDE.md rule 12**: no dead code or obsolete tests. Code: `src/variable-rewards/week.ts` now refuses any day but today; four yesterday tests rewritten as today-only checks (owner, Option A): 139 before, 139 after.
 - [2026-11-09 21:49 SGT] **Version 1.18, Telegram B1 parts 2 and 3 and B2 group C (owner, design chat, 9 Nov; handoffs in the document index):** recorded, not built. Rules changed: **5.1** typed messages (Claude matches, asks first for a chosen habit, child's name removed); **5.4** today only, an unchosen habit is a reflection, a repeat log is celebrated; **3.12** any activity (log, reflection or moment) triggers the Wrap Up, which is now two messages; **7.6** the Monday-for-Sunday receipt retired; **7.8** the summary shows Habits logged, Feelings logged and Photos with Add a moment and View wrap up, steady weeks and the monthly view move to My page. Dated design notes for rules 3.5, 5.3, 5.5, 5.6, 6.1, 6.2 and 7.7 (texts of 5.6 and 7.7 not yet changed). Drafted: one Datastore proposal (photos, reflections, moment lines, photo delete, edits 6 and 7). Four typed-text known issues logged. No code changed; test count unchanged at 139.
