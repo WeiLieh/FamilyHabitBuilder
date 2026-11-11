@@ -116,7 +116,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 5. Waiting on you (not blocking the next steps)
 - [2026-11-11 21:58 SGT] **UAT of thin slice 1** ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)): U2 to U10 pass. Remaining, in the quickest order: **12 Nov before 7 pm** U13 (pause, Run, no message, un-pause), then leave the 7 pm nudge untapped; **13 Nov just after midnight** U12 (tap that nudge's ✅ Done: "Reminder has expired"); **13 Nov 7 pm** U11 (😴 Not today); **any time after an hour's quiet** U14 (reply speed).
-- [2026-11-11 21:58 SGT] Vercel: confirm you are the only member of the "Vibe Coding S…" team (others could see the project's secrets); if not, transfer the project to your personal account.
+- [2026-11-11 22:02 SGT] DONE: Vercel team checked: the owner is the only member (Owner role), so nobody else can see the project's secrets.
+- SUPERSEDED [2026-11-11 22:02 SGT] [2026-11-11 21:58 SGT] Vercel: confirm you are the only member of the "Vibe Coding S…" team (others could see the project's secrets); if not, transfer the project to your personal account.
 - [2026-11-11 21:58 SGT] Agreement wording (Q8) is still a draft in the live bot; photo consent wording and withdrawing consent go to your PDPA reviewer.
 - [2026-11-11 17:38 SGT] DONE: migration 005 applied on Supabase (before query 0 logs; check query matched); fingerprint recorded.
 - SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] **After the pull request is merged:** run the "before" query, then `src/datastore/supabase/migrations/005_photos_reflections_moments.sql`, then the check query, in the Supabase SQL Editor (Claude gives both queries in the session), and paste the result back, so its fingerprint is recorded (rule B1).
