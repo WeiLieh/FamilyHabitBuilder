@@ -5,7 +5,7 @@
 // Telegram bot can ask of the Datastore, like a restaurant menu: the bot orders
 // from the menu and never walks into the kitchen. The real kitchen is
 // supabase-store.ts (Supabase); the tests use a pretend kitchen with the same
-// menu (tests/helpers/telegram-bot-fakes.ts).
+// menu (tests/helpers/datastore-fake-store.ts).
 //
 // Why: the bot's logic can then be tested without the real database, and the
 // database rules (add-only, all-or-nothing functions) stay in the Datastore.

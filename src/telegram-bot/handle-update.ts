@@ -51,7 +51,15 @@ async function handleStart(s: Extract<Incoming, { kind: "start" }>, { store, tel
     return;
   }
   // One all-or-nothing step: the parent, the used invite and the event (migration 006).
-  const result = await store.signUp({ telegramId: s.telegramId, firstName: s.firstName, code: s.code, updateId: s.updateId });
+  let result;
+  try {
+    result = await store.signUp({ telegramId: s.telegramId, firstName: s.firstName, code: s.code, updateId: s.updateId });
+  } catch (error) {
+    // Nothing was saved (all or nothing); say so honestly (rule 1.3).
+    console.error("Sign-up failed:", error instanceof Error ? error.message : error);
+    await telegram.sendMessage(s.chatId, WORDS.signUpFailed);
+    return;
+  }
   if (!result.ok) {
     await telegram.sendMessage(s.chatId, result.reason === "already" ? WORDS.alreadySignedUp : WORDS.badCode);
     return;

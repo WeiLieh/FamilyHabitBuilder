@@ -33,17 +33,27 @@ export async function runDailyNudge({ store, telegram, now }: BotDeps): Promise<
       result.skipped++;
       continue;
     }
+    let messageId: number;
     try {
-      await telegram.sendMessage(c.telegramId, WORDS.nudge(nudge.name, nudge.example), [
+      messageId = await telegram.sendMessage(c.telegramId, WORDS.nudge(nudge.name, nudge.example), [
         { text: WORDS.doneButton, data: `done:${day}` },
         { text: WORDS.notTodayButton, data: `skip:${day}` },
       ]);
+    } catch (error) {
+      // Logged with the parent's number only, never their name or Telegram ID.
+      console.error(`Daily nudge not sent to parent ${c.parentId}:`, error instanceof Error ? error.message : error);
+      result.failed++;
+      continue;
+    }
+    try {
       await store.recordNudgeSent({ parentId: c.parentId, nudgeId: nudge.nudgeId, exampleId: nudge.exampleId, day, slotMinute: slot });
       result.sent++;
     } catch (error) {
-      // Logged with the parent's number only, never their name or Telegram ID.
-      console.error(`Daily nudge failed for parent ${c.parentId}:`, error instanceof Error ? error.message : error);
+      // Sent but not recorded: its buttons could never save, so say so honestly
+      // and remove them (rule 1.3), rather than leave buttons that fail later.
+      console.error(`Daily nudge sent but not recorded for parent ${c.parentId}:`, error instanceof Error ? error.message : error);
       result.failed++;
+      await telegram.editMessage(c.telegramId, messageId, WORDS.nudgeNotSaved).catch(() => undefined);
     }
   }
   return result;

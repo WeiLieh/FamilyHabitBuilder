@@ -69,7 +69,10 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         p_variants: variants,
       });
       // The database explains a refusal in words (migration 006).
-      if (r.error?.message.includes("already signed up")) return { ok: false, reason: "already" };
+      // "already signed up", or 23505 (duplicate key) when two /start messages arrive at the same moment.
+      if (r.error?.message.includes("already signed up") || (r.error as { code?: string } | null)?.code === "23505") {
+        return { ok: false, reason: "already" };
+      }
       if (r.error?.message.includes("unknown or already used")) return { ok: false, reason: "bad_code" };
       return { ok: true, parentId: Number(check(r, "Signing up")) };
     },

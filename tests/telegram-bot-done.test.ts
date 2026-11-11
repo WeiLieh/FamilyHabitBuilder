@@ -68,6 +68,21 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     expect(store.logs).toEqual([]); // Not today is not a log
   });
 
+  it("😴 Not today delivered twice by Telegram is recorded once", async () => {
+    const once = tapUpdate(ME, `skip:${today}`, 55, 8888);
+    await handleUpdate(parseUpdate(once), { store, telegram, now: evening });
+    await handleUpdate(parseUpdate(once), { store, telegram, now: evening });
+    expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(1);
+  });
+
+  it("ignores a button tap whose chat isn't the person who tapped", async () => {
+    const body = tapUpdate(ME, `done:${today}`, 55) as { callback_query: { message: { chat: { id: number } } } };
+    body.callback_query.message.chat.id = 9999;
+    await handleUpdate(parseUpdate(body), { store, telegram, now: evening });
+    expect(store.logs).toEqual([]);
+    expect(telegram.calls).toEqual([]);
+  });
+
   it("if saving fails, the parent sees an honest 'didn't save' message, never a receipt (rule 1.3)", async () => {
     store.failWrites = true;
     await tap(`done:${today}`);

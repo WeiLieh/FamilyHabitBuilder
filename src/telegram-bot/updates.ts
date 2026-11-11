@@ -44,7 +44,8 @@ export function parseUpdate(body: unknown): Incoming {
 
   // A button tap in a private chat with the bot.
   const tap = u.callback_query;
-  if (tap && tap.message && tap.message.chat.type === "private" && tap.data !== undefined) {
+  // In a private chat the chat is the person; anything else is ignored (an extra safeguard).
+  if (tap && tap.message && tap.message.chat.type === "private" && tap.message.chat.id === tap.from.id && tap.data !== undefined) {
     return {
       kind: "tap",
       updateId: u.update_id,
@@ -61,13 +62,17 @@ export function parseUpdate(body: unknown): Incoming {
   if (m && m.chat.type === "private" && m.from && !m.from.is_bot) {
     // "/start" or "/start CODE" (the invite link t.me/<bot>?start=CODE arrives like this).
     const start = /^\/start(?:\s+(\S+))?\s*$/.exec(m.text ?? "");
+    // Telegram always sends a first name; without one, we ignore the message rather
+    // than save a made-up name (rule 1.3).
+    const firstName = (m.from.first_name ?? "").trim();
+    if (start && firstName === "") return { kind: "ignore" };
     if (start) {
       return {
         kind: "start",
         updateId: u.update_id,
         chatId: m.chat.id,
         telegramId: m.from.id,
-        firstName: (m.from.first_name ?? "").trim() || "there",
+        firstName,
         code: start[1] ?? null,
       };
     }

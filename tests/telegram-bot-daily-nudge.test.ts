@@ -69,6 +69,19 @@ describe("The daily nudge (thin slice 1)", () => {
     expect(store.sentNudges.map((n) => n.parentId)).toEqual([store.parents[1]?.id]);
   });
 
+  it("if recording fails after sending, edits that nudge into an honest note without buttons, and counts a failure", async () => {
+    await addParent(1008, { agreed: true });
+    store.failWrites = true;
+    const result = await runDailyNudge({ store, telegram, now: sevenPm });
+    expect(result).toEqual({ sent: 0, failed: 1, skipped: 0 });
+    expect(telegram.calls.at(-1)).toEqual({
+      kind: "edit",
+      chatId: 1008,
+      messageId: 500,
+      text: "Sorry, this reminder couldn't be saved, so its buttons won't work. Your next one comes tomorrow.",
+    });
+  });
+
   it("running the job twice the same evening doesn't send a second nudge", async () => {
     await addParent(1006, { agreed: true });
     await runDailyNudge({ store, telegram, now: sevenPm });

@@ -23,9 +23,11 @@ export class FakeTelegram implements TelegramApi {
   // Telegram IDs whose messages fail to send (e.g. the parent blocked the bot).
   failFor = new Set<number>();
 
-  async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<void> {
+  private nextMessageId = 500;
+  async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<number> {
     if (this.failFor.has(chatId)) throw new Error(`Telegram refused to send to ${chatId}`);
     this.calls.push({ kind: "send", chatId, text, buttons });
+    return this.nextMessageId++; // Telegram's number for the new message
   }
   async editMessage(chatId: number, messageId: number, text: string): Promise<void> {
     this.calls.push({ kind: "edit", chatId, messageId, text });

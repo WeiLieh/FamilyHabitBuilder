@@ -17,7 +17,8 @@
 export type Button = { text: string; data: string };
 
 export interface TelegramApi {
-  sendMessage(chatId: number, text: string, buttons?: Button[]): Promise<void>;
+  // Returns Telegram's number for the new message, so it can be edited later.
+  sendMessage(chatId: number, text: string, buttons?: Button[]): Promise<number>;
   editMessage(chatId: number, messageId: number, text: string): Promise<void>;
   answerTap(tapId: string, popup?: string): Promise<void>;
 }
@@ -26,7 +27,7 @@ export interface TelegramApi {
 // settings, and is never written to a log.
 export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetch): TelegramApi {
   // Every Telegram Bot API call is a POST to https://api.telegram.org/bot<token>/<method>.
-  async function call(method: string, body: Record<string, unknown>): Promise<void> {
+  async function call(method: string, body: Record<string, unknown>): Promise<unknown> {
     const res = await fetchFn(`https://api.telegram.org/bot${botToken}/${method}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -37,17 +38,26 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
       const detail = await res.text().catch(() => "");
       throw new Error(`Telegram ${method} failed (${res.status}): ${detail.slice(0, 200)}`);
     }
+    return res.json();
   }
   // Buttons are sent as one row, side by side ("inline keyboard").
   const keyboard = (buttons: Button[]) => ({
     inline_keyboard: [buttons.map((b) => ({ text: b.text, callback_data: b.data }))],
   });
   return {
-    sendMessage: (chatId, text, buttons = []) =>
-      call("sendMessage", { chat_id: chatId, text, ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) }),
+    async sendMessage(chatId, text, buttons = []) {
+      const reply = await call("sendMessage", { chat_id: chatId, text, ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) });
+      // Telegram answers { ok: true, result: { message_id: … } }; anything else is a failure.
+      const id = (reply as { result?: { message_id?: unknown } }).result?.message_id;
+      if (typeof id !== "number") throw new Error("Telegram sendMessage gave no message number");
+      return id;
+    },
     // Editing without reply_markup removes the buttons.
-    editMessage: (chatId, messageId, text) => call("editMessageText", { chat_id: chatId, message_id: messageId, text }),
-    answerTap: (tapId, popup) =>
-      call("answerCallbackQuery", { callback_query_id: tapId, ...(popup ? { text: popup, show_alert: true } : {}) }),
+    async editMessage(chatId, messageId, text) {
+      await call("editMessageText", { chat_id: chatId, message_id: messageId, text });
+    },
+    async answerTap(tapId, popup) {
+      await call("answerCallbackQuery", { callback_query_id: tapId, ...(popup ? { text: popup, show_alert: true } : {}) });
+    },
   };
 }

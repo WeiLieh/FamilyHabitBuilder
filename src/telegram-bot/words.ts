@@ -32,4 +32,6 @@ export const WORDS = {
   expired: "Reminder has expired. Tap a behaviour on the keyboard to log today.", // owner, 9 Nov
   alreadySaved: "Already saved.", // draft
   didNotSave: "Sorry, that didn't save. Please try again.", // draft, rule 1.3
+  signUpFailed: "Sorry, that didn't work. Please try again.", // draft, rule 1.3
+  nudgeNotSaved: "Sorry, this reminder couldn't be saved, so its buttons won't work. Your next one comes tomorrow.", // draft, rule 1.3
 } as const;

@@ -3,7 +3,8 @@
 //
 // [2026-11-11] What a person sees when they open the bot with an invite link
 // (src/telegram-bot/SPEC.md, "Build: thin slice 1"; rules 1.1, 11.9).
-// Uses the pretend Telegram and database in tests/helpers/telegram-bot-fakes.ts.
+// Uses the pretend Telegram (tests/helpers/telegram-bot-fakes.ts) and database
+// (tests/helpers/datastore-fake-store.ts).
 // =============================================================================
 
 import { beforeEach, describe, expect, it } from "vitest";
@@ -58,6 +59,21 @@ describe("Sign-up with an invite (thin slice 1)", () => {
     expect(store.parents).toHaveLength(1);
     expect(store.invites.get("WELCOME-2")).toBeNull(); // the second code is still unused
     expect(telegram.sentTexts().at(-1)).toBe("You're already signed up.");
+  });
+
+  it("tells the person honestly if signing up fails in the database, and saves nothing (rule 1.3)", async () => {
+    store.failWrites = true;
+    await send(textUpdate(ME, "Wei Lieh", "/start WELCOME-1"));
+    expect(store.parents).toEqual([]);
+    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+  });
+
+  it("ignores a /start without a first name, rather than saving a made-up name", async () => {
+    const body = textUpdate(ME, "Wei Lieh", "/start WELCOME-1") as { message: { from: { first_name?: string } } };
+    delete body.message.from.first_name;
+    await send(body);
+    expect(store.parents).toEqual([]);
+    expect(telegram.calls).toEqual([]);
   });
 
   it("records the recording agreement when 'I agree' is tapped, and says when the reminder comes", async () => {

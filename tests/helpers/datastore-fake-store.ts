@@ -31,9 +31,6 @@ export class FakeStore implements Store {
     if (this.failWrites) throw new Error("database unavailable");
   }
 
-  async settingsVersion(): Promise<number> {
-    return 1;
-  }
   async findParent(telegramId: number): Promise<{ id: number; paused: boolean } | null> {
     const p = this.parents.find((x) => x.telegramId === telegramId);
     return p ? { id: p.id, paused: p.paused } : null;
