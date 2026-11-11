@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-09 21:57 SGT] Session 10 (2026-11-09 afternoon and evening)
+- [2026-11-09 21:57 SGT] **Ended by the owner.** About 4 h 35 min elapsed (about 17:25 to 22:00 SGT); about 2 h 15 min active in Claude Code (the owner designed in Claude Chat from about 19:30 to 21:40). Start-of-session routine; privacy findings (3 Nov and 9 Nov) decided; progress file archived; B2 groups A and B settled here; the Wrap Up's own switch removed test-first (code, settings, migration 004, applied and fingerprinted); both review agents ran and their findings were fixed; a brief sent to Chat; three Chat handoffs recorded (rules 5.1, 5.4, 3.12, 7.6, 7.8); Datastore proposal drafted; four typed-text known issues; branch housekeeping.
+- **Notes for timeboxing:** the low-fidelity Code preview did not help (the owner redid it in Chat), so screen previews go to Chat from now on. Decisions recorded straight from short answers took 5 to 10 minutes each. The drift test's minimum test count caught a dropped test before commit.
+- **Started:** about 17:25 SGT
+
 ## [2026-11-09 00:14 SGT] Session 9 (2026-11-08 evening to 2026-11-09 00:15)
 - [2026-11-09 00:14 SGT] **Ended by the owner.** About 2 h 55 min elapsed (about 21:20 SGT on 8 Nov to 00:15 SGT on 9 Nov); about 2 h active (the owner spent about 30 minutes in Claude Chat between 22:36 and 23:07). Start-of-session routine and recap; group A answers and 9 rule changes approved through an old/new table; the 8 Nov screen edits handoff (3 defaults confirmed); two design pull requests that failed the drift check (#19, #21; habit H10 added); the B1 daily-loop handoff and its answers (Undo, 30 seconds); rule 5.2 and metric 8 reworked with a timeline preview page; metrics spreadsheet version 2; review agents; end-of-session pull request.
 - **Notes for timeboxing:** recording a Chat handoff now takes about 10 minutes. The timeline preview page settled the "unprompted" question in one round. Handoff branches without their index link cost a round each time (fixed by H10).

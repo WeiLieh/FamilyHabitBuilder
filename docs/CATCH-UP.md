@@ -108,6 +108,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-09 21:57 SGT] **Next session, first (5 answers):** the yesterday test (Option A or B); question 12 and rule 10.2; the `/log` default for an unchosen habit; go-ahead for the texts of rules 5.6 and 7.7; the Datastore proposal ([src/datastore/SPEC.md](../src/datastore/SPEC.md), "Proposed").
+- [2026-11-09 21:57 SGT] Take to your PDPA reviewer: the photo consent wording (still a placeholder), withdrawing consent, and reflections that mention the child.
 - [2026-11-09 18:23 SGT] DONE: migration 004 applied on Supabase (check query matched); fingerprint recorded.
 - SUPERSEDED [2026-11-09 18:23 SGT] [2026-11-09 18:16 SGT] **After the pull request is merged:** run `src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql` in the Supabase SQL Editor (removes the Wrap Up's own switch). Then tell Claude, so its fingerprint is recorded (rule B1).
 - [2026-11-09 00:10 SGT] DONE: success metrics spreadsheet updated to version 2 (`src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx`); version 1 deprecated in `docs/archive/`.

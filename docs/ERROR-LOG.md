@@ -2,6 +2,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-09 21:57 SGT] Removing a test dropped the count below the minimum
+- **What broke:** [2026-11-09 21:57 SGT] After the owner approved removing the test "not sent when the parent has turned it off", `npm run check` failed: "Only 138 tests; the minimum recorded in docs/SPEC.md is 139" (rule P1, habit H4).
+- **Cause:** [2026-11-09 21:57 SGT] A test removed for a good reason still lowers the count, and the minimum must never drop.
+- **Fix:** [2026-11-09 21:57 SGT] Added a test for a behaviour nothing checked yet ("sent at any time the parent may choose, and only pausing stops it"), shown to fail on the old code. Count back to 139. The minimum was not lowered.
+- **How to prevent it:** [2026-11-09 21:57 SGT] When a test is removed, plan its replacement in the same step, and show the owner both.
+
 ## [2026-11-08 23:12 SGT] Design-handoff pull request failed the drift check (second time)
 - [2026-11-08 23:42 SGT] **Third time:** pull request #21 (branch `design/telegram-b1-daily-loop-2026-11-08`) had the same gap. The owner closed it unmerged; the handoff and its link came in on `claude/festive-einstein-nf623s`. New rule **H10** added to `CLAUDE.md` (owner approved).
 - **What broke:** [2026-11-08 23:12 SGT] Pull request #19 (branch `design/telegram-screen-edits-2026-11-08`) failed `npm run check` in GitHub: "docs/handoffs/2026-11-08-telegram-onboarding-screen-edits.md is not reachable by links from CLAUDE.md or docs/SPEC.md" (rule D1). The same happened with pull request #17 on 3 Nov.
