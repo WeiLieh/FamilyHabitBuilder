@@ -15,6 +15,7 @@
 - [2026-11-11 20:11 SGT] Owner merged thin slice 1 (pull request #33, merged by Claude Code at the owner's request after the check passed). Receipt wording settled: no comma (rule 7.5 updated). Owner now runs UAT setup S2 to S8 and test cases U1 to U14.
 - [2026-11-11 20:17 SGT] **Migration 006 applied on Supabase** (UAT S2, at the second attempt; check query true, true); fingerprint `12dbf630129a` recorded (rule B1). Error log entry: run migrations in a fresh tab with nothing highlighted.
 - [2026-11-11 20:42 SGT] Before the owner's Vercel setup (S7): added `public/index.html` and `outputDirectory: public` in `vercel.json`, so the deploy works and only that page (plus `api/`) is public, never the repository's files; UAT case U0 checks it.
+- [2026-11-11 21:03 SGT] Owner's UAT setup: S2 (migration 006), S5, S6, S7 done, cron job confirmed (11:00 UTC). S8 refused the webhook secret (symbols); UAT S4 wording fixed, error log entry added.
 ### In progress
 - [2026-11-11 17:38 SGT] None.
 - SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] Migration 005 built and committed; **waiting for the owner to apply it in Supabase** (after the pull request is merged), then its fingerprint is recorded.

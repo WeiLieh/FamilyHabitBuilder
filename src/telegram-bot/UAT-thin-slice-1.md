@@ -17,7 +17,7 @@ The automated tests (166, run on every pull request, including the honest "didn'
          not has_function_privilege('anon', 'public.sign_up(bigint, text, text, text, integer, bigint, bigint, jsonb)', 'execute') as outsiders_cannot;
   ```
 - [ ] **S3. Create the bot in Telegram.** Open Telegram, search **@BotFather** (blue tick), send `/newbot`, give a name (e.g. "Family Habit Builder (test)") and a username ending in `bot`. BotFather replies with a **token**: copy it into your password manager. Note the bot's username.
-- [ ] **S4. Make two secrets** in your password manager's generator: a **webhook secret** and a **cron secret**, each about 40 characters, letters and numbers only.
+- [ ] **S4. Make two secrets** in your password manager's generator: a **webhook secret** and a **cron secret**, each about 40 characters. [2026-11-11 21:03 SGT] **Turn symbols off: letters and numbers only.** Telegram refuses a webhook secret with any character other than A–Z, a–z, 0–9, `_` and `-` ("secret token contains illegal characters").
 - [ ] **S5. Find two Supabase values:** Project Settings > API: the **Project URL** and the **service_role** key (secret: it can do anything in the database).
 - [ ] **S6. Add your invite code** in Supabase, SQL Editor. Make it long and random (a guessable code could let a stranger sign up): generate about 16 letters and numbers in your password manager and use `OWNER-` followed by them, e.g. `OWNER-k3V9…`. Below it is written `<CODE>`.
   ```sql
