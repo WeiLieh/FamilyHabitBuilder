@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-11 21:58 SGT] Session 11 (2026-11-11 afternoon and evening)
+- [2026-11-11 21:58 SGT] **Ended by the owner.** About 5 h 5 min elapsed (about 16:52 to 21:58 SGT). Active: about 3 h 30 min in Claude Code plus the owner's setup and UAT time (about 1 h 15 min, 20:40 to 21:55). Target set at the start: 2 to 3 hours for the five answers and migration 005; done in about 45 minutes, so the owner chose to push on to thin slice 1. Also: stale diagram fixed (rule D4); thin slice 1 specified, tested and built (166 tests); migrations 005 and 006 applied; Vercel and Telegram set up; UAT U2 to U10 pass.
+- **Notes for timeboxing:** each review round found real issues for about 10 minutes of fixing. Most owner-side time went on setup slips that tests can't catch (a migration not taking effect, symbols in a secret, a typo in the webhook address); each became a checklist line. Writing the UAT checklist before the setup paid off: every slip was traced in one or two rounds.
+- **Started:** about 16:52 SGT
+
 ## [2026-11-09 21:57 SGT] Session 10 (2026-11-09 afternoon and evening)
 - [2026-11-09 21:57 SGT] **Ended by the owner.** About 4 h 35 min elapsed (about 17:25 to 22:00 SGT); about 2 h 15 min active in Claude Code (the owner designed in Claude Chat from about 19:30 to 21:40). Start-of-session routine; privacy findings (3 Nov and 9 Nov) decided; progress file archived; B2 groups A and B settled here; the Wrap Up's own switch removed test-first (code, settings, migration 004, applied and fingerprinted); both review agents ran and their findings were fixed; a brief sent to Chat; three Chat handoffs recorded (rules 5.1, 5.4, 3.12, 7.6, 7.8); Datastore proposal drafted; four typed-text known issues; branch housekeeping.
 - **Notes for timeboxing:** the low-fidelity Code preview did not help (the owner redid it in Chat), so screen previews go to Chat from now on. Decisions recorded straight from short answers took 5 to 10 minutes each. The drift test's minimum test count caught a dropped test before commit.

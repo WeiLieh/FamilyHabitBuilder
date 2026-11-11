@@ -2,6 +2,18 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-11 21:45 SGT] The bot stopped answering after the webhook was set again
+- **What broke:** [2026-11-11 21:45 SGT] UAT U5: `/start <code>` got no reply on any device, and Vercel's Logs showed no request at all.
+- **Cause:** [2026-11-11 21:45 SGT] setWebhook had been run a second time with a typo in the path (`/ape/telegram-bot`), so Telegram delivered to a page that doesn't exist (getWebhookInfo: "Wrong response from the webhook: 404 Not Found", 2 messages pending). The bot and the database were fine.
+- **Fix:** [2026-11-11 21:45 SGT] setWebhook again with `/api/telegram-bot`; getWebhookInfo then showed the right address and 0 pending.
+- **How to prevent it:** [2026-11-11 21:45 SGT] UAT S8 now checks the address with getWebhookInfo straight after setting it. When the bot is silent and Vercel shows no request, check getWebhookInfo first: the problem is between Telegram and Vercel, not in our code.
+
+## [2026-11-11 21:03 SGT] Telegram refused the webhook secret
+- **What broke:** [2026-11-11 21:03 SGT] UAT step S8 (setWebhook) answered "Bad Request: secret token contains illegal characters".
+- **Cause:** [2026-11-11 21:03 SGT] The password generator added symbols. Telegram allows only A–Z, a–z, 0–9, `_` and `-` in the webhook secret; the UAT said "letters and numbers only" but not "turn symbols off".
+- **Fix:** [2026-11-11 21:03 SGT] A new letters-and-numbers secret, updated in Vercel (`TELEGRAM_WEBHOOK_SECRET`), a redeploy, then S8 again.
+- **How to prevent it:** [2026-11-11 21:03 SGT] The UAT's S4 now says to turn symbols off and names the allowed characters.
+
 ## [2026-11-11 20:17 SGT] Migration 006's check said the function didn't exist
 - **What broke:** [2026-11-11 20:17 SGT] After running migration 006 in Supabase, the check query failed: "function public.sign_up(...) does not exist" (UAT step S2).
 - **Cause:** [2026-11-11 20:17 SGT] The migration had not taken effect in Supabase. The file itself was fine: it ran cleanly on a local copy built from migrations 001 to 005. Likely causes: run in another of several open tabs with an error that went unseen, only part of the file copied, or some text highlighted (Supabase then runs only the highlighted part).

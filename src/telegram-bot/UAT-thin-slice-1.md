@@ -17,7 +17,7 @@ The automated tests (166, run on every pull request, including the honest "didn'
          not has_function_privilege('anon', 'public.sign_up(bigint, text, text, text, integer, bigint, bigint, jsonb)', 'execute') as outsiders_cannot;
   ```
 - [ ] **S3. Create the bot in Telegram.** Open Telegram, search **@BotFather** (blue tick), send `/newbot`, give a name (e.g. "Family Habit Builder (test)") and a username ending in `bot`. BotFather replies with a **token**: copy it into your password manager. Note the bot's username.
-- [ ] **S4. Make two secrets** in your password manager's generator: a **webhook secret** and a **cron secret**, each about 40 characters, letters and numbers only.
+- [ ] **S4. Make two secrets** in your password manager's generator: a **webhook secret** and a **cron secret**, each about 40 characters. [2026-11-11 21:03 SGT] **Turn symbols off: letters and numbers only.** Telegram refuses a webhook secret with any character other than A–Z, a–z, 0–9, `_` and `-` ("secret token contains illegal characters").
 - [ ] **S5. Find two Supabase values:** Project Settings > API: the **Project URL** and the **service_role** key (secret: it can do anything in the database).
 - [ ] **S6. Add your invite code** in Supabase, SQL Editor. Make it long and random (a guessable code could let a stranger sign up): generate about 16 letters and numbers in your password manager and use `OWNER-` followed by them, e.g. `OWNER-k3V9…`. Below it is written `<CODE>`.
   ```sql
@@ -27,11 +27,15 @@ The automated tests (166, run on every pull request, including the honest "didn'
   `TELEGRAM_BOT_TOKEN` (S3), `TELEGRAM_WEBHOOK_SECRET` (S4), `CRON_SECRET` (S4), `SUPABASE_URL` (S5), `SUPABASE_SERVICE_ROLE_KEY` (S5). Then **Deploy**.
 - [ ] **S8. Tell Telegram where the bot lives.** Open a **private (incognito) browser window**, so the address, which contains two secrets, isn't saved in your history or synced. In its address bar, with your values in place of the `<…>` parts:
   `https://api.telegram.org/bot<TOKEN>/setWebhook?url=https://<your-project>.vercel.app/api/telegram-bot&secret_token=<WEBHOOK_SECRET>`
-  Expected: `{"ok":true,"result":true,"description":"Webhook was set"}`. Then close the private window.
+  Expected: `{"ok":true,"result":true,"description":"Webhook was set"}`. [2026-11-11 21:45 SGT] **Then check it:** open `https://api.telegram.org/bot<TOKEN>/getWebhookInfo` in the same window: `"url"` must end exactly in `/api/telegram-bot` (a typo such as `/ape/` sends every message to a page that doesn't exist: Telegram then reports `"Wrong response from the webhook: 404 Not Found"` and holds the messages). Then close the private window. If the bot ever stops answering and Vercel's Logs show no requests, run this check first.
 
 ---
 
 ## Part 2: test cases
+
+[2026-11-11 21:55 SGT] **Results, 11 Nov (owner):** U2 to U10 **pass** (U4's reply was slow to show in Telegram Web; U5 needed the webhook address fixed first, see `docs/ERROR-LOG.md`). Still to run: U11, U12 and U13 (need tomorrow's nudge), U14.
+
+[2026-11-11 21:31 SGT] **Tip:** if a bot reply seems missing in **Telegram Web**, refresh the page (F5) or look in the phone app first: Telegram Web can be slow to show new messages. If it is still missing, Vercel's Logs show whether the bot sent it (an outgoing `sendMessage` call, and the Error count stays 0).
 
 | ID | Do this | You should see | Where to check | Pass |
 |---|---|---|---|---|

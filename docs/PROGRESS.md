@@ -1,5 +1,11 @@
 # Progress (handoff between sessions)
 
+## [2026-11-11 21:58 SGT] HANDOFF: session 11 ended (read this first)
+- [2026-11-11 21:58 SGT] **State:** everything is in `main` except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (166 tests, drift clean); database tests T1 to T56 pass locally. Supabase: migrations up to **006** applied and fingerprinted. **Thin slice 1 is live** on Vercel (`family-habit-builder.vercel.app`, webhook set, daily cron 11:00 UTC) for the owner only.
+- [2026-11-11 21:58 SGT] **UAT:** U2 to U10 pass. U11 to U14 wait on the calendar (schedule in `docs/CATCH-UP.md`, section 5).
+- [2026-11-11 21:58 SGT] **First, next session:** (1) the owner's U11 to U14 results; (2) fix the sign-up gap test-first: if `findParent` fails at `/start`, the person gets no reply (wrap the whole start path, rule 1.3); (3) then group C in Claude Chat, or the next slice (Claude's warm reply; the planner's picks and times).
+- [2026-11-11 21:58 SGT] Open for the owner: whether anyone else is in the Vercel team; agreement wording (Q8).
+
 ## [2026-11-11 17:15 SGT] Session 11
 ### Done
 - [2026-11-11 17:15 SGT] Start-of-session routine: drift check passed (22 checks, no warnings); pull request #30 merged by the owner; branch brought level with `main`. Target agreed (2 to 3 hours, Option 1): the five answers, then migration 005.
@@ -15,6 +21,10 @@
 - [2026-11-11 20:11 SGT] Owner merged thin slice 1 (pull request #33, merged by Claude Code at the owner's request after the check passed). Receipt wording settled: no comma (rule 7.5 updated). Owner now runs UAT setup S2 to S8 and test cases U1 to U14.
 - [2026-11-11 20:17 SGT] **Migration 006 applied on Supabase** (UAT S2, at the second attempt; check query true, true); fingerprint `12dbf630129a` recorded (rule B1). Error log entry: run migrations in a fresh tab with nothing highlighted.
 - [2026-11-11 20:42 SGT] Before the owner's Vercel setup (S7): added `public/index.html` and `outputDirectory: public` in `vercel.json`, so the deploy works and only that page (plus `api/`) is public, never the repository's files; UAT case U0 checks it.
+- [2026-11-11 21:03 SGT] Owner's UAT setup: S2 (migration 006), S5, S6, S7 done, cron job confirmed (11:00 UTC). S8 refused the webhook secret (symbols); UAT S4 wording fixed, error log entry added.
+- [2026-11-11 21:31 SGT] Owner's UAT: setup S2 to S8 done (webhook set, no errors); U2, U3 and U4 pass (U4's reply showed in the phone app; Telegram Web was slow to display it, tip added to the checklist).
+- [2026-11-11 21:45 SGT] UAT U5 first attempt: no reply because the webhook had been set again with a typo (`/ape/`); fixed by the owner; error log entry and a getWebhookInfo check added to S8. **To fix after this UAT round (found while tracing):** if the first database question in `/start` ("already signed up?") fails, the person gets no reply; wrap the whole sign-up path so they get "Sorry, that didn't work" (rule 1.3), test-first.
+- [2026-11-11 21:55 SGT] **UAT of thin slice 1: U2 to U10 pass** on the live bot (sign-up, agreement, the daily nudge via Vercel's Run, Done saved with `done_button` and linked to its nudge). Still to run: U11 to U14.
 ### In progress
 - [2026-11-11 17:38 SGT] None.
 - SUPERSEDED [2026-11-11 17:38 SGT] [2026-11-11 17:29 SGT] Migration 005 built and committed; **waiting for the owner to apply it in Supabase** (after the pull request is merged), then its fingerprint is recorded.
