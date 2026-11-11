@@ -163,18 +163,20 @@ function mermaidBlocks(text: string): string[] {
   return [...text.matchAll(/```mermaid\n([\s\S]*?)```/g)].map((m) => m[1] ?? "");
 }
 
-// The one diagram: its boxes (id, official name, status) and arrows.
-type Diagram = { nodes: { id: string; name: string; status: string }[]; edges: [string, string][] };
+// The one diagram: its boxes (id, official name, status, colour class) and arrows.
+type Diagram = { nodes: { id: string; name: string; status: string; colour: string }[]; edges: [string, string][] };
 const DIAGRAM_PATH = "docs/ARCHITECTURE.md";
 
 function readDiagram(repo: Repo): Diagram | null {
   const text = repo.files.get(DIAGRAM_PATH);
   if (text == null) return null;
   const block = mermaidBlocks(text)[0] ?? "";
-  const nodes = [...block.matchAll(/(\w+)\["([^"<]*)<br\/>([^"]*)"\]/g)].map((m) => ({
+  // A box looks like: telegram["Telegram bot<br/>Not started"]:::todo
+  const nodes = [...block.matchAll(/(\w+)\["([^"<]*)<br\/>([^"]*)"\](?::::(\w+))?/g)].map((m) => ({
     id: m[1] ?? "",
     name: (m[2] ?? "").trim(),
     status: (m[3] ?? "").trim(),
+    colour: m[4] ?? "",
   }));
   const edges: [string, string][] = [];
   for (const line of block.split("\n")) {
@@ -308,6 +310,24 @@ export function checkDiagramStatus(repo: Repo, st: Structure): string[] {
     const module = st.modules.find((m) => m.name === node.name);
     if (module && module.status !== node.status) {
       problems.push(`${module.name}: diagram says "${node.status}", Module table says "${module.status}"`);
+    }
+  }
+  return problems;
+}
+
+// D4 [2026-11-11]: each box's colour fits its status words (owner, 11 Nov). Grey
+// (todo) = "Not started"; green (done) = a status starting with "Built"; yellow
+// (part) = anything in between, such as "Design in progress" or "Decisions built".
+// It can't tell whether a status is true, only that words and colour agree.
+export function checkDiagramColour(repo: Repo): string[] {
+  const diagram = readDiagram(repo);
+  if (diagram === null) return [];
+  const problems: string[] = [];
+  for (const node of diagram.nodes) {
+    const expected = node.status === "Not started" ? "todo" : node.status.startsWith("Built") ? "done" : "part";
+    if (node.colour === "") problems.push(`${node.name}: its diagram box has no colour (expected :::${expected})`);
+    else if (node.colour !== expected) {
+      problems.push(`${node.name}: status "${node.status}" should be shown as :::${expected}, not :::${node.colour}`);
     }
   }
   return problems;
@@ -527,6 +547,7 @@ export function runAllChecks(repo: Repo, options: { withGitDates?: boolean } = {
     ...checkRetiredNames(repo, st),
     ...checkSingleDiagram(repo, st),
     ...checkDiagramStatus(repo, st),
+    ...checkDiagramColour(repo),
     ...checkSrcRoot(repo, st),
     ...checkApiNames(repo, st),
     ...checkSqlLocation(repo, st),
