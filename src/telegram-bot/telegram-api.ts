@@ -1,10 +1,11 @@
 // =============================================================================
 // src/telegram-bot/telegram-api.ts: talking to Telegram with plain web requests
 //
-// What it does: [2026-11-11] the three things the bot asks Telegram to do in
+// What it does: [2026-11-11] the things the bot asks Telegram to do in
 // thin slice 1: send a message (with buttons), edit a message the bot sent
-// (which also removes its buttons), and answer a button tap (optionally with a
-// short pop-up). Telegram is called with plain web requests, no library
+// (which also removes its buttons), [2026-11-12] remove only a message's
+// buttons while keeping its words (rule 5.10), and answer a button tap
+// (optionally with a short pop-up). Telegram is called with plain web requests, no library
 // (docs/CONTEXT.md, "Approved libraries").
 //
 // Why it is an interface: the tests swap in a pretend Telegram that only
@@ -20,6 +21,8 @@ export interface TelegramApi {
   // Returns Telegram's number for the new message, so it can be edited later.
   sendMessage(chatId: number, text: string, buttons?: Button[]): Promise<number>;
   editMessage(chatId: number, messageId: number, text: string): Promise<void>;
+  // [2026-11-12] Keep the message's words, take away its buttons (rule 5.10).
+  removeButtons(chatId: number, messageId: number): Promise<void>;
   answerTap(tapId: string, popup?: string): Promise<void>;
 }
 
@@ -55,6 +58,11 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
     // Editing without reply_markup removes the buttons.
     async editMessage(chatId, messageId, text) {
       await call("editMessageText", { chat_id: chatId, message_id: messageId, text });
+    },
+    // [2026-11-12] editMessageReplyMarkup changes only the buttons; an empty
+    // list of buttons leaves the words exactly as they were (rule 5.10).
+    async removeButtons(chatId, messageId) {
+      await call("editMessageReplyMarkup", { chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } });
     },
     async answerTap(tapId, popup) {
       await call("answerCallbackQuery", { callback_query_id: tapId, ...(popup ? { text: popup, show_alert: true } : {}) });

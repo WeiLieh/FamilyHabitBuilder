@@ -4,7 +4,8 @@
 - [2026-11-11 21:58 SGT] **State:** everything is in `main` except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (166 tests, drift clean); database tests T1 to T56 pass locally. Supabase: migrations up to **006** applied and fingerprinted. **Thin slice 1 is live** on Vercel (`family-habit-builder.vercel.app`, webhook set, daily cron 11:00 UTC) for the owner only.
 - [2026-11-11 21:58 SGT] **UAT:** U2 to U10 pass. U11 to U14 wait on the calendar (schedule in `docs/CATCH-UP.md`, section 5).
 - [2026-11-11 21:58 SGT] **First, next session:** (1) the owner's U11 to U14 results; (2) fix the sign-up gap test-first: if `findParent` fails at `/start`, the person gets no reply (wrap the whole start path, rule 1.3); (3) then group C in Claude Chat, or the next slice (Claude's warm reply; the planner's picks and times).
-- [2026-11-11 21:58 SGT] Open for the owner: whether anyone else is in the Vercel team; agreement wording (Q8).
+- [2026-11-11 22:02 SGT] Vercel team checked by the owner: only the owner is a member. Still open: agreement wording (Q8).
+- SUPERSEDED [2026-11-11 22:02 SGT] [2026-11-11 21:58 SGT] Open for the owner: whether anyone else is in the Vercel team; agreement wording (Q8).
 
 ## [2026-11-11 17:15 SGT] Session 11
 ### Done

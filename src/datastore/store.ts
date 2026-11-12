@@ -44,4 +44,7 @@ export interface Store {
   saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate">;
   // The parent tapped "Not today" (rule 3.5).
   recordNotToday(parentId: number, updateId: number): Promise<void>;
+  // [2026-11-12] Did this parent already tap "Not today" on this Singapore day?
+  // Thin slice 1 has one nudge a day, so this tells us that nudge was answered (rule 5.10).
+  notTodayOn(parentId: number, day: string): Promise<boolean>;
 }

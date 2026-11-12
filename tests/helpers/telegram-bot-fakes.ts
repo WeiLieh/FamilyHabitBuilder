@@ -16,21 +16,35 @@ import type { Button, TelegramApi } from "../../src/telegram-bot/telegram-api.js
 export type TelegramCall =
   | { kind: "send"; chatId: number; text: string; buttons: Button[] }
   | { kind: "edit"; chatId: number; messageId: number; text: string }
+  | { kind: "removeButtons"; chatId: number; messageId: number } // [2026-11-12] the text stays, only the buttons go
   | { kind: "answer"; tapId: string; popup: string | null };
 
 export class FakeTelegram implements TelegramApi {
   calls: TelegramCall[] = [];
   // Telegram IDs whose messages fail to send (e.g. the parent blocked the bot).
   failFor = new Set<number>();
+  // [2026-11-12] When true, removing a message's buttons fails (e.g. Telegram is briefly down).
+  failRemoveButtons = false;
+  // [2026-11-12] When true, only the next message fails to send; later ones work.
+  failNextSend = false;
 
   private nextMessageId = 500;
   async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<number> {
     if (this.failFor.has(chatId)) throw new Error(`Telegram refused to send to ${chatId}`);
+    if (this.failNextSend) {
+      this.failNextSend = false;
+      throw new Error("Telegram refused this one message");
+    }
     this.calls.push({ kind: "send", chatId, text, buttons });
     return this.nextMessageId++; // Telegram's number for the new message
   }
   async editMessage(chatId: number, messageId: number, text: string): Promise<void> {
     this.calls.push({ kind: "edit", chatId, messageId, text });
+  }
+  // [2026-11-12] Keep the message's words, take away only its buttons.
+  async removeButtons(chatId: number, messageId: number): Promise<void> {
+    if (this.failRemoveButtons) throw new Error("Telegram refused to remove the buttons");
+    this.calls.push({ kind: "removeButtons", chatId, messageId });
   }
   async answerTap(tapId: string, popup?: string): Promise<void> {
     this.calls.push({ kind: "answer", tapId, popup: popup ?? null });

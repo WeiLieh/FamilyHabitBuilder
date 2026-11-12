@@ -20,6 +20,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { SETTINGS_KEYS_THE_DATABASE_READS, THIN_SLICE_NUDGE, WEEK_ONE_COHORT, WEEK_ONE_VARIANTS, DEFAULT_WEEKLY_WRAP_UP, AGREEMENT_WORDING_VERSION } from "../settings.js";
 import { currentConsent, type ConsentRow } from "./consents.js";
 import type { NudgeCandidate, SignUpResult, Store } from "./store.js";
+import { addDays, sgtInstant } from "../sgt.js";
 
 // Stop with a clear message if Supabase reports an error.
 function check<T>(r: { data: T; error: { message: string } | null }, what: string): T {
@@ -165,6 +166,24 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       });
       // 23505 = "already saved": Telegram resent the same tap (rule 8.6).
       if (r.error && (r.error as { code?: string }).code !== "23505") throw new Error(`Recording Not today failed: ${r.error.message}`);
+    },
+
+    // [2026-11-12] Rule 5.10: any "not_today" event for this parent between
+    // midnight and the next midnight, Singapore time.
+    async notTodayOn(parentId, day) {
+      const type = need(await db.from("event_types").select("id").eq("name", "not_today").single(), "Reading the event type");
+      const rows = check(
+        await db
+          .from("events")
+          .select("id")
+          .eq("parent_id", parentId)
+          .eq("event_type_id", type.id)
+          .gte("occurred_at", sgtInstant(day, 0).toISOString())
+          .lt("occurred_at", sgtInstant(addDays(day, 1), 0).toISOString())
+          .limit(1),
+        "Checking for Not today",
+      );
+      return (rows ?? []).length > 0;
     },
   };
 }

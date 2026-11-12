@@ -31,6 +31,7 @@ export const WORDS = {
   notToday: "😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow.", // B1 part 2
   expired: "Reminder has expired. Tap a behaviour on the keyboard to log today.", // owner, 9 Nov
   alreadySaved: "Already saved.", // draft
+  alreadyAnswered: "Already answered.", // [2026-11-12] draft, rule 5.10
   didNotSave: "Sorry, that didn't save. Please try again.", // draft, rule 1.3
   signUpFailed: "Sorry, that didn't work. Please try again.", // draft, rule 1.3
   nudgeNotSaved: "Sorry, this reminder couldn't be saved, so its buttons won't work. Your next one comes tomorrow.", // draft, rule 1.3

@@ -2,6 +2,14 @@
 
 ## Open
 
+### [2026-11-12 20:59 SGT] Two taps at the same instant can both be saved
+- **Issue:** [2026-11-12 20:59 SGT] The bot checks "already answered?" before saving, but two taps arriving at exactly the same moment can both pass the check. The database has no rule against a second log for the same nudge message (`habit_logs.from_message_id` is not unique), and a "not today" event is not linked to its nudge (privacy review of rule 5.10, findings P1 and P2; owner agreed to log it, 12 Nov).
+- **Impact:** [2026-11-12 20:59 SGT] Low now (one tester). Two logs for one nudge, two "not today" events, or both for one nudge; streaks and metrics could count wrongly.
+- **Workaround:** [2026-11-12 20:59 SGT] Fix in migration 007, test-first: one log per nudge message, and "not today" linked to its nudge and saved once. The bot's own check (rule 5.10, "Already answered.") already stops taps that arrive one after the other.
+### [2026-11-12 20:59 SGT] The agreement can wrongly say "didn't save"
+- **Issue:** [2026-11-12 20:59 SGT] If Telegram fails after the "I agree" tap is saved, the parent is told "Sorry, that didn't save" (`src/telegram-bot/handle-update.ts`, the agree path), which is untrue (rule 1.3) (privacy review of rule 5.10, finding P4; owner agreed to log it, 12 Nov).
+- **Impact:** [2026-11-12 20:59 SGT] Low: the parent taps again; the agreement is recorded twice (the latest answer counts, rule 11.13).
+- **Workaround:** [2026-11-12 20:59 SGT] Fix it in the sign-up gap pull request (next), test-first, the same way as rule 5.10.
 ### [2026-11-11 18:14 SGT] The real database connection is checked only by the owner's UAT
 - **Issue:** [2026-11-11 18:14 SGT] `src/datastore/supabase-store.ts` (thin slice 1) talks to the real Supabase project, so the app tests use a pretend store instead. The database functions it calls are tested (T1 to T56), but the connection code itself is not.
 - **Impact:** [2026-11-11 18:14 SGT] A mistake in a column name or a query would show only when the owner runs the UAT (src/telegram-bot/UAT-thin-slice-1.md), not in `npm run check`.

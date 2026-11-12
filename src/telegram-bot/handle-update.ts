@@ -7,6 +7,8 @@
 //   - "I agree": record the recording agreement, say when the reminder comes
 //   - ✅ Done: save today's log from that nudge, show the fixed receipt (rules 5.4, 7.5)
 //   - 😴 Not today: record it, show the comforting note (rule 3.5)
+//   [2026-11-12] For both, the nudge keeps its words and loses its buttons, and
+//   the receipt or note arrives as a new message below it (rule 5.10).
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
 // See src/telegram-bot/SPEC.md, "Build: thin slice 1".
 //
@@ -102,39 +104,69 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
     return;
   }
 
-  if (action === "done") {
-    if (await store.logExistsFor(nudge.messageId)) {
-      await telegram.answerTap(t.tapId, WORDS.alreadySaved);
-      return;
-    }
-    await saveOrSaySorry(t, deps, async () => {
-      const saved = await store.saveDoneLog({ parentId: parent.id, nudgeId: nudge.nudgeId, day, messageId: nudge.messageId, updateId: t.updateId });
-      if (saved === "duplicate") {
-        await telegram.answerTap(t.tapId, WORDS.alreadySaved);
-        return;
-      }
-      // The receipt replaces the nudge, which also removes its buttons (rule 7.5).
-      await telegram.editMessage(t.chatId, t.messageId, WORDS.receipt(nudge.nudgeName));
-      await telegram.answerTap(t.tapId);
-    });
+  // [2026-11-12] Rule 5.10: once a nudge is answered one way, a tap on its other
+  // button saves nothing (its buttons may still show if removing them failed).
+  const doneAlready = await store.logExistsFor(nudge.messageId);
+  const notTodayAlready = await store.notTodayOn(parent.id, day);
+  if ((action === "skip" && (doneAlready || notTodayAlready)) || (action === "done" && notTodayAlready)) {
+    await telegram.answerTap(t.tapId, WORDS.alreadyAnswered);
     return;
   }
 
-  await saveOrSaySorry(t, deps, async () => {
-    await store.recordNotToday(parent.id, t.updateId);
-    await telegram.editMessage(t.chatId, t.messageId, WORDS.notToday);
-    await telegram.answerTap(t.tapId);
-  });
+  if (action === "done") {
+    if (doneAlready) {
+      await telegram.answerTap(t.tapId, WORDS.alreadySaved);
+      return;
+    }
+    let saved: "saved" | "duplicate" | undefined; // what the database said
+    const ok = await saveOrSaySorry(t, deps, async () => {
+      saved = await store.saveDoneLog({ parentId: parent.id, nudgeId: nudge.nudgeId, day, messageId: nudge.messageId, updateId: t.updateId });
+    });
+    if (!ok) return;
+    if (saved === "duplicate") {
+      await telegram.answerTap(t.tapId, WORDS.alreadySaved);
+      return;
+    }
+    // [2026-11-12] The receipt is a new message below the nudge (rules 5.10, 7.5).
+    await replyBelowNudge(t, deps, WORDS.receipt(nudge.nudgeName));
+    return;
+  }
+
+  const ok = await saveOrSaySorry(t, deps, () => store.recordNotToday(parent.id, t.updateId));
+  if (ok) await replyBelowNudge(t, deps, WORDS.notToday); // [2026-11-12] rule 5.10
+}
+
+// [2026-11-12] Rule 5.10: once a tap is saved, the nudge keeps its words and
+// loses its buttons (first, so it can't be tapped again), then the reply arrives
+// as a new message. The answer is already saved, so a Telegram failure here is
+// written to the log but never reported to the parent as "didn't save" (rule 1.3:
+// that would be untrue, and they would tap again).
+async function replyBelowNudge(t: Extract<Incoming, { kind: "tap" }>, { telegram }: BotDeps, text: string): Promise<void> {
+  try {
+    await telegram.removeButtons(t.chatId, t.messageId);
+  } catch (error) {
+    console.error("Saved, but removing the nudge's buttons failed:", error instanceof Error ? error.message : error);
+  }
+  try {
+    await telegram.sendMessage(t.chatId, text);
+  } catch (error) {
+    console.error("Saved, but sending the reply failed:", error instanceof Error ? error.message : error);
+  }
+  // Stop Telegram's loading spinner on the button.
+  await telegram.answerTap(t.tapId).catch((error) => console.error("Answering the tap failed:", error instanceof Error ? error.message : error));
 }
 
 // If saving fails, say so honestly and leave the buttons, so the parent can try
 // again. Never show a receipt for something that wasn't saved (rule 1.3).
-async function saveOrSaySorry(t: Extract<Incoming, { kind: "tap" }>, { telegram }: BotDeps, work: () => Promise<void>): Promise<void> {
+// [2026-11-12] Returns true when the work succeeded, so the caller replies only then.
+async function saveOrSaySorry(t: Extract<Incoming, { kind: "tap" }>, { telegram }: BotDeps, work: () => Promise<unknown>): Promise<boolean> {
   try {
     await work();
+    return true;
   } catch (error) {
     console.error("Saving a tap failed:", error instanceof Error ? error.message : error);
     await telegram.sendMessage(t.chatId, WORDS.didNotSave);
     await telegram.answerTap(t.tapId).catch(() => undefined);
+    return false;
   }
 }
