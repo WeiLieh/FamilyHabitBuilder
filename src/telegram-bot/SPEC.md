@@ -10,6 +10,7 @@
   - `onboarding.ts`: sign-up screens 2 to 11 on the sign-up draft (Change name, up to 3 children, ticking behaviours, the default times, the plan, "I agree", Start right now, All set). Tests: tests/telegram-bot-onboarding.test.ts (screens 2 to 9), tests/telegram-bot-start-now.test.ts (screens 10 and 11); helper tests/helpers/telegram-bot-onboarding.ts walks a pretend person to any screen.
   - `daily-nudge.ts` also runs the sign-up clean-up (temporary home until pull request 3, decision D4). Tests: tests/telegram-bot-daily-nudge.test.ts.
   - `public/my-page.html` and `public/settings.html`: placeholder pages titled "My Page" and "Settings" (owner, 12 Nov); "Open my page ↗" links to the first.
+  - [UAT-onboarding.md](UAT-onboarding.md): [2026-11-12 23:16 SGT] the owner's setup steps (S1 to S5) and test cases (U17 to U28) on the live bot.
 - [2026-11-11 18:13 SGT] **Thin slice 1** (built 11 Nov; owner checks it with [UAT-thin-slice-1.md](UAT-thin-slice-1.md)):
   - `updates.ts`: makes sense of what Telegram sends (start, message, tap, ignore). Tests: tests/telegram-bot-webhook.test.ts.
   - [2026-11-12 23:07 SGT] `handle-update.ts`: what the bot does with each update: sends sign-up to `onboarding.ts`, then Done, Not today, "Unrecognised text.". Tests: tests/telegram-bot-onboarding.test.ts, tests/telegram-bot-done.test.ts.
