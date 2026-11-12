@@ -1,17 +1,14 @@
 # Experiments
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/experiments-EXPERIMENTS-superseded.md](../../docs/archive/experiments-EXPERIMENTS-superseded.md) to keep this file short (owner approved).
+
 [2026-10-31 19:18 SGT] **Moved** from `docs/EXPERIMENTS.md` to this folder, next to the module's rules ([SPEC.md](SPEC.md)), on the owner's decision.
 
 [2026-10-31 19:06 SGT] **What this file is now:** a plain-English description of the experiments we might run and the starting values, for the owner. The **numbers live once, in code** (`src/settings.ts`, rule 1.4), and the rules for running experiments are in the Experiments module, [src/experiments/SPEC.md](SPEC.md). The paragraph below is history (marked SUPERSEDED).
 
-SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are defined. The nudge engine reads its experiment settings from this file (see `docs/SPEC.md`, Constraints, Experiments). There is no admin screen: to start, stop or change an experiment, edit this file.
-
 ## How experiments work
 - [2026-10-24 18:26 SGT] Each experiment tests one thing (for example, a nudge wording, a reward or the surprise rate) by giving different **variants** to different parents.
-- SUPERSEDED [2026-10-31 19:09 SGT] (now rule 11.6 in src/experiments/SPEC.md) [2026-10-24 18:26 SGT] When a parent first meets an experiment, they are randomly assigned to one variant and stay in it for the life of the experiment (sticky assignment), so results are not mixed up.
 - [2026-11-09 00:10 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx` (version 1 deprecated, in `docs/archive/`).
-- SUPERSEDED [2026-11-09 00:10 SGT] [2026-10-31 19:09 SGT] Correction: the metrics file is now `src/telemetry/Family_Habit_App_Success_Metrics.xlsx`.
-- SUPERSEDED [2026-10-31 19:20 SGT] (path corrected above) [2026-10-24 18:26 SGT] Outcomes are compared with the metrics in `docs/Family_Habit_App_Success_Metrics.xlsx` (for example, metric 8, nudge-to-action rate, split by variant).
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
@@ -69,20 +66,14 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
 - [2026-10-31 19:06 SGT] Trial length (D9, rule 10.3): 5 full weeks per parent from their first full Monday; the week-one friends group, about 12 parents.
-- SUPERSEDED [2026-10-31 19:06 SGT] [2026-10-31 18:00 SGT] Trial length (D9, rule 10.3): 5 full weeks per family from its first full Monday; 5 to 10 friends' families.
 - [2026-11-09 18:16 SGT] Weekly Wrap Up (rule 3.12): Sunday, default 8:00pm; the parent can change the time (any 30-minute block, 7:00am to 9:30pm). No on/off switch of its own: the one Pause switch stops it. Not a nudge message: no slot, not counted toward the 3-a-day cap. In `src/settings.ts` (`WEEKLY_WRAP_UP_WEEKDAY`, `DEFAULT_WEEKLY_WRAP_UP`).
-- SUPERSEDED [2026-11-09 18:16 SGT] [2026-10-31 17:53 SGT] Weekly Wrap Up (rule 3.12): Sunday, default 8:00pm, on by default; the parent can change the time (any 30-minute block, 7:00am to 9:30pm) or turn it off. Not a nudge message: no slot, not counted toward the 3-a-day cap. In `src/settings.ts` (`WEEKLY_WRAP_UP_WEEKDAY`, `DEFAULT_WEEKLY_WRAP_UP`). Possible future experiment: another day or default time.
 - [2026-10-28 22:23 SGT] Nudge slots: 30-minute blocks from 7:00am to 9:30pm (last start), up to 3 per schedule, at least 1 hour apart, at least 1 in total. Defaults: school days 7:00am, 7:00pm, 9:00pm; non-school days 9:00am, 12:30pm, 7:00pm.
 - [2026-10-28 22:23 SGT] Deliberate behaviours are nudged on Friday (planning) and Sunday (only if still due). Possible future experiment: other patterns (e.g. a midweek nudge).
 - [2026-10-28 22:23 SGT] A quick behaviour logged on each of the last 7 days is nudged only if it was not nudged yesterday.
-- SUPERSEDED [2026-10-31 19:09 SGT] (rule 1.4: the code holds the values, this file describes them) [2026-10-31 18:59 SGT] The code's copy of these values is `src/settings.ts` (moved from `shared/` on 31 Oct). Change both together; a test checks the choice limits.
-- SUPERSEDED [2026-10-31 18:59 SGT] [2026-10-25 06:25 SGT] The code's copy of these values is `shared/settings.ts`. Change both together; a test checks the choice limits.
 These apply to everyone who is not in an experiment that changes them.
 - [2026-10-24 22:18 SGT] Choice limits: up to 2 quick and up to 1 deliberate behaviour at a time; at least 1 in total. Choosing more is an unlock (rule WIP).
 - [2026-10-24 18:26 SGT] Maximum nudges per day: 3
-- [2026-10-24 18:26 SGT] SUPERSEDED [2026-10-29 20:58 SGT] (spec v1.8: no random surprise bonus) Surprise bonus rate: 20% of logged actions
 - [2026-10-24 22:18 SGT] Quick nudges (4): parent picks every day or every 2 days for each. Hidden ideal 1 per day, floor 1 per 2 days. Deliberate nudges (5, including spending quality time): 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
-- [2026-10-24 18:26 SGT] SUPERSEDED [2026-10-24 22:18 SGT] Quick actions: parent picks every day or every 2 days. Hidden ideal 1 per day, floor 1 per 2 days.
 - [2026-10-24 18:26 SGT] Deliberate actions: 1 or 2 per week in total. Hidden ideal 1 per week, no floor.
 - [2026-10-24 18:26 SGT] Streak gap allowed (quick actions): up to 2 missed days in a row
 
@@ -113,7 +104,6 @@ These apply to everyone who is not in an experiment that changes them.
 **What a parent picks**
 - Limits: how many quick and deliberate behaviours (now 2 + 1)
 - [2026-10-31 18:59 SGT] Which nudges start unlocked (now all 9, rule 2.2 changed 29 Oct; unlocks are out of the MVP), and how an unlock is earned
-- SUPERSEDED [2026-10-31 18:59 SGT] Which nudges start unlocked (now 6 of 9), and how an unlock is earned
 - Frequencies offered (every day / every 2 days; 1 or 2 times a week)
 - Hidden ideal and floor values
 

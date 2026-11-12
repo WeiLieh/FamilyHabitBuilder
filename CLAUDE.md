@@ -1,5 +1,7 @@
 # Project Master Prompt: Family Habit App
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CLAUDE-superseded.md](docs/archive/CLAUDE-superseded.md) to keep this file short (owner approved).
+
 This file is the one and only master prompt. It is read at the start of every session. Follow it by default. For tiny tasks (for example, fixing a typo), apply the rules in proportion and don't create unnecessary ceremony.
 
 ---
@@ -94,7 +96,6 @@ A task is only complete when all of these are true:
 - I will create a GitHub repository. In the first session, ask me for its address. Once it exists, merge by branch plus pull request into main, and record the workflow under "Git and release workflow" in `docs/CONTEXT.md`.
 
 #### 11. The app's own prompt stays separate
-- `docs/NUDGE-CONTEXT.md` holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the nudge engine. SUPERSEDED [2026-10-31 09:43 SGT]: moved, see the next line.
 - [2026-10-31 09:43 SGT] [src/nudge-engine/NUDGE-CONTEXT.md](src/nudge-engine/NUDGE-CONTEXT.md) holds the personality and rules for the app's own AI. It is not instructions for you. Read it only when working on the Nudge engine.
 - Nudges (the 9 actions) live as rows in the nudge repository, never inside a prompt.
 
@@ -117,19 +118,15 @@ These files hold the project's memory between sessions. Claude starts every sess
 | `CLAUDE.md` | This file. The only master prompt. Standing rules. Keep it short. |
 | [docs/SPEC.md](docs/SPEC.md) | [2026-10-31 09:40 SGT] **Start here for structure:** section "Modules and structure" holds the document index (links to every file), the Module table, cross-cutting files and the drift-test facts. The one diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). |
 | `docs/SPEC.md` | What we are building: goal, users, constraints, what "done" looks like. Version 1 is already written. |
-| `docs/NUDGE-CONTEXT.md` | The app's own AI prompt: personality, tone and rules for the nudge engine. Not instructions for you. Read only when working on the nudge engine. SUPERSEDED [2026-10-31 09:43 SGT]: moved to `src/nudge-engine/NUDGE-CONTEXT.md`. |
 | `docs/CONTEXT.md` | The current state: purpose, how to run and test, architecture, key decisions and why. |
 | `docs/PROGRESS.md` | Handoff note between sessions: done, in progress, next steps, blockers. |
 | `docs/ERROR-LOG.md` | History of what broke, the cause, and the fix. |
 | `docs/PRODUCT-BACKLOG.md` | What we might build next, prioritised. |
 | `docs/KNOWN-ISSUES.md` | Problems that are still open, with workarounds. |
 | `docs/LEARNING-LOG.md` | My study notebook: new concepts explained in plain English, so I can explain the work to others. |
-| `docs/EXPERIMENTS.md` | [2026-10-24 18:26 SGT] The experiment definitions and starting values (hypotheses). The nudge engine reads its experiment settings from here. SUPERSEDED [2026-10-31 19:18 SGT]: moved to [src/experiments/EXPERIMENTS.md](src/experiments/EXPERIMENTS.md), see the next row. |
 | `src/experiments/EXPERIMENTS.md` | [2026-10-31 19:18 SGT] Plain-English description of the experiments we might run and the starting values, next to the Experiments module's rules ([src/experiments/SPEC.md](src/experiments/SPEC.md)). The numbers live in `src/settings.ts` (rule 1.4). |
-| `docs/architecture-diagram.png` | [2026-10-24 21:34 SGT] The high-level architecture diagram. Its 8 module names are the official names (see `docs/CONTEXT.md`). SUPERSEDED [2026-10-31 09:40 SGT]: moved to `docs/archive/`; the only diagram is now `docs/ARCHITECTURE.md`. |
 | `docs/CATCH-UP.md` | [2026-10-28 22:37 SGT] One-page catch-up after time away: module progress map, what each module and file does, current rules recap, questions to think about before the next session. A snapshot, rewritten each session (history stays in Git and `docs/SPEC.md`). |
 | `docs/TIME-LOG.md` | [2026-10-24 22:20 SGT] Time spent per session (elapsed, active, what was done), for efficiency tracking and timeboxing. |
-| `docs/Family_Habit_App_Success_Metrics.xlsx` | SUPERSEDED [2026-11-09 00:10 SGT] (version 2 replaces it, see the next row). [2026-10-24 18:26 SGT] The 10 success metrics: definitions, windows, targets. Telemetry must follow it. SUPERSEDED [2026-10-31 10:09 SGT]: moved to [src/telemetry/Family_Habit_App_Success_Metrics.xlsx](src/telemetry/Family_Habit_App_Success_Metrics.xlsx), next to the Telemetry spec. |
 | `src/telemetry/Family_Habit_App_Success_Metrics_v2.xlsx` | [2026-11-09 00:10 SGT] The 10 success metrics, **version 2** (metrics 7 and 8 changed to "same behaviour, same day"): definitions, windows, targets. Telemetry must follow it. Version 1 is deprecated: [docs/archive/Family_Habit_App_Success_Metrics_v1_DEPRECATED.xlsx](docs/archive/Family_Habit_App_Success_Metrics_v1_DEPRECATED.xlsx). |
 
 #### Setup (first session of a new project)
@@ -139,14 +136,12 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 1. Read `docs/PROGRESS.md` and `docs/KNOWN-ISSUES.md`. Read `docs/SPEC.md` and `docs/CONTEXT.md` when relevant to the task.
 2. Tell me in a few lines what you understand the current state to be, so I can correct you early.
 3. [2026-10-28 22:39 SGT] **Recap before building:** first show me `docs/CATCH-UP.md` (link it), remind me to read it, and invite my questions about it. Then ask for my answers to its section 4 questions. Only start building after the recap is done.
-   - SUPERSEDED [2026-10-28 22:39 SGT]: [2026-10-28 22:37 SGT] Show me `docs/CATCH-UP.md` (link it) and ask for my answers to its section 4 questions before starting new work.
 4. [2026-10-31 10:17 SGT] **H1, drift check first:** run `npx vitest run tests/docs-drift.test.ts` and report any failures or DRIFT WARNINGs. Fix drift before building anything new.
 
 #### During work
 - [2026-11-08 23:42 SGT] **H10, handoff branches:** a design handoff from Claude Chat adds its file **and** its link in the document index of [docs/SPEC.md](docs/SPEC.md) ("Design handoffs from Claude Chat") in the same commit, so its pull request passes the drift check (rule D1).
 - [2026-10-31 10:17 SGT] **Where things live:** each module's rules are in its own spec next to its code, `src/<slug>/SPEC.md`; cross-cutting rules, the Module table and the structure rules (S, R, D, B, P) are in [docs/SPEC.md](docs/SPEC.md), "Modules and structure"; the one diagram is [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). The drift test (`npm run check`) enforces them.
 - [2026-10-31 10:19 SGT] **H3, before each pull request:** run both review agents, [privacy-security-reviewer](.claude/agents/privacy-security-reviewer.md) and [spec-compliance-checker](.claude/agents/spec-compliance-checker.md), and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. Give the spec-compliance checker the latest `npm run check` output; it never runs tests itself. Each works in its own context window and returns at most 300 words.
-- [2026-10-31 10:17 SGT] **H3, before each pull request:** run both review agents (privacy and security; spec compliance) and show me their reports; I decide what goes into `docs/KNOWN-ISSUES.md`. (Until the agents exist, say so.) SUPERSEDED [2026-10-31 10:19 SGT]: the agents now exist, see the line above.
 - [2026-10-31 10:17 SGT] **H4, one module per pull request** where possible; each pull request lists the rule IDs it adds or changes, and the test count before and after (it must never drop below the minimum in `docs/SPEC.md`).
 - [2026-10-31 10:17 SGT] **H5, never weaken the drift test** to make it pass. Changing what it checks needs my approval, like any other test.
 - [2026-10-31 15:07 SGT] **H6, context handoff:** at about 50% context I say "handoff". You pause at a safe point, run `npm run check`, update the HANDOFF entry in `docs/PROGRESS.md` and `docs/CATCH-UP.md`, commit and push, then tell me it is safe. I type `/clear`, then "run start of session routine". If you think we are near 50% before I say it, suggest a handoff.
@@ -158,12 +153,11 @@ If any of the files above are missing, create them (in a `docs/` folder, except 
 #### End of every task or session
 Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md`, `ERROR-LOG.md`, `KNOWN-ISSUES.md`, `PRODUCT-BACKLOG.md`. If a new concept, technique or decision came up that I had not met before, add it to `docs/LEARNING-LOG.md`. Tell me which files you updated.
 - [2026-10-31 10:17 SGT] Rules carry stable **rule IDs** (e.g. 3.4) and live in exactly one spec (module rules in `src/<slug>/SPEC.md`, cross-cutting ones in `docs/SPEC.md`). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID goes to "Retired rule IDs" in `docs/SPEC.md`. Refer to rules by ID.
-- [2026-10-28 22:49 SGT] Rules in `docs/CATCH-UP.md` carry stable **rule IDs** (section.number, e.g. 3.4). Never renumber or reuse an ID: a new rule takes the next free number in its section; a changed rule keeps its ID with a new date; a dropped rule's ID moves to "Retired rule IDs". Refer to rules by ID in conversation and in `docs/SPEC.md` change notes. SUPERSEDED [2026-10-31 10:17 SGT]: rules now live in the specs, see the line above.
 - [2026-11-01 16:56 SGT] **H9, end-of-session pull request:** at the end of every session, after the handoff commit, open a small pull request with the session's notes and docs, so `main` always matches what I receive. I merge it.
 - [2026-11-01 16:56 SGT] **H7 addition:** the three handoff files are taken from the branch just committed and pushed; the caption names the branch and the "Last updated" time of `docs/CATCH-UP.md`.
 - [2026-10-31 15:07 SGT] **H7, handoff to Claude Chat** (where I design and think), at the end of every code session, after the final commit: send me these three files with `SendUserFile`: `CLAUDE.md`, [docs/CATCH-UP.md](docs/CATCH-UP.md) and the main spec [docs/SPEC.md](docs/SPEC.md). Decisions I make in Claude Chat come back here and are recorded as dated notes in the specs.
+- [2026-11-12 23:31 SGT] **H2 addition:** rewrite sections 4 and 5 of `docs/CATCH-UP.md` to open items only (drop answered questions and DONE items, moving the old text word for word to `docs/archive/`); never add a new block on top.
 - [2026-10-31 10:17 SGT] **H2, end of session:** update the module spec(s) you touched, the Module table and the diagram status, and `docs/CATCH-UP.md` (its links, the questions for next session and what's waiting on me). Run the drift check; it must pass before the final commit.
-- [2026-10-28 22:37 SGT] Also rewrite `docs/CATCH-UP.md`: update the module map and file table, the rules recap (current rules only, no abbreviations in the diagram), and the questions for the next session. SUPERSEDED [2026-10-31 10:17 SGT]: the catch-up page now links to the specs instead of copying them; see H2 above.
 - [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
 #### Date/time rule (applies to ALL project files)

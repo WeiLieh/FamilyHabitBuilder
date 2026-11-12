@@ -1,5 +1,7 @@
 # Error Log
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/ERROR-LOG-superseded.md](archive/ERROR-LOG-superseded.md) to keep this file short (owner approved).
+
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 ## [2026-11-11 21:45 SGT] The bot stopped answering after the webhook was set again
@@ -63,4 +65,3 @@ One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 - **Fix:** [2026-10-24 21:19 SGT] Added `"rootDir": "."` to `tsconfig.build.json`. The check then passed.
 - **How to prevent it:** [2026-10-24 21:19 SGT] When adding a new TypeScript settings file that writes output, always set `rootDir` and `outDir` together.
 
-- [2026-10-24 17:39 SGT] No errors yet. SUPERSEDED [2026-10-24 21:19 SGT]

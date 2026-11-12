@@ -1,5 +1,7 @@
 # Web app: module spec
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/web-app-SPEC-superseded.md](../../docs/archive/web-app-SPEC-superseded.md) to keep this file short (owner approved).
+
 [2026-10-31 10:12 SGT] The **current rules** of the Web app module: plain web pages a parent opens from a one-tap link. Rule IDs are permanent. The dated history of each decision is in the change notes of the master spec, [docs/SPEC.md](../../docs/SPEC.md).
 
 ## Purpose
@@ -26,4 +28,3 @@
 
 ## Rules
 - **9.1** [2026-11-08 22:34 SGT] Plain, unstyled pages that show the right data; **the look comes from the owner later**. **My page** is the parent's dashboard (`/mypage` in Telegram). **Settings lives inside My page**: behaviours, how often (rule 2.5), times, Weekly Wrap Up and **pause**, reusing the Telegram sign-up conversations; these are the same settings as sign-up screen 8 (rule 3.14). "Delete my data" and **"delete a photo"** live here too. `/pause` and `/settings` in Telegram link here (the pause speed bump); resume stays in Telegram (rule 5.7). *(decided 24 Oct, changed 8 Nov)* Not yet tested (nothing built).
-- SUPERSEDED [2026-11-08 22:34 SGT] **9.1** Plain, unstyled pages that show the right data; **the look comes from the owner later**. "Delete my data" lives here (WIP until UI design). *(decided 24 Oct)* Not yet tested (nothing built).

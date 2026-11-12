@@ -1,5 +1,7 @@
 # Nudge repository: module spec
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/nudge-repository-SPEC-superseded.md](../../docs/archive/nudge-repository-SPEC-superseded.md) to keep this file short (owner approved).
+
 [2026-10-31 09:56 SGT] The **current rules** of the Nudge repository module: the 9 nudges and their examples, which the owner edits in Supabase. Rule IDs are permanent. The dated history of each decision is in the change notes of the master spec, [docs/SPEC.md](../../docs/SPEC.md).
 
 ## Purpose
@@ -20,6 +22,5 @@
 - **4.3** Each nudge has these settings: self-report allowed (yes/no), photo upload allowed (yes/no, plus a photo idea), description limit (280), active (yes/no), and **starts unlocked (yes/no)**. Which nudges start unlocked is rule 2.2 (Nudge engine). *(decided 24 Oct, 25 Oct; reworded 29 Oct)* Tested by: tests/nudge-repository.test.ts, src/datastore/supabase/tests/nudge-repository.test.sql
 - **4.4** At least **3 active examples** per nudge: the database blocks edits that go below 3; the app flags new nudges below 3 (the nudge keeps working). *(decided 25 Oct)* Tested by: src/datastore/supabase/tests/nudge-repository.test.sql (the block), tests/nudge-repository.test.ts (the flag). Delivering the alert to the owner is not built yet (see docs/KNOWN-ISSUES.md).
 - **4.5** [2026-11-01 09:56 SGT] Examples are **time-agnostic** (no "at dinner", "before bedtime"). "Today" is not a time word, because it fits any slot of the day. *(decided 28 Oct, clarified 1 Nov)* Tested by: tests/nudge-repository-first-load.test.ts (first-load examples). Examples added later in Supabase are not checked for time words.
-- SUPERSEDED [2026-11-01 09:56 SGT] **4.5** Examples are **time-agnostic** (no "at dinner", "before bedtime"). *(decided 28 Oct)* Tested by: tests/nudge-repository-first-load.test.ts (first-load examples). Examples added later in Supabase are not checked for time words.
 - **4.6** Never delete: **retire** (active = no). A broken row is left out and reported; the rest keeps working. *(decided 25 Oct)* Tested by: tests/nudge-repository.test.ts (broken rows, retired nudges and examples), src/datastore/supabase/tests/nudge-repository.test.sql (deleting a nudge with examples is refused)
 - **4.7** [2026-11-12 22:17 SGT] **Start-now lines.** Each **quick** nudge has one fixed "Start right now" line, shown at the end of sign-up (screen 10), with `{child}` replaced by one child's name; deliberate nudges have none. The owner's four lines of 12 Nov are loaded by migration 007; the owner edits them in Supabase like any nudge setting. Never written by Claude (owner: "for now"). *(decided 12 Nov)* Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T73).
