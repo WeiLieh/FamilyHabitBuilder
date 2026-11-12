@@ -3,8 +3,11 @@
 //
 // What it does: [2026-11-11] decides the bot's response to one update, already
 // made sense of by updates.ts:
-//   - /start CODE: sign up with the invite, then show the agreement (rules 1.1, 11.9)
-//   - "I agree": record the recording agreement, say when the reminder comes
+//   - [2026-11-12] /start, typed names and sign-up buttons from someone who is
+//     not a parent yet: the onboarding screens 2 to 11 (onboarding.ts, rule 8.13).
+//     The thin-slice sign-up ("sign up at /start, agree later") is removed
+//     (CLAUDE.md rule 12).
+//   - Screen 10's buttons from a new parent: "I've started!" and "Not now" (onboarding.ts)
 //   - ✅ Done: save today's log from that nudge, show the fixed receipt (rules 5.4, 7.5)
 //   - 😴 Not today: record it, show the comforting note (rule 3.5)
 //   [2026-11-12] For both, the nudge keeps its words and loses its buttons, and
@@ -23,6 +26,7 @@ import type { TelegramApi } from "./telegram-api.js";
 import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
 import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
+import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./onboarding.js";
 
 export type BotDeps = { store: Store; telegram: TelegramApi; now: Date };
 
@@ -32,7 +36,7 @@ export async function handleUpdate(incoming: Incoming, deps: BotDeps): Promise<v
     case "ignore":
       return; // not a person's message: stay silent
     case "message":
-      await telegram.sendMessage(incoming.chatId, WORDS.unrecognised);
+      await handleMessage(incoming, deps);
       return;
     case "start":
       await handleStart(incoming, deps);
@@ -43,7 +47,8 @@ export async function handleUpdate(incoming: Incoming, deps: BotDeps): Promise<v
   }
 }
 
-async function handleStart(s: Extract<Incoming, { kind: "start" }>, { store, telegram }: BotDeps): Promise<void> {
+async function handleStart(s: Extract<Incoming, { kind: "start" }>, deps: BotDeps): Promise<void> {
+  const { store, telegram } = deps;
   // Someone already signed up sends /start again (e.g. reopens the invite link).
   // [2026-11-12] If the database can't even answer this, say so honestly
   // instead of staying silent (rule 1.3; the sign-up gap found on 11 Nov).
@@ -59,26 +64,29 @@ async function handleStart(s: Extract<Incoming, { kind: "start" }>, { store, tel
     await telegram.sendMessage(s.chatId, WORDS.alreadySignedUp);
     return;
   }
-  if (s.code === null) {
-    await telegram.sendMessage(s.chatId, WORDS.badCode);
-    return;
+  await startOnboarding(s, deps); // [2026-11-12] screens 2 and 3, or "Welcome back!"
+}
+
+// [2026-11-12] Something a person typed or sent. During sign-up, a typed name
+// (onboarding.ts); otherwise "Unrecognised text." (owner, 11 Nov).
+async function handleMessage(m: Extract<Incoming, { kind: "message" }>, deps: BotDeps): Promise<void> {
+  const { store, telegram } = deps;
+  if (m.text !== null) {
+    let draft;
+    try {
+      // A parent never has a draft (finishing removes it), so one question is enough.
+      draft = await store.findDraft(m.telegramId);
+    } catch (error) {
+      logFailure("Checking for a sign-up in progress failed", error);
+      await telegram.sendMessage(m.chatId, WORDS.signUpFailed);
+      return;
+    }
+    if (draft) {
+      await onboardingText(m.chatId, m.telegramId, m.text, draft, deps);
+      return;
+    }
   }
-  // One all-or-nothing step: the parent, the used invite and the event (migration 006).
-  let result;
-  try {
-    result = await store.signUp({ telegramId: s.telegramId, firstName: s.firstName, code: s.code, updateId: s.updateId });
-  } catch (error) {
-    // Nothing was saved (all or nothing); say so honestly (rule 1.3).
-    logFailure("Sign-up failed", error);
-    await telegram.sendMessage(s.chatId, WORDS.signUpFailed);
-    return;
-  }
-  if (!result.ok) {
-    await telegram.sendMessage(s.chatId, result.reason === "already" ? WORDS.alreadySignedUp : WORDS.badCode);
-    return;
-  }
-  await telegram.sendMessage(s.chatId, WORDS.welcome(s.firstName));
-  await telegram.sendMessage(s.chatId, WORDS.agreement, [{ text: WORDS.agreeButton, data: "agree" }]);
+  await telegram.sendMessage(m.chatId, WORDS.unrecognised);
 }
 
 async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): Promise<void> {
@@ -95,23 +103,24 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
     return;
   }
   if (!parent) {
-    await telegram.answerTap(t.tapId, WORDS.signUpFirst);
+    // [2026-11-12] Not a parent yet: a sign-up button, if they have a sign-up in progress.
+    let draft;
+    try {
+      draft = await store.findDraft(t.telegramId);
+    } catch (error) {
+      logFailure("Checking for a sign-up in progress failed", error);
+      await telegram.sendMessage(t.chatId, WORDS.signUpFailed).catch(() => undefined);
+      await telegram.answerTap(t.tapId).catch(() => undefined);
+      return;
+    }
+    if (draft) await onboardingTap(t, draft, deps);
+    else await telegram.answerTap(t.tapId, WORDS.signUpFirst);
     return;
   }
 
-  if (t.data === "agree") {
-    // [2026-11-12] Save first; only a failed save gets "didn't save" (rule 1.3).
-    if (!(await saveOrSaySorry(t, deps, () => store.recordAgreement(parent.id)))) return;
-    // Saved. A Telegram failure from here on is logged, never reported as "didn't save".
-    try {
-      await telegram.editMessage(t.chatId, t.messageId, `${WORDS.agreement}\n\n${WORDS.agreed}`); // removes the button
-    } catch (error) {
-      logFailure("Saved, but updating the agreement message failed", error);
-    }
-    await telegram
-      .sendMessage(t.chatId, WORDS.allSet(THIN_SLICE_NUDGE.slotMinute))
-      .catch((error) => logFailure("Saved, but sending 'all set' failed", error));
-    await telegram.answerTap(t.tapId).catch(() => undefined);
+  // [2026-11-12] Screen 10's buttons (onboarding.ts).
+  if (t.data === "start:done" || t.data === "start:notnow") {
+    await startNowTap(t, parent, deps);
     return;
   }
 

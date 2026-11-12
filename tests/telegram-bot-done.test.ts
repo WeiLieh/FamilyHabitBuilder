@@ -29,10 +29,8 @@ beforeEach(async () => {
   store = new FakeStore();
   store.today = today; // [2026-11-12] the pretend database's "today" matches the tap
   telegram = new FakeTelegram();
-  store.invites.set("WELCOME-1", null);
-  const r = await store.signUp({ telegramId: ME, firstName: "Wei Lieh", code: "WELCOME-1", updateId: 1 });
-  parentId = r.ok ? r.parentId : 0;
-  await store.recordAgreement(parentId);
+  // [2026-11-12] A signed-up parent who agreed (sign-up itself is tested in telegram-bot-onboarding.test.ts).
+  parentId = store.addParent({ telegramId: ME, firstName: "Wei Lieh", agreed: true });
   // Tonight's nudge was sent and recorded (7:00 pm = minute 1140).
   await store.recordNudgeSent({ parentId, nudgeId: 2, exampleId: 7, day: today, slotMinute: 1140 });
 });

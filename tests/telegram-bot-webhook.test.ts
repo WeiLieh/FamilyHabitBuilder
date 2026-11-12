@@ -66,11 +66,14 @@ describe("The webhook doorway (rule 5.9, thin slice 1)", () => {
     expect(telegram.calls).toEqual([]);
   });
 
+  // [2026-11-12] Rewritten (pull request 2): /start now starts a sign-up draft,
+  // not a parent, so "saved once" means one draft and one held code.
   it("saves the same Telegram message only once if Telegram delivers it twice", async () => {
     const once = textUpdate(4242, "Wei Lieh", "/start WELCOME-1", 7777);
     await post(once);
     await post(once);
-    expect(store.parents).toHaveLength(1);
-    expect(store.events.filter((e) => e.type === "signed_up")).toHaveLength(1);
+    expect(store.drafts.size).toBe(1);
+    expect([...store.holds.values()]).toEqual([4242]);
+    expect(store.parents).toEqual([]);
   });
 });

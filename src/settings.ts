@@ -135,3 +135,17 @@ export const WEEK_ONE_VARIANTS: readonly string[] = ["baseline"];
 export const THIN_SLICE_NUDGE = { code: "SAF", slotMinute: 19 * 60 } as const;
 // The wording version of the recording agreement shown at sign-up (still a draft, Q8).
 export const AGREEMENT_WORDING_VERSION = "draft-2026-11-11";
+
+// ---- Onboarding, pull request 2 (owner, 12 Nov) -----------------------------
+// [2026-11-12] The longest first name or child's name sign-up accepts (Q7a, owner 12 Nov).
+export const NAME_MAX_CHARS = 40;
+// [2026-11-12] The most children a parent can name (Q7b); the database checks it too (migration 007).
+export const MAX_CHILDREN = 3;
+// [2026-11-12] Rule 2.5: how often each picked behaviour is nudged until the parent changes it in Settings.
+export const DEFAULT_FREQUENCIES = { quick: "every_2_days", deliberate: "once_a_week" } as const;
+// [2026-11-12] The placeholder web page until the Web app exists (owner, 12 Nov):
+// public/my-page.html on the live Vercel address. (public/settings.html exists
+// too, but nothing links to it yet: the /settings command comes with the Menu.)
+export const WEB_PAGES = {
+  myPage: "https://family-habit-builder.vercel.app/my-page.html",
+} as const;

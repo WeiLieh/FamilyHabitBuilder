@@ -22,6 +22,15 @@ import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal value
 export type NudgeRunResult = { sent: number; failed: number; skipped: number };
 
 export async function runDailyNudge({ store, telegram, now }: BotDeps): Promise<NudgeRunResult> {
+  // [2026-11-12] TEMPORARY home (owner's decision D4): the sign-up clean-up runs
+  // with this daily job, so "We'll keep your answers for 7 days" is true from
+  // day one. It moves to the every-30-minutes scheduler in pull request 3. A
+  // failure is logged and the nudges still go out.
+  try {
+    await store.cleanUpSignUps();
+  } catch (error) {
+    logFailure("The sign-up clean-up failed", error);
+  }
   const day = toSgt(now).date;
   const slot = THIN_SLICE_NUDGE.slotMinute;
   const nudge = await store.fixedNudge(day);

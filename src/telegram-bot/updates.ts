@@ -17,7 +17,8 @@ import { z } from "zod";
 
 export type Incoming =
   | { kind: "start"; updateId: number; chatId: number; telegramId: number; firstName: string; code: string | null }
-  | { kind: "message"; updateId: number; chatId: number }
+  // [2026-11-12] "text" is what they typed (a name during sign-up); null for a sticker, photo and so on.
+  | { kind: "message"; updateId: number; chatId: number; telegramId: number; text: string | null }
   | { kind: "tap"; updateId: number; tapId: string; chatId: number; messageId: number; telegramId: number; data: string }
   | { kind: "ignore" };
 
@@ -76,7 +77,7 @@ export function parseUpdate(body: unknown): Incoming {
         code: start[1] ?? null,
       };
     }
-    return { kind: "message", updateId: u.update_id, chatId: m.chat.id };
+    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, telegramId: m.from.id, text: m.text ?? null };
   }
   return { kind: "ignore" };
 }

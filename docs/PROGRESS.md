@@ -1,5 +1,19 @@
 # Progress (handoff between sessions)
 
+## [2026-11-12 23:18 SGT] Session 13
+### Done
+- [2026-11-12 23:18 SGT] Start-of-session routine: drift check passed (24 checks, no warnings); branch brought level with `main` (pull request #39 merged). UAT U12, U14, U15, U16: the owner reports tomorrow (U12 needs midnight).
+- [2026-11-12 23:18 SGT] Owner: the PDPA wording (Q8, the 7-day line) stays a placeholder for now (not going live soon). **Scheduler for pull request 3: Supabase Cron** (owner confirmed; already decided 24 Oct, `docs/CONTEXT.md`).
+- [2026-11-12 23:18 SGT] Onboarding canvas "Onboarding: Telegram previews" updated to the 12 Nov decisions and the live bot (screens 2, 3, 6, 7, 10, 11, B1-2, B1-6, note s7, a new note).
+- [2026-11-12 23:18 SGT] **Pull request 2 of 3, onboarding screens 2 to 11**, built test-first: 29 tests agreed in plain English, seen failing, then `onboarding.ts`; owner's decisions D1 to D4 and the screen 8 title (rule 3.14). Placeholder pages My Page and Settings. Migration 008 removes the thin-slice `sign_up` function (rule 12). App tests 183 to 208; database PASS lines 165 to 160 (T54 to T56 retired, T81 added). UAT checklist `src/telegram-bot/UAT-onboarding.md`.
+### In progress
+- [2026-11-12 23:16 SGT] Pull request 2: both review agents run (no High findings); owner agreed fixes F1 to F5 (done, tests 208 to 211) and known issues K1 to K5 (recorded). Pull request opened.
+- SUPERSEDED [2026-11-12 23:16 SGT] [2026-11-12 23:18 SGT] Pull request 2: the two review agents (habit H3), then the pull request.
+### Next steps
+- [2026-11-12 23:18 SGT] Owner merges pull request 2, runs UAT S1 to S5 and U17 to U28, then migration 008. Then pull request 3 (the planner live on Supabase Cron).
+### Blockers
+- [2026-11-12 23:18 SGT] None.
+
 ## [2026-11-12 22:34 SGT] HANDOFF: session 12 ended (read this first)
 - [2026-11-12 22:34 SGT] **State:** everything is in `main` (pull requests #36, #37, #38 merged) except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (183 tests, drift clean); database tests 167 checks pass locally (T1 to T80). Supabase: migrations up to **007** applied and fingerprinted. The live bot still runs thin slice 1 (rule 5.10 and the sign-up gap fix are live).
 - [2026-11-12 22:34 SGT] **First, next session:** (1) the owner's UAT results U12, U14, U15, U16; (2) **pull request 2 of 3, Telegram bot: onboarding screens 2 to 11** on the sign-up draft (spec: `src/telegram-bot/SPEC.md`, "Recorded: group A finished"), test-first, including the invite cases 10a to 10h, the 7-day line at `/start`, the "Already saved." mapping for the one-log-per-message refusal, and removing the old `sign_up` function (review P4, CLAUDE.md rule 12); (3) then pull request 3 (the planner live), which first needs the scheduler decision (Vercel's free cron runs once a day).

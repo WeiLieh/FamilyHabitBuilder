@@ -15,6 +15,7 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-12 23:07 SGT] Values 40 and 41 added (onboarding screens, pull request 2), so **40 values are in use**.
 - [2026-11-12 22:17 SGT] Values 37 to 39 added (onboarding, migration 007), so **38 values are in use**.
 - [2026-11-11 18:14 SGT] Values 35 and 36 added (thin slice 1), so **35 values are in use**.
 - [2026-11-11 17:28 SGT] Values 32 to 34 added (the three time windows), so **33 values are in use** (value 30 is retired).
@@ -62,6 +63,8 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 | 37 | Tuneable | [2026-11-12 22:17 SGT] Sign-up draft window: how long an unfinished sign-up keeps its answers before it is cut down and its invite released (rule 8.13, Q11a). | Days. Today: 7 | settings.ts |
 | 38 | Tuneable | [2026-11-12 22:17 SGT] Stopped sign-up record: how long the cut-down record (Telegram ID and last step) is kept before it is deleted (Q11d). | Days. Today: 90 | settings.ts |
 | 39 | Fixed | [2026-11-12 22:17 SGT] Children per parent: the most children a parent can add (Q7b). | Always up to 3 | database (children table) |
+| 40 | Tuneable | [2026-11-12 23:07 SGT] Name length: the longest first name or child's name sign-up accepts (Q7a). | Characters. Today: 40 | settings.ts |
+| 41 | Tuneable | [2026-11-12 23:07 SGT] Default frequencies at sign-up (rule 2.5). | Today: quick every 2 days, deliberate once a week | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

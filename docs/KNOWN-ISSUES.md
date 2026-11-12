@@ -2,6 +2,26 @@
 
 ## Open
 
+### [2026-11-12 23:16 SGT] The /start line mentions 7 days, not the 90-day record (K1)
+- **Issue:** [2026-11-12 23:16 SGT] After 7 quiet days a sign-up draft is cut down, but its Telegram ID and last step are kept for 90 days (rule 8.13, Q11d). The `/start` line only says "We'll keep your answers for 7 days… Nothing is saved for good until you agree." (privacy review of pull request 2, Medium).
+- **Impact:** [2026-11-12 23:16 SGT] Low for the trial; people are not told about the 90-day record.
+- **Workaround:** [2026-11-12 23:16 SGT] Owner decided (12 Nov): take it to the PDPA reviewer together with the agreement wording (Q8), which stays a placeholder for now.
+
+### [2026-11-12 23:16 SGT] "7 days" can be about 8, and a failed clean-up is not retried (K2)
+- **Issue:** [2026-11-12 23:16 SGT] Until pull request 3, the sign-up clean-up runs once a day with the 7:00 pm job (decision D4), so a draft can last up to about 8 days; if the clean-up fails, the failure is only logged (privacy review of pull request 2, Medium).
+- **Impact:** [2026-11-12 23:16 SGT] Low; the 7-day promise can slip by a day, or longer if the clean-up keeps failing unnoticed.
+- **Workaround:** [2026-11-12 23:16 SGT] Pull request 3 moves the clean-up to Supabase Cron (every 30 minutes), which also retries it at the next run. Until then, the owner can check Vercel's logs for "The sign-up clean-up failed".
+
+### [2026-11-12 23:16 SGT] No "delete my data" for someone halfway through sign-up (K3)
+- **Issue:** [2026-11-12 23:16 SGT] The database function `delete_sign_up_draft` exists (migration 007), but nothing in the bot calls it yet, so a person part-way through sign-up can't delete the children's names they typed (rule 1.5; privacy review of pull request 2, Medium).
+- **Impact:** [2026-11-12 23:16 SGT] Low for the trial; their draft is cut down after 7 days anyway (K2).
+- **Workaround:** [2026-11-12 23:16 SGT] Comes with the Menu (`/delete` or Settings, rule 5.7). Until then, the owner can delete a draft in Supabase on request.
+
+### [2026-11-12 23:16 SGT] Sign-up steps are kept in order only by the bot's code (K5)
+- **Issue:** [2026-11-12 23:16 SGT] The database doesn't check that sign-up steps happen in order, and `finish_sign_up` doesn't check the step is "agreement"; only `onboarding.ts` stops the agreement being skipped. Two taps handled at the very same moment can also overwrite each other's saved answers (privacy review of pull request 2, Low).
+- **Impact:** [2026-11-12 23:16 SGT] Low: forged taps are refused by the webhook secret (rule 5.9), the Telegram ID comes from Telegram itself, and `finish_sign_up` still checks the answers are complete (rules 2.1, 3.1, Q7b).
+- **Workaround:** [2026-11-12 23:16 SGT] None needed for the trial. A later migration could make `finish_sign_up` require the agreement step.
+
 ### [2026-11-12 22:27 SGT] A sign-up draft holds personal data before the agreement
 - **Issue:** [2026-11-12 22:27 SGT] While someone signs up, their first name, children's names and picks are held in a draft for up to 7 days before they tap "I agree" (rule 8.13, migration 007). Singapore's Personal Data Protection Act (PDPA) normally expects consent at or before collection (privacy review of migration 007, finding P1, High; owner decided 12 Nov).
 - **Impact:** [2026-11-12 22:27 SGT] Low for the trial (invite-only, a few known parents); matters before real families join.
@@ -50,6 +70,7 @@
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): the bot **stops waiting after a set time** (10 minutes suggested; the exact number is a Tuneable value decided in B1 design and kept in `src/settings.ts`), with a test.
 
 ### [2026-11-09 17:50 SGT] Telegram keeps the chat history outside Singapore
+- **Issue:** [2026-11-12 23:16 SGT] (K4, privacy review of pull request 2) Children's names are now also in the bot's own messages: the greeting on screen 4, the taking-turns note on screen 3 and Start right now on screen 10. Same workaround: the PDPA note.
 - **Issue:** [2026-11-09 17:50 SGT] Keyboard taps and messages leave behaviour names (and possibly children's names) in Telegram's own chat history, stored outside Singapore and beyond the reach of "delete my data" (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
 - **Impact:** [2026-11-09 17:50 SGT] Low. Parents may assume "delete my data" removes everything.
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): mention it in the PDPA (Personal Data Protection Act) note for parents and the owner's PDPA reviewer (the note is not written yet).
