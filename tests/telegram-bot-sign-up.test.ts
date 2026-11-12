@@ -68,6 +68,15 @@ describe("Sign-up with an invite (thin slice 1)", () => {
     expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
   });
 
+  // [2026-11-12] New (known issue: the sign-up gap; rule 1.3). The very first
+  // database question, "already signed up?", used to fail in silence.
+  it("tells the person honestly if the 'already signed up?' check fails, and saves nothing (rule 1.3)", async () => {
+    store.failReads = true;
+    await send(textUpdate(ME, "Wei Lieh", "/start WELCOME-1"));
+    expect(store.parents).toEqual([]);
+    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+  });
+
   it("ignores a /start without a first name, rather than saving a made-up name", async () => {
     const body = textUpdate(ME, "Wei Lieh", "/start WELCOME-1") as { message: { from: { first_name?: string } } };
     delete body.message.from.first_name;
@@ -82,5 +91,35 @@ describe("Sign-up with an invite (thin slice 1)", () => {
     expect(store.consents).toEqual([{ parentId: store.parents[0]?.id, topic: "recording", answer: "agreed" }]);
     expect(telegram.calls).toContainEqual(expect.objectContaining({ kind: "edit", chatId: ME, messageId: 77 })); // button removed
     expect(telegram.sentTexts().at(-1)).toBe("You're all set. Your reminder comes every day at 7:00 pm.");
+  });
+
+  // [2026-11-12] New (known issue: the agreement can wrongly say "didn't save"; rule 1.3).
+  it("if 'I agree' is saved but Telegram fails to update the agreement message, the parent is never told it didn't save", async () => {
+    await send(textUpdate(ME, "Wei Lieh", "/start WELCOME-1"));
+    telegram.failEdits = true;
+    await send(tapUpdate(ME, "agree", 77));
+    expect(store.consents).toHaveLength(1); // really saved
+    expect(telegram.sentTexts()).not.toContain("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts().at(-1)).toBe("You're all set. Your reminder comes every day at 7:00 pm.");
+  });
+
+  // [2026-11-12] New: the honest reply when saving the agreement really fails (was not tested).
+  it("if saving 'I agree' fails, the parent sees 'didn't save' and the button stays, so they can try again", async () => {
+    await send(textUpdate(ME, "Wei Lieh", "/start WELCOME-1"));
+    store.failWrites = true;
+    await send(tapUpdate(ME, "agree", 77));
+    expect(store.consents).toEqual([]);
+    expect(telegram.sentTexts().at(-1)).toBe("Sorry, that didn't save. Please try again.");
+    expect(telegram.calls.some((c) => c.kind === "edit")).toBe(false); // the button stays
+  });
+
+  // [2026-11-12] New (the same gap on button taps): "who is this?" failing must not be silent.
+  it("if the 'who is this?' check fails when a button is tapped, the person is told honestly and nothing is saved", async () => {
+    await send(textUpdate(ME, "Wei Lieh", "/start WELCOME-1"));
+    store.failReads = true;
+    await send(tapUpdate(ME, "agree", 77));
+    expect(store.consents).toEqual([]);
+    expect(telegram.sentTexts().at(-1)).toBe("Sorry, that didn't work. Please try again.");
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null }); // spinner stopped
   });
 });

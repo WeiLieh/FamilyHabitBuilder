@@ -138,6 +138,32 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(1);
   });
 
+  // [2026-11-12] New (review finding P1, rule 1.3): every database question a tap
+  // asks must fail honestly, never in silence with a spinning button.
+  it("if 'which nudge is this?' can't be answered, the parent is told honestly and nothing is saved", async () => {
+    store.failReadsOf.add("findNudgeMessage");
+    await tap(`done:${today}`);
+    expect(store.logs).toEqual([]);
+    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null }); // spinner stopped
+  });
+
+  it("if 'already logged?' can't be answered, the parent is told honestly and nothing is saved", async () => {
+    store.failReadsOf.add("logExistsFor");
+    await tap(`done:${today}`);
+    expect(store.logs).toEqual([]);
+    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null });
+  });
+
+  it("if 'already said Not today?' can't be answered, the parent is told honestly and nothing is saved", async () => {
+    store.failReadsOf.add("notTodayOn");
+    await tap(`skip:${today}`);
+    expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(0);
+    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null });
+  });
+
   it("ignores a button tap whose chat isn't the person who tapped", async () => {
     const body = tapUpdate(ME, `done:${today}`, 55) as { callback_query: { message: { chat: { id: number } } } };
     body.callback_query.message.chat.id = 9999;

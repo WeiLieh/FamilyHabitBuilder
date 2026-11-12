@@ -27,6 +27,8 @@ export class FakeTelegram implements TelegramApi {
   failRemoveButtons = false;
   // [2026-11-12] When true, only the next message fails to send; later ones work.
   failNextSend = false;
+  // [2026-11-12] When true, editing a message's words fails.
+  failEdits = false;
 
   private nextMessageId = 500;
   async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<number> {
@@ -39,6 +41,7 @@ export class FakeTelegram implements TelegramApi {
     return this.nextMessageId++; // Telegram's number for the new message
   }
   async editMessage(chatId: number, messageId: number, text: string): Promise<void> {
+    if (this.failEdits) throw new Error("Telegram refused to edit the message");
     this.calls.push({ kind: "edit", chatId, messageId, text });
   }
   // [2026-11-12] Keep the message's words, take away only its buttons.
