@@ -28,6 +28,8 @@ export class FakeStore implements Store {
   today = "2026-11-11";
   // Set to true to make every write fail, like a database outage.
   failWrites = false;
+  // [2026-11-12] Set failReads to pretend the database can't answer questions either.
+  failReads = false;
 
   private nextId = 1;
   private failIfAsked(): void {
@@ -35,6 +37,7 @@ export class FakeStore implements Store {
   }
 
   async findParent(telegramId: number): Promise<{ id: number; paused: boolean } | null> {
+    if (this.failReads) throw new Error("database unavailable (read)");
     const p = this.parents.find((x) => x.telegramId === telegramId);
     return p ? { id: p.id, paused: p.paused } : null;
   }

@@ -44,7 +44,17 @@ export async function handleUpdate(incoming: Incoming, deps: BotDeps): Promise<v
 
 async function handleStart(s: Extract<Incoming, { kind: "start" }>, { store, telegram }: BotDeps): Promise<void> {
   // Someone already signed up sends /start again (e.g. reopens the invite link).
-  if (await store.findParent(s.telegramId)) {
+  // [2026-11-12] If the database can't even answer this, say so honestly
+  // instead of staying silent (rule 1.3; the sign-up gap found on 11 Nov).
+  let existing;
+  try {
+    existing = await store.findParent(s.telegramId);
+  } catch (error) {
+    console.error("Checking for an existing sign-up failed:", error instanceof Error ? error.message : error);
+    await telegram.sendMessage(s.chatId, WORDS.signUpFailed);
+    return;
+  }
+  if (existing) {
     await telegram.sendMessage(s.chatId, WORDS.alreadySignedUp);
     return;
   }
@@ -72,19 +82,35 @@ async function handleStart(s: Extract<Incoming, { kind: "start" }>, { store, tel
 
 async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): Promise<void> {
   const { store, telegram } = deps;
-  const parent = await store.findParent(t.telegramId);
+  // [2026-11-12] "Who tapped this?" If the database can't answer, say so
+  // honestly and stop the button's spinner, rather than stay silent (rule 1.3).
+  let parent;
+  try {
+    parent = await store.findParent(t.telegramId);
+  } catch (error) {
+    console.error("Finding who tapped a button failed:", error instanceof Error ? error.message : error);
+    await telegram.sendMessage(t.chatId, WORDS.signUpFailed).catch(() => undefined);
+    await telegram.answerTap(t.tapId).catch(() => undefined);
+    return;
+  }
   if (!parent) {
     await telegram.answerTap(t.tapId, WORDS.signUpFirst);
     return;
   }
 
   if (t.data === "agree") {
-    await saveOrSaySorry(t, deps, async () => {
-      await store.recordAgreement(parent.id);
+    // [2026-11-12] Save first; only a failed save gets "didn't save" (rule 1.3).
+    if (!(await saveOrSaySorry(t, deps, () => store.recordAgreement(parent.id)))) return;
+    // Saved. A Telegram failure from here on is logged, never reported as "didn't save".
+    try {
       await telegram.editMessage(t.chatId, t.messageId, `${WORDS.agreement}\n\n${WORDS.agreed}`); // removes the button
-      await telegram.sendMessage(t.chatId, WORDS.allSet(THIN_SLICE_NUDGE.slotMinute));
-      await telegram.answerTap(t.tapId);
-    });
+    } catch (error) {
+      console.error("Saved, but updating the agreement message failed:", error instanceof Error ? error.message : error);
+    }
+    await telegram
+      .sendMessage(t.chatId, WORDS.allSet(THIN_SLICE_NUDGE.slotMinute))
+      .catch((error) => console.error("Saved, but sending 'all set' failed:", error instanceof Error ? error.message : error));
+    await telegram.answerTap(t.tapId).catch(() => undefined);
     return;
   }
 
