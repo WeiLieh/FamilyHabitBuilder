@@ -12,9 +12,18 @@
 // =============================================================================
 
 import { formatTime } from "../sgt.js";
+import { DEFAULT_FREQUENCIES, SIGN_UP_DRAFT_KEEP_DAYS } from "../settings.js";
 
 // "7:00pm" from formatTime becomes "7:00 pm", the owner's agreed style.
 export const spacedTime = (minutes: number) => formatTime(minutes).replace(/(am|pm)$/, " $1");
+
+// [2026-11-12] Review fix F1: how each frequency is said, so screen 8 always
+// matches the defaults in src/settings.ts (rule 1.4). A frequency missing here
+// fails the type check, never shows a made-up phrase.
+const FREQUENCY_WORDS: Record<(typeof DEFAULT_FREQUENCIES)[keyof typeof DEFAULT_FREQUENCIES], string> = {
+  every_2_days: "every 2 days",
+  once_a_week: "once a week",
+};
 
 // Names joined the way people say them: "Mia", "Mia and Leo", "Mia, Leo and Ava".
 export const joinNames = (names: string[]) =>
@@ -24,7 +33,7 @@ export const WORDS = {
   // ---- Screens 1 to 3: invite, first name, children (Q7, Q10) ----
   // Screen 2, with the 7-day line at /start (owner, 12 Nov, review finding P1).
   welcome: (firstName: string) =>
-    `Thanks for joining, ${firstName}!\n\nWe'll keep your answers for 7 days while you set up. Nothing is saved for good until you agree.`,
+    `Thanks for joining, ${firstName}!\n\nWe'll keep your answers for ${SIGN_UP_DRAFT_KEEP_DAYS} days while you set up. Nothing is saved for good until you agree.`,
   changeNameButton: "Change name",
   askFirstName: "What should we call you? Type your first name.",
   thanksName: (firstName: string) => `Thanks, ${firstName}!`,
@@ -67,8 +76,8 @@ export const WORDS = {
   plan: (quick: string[], deliberate: string | null, wrapUpMinute: number) =>
     [
       "From what you chose, your reminders are:",
-      ...(quick.length > 0 ? [`${quick.join(", ")}: every 2 days`] : []),
-      ...(deliberate ? [`${deliberate}: once a week`] : []),
+      ...(quick.length > 0 ? [`${quick.join(", ")}: ${FREQUENCY_WORDS[DEFAULT_FREQUENCIES.quick]}`] : []),
+      ...(deliberate ? [`${deliberate}: ${FREQUENCY_WORDS[DEFAULT_FREQUENCIES.deliberate]}`] : []),
       `A wrap up for the week will be sent on Sunday at ${spacedTime(wrapUpMinute)}.`,
       "Change these anytime in Settings.",
     ].join("\n"),
@@ -89,6 +98,7 @@ export const WORDS = {
   myPage: "Your page is here whenever you want to look back. It's empty for now.",
   openMyPageButton: "Open my page ↗",
   startNowNotSaved: "Sorry, this couldn't be saved, so its buttons won't work.", // draft, rule 1.3
+  startNowNotShown: "Sorry, Start right now couldn't be shown. You're signed up.", // [2026-11-12] draft, review fix F3
 
   // ---- The daily loop (thin slice 1) ----
   unrecognised: "Unrecognised text.", // owner, 11 Nov

@@ -7,7 +7,8 @@
 - [2026-11-12 23:18 SGT] Onboarding canvas "Onboarding: Telegram previews" updated to the 12 Nov decisions and the live bot (screens 2, 3, 6, 7, 10, 11, B1-2, B1-6, note s7, a new note).
 - [2026-11-12 23:18 SGT] **Pull request 2 of 3, onboarding screens 2 to 11**, built test-first: 29 tests agreed in plain English, seen failing, then `onboarding.ts`; owner's decisions D1 to D4 and the screen 8 title (rule 3.14). Placeholder pages My Page and Settings. Migration 008 removes the thin-slice `sign_up` function (rule 12). App tests 183 to 208; database PASS lines 165 to 160 (T54 to T56 retired, T81 added). UAT checklist `src/telegram-bot/UAT-onboarding.md`.
 ### In progress
-- [2026-11-12 23:18 SGT] Pull request 2: the two review agents (habit H3), then the pull request.
+- [2026-11-12 23:16 SGT] Pull request 2: both review agents run (no High findings); owner agreed fixes F1 to F5 (done, tests 208 to 211) and known issues K1 to K5 (recorded). Pull request opened.
+- SUPERSEDED [2026-11-12 23:16 SGT] [2026-11-12 23:18 SGT] Pull request 2: the two review agents (habit H3), then the pull request.
 ### Next steps
 - [2026-11-12 23:18 SGT] Owner merges pull request 2, runs UAT S1 to S5 and U17 to U28, then migration 008. Then pull request 3 (the planner live on Supabase Cron).
 ### Blockers

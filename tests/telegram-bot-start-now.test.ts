@@ -111,6 +111,38 @@ describe("F. Start right now and All set", () => {
     expect(telegram.sentTexts().slice(-2)).toEqual(["You're all set, John. Your next reminder is today at 7:00 pm.", PAGE]);
   });
 
+  // [2026-11-12] Review fixes F2 to F4 (owner agreed, 12 Nov).
+  it("F4. once 'I agree' is saved, a Telegram failure is never reported as 'didn't save' (rule 1.3)", async () => {
+    await goTo("agreement", deps(), ME);
+    telegram.failEdits = true; // updating the agreement message fails
+    telegram.calls = [];
+    await tap("agree", 800);
+    expect(store.parents).toHaveLength(1);
+    expect(telegram.sentTexts()).not.toContain("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts()[0]).toBe(START_LINE); // sign-up carries on
+  });
+
+  it("F3. if the behaviours can't be read after 'I agree', the parent is told Start right now couldn't be shown, then All set", async () => {
+    await goTo("agreement", deps(), ME);
+    store.failReadsOf.add("behaviours");
+    telegram.calls = [];
+    await tap("agree", 800);
+    expect(store.parents).toHaveLength(1);
+    expect(telegram.sentTexts()).toEqual([
+      "Sorry, Start right now couldn't be shown. You're signed up.",
+      "You're all set, John. Your next reminder is today at 7:00 pm.",
+      PAGE,
+    ]);
+  });
+
+  it("F2. a missing first name is never shown as a blank: the greeting is left out (rule 1.3)", async () => {
+    await goTo("children", deps(), ME);
+    delete store.drafts.get(ME)!.answers.first_name; // a damaged draft
+    telegram.calls = [];
+    await tap("kids:done", 501);
+    expect(telegram.sentTexts()).toEqual(["These are quick behaviours. Pick up to 2 to work on."]);
+  });
+
   it("if saving 'I've started!' fails, the person sees 'didn't save' and the buttons stay", async () => {
     await goTo("finished", deps(), ME);
     store.failWrites = true;

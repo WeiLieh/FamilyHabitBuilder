@@ -156,7 +156,8 @@ export async function onboardingTap(t: Tap, draft: Draft, deps: BotDeps): Promis
     }
   }
   const quickPicks = picks.filter((p) => behaviours.some((b) => b.id === p.nudge_id && b.category === "quick"));
-  const nameOf = (id: number) => behaviours.find((b) => b.id === id)?.name ?? "";
+  // Picks always come from this list, so a name is always found; an unknown one is left out (F2).
+  const namesOf = (ids: number[]) => ids.flatMap((id) => behaviours.filter((b) => b.id === id).map((b) => b.name));
 
   const tick = /^q:(\d+)$/.exec(t.data);
   if (tick && step === "quick") {
@@ -178,14 +179,14 @@ export async function onboardingTap(t: Tap, draft: Draft, deps: BotDeps): Promis
     return;
   }
   if (t.data === "q:next" && step === "quick") {
-    return moveOn({ step: "deliberate", answers: a }, `${WORDS.quickIntro}\n\n${WORDS.picked(quickPicks.map((p) => nameOf(p.nudge_id)))}`);
+    return moveOn({ step: "deliberate", answers: a }, `${WORDS.quickIntro}\n\n${WORDS.picked(namesOf(quickPicks.map((p) => p.nudge_id)))}`);
   }
   const choose = /^d:(\d+)$/.exec(t.data);
   if (choose && step === "deliberate") {
     const id = Number(choose[1]);
     if (!behaviours.some((b) => b.id === id && b.category === "deliberate")) return void (await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId)));
     const nextPicks = [...picks, { nudge_id: id, frequency: DEFAULT_FREQUENCIES.deliberate }];
-    return moveOn({ step: "school_times", answers: { ...a, picks: nextPicks } }, `${deliberateIntro(quickPicks.length)}\n\n${WORDS.picked([nameOf(id)])}`);
+    return moveOn({ step: "school_times", answers: { ...a, picks: nextPicks } }, `${deliberateIntro(quickPicks.length)}\n\n${WORDS.picked(namesOf([id]))}`);
   }
   // Skip only when a quick behaviour was picked: at least one in total (rule 2.1, owner's D2).
   if (t.data === "d:skip" && step === "deliberate" && quickPicks.length > 0) {
@@ -226,13 +227,17 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
   await quietly("Saved, but updating the agreement failed", () => telegram.editMessage(t.chatId, t.messageId, `${WORDS.agreement}\n\n${WORDS.agreed}`));
   await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
 
-  const firstName = draft.answers.first_name ?? "";
+  const firstName = draft.answers.first_name;
   // Screen 10 uses the first quick behaviour picked and the first child (Q3, Q4).
-  let behaviours: Behaviour[] = [];
+  let behaviours: Behaviour[];
   try {
     behaviours = await store.behaviours();
   } catch (error) {
+    // [2026-11-12] Review fix F3: say so, rather than skip screen 10 in silence (rule 1.3).
     logFailure("Reading the behaviours for Start right now failed", error);
+    await quietly("Sending the start-now failure note failed", () => telegram.sendMessage(t.chatId, WORDS.startNowNotShown));
+    await allSet(t.chatId, firstName, deps);
+    return;
   }
   const first = (draft.answers.picks ?? [])
     .map((p) => behaviours.find((b) => b.id === p.nudge_id))
@@ -312,8 +317,11 @@ export async function startNowTap(t: Tap, parent: { id: number; firstName: strin
 }
 
 // Screen 11: "You're all set" and the link to My page (a placeholder until the Web app).
-async function allSet(chatId: number, firstName: string, { telegram, now }: BotDeps): Promise<void> {
-  await quietly("Sending 'all set' failed", () => telegram.sendMessage(chatId, WORDS.allSet(firstName, nextReminder(now))));
+// [2026-11-12] Review fix F2: without a first name, that line is left out rather
+// than shown with a blank (rule 1.3); the database never lets this happen for a parent.
+async function allSet(chatId: number, firstName: string | undefined, { telegram, now }: BotDeps): Promise<void> {
+  if (firstName) await quietly("Sending 'all set' failed", () => telegram.sendMessage(chatId, WORDS.allSet(firstName, nextReminder(now))));
+  else logFailure("'All set' left out: no first name", new Error("missing data"));
   await quietly("Sending the page link failed", () =>
     telegram.sendMessage(chatId, WORDS.myPage, [[{ text: WORDS.openMyPageButton, url: WEB_PAGES.myPage }]]),
   );
@@ -361,7 +369,9 @@ async function showStep(chatId: number, draft: Draft, deps: BotDeps): Promise<vo
       const picked = (a.picks ?? []).map((p) => p.nudge_id);
       if (draft.step === "quick") {
         const children = a.children ?? [];
-        await send(children.length === 1 ? WORDS.greetOneChild(children[0]!, a.first_name ?? "") : WORDS.greetManyChildren(a.first_name ?? ""));
+        // [2026-11-12] Review fix F2: no first name, no greeting (never a blank, rule 1.3).
+        if (!a.first_name) logFailure("Greeting left out: no first name", new Error("missing data"));
+        else await send(children.length === 1 ? WORDS.greetOneChild(children[0]!, a.first_name) : WORDS.greetManyChildren(a.first_name));
         return send(WORDS.quickIntro, quickButtons(behaviours, picked));
       }
       const quickCount = behaviours.filter((b) => b.category === "quick" && picked.includes(b.id)).length;
