@@ -2,10 +2,6 @@
 
 ## Open
 
-### [2026-11-12 20:59 SGT] Two taps at the same instant can both be saved
-- **Issue:** [2026-11-12 20:59 SGT] The bot checks "already answered?" before saving, but two taps arriving at exactly the same moment can both pass the check. The database has no rule against a second log for the same nudge message (`habit_logs.from_message_id` is not unique), and a "not today" event is not linked to its nudge (privacy review of rule 5.10, findings P1 and P2; owner agreed to log it, 12 Nov).
-- **Impact:** [2026-11-12 20:59 SGT] Low now (one tester). Two logs for one nudge, two "not today" events, or both for one nudge; streaks and metrics could count wrongly.
-- **Workaround:** [2026-11-12 20:59 SGT] Fix in migration 007, test-first: one log per nudge message, and "not today" linked to its nudge and saved once. The bot's own check (rule 5.10, "Already answered.") already stops taps that arrive one after the other.
 ### [2026-11-11 18:14 SGT] The real database connection is checked only by the owner's UAT
 - **Issue:** [2026-11-11 18:14 SGT] `src/datastore/supabase-store.ts` (thin slice 1) talks to the real Supabase project, so the app tests use a pretend store instead. The database functions it calls are tested (T1 to T56), but the connection code itself is not.
 - **Impact:** [2026-11-11 18:14 SGT] A mistake in a column name or a query would show only when the owner runs the UAT (src/telegram-bot/UAT-thin-slice-1.md), not in `npm run check`.
@@ -53,6 +49,7 @@
 - **Workaround:** [2026-11-08 22:34 SGT] Design it with group C (Settings on the Web app, with the photo store); take PDPA section 16 to the owner's PDPA reviewer.
 
 ### [2026-11-08 22:34 SGT] A child's name reaches more places than the database
+- [2026-11-12 22:17 SGT] Progress: migration 007 adds the name column and keeps it out of the Telemetry view of children, with a test (T76). Still open: the chat memory and the Telegram chat (not built yet).
 - [2026-11-09 17:44 SGT] Owner (9 Nov): keep children's names out of the Telemetry views, **with a test that checks it**. The child's name is **never sent to Claude**; it is only shown in Telegram messages, to make them feel personal (answers part of Q4).
 - **Issue:** [2026-11-08 22:34 SGT] A child's name (rule 8.10) will also appear in the Telegram chat, in the Upstash chat memory and possibly in what is sent to Claude (Q4). Rule 8.11 (Telemetry views) names first names, Telegram IDs and descriptions, but not children's names (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no name column). If missed, children's names could reach Telemetry or third parties without a decision.
@@ -172,6 +169,11 @@
 
 ## Resolved
 
+### [2026-11-12 20:59 SGT] Two taps at the same instant can both be saved
+- [2026-11-12 22:17 SGT] RESOLVED in migration 007 (once applied): the database refuses a second log for the same bot message and a second Not today on the same Singapore day (T74, T75). Note: in the rare race, the second tap now gets the bot's "didn't save" message instead of "Already saved."; the onboarding pull request maps that refusal to "Already saved.".
+- **Issue:** [2026-11-12 20:59 SGT] The bot checks "already answered?" before saving, but two taps arriving at exactly the same moment can both pass the check. The database has no rule against a second log for the same nudge message (`habit_logs.from_message_id` is not unique), and a "not today" event is not linked to its nudge (privacy review of rule 5.10, findings P1 and P2; owner agreed to log it, 12 Nov).
+- **Impact:** [2026-11-12 20:59 SGT] Low now (one tester). Two logs for one nudge, two "not today" events, or both for one nudge; streaks and metrics could count wrongly.
+- **Workaround:** [2026-11-12 20:59 SGT] Fix in migration 007, test-first: one log per nudge message, and "not today" linked to its nudge and saved once. The bot's own check (rule 5.10, "Already answered.") already stops taps that arrive one after the other.
 ### [2026-11-12 20:59 SGT] The agreement can wrongly say "didn't save"
 - [2026-11-12 21:06 SGT] RESOLVED: once "I agree" is saved, a Telegram failure is logged and "You're all set" is still sent; never "didn't save" (test in tests/telegram-bot-sign-up.test.ts). Also fixed in the same change: the sign-up gap (silence when the "already signed up?" or "who is this?" check fails).
 - **Issue:** [2026-11-12 20:59 SGT] If Telegram fails after the "I agree" tap is saved, the parent is told "Sorry, that didn't save" (`src/telegram-bot/handle-update.ts`, the agree path), which is untrue (rule 1.3) (privacy review of rule 5.10, finding P4; owner agreed to log it, 12 Nov).

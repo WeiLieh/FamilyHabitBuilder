@@ -136,7 +136,8 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-12 21:11 SGT] Minimum test count: 182 (sign-up gap review fixes, 12 Nov).
+- [2026-11-12 22:17 SGT] Minimum test count: 183 (migration 007's two sign-up windows, 12 Nov).
+- SUPERSEDED [2026-11-12 22:17 SGT] - [2026-11-12 21:11 SGT] Minimum test count: 182 (sign-up gap review fixes, 12 Nov).
 - SUPERSEDED [2026-11-12 21:11 SGT] - [2026-11-12 21:06 SGT] Minimum test count: 176 (the sign-up gap, 12 Nov).
 - SUPERSEDED [2026-11-12 21:06 SGT] - [2026-11-12 20:59 SGT] Minimum test count: 172 (rule 5.10 review fixes, 12 Nov).
 - SUPERSEDED [2026-11-12 20:59 SGT] - [2026-11-12 20:54 SGT] Minimum test count: 168 (rule 5.10, 12 Nov).
@@ -150,6 +151,7 @@ The number of tests must never drop below this (rule P1). Raise it in the same p
 - SUPERSEDED [2026-10-31 17:53 SGT] [2026-10-31 09:40 SGT] Minimum test count: 106
 
 ## Change notes
+- [2026-11-12 22:17 SGT] **Migration 007, onboarding database (pull request 1 of 3, Datastore):** the sign-up draft and stop count, invite holds, children's names (up to 3, birth year optional), finish sign-up and the clean-up as all-or-nothing functions, Start right now (message kind, log source, three events, a fixed line per quick behaviour), one log per bot message and one Not today a day (known issue). Rules **8.3**, **8.4**, **8.6**, **8.10**, **8.13** changed, new **4.7**; values 37 to 39. Database tests: T57 to T76 new, T9 rewritten (rule 8.10 retired its old check) and the table count 17 to 19; 129 checks before, 160 after. App tests: one new (the two sign-up windows), one rewritten (four windows the database reads, was two): 182 before, 183 after. Not yet applied in Supabase.
 - [2026-11-12 22:04 SGT] **Onboarding (group A) finished in design (owner, session 12):** answers to Q3 (screen 10: first quick behaviour, fixed words per behaviour, its own kind of message so its log is prompted), Q4 (one child per message, taking turns, told once), Q7 (Change name stays in Telegram; up to 3 children; no Change on screens 6 and 7, all changes in Settings), Q10 (the invite is held at /start and used at agreement) and Q11 (7-day draft, one reminder, 90-day deletion), plus the sign-up draft that resolves a conflict with rule 8.13. Recorded in `src/telegram-bot/SPEC.md`; rules 5.2, 8.13, 3.4, 10.2 and the Datastore's message kinds and log sources change in the next build's spec. No code changed.
 - [2026-11-12 21:11 SGT] **Sign-up gap, review fixes (owner chose P1 and P2, 12 Nov):** the three other questions a tap asks before saving ("which nudge?", "already logged?", "already said Not today?") now fail honestly too, never in silence (P1); every failure log line goes through `src/telegram-bot/log-failure.ts`, which blanks out long numbers and anything in double quotes (P2, with its limit noted in the Telegram bot spec). The pretend database's failure switch now covers all four questions (S2). Six new tests: 176 before, 182 after.
 - [2026-11-12 21:06 SGT] **The sign-up gap and the agreement (12 Nov):** if the database can't answer "already signed up?" at `/start` or "who is this?" on a button tap, the person now gets "Sorry, that didn't work. Please try again." instead of silence; once "I agree" is saved, a Telegram failure is logged, never reported as "didn't save". Rule **1.3** Tested-by extended. Four new tests (one already passed: the honest reply when saving the agreement really fails, now checked): 172 before, 176 after.

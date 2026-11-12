@@ -12,7 +12,7 @@
 - The owner's original spreadsheet is history: `docs/archive/Nudge_Repository.xlsx`. Supabase is the master copy.
 
 ## Rules at a glance
-4.1 two tables and codes · 4.2 the 9 nudges · 4.3 settings per nudge · 4.4 at least 3 active examples · 4.5 time-agnostic examples · 4.6 retire, never delete; broken rows reported
+4.1 two tables and codes · 4.2 the 9 nudges · 4.3 settings per nudge · 4.4 at least 3 active examples · 4.5 time-agnostic examples · 4.6 retire, never delete; broken rows reported · 4.7 a fixed start-now line per quick nudge
 
 ## Rules
 - **4.1** Two tables the owner edits in Supabase: **nudges** (9 rows, settings written once, short codes TWC, SAF, DPR, GAT, SQT, IAC, SGE, ITE, ASD) and **examples** (unlimited, linked by code). *(decided 25 Oct)* Tested by: tests/nudge-repository.test.ts (row checks, codes, linking), src/datastore/supabase/tests/nudge-repository.test.sql (database rules, codes, typo refused)
@@ -22,3 +22,4 @@
 - **4.5** [2026-11-01 09:56 SGT] Examples are **time-agnostic** (no "at dinner", "before bedtime"). "Today" is not a time word, because it fits any slot of the day. *(decided 28 Oct, clarified 1 Nov)* Tested by: tests/nudge-repository-first-load.test.ts (first-load examples). Examples added later in Supabase are not checked for time words.
 - SUPERSEDED [2026-11-01 09:56 SGT] **4.5** Examples are **time-agnostic** (no "at dinner", "before bedtime"). *(decided 28 Oct)* Tested by: tests/nudge-repository-first-load.test.ts (first-load examples). Examples added later in Supabase are not checked for time words.
 - **4.6** Never delete: **retire** (active = no). A broken row is left out and reported; the rest keeps working. *(decided 25 Oct)* Tested by: tests/nudge-repository.test.ts (broken rows, retired nudges and examples), src/datastore/supabase/tests/nudge-repository.test.sql (deleting a nudge with examples is refused)
+- **4.7** [2026-11-12 22:17 SGT] **Start-now lines.** Each **quick** nudge has one fixed "Start right now" line, shown at the end of sign-up (screen 10), with `{child}` replaced by one child's name; deliberate nudges have none. The owner's four lines of 12 Nov are loaded by migration 007; the owner edits them in Supabase like any nudge setting. Never written by Claude (owner: "for now"). *(decided 12 Nov)* Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T73).
