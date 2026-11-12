@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-12 23:20 SGT] Session 13 (2026-11-12 late evening)
+- [2026-11-12 23:20 SGT] **Ended by the owner (handoff; building first next session).** About 45 min elapsed (about 22:37 to 23:20 SGT), all active in Claude Code, with the owner merging pull request #40. Start-of-session routine, scheduler options (Supabase Cron confirmed), the onboarding canvas updated, pull request 2 (onboarding screens, 29 tests then 3 review tests, 183 to 211) built, reviewed and merged.
+- **Notes for timeboxing:** agreeing the test list in plain English up front (about 10 minutes, with four decisions) let the whole build run without stopping; the two review agents ran in parallel while the UAT checklist was written. A test helper that "fast-forwards" a person to any screen kept the 29 tests short.
+- **Started:** about 22:37 SGT
+
 ## [2026-11-12 22:34 SGT] Session 12 (2026-11-12 evening)
 - [2026-11-12 22:34 SGT] **Ended by the owner (handoff, restarting straight away).** About 2 h elapsed (about 20:34 to 22:34 SGT), almost all active in Claude Code, with the owner merging three pull requests and applying migration 007 along the way. Rule 5.10 (#36), the sign-up gap (#37), the onboarding design, migration 007 (#38, applied).
 - **Notes for timeboxing:** the onboarding design questions went fastest as one table of suggested defaults per question (about 5 minutes each); the two drawn "Change times" options took about 15 minutes and settled the question by being rejected. Each review round found real issues for about 10 minutes of fixing.

@@ -1,5 +1,10 @@
 # Progress (handoff between sessions)
 
+## [2026-11-12 23:20 SGT] HANDOFF: session 13 ended (read this first)
+- [2026-11-12 23:20 SGT] **State:** everything is in `main` (pull request #40 merged) except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (211 tests, drift clean); database checks pass locally (160 PASS lines, T81 new). Supabase: migrations up to **007** applied; **008 written, not yet applied** (UAT step S5). The live bot now has the **full onboarding** (once Vercel deployed #40); its daily reminder is still thin slice 1's "Showing affection" at 7:00 pm.
+- [2026-11-12 23:20 SGT] **Owner wants to prioritise building next session.** First, briefly: (1) the owner's UAT results U12, U14, U15, U16 and, if done, the onboarding UAT U17 to U28 (`src/telegram-bot/UAT-onboarding.md`); (2) migration 008 applied? (then record its fingerprint, rule B1). Then **build pull request 3 of 3: the planner live on Supabase Cron** (owner confirmed 12 Nov): the 30-minute alarm from Supabase calling our web address, the planner choosing each parent's behaviours and slots (rules 2.x, 3.x, already built and tested in the Nudge engine), the 24-hour sign-up reminder (Q11b), moving the clean-up there, and removing the temporary D1 wording and the clean-up's spot in the 7:00 pm job (CLAUDE.md rule 12). Spec it and agree the tests first.
+- [2026-11-12 23:20 SGT] **Open for the owner (not blocking):** PDPA reviewer items (agreement wording Q8, the 7-day and 90-day lines, photo consent); known issues K1 to K5; `docs/SPEC.md` is now over 300 lines (archive proposal below).
+
 ## [2026-11-12 23:18 SGT] Session 13
 ### Done
 - [2026-11-12 23:18 SGT] Start-of-session routine: drift check passed (24 checks, no warnings); branch brought level with `main` (pull request #39 merged). UAT U12, U14, U15, U16: the owner reports tomorrow (U12 needs midnight).
@@ -10,7 +15,8 @@
 - [2026-11-12 23:16 SGT] Pull request 2: both review agents run (no High findings); owner agreed fixes F1 to F5 (done, tests 208 to 211) and known issues K1 to K5 (recorded). Pull request opened.
 - SUPERSEDED [2026-11-12 23:16 SGT] [2026-11-12 23:18 SGT] Pull request 2: the two review agents (habit H3), then the pull request.
 ### Next steps
-- [2026-11-12 23:18 SGT] Owner merges pull request 2, runs UAT S1 to S5 and U17 to U28, then migration 008. Then pull request 3 (the planner live on Supabase Cron).
+- [2026-11-12 23:20 SGT] Owner merged pull request #40. Next: UAT S1 to S5 and U17 to U28, migration 008, then pull request 3 (the planner live on Supabase Cron).
+- SUPERSEDED [2026-11-12 23:20 SGT] [2026-11-12 23:18 SGT] Owner merges pull request 2, runs UAT S1 to S5 and U17 to U28, then migration 008. Then pull request 3 (the planner live on Supabase Cron).
 ### Blockers
 - [2026-11-12 23:18 SGT] None.
 
