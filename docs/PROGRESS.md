@@ -5,6 +5,7 @@
 ## [2026-11-12 23:27 SGT] Session 14: long Markdown files shortened
 ### Done
 - [2026-11-12 23:27 SGT] Drift check passed (24 checks) at the start. Owner asked: "shorten all the long md files". Moved history word for word into `docs/archive/` (nothing deleted or reworded), each file keeping a dated pointer: replaced (SUPERSEDED) lines from 20 files (two marker lines kept in `docs/CONTEXT.md` because current lines depend on them); `docs/SPEC.md` change notes before 8 Nov; progress sessions 7 to 11 (summary left below); resolved known issues; time log sessions 1 to 6. Active Markdown about 686 KB to 473 KB; every file now under 300 lines. `npm run check` passes (211 tests).
+- [2026-11-12 23:31 SGT] Owner spotted that `docs/CATCH-UP.md` section 4 was stale: each session added a new "Decided in session N" block on top but never removed questions answered later (scheduler, Q3/Q4/Q7/Q10/Q11, the five 11 Nov answers, the privacy findings). Sections 4 and 5 rewritten to open items only; the old text moved word for word to `docs/archive/`.
 ### In progress
 - [2026-11-12 23:27 SGT] None.
 ### Next steps
