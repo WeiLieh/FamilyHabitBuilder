@@ -2,6 +2,10 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-12 23:33 SGT] HANDOFF: session 14 ended (read this first)
+- [2026-11-12 23:33 SGT] **State:** pull request #42 (long files shortened, catch-up sections 4 and 5 rewritten, CLAUDE.md H2 addition) is open for the owner to merge. `npm run check` passes (211 tests, drift clean). No code or database change this session.
+- [2026-11-12 23:33 SGT] **Next session (resume tomorrow):** unchanged from the session 13 handoff below: UAT results (U12, U14 to U16, U17 to U28), migration 008, then build pull request 3 (the planner live on Supabase Cron), spec and tests agreed first.
+
 ## [2026-11-12 23:27 SGT] Session 14: long Markdown files shortened
 ### Done
 - [2026-11-12 23:27 SGT] Drift check passed (24 checks) at the start. Owner asked: "shorten all the long md files". Moved history word for word into `docs/archive/` (nothing deleted or reworded), each file keeping a dated pointer: replaced (SUPERSEDED) lines from 20 files (two marker lines kept in `docs/CONTEXT.md` because current lines depend on them); `docs/SPEC.md` change notes before 8 Nov; progress sessions 7 to 11 (summary left below); resolved known issues; time log sessions 1 to 6. Active Markdown about 686 KB to 473 KB; every file now under 300 lines. `npm run check` passes (211 tests).
