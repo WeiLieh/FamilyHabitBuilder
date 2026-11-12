@@ -156,6 +156,7 @@ Update `docs/PROGRESS.md` (always), and any other file that changed: `CONTEXT.md
 - [2026-11-01 16:56 SGT] **H9, end-of-session pull request:** at the end of every session, after the handoff commit, open a small pull request with the session's notes and docs, so `main` always matches what I receive. I merge it.
 - [2026-11-01 16:56 SGT] **H7 addition:** the three handoff files are taken from the branch just committed and pushed; the caption names the branch and the "Last updated" time of `docs/CATCH-UP.md`.
 - [2026-10-31 15:07 SGT] **H7, handoff to Claude Chat** (where I design and think), at the end of every code session, after the final commit: send me these three files with `SendUserFile`: `CLAUDE.md`, [docs/CATCH-UP.md](docs/CATCH-UP.md) and the main spec [docs/SPEC.md](docs/SPEC.md). Decisions I make in Claude Chat come back here and are recorded as dated notes in the specs.
+- [2026-11-12 23:31 SGT] **H2 addition:** rewrite sections 4 and 5 of `docs/CATCH-UP.md` to open items only (drop answered questions and DONE items, moving the old text word for word to `docs/archive/`); never add a new block on top.
 - [2026-10-31 10:17 SGT] **H2, end of session:** update the module spec(s) you touched, the Module table and the diagram status, and `docs/CATCH-UP.md` (its links, the questions for next session and what's waiting on me). Run the drift check; it must pass before the final commit.
 - [2026-10-24 22:20 SGT] Also add a session entry to `docs/TIME-LOG.md` (elapsed and active time, estimated from commit times, and what was done).
 
