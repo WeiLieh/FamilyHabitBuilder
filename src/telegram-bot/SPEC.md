@@ -31,6 +31,7 @@
 - SUPERSEDED [2026-11-09 17:44 SGT] [2026-11-08 22:34 SGT] **Q4:** the child's name is there to increase relevance. Nudges for families with more than one child need a design discussion (work in progress), including whether the name is sent to Claude.
 - [2026-11-08 23:08 SGT] **Screens 6 and 7** (owner's edit, 8 Nov): buttons **OK** and **Change**; the question tags "Ok?" and "Is that ok?" are removed. Q6 stays "intentional"; rule 3.1 (at least 1 hour apart) still applies in the Change picker.
 - [2026-11-08 22:34 SGT] **Q6:** intentional. **Q12:** the birth year is not asked at sign-up; it starts empty and is collected later in the engagement journey (rule 8.10; work in progress). **Q13:** Menu confirmed; plain words without the slash work too (rule 5.7).
+- [2026-11-12 22:04 SGT] **Answered 12 Nov** (section "Recorded: group A finished" above): Q3, Q4, Q7 (the Change buttons), Q10, Q11. **Still in progress:** Q5 (renaming the behaviours), Q8 (agreement wording), Q9 (bot name), Q12 (birth year).
 - [2026-11-08 22:34 SGT] **Work in progress:** Q5 (renaming the behaviours), Q7 (flows behind the buttons), Q8 (agreement wording), Q9 (bot name), Q10 (invite code edge cases), Q11 (stopping halfway; what is kept is rule 8.13).
 
 **Design principles** (owner, adopted 2026-11-02, from Telegram's Bot Guidelines and Bot Features; for the chat bot, not a Mini App)
@@ -83,6 +84,47 @@
 - [2026-11-03 22:27 SGT] **Proposed addition to rule 5.6** (Sunday rhythm): add "Sent inside the Weekly Wrap Up when the parent logged that week; otherwise as its own message." Today rule 5.6 does not say when the question is sent. Open before approval: its time, whether it counts toward the cap, and whether it is sent when paused or when the Wrap Up is off (parked questions 1 and 2).
 - [2026-11-08 23:42 SGT] **Flag, rule 5.1, resolved by B1:** self-logging uses the persistent keyboard, and `/log` is in the Menu as a backup (rules 5.1 and 5.7).
 - SUPERSEDED [2026-11-08 23:42 SGT] [2026-11-03 22:27 SGT] **Flag, rule 5.1** (log any time, including a "Log something" button): the proposed Menu (screen 12) has no "log" command. Not a conflict yet, since the daily loop (group B1) designs logging; noted so it isn't lost.
+
+## Recorded: group A finished, the rest of onboarding (owner, in Claude Code, 2026-11-12)
+[2026-11-12 22:04 SGT] Answers to Q3, Q4, Q7, Q10 and Q11 and a conflict with rule 8.13, settled one at a time in session 12. **Recorded, not built**: built with the planner in the next slice. The rule texts named below (5.2, 8.13, 3.4, 10.2 and the Datastore's message kinds and log sources) are changed, test-first, in that build's spec, with the old text marked SUPERSEDED. Screens 6 and 7 below change the 8 Nov table above.
+
+**Sign-up draft (conflict with rule 8.13, Option A)**
+- [2026-11-12 22:27 SGT] **The database side is built** (migration 007, pull request 1 of 3; not yet applied). The bot side (screens 2 to 11) is pull request 2. That pull request also **removes the old thin-slice `sign_up` function** (it creates a parent with no draft or agreement; CLAUDE.md rule 12, review finding P4, 12 Nov).
+- [2026-11-12 22:27 SGT] **Telling people at `/start` (owner, 12 Nov, review finding P1):** the first message also says "We'll keep your answers for 7 days while you set up. Nothing is saved for good until you agree." so the draft is not a surprise (Singapore's Personal Data Protection Act (PDPA): consent at or before collection; the owner takes it to their PDPA reviewer).
+- [2026-11-12 22:04 SGT] Answers given during sign-up (first name, children, picks, times, last step) are held in **one sign-up draft per person**, not in the real tables. Tapping ✅ I agree turns the draft into the parent, children and choices in **one all-or-nothing step**. Nothing personal sits in the real tables before the agreement. The live bot, which saves the parent at `/start`, changes to this in the next build.
+
+**Q7, the Change buttons**
+- [2026-11-12 22:04 SGT] **Screen 2:** "Thanks for joining, John!" stays the first message, with **Change name**. Tapping it: "What should we call you? Type your first name." (up to 40 characters; while the bot waits, the typed text is the answer and is never matched by Claude, rule 5.1), then "Thanks, <name>!" and on to screen 3.
+- [2026-11-12 22:04 SGT] **Screen 3:** "+ Add another child" asks "What's your other child's name?", then repeats the names with the same two buttons. **Up to 3 children** (owner: families of 3 are already the 82nd percentile, and more names get onerous); after the third, "+ Add another child" is gone. Typos are fixed later in Settings.
+- [2026-11-12 22:04 SGT] **Screens 6 and 7: no Change button during sign-up** (Option B; the tick-list and one-at-a-time designs were both too awkward, owner). Each shows the default times, "1 reminder each time. A maximum of 3 in total a day." and "You can change these anytime in Settings.", with **one button, OK** (like screen 8). All plan changes (times, behaviours, how often, child names) happen in the Web app's Settings after sign-up; Settings must keep rule 3.1 (up to 3 per schedule, at least 1, at least 1 hour apart). Until the Web app exists, the defaults apply.
+
+**Q3, screen 10 "Start right now"**
+- [2026-11-12 22:04 SGT] **Which behaviour:** the **first quick behaviour picked**. If only a deliberate behaviour was picked, screen 10 is skipped and screen 11 follows "✅ I agree" without a receipt ("You're all set, John. Your next reminder is on Friday at 7:00 pm.", rule 3.10).
+- [2026-11-12 22:04 SGT] **The words: fixed, one line per quick behaviour**, kept as rows in the nudge repository (CLAUDE.md rule 11), not written by Claude, even once Claude writes the nudges (owner: "for now"): Talking with children "Start right now, and get on the scoreboard straight away by talking with Mia. Ask, "What made you laugh today?" and listen to the full answer."; Showing affection "… by showing Mia some affection. Give Mia a hug!"; Descriptive praise "… by praising Mia. Tell Mia one thing they did well today, and say exactly what they did."; Giving attention "… by giving Mia your full attention. Put down your phone and listen to Mia for one minute."
+- [2026-11-12 22:04 SGT] **Not now:** "No problem. Your first reminder is today at 7:00 pm." (or the next reminder's day and time), then screen 11 without the receipt.
+- [2026-11-12 22:04 SGT] **✅ I've started!** saves a **habit log for today**, logged via "start now". It counts as a day logged and shows on My page. It is **not a nudge**: no slot, not in the 3-a-day cap (rule 3.4). The parent can still get up to 3 nudges that day, in the slots still ahead and only for behaviours still due (rules 2.4, 3.6, 3.7); no rule change (owner).
+- [2026-11-12 22:04 SGT] **Prompted** for metric 7, and **left out of metric 8** (screen 10 is not a nudge). **Option A:** screen 10 is recorded as **its own kind of sent message, "start now"**, and the log points at it, as a Done log points at its nudge; rule 5.2 gains "a log that answers a start-now message is prompted".
+- [2026-11-12 22:04 SGT] **Tracking events:** "start now shown", "start now done", "start now not now" (rule 10.2).
+
+**Q4, more than one child (answered)**
+- [2026-11-12 22:04 SGT] **One child per message, taking turns** (owner: naming all of them, or "each of them", is triple the effort and a put-off). Turns follow the order the names were typed (Mia, Leo, Ava, Mia…), across all the bot's messages: reminders, screen 10 and the Wrap Up if it names a child. Screen 10 uses the first child.
+- [2026-11-12 22:04 SGT] **Told once**, right after the names on screen 3, to parents of 2 or 3 children (owner's choice, the warmer wording): "Mia, Leo and Ava. Lovely! To keep things fresh, we'll take turns naming one of them in each reminder. It's just a suggestion: do it with whoever you like."
+- [2026-11-12 22:04 SGT] The screen 4 greeting for 2 or 3 children is "Nice to meet you, John!". A log counts for the parent, whichever child it was with; nothing asks which child.
+
+**Q10, invite codes**
+- [2026-11-12 22:04 SGT] **10a:** a code is **held** for that Telegram account at `/start`, so a forwarded link can't take it mid-sign-up, and **used** only at ✅ I agree. If sign-up isn't finished, the hold is released when the draft is cut down (11a). (Owner first chose "used at Start", then chose this after seeing it keeps the invite the only way in.)
+- [2026-11-12 22:04 SGT] **10b:** each parent has their own invite and sign-up; two parents are not linked in the MVP (backlog: family accounts).
+- [2026-11-12 22:04 SGT] **10c:** a code someone else used: "Sorry, that invite code doesn't work. Please ask the person who invited you for your own link."
+- [2026-11-12 22:04 SGT] **10d:** no code: "Hi! This app is invite-only for now. Please use the invite link you were sent."
+- [2026-11-12 22:04 SGT] **10e:** someone halfway who taps their link again: "Welcome back! Let's carry on.", then the screen they were on. **10f:** a different link halfway is ignored; they keep their first code. **10g:** codes match ignoring capitals and spaces at the ends. **10h:** invites don't expire in the trial; the owner can delete an unused one in Supabase.
+
+**Q11, an unfinished sign-up (rule 8.13 details)**
+- [2026-11-12 22:04 SGT] **11a:** after **7 days** with no activity, the draft is cut down to the Telegram ID and the last step, and the invite hold is released.
+- [2026-11-12 22:04 SGT] **11b:** **one reminder**, 24 hours after they stop: "You're almost there! Tap below to finish setting up. It takes about a minute." with **Carry on**. No more.
+- [2026-11-12 22:04 SGT] **11c:** dropped: someone coming back after 7 days uses their original link again.
+- [2026-11-12 22:04 SGT] **11d:** the cut-down record is deleted completely after **90 days** (PDPA: kept no longer than needed).
+- [2026-11-12 22:27 SGT] **11e:** a "sign-up stopped" **count**, with the last step reached and no name or other details, kept in its own table (`sign_up_stops`), not as an event: every event belongs to a parent, and a person who never agreed is not one (review finding, 12 Nov).
+- SUPERSEDED [2026-11-12 22:27 SGT] [2026-11-12 22:04 SGT] **11e:** a "sign-up stopped" event with the last step reached, and no name or other details (the onboarding funnel).
 
 ## Design in progress: group B1, the daily loop (owner decision, design chat, 2026-11-08)
 [2026-11-08 23:42 SGT] Recorded from the [handoff of 8 Nov](../../docs/handoffs/2026-11-08-telegram-b1-daily-loop.md) (previews: the private canvas "Onboarding: Telegram previews (low fidelity)", row 4, boards B1-1 to B1-5). **Recorded, not built.** The sample words on the boards (nudge ideas, warm replies) are examples; Claude writes the real ones within [NUDGE-CONTEXT.md](../nudge-engine/NUDGE-CONTEXT.md). Rules 3.4, 5.4, 7.5 and 7.6 are used as they stand.

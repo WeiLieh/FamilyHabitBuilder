@@ -15,6 +15,7 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-12 22:17 SGT] Values 37 to 39 added (onboarding, migration 007), so **38 values are in use**.
 - [2026-11-11 18:14 SGT] Values 35 and 36 added (thin slice 1), so **35 values are in use**.
 - [2026-11-11 17:28 SGT] Values 32 to 34 added (the three time windows), so **33 values are in use** (value 30 is retired).
 - [2026-11-09 18:16 SGT] Value 30 retired on 9 Nov (the Wrap Up's own switch removed), so **30 values are in use**; numbers are never reused.
@@ -58,6 +59,9 @@ SUPERSEDED [2026-10-31 19:09 SGT]: The single place where experiments are define
 | 34 | Tuneable | [2026-11-11 17:28 SGT] Moment window: how long the bot waits for a moment's photo or line after the button (rule 7.7). | Hours. Today: 24 | settings.ts |
 | 35 | Named rule | [2026-11-11 18:13 SGT] Week-one cohort: the label every parent joins with in week one (rule 11.11). | A neutral label. Today: cohort-1 | settings.ts |
 | 36 | Fixed | [2026-11-11 18:13 SGT] Thin slice 1 nudge: the one behaviour and time everyone gets until choosing is built (temporary). | Today: Showing affection at 7:00 pm | settings.ts |
+| 37 | Tuneable | [2026-11-12 22:17 SGT] Sign-up draft window: how long an unfinished sign-up keeps its answers before it is cut down and its invite released (rule 8.13, Q11a). | Days. Today: 7 | settings.ts |
+| 38 | Tuneable | [2026-11-12 22:17 SGT] Stopped sign-up record: how long the cut-down record (Telegram ID and last step) is kept before it is deleted (Q11d). | Days. Today: 90 | settings.ts |
+| 39 | Fixed | [2026-11-12 22:17 SGT] Children per parent: the most children a parent can add (Q7b). | Always up to 3 | database (children table) |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

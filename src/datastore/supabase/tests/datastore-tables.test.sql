@@ -19,6 +19,10 @@
 -- T43 to T53. The old log and photo tests were rewritten for the new functions
 -- (CLAUDE.md rule 12): the photo now lives in its own table, so "recorded as
 -- photo-verified" is no longer stored and its refusal tests are gone.
+--
+-- [2026-11-12] Also runs migration 007 (the sign-up draft, invite holds,
+-- children's names, Start right now, one log per nudge message) and checks it
+-- in T57 to T76.
 -- =============================================================================
 
 \set ON_ERROR_STOP on
@@ -33,6 +37,7 @@ alter role service_role bypassrls;
 \i src/datastore/supabase/migrations/004_remove_wrap_up_switch.sql
 \i src/datastore/supabase/migrations/005_photos_reflections_moments.sql
 \i src/datastore/supabase/migrations/006_sign_up.sql
+\i src/datastore/supabase/migrations/007_onboarding.sql
 
 -- Helper: try one statement and expect the database to refuse it. Same idea as
 -- in nudge-repository.test.sql. It runs as whichever role is active.
@@ -190,18 +195,19 @@ begin
   raise notice 'PASS: T8 a parent with no children rows is normal';
 end $$;
 
--- T9: a child needs a parent and a birth year; there is no name column.
-select pg_temp.expect_refused('T9 a child with no birth year', $q$insert into public.children (parent_id) values (pg_temp.ann())$q$);
-select pg_temp.expect_refused('T9 a child with no parent', $q$insert into public.children (birth_year) values (2017)$q$);
+-- T9: [2026-11-12] rewritten for rule 8.10 (8 Nov: a child has a first name or
+-- nickname, and the birth year starts empty). Was: "a child needs a parent and a
+-- birth year; there is no name column", retired with migration 007.
+select pg_temp.expect_refused('T9 a child with no parent', $q$insert into public.children (first_name, birth_year) values ('Noa', 2017)$q$);
 do $$
 begin
-  insert into public.children (parent_id, birth_year) values (pg_temp.ann(), 2017);
-  assert not exists (select 1 from information_schema.columns where table_name = 'children' and column_name ilike '%name%'), 'children has a name column';
-  raise notice 'PASS: T9 a child is a parent plus a birth year, with no name column';
+  insert into public.children (parent_id, first_name, birth_year) values (pg_temp.ann(), 'Noa', 2017);
+  assert (select first_name = 'Noa' and birth_year = 2017 from public.children where parent_id = pg_temp.ann()), 'child not saved with its name and birth year';
+  raise notice 'PASS: T9 a child is a parent plus a first name, with an optional birth year';
 end $$;
-insert into public.children (parent_id, birth_year) values (pg_temp.ben(), 2016);
+insert into public.children (parent_id, first_name, birth_year) values (pg_temp.ben(), 'Bo', 2016);
 select pg_temp.expect_refused('fix 1: a child correction pointing at another parent''s child',
-  $q$insert into public.children (parent_id, birth_year, replaces_id) values (pg_temp.ann(), 2018, (select id from public.children where parent_id = pg_temp.ben()))$q$, 'same parent');
+  $q$insert into public.children (parent_id, first_name, birth_year, replaces_id) values (pg_temp.ann(), 'Noa', 2018, (select id from public.children where parent_id = pg_temp.ben()))$q$, 'same parent');
 
 -- =============================================================================
 -- Consents (rules 8.4, 11.13)
@@ -641,6 +647,345 @@ begin
 end $$;
 
 -- =============================================================================
+-- [2026-11-12] Migration 007: the sign-up draft, invite holds, children's names,
+-- Start right now, one log per nudge message (rules 8.3, 8.4, 8.6, 8.10, 8.13;
+-- onboarding decisions of 12 Nov in src/telegram-bot/SPEC.md). T57 to T76.
+-- =============================================================================
+
+reset role;
+-- A settings version with the two sign-up windows the database reads (7 and 90 days).
+select public.record_settings_version('Sign-up windows', '{"max_nudges_per_day": 3, "undo_window_seconds": 30, "connection_answer_window_hours": 24, "sign_up_draft_keep_days": 7, "sign_up_stopped_keep_days": 90}'::jsonb);
+insert into public.invites (code) values ('DRAFT-1'), ('DRAFT-2'), ('DRAFT-3'), ('DRAFT-4'), ('DRAFT-5'), ('DRAFT-6');
+-- Short names for the nudges used below (looked up by category: the nudge tests rename some codes).
+create function pg_temp.quick1() returns bigint language sql as $$ select min(id) from public.nudges where category = 'quick' $$;
+create function pg_temp.quick2() returns bigint language sql as $$ select min(id) from public.nudges where category = 'quick' and id > pg_temp.quick1() $$;
+create function pg_temp.quick3() returns bigint language sql as $$ select min(id) from public.nudges where category = 'quick' and id > pg_temp.quick2() $$;
+create function pg_temp.deliberate1() returns bigint language sql as $$ select min(id) from public.nudges where category = 'deliberate' $$;
+-- A complete set of sign-up answers, as the bot would save them step by step.
+create function pg_temp.answers(children jsonb default '["Mia", "Leo"]') returns jsonb language sql as $$
+  select jsonb_build_object(
+    'first_name', 'Wei Lieh',
+    'children', children,
+    'picks', jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick1(), 'frequency', 'every_2_days'),
+                               jsonb_build_object('nudge_id', pg_temp.deliberate1(), 'frequency', 'once_a_week')),
+    'slots', jsonb_build_object('school', '[420, 1140, 1260]'::jsonb, 'non_school', '[540, 750, 1140]'::jsonb)) $$;
+set role service_role;
+
+-- ---- Group 1: the sign-up draft and invite holds (Q10, rule 8.13) -----------
+
+-- T57: starting sign-up with a valid code makes one draft and holds the code; no parent yet.
+do $$
+declare d bigint;
+begin
+  d := public.start_sign_up(6001, 'Wei Lieh', 'DRAFT-1');
+  assert (select count(*) from public.sign_up_drafts where telegram_id = 6001) = 1, 'expected one draft';
+  assert (select answers ->> 'first_name' = 'Wei Lieh' from public.sign_up_drafts where id = d), 'first name not kept in the draft';
+  assert (select held_by_telegram_id = 6001 and held_at is not null and used_at is null from public.invites where code = 'DRAFT-1'),
+    'code not held for this person';
+  assert not exists (select 1 from public.parents where telegram_id = 6001), 'a parent was created before the agreement';
+  raise notice 'PASS: T57 starting sign-up makes one draft and holds the code, with no parent yet';
+end $$;
+
+-- T58: an unknown, used or held code is refused, and leaves no draft.
+select pg_temp.expect_refused('T58 an unknown code', $q$select public.start_sign_up(6002, 'Kim', 'NOPE')$q$, 'unknown, used or held');
+select pg_temp.expect_refused('T58 a used code', $q$select public.start_sign_up(6002, 'Kim', 'THIN-1')$q$, 'unknown, used or held');
+select pg_temp.expect_refused('T58 a code held by someone else', $q$select public.start_sign_up(6002, 'Kim', 'DRAFT-1')$q$, 'unknown, used or held');
+do $$
+begin
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = 6002), 'a refused start left a draft';
+  raise notice 'PASS: T58 a refused start leaves no draft';
+end $$;
+
+-- T59: starting again, with the same or another link, keeps the one draft and the first code.
+do $$
+declare first_id bigint := (select id from public.sign_up_drafts where telegram_id = 6001);
+begin
+  assert public.start_sign_up(6001, 'Wei Lieh', 'DRAFT-1') = first_id, 'the same link made a new draft';
+  assert public.start_sign_up(6001, 'Wei Lieh', 'DRAFT-2') = first_id, 'another link made a new draft';
+  assert (select count(*) from public.sign_up_drafts where telegram_id = 6001) = 1, 'expected still one draft';
+  assert (select held_by_telegram_id is null from public.invites where code = 'DRAFT-2'), 'the second code was held too';
+  raise notice 'PASS: T59 starting again keeps the one draft and the first code';
+end $$;
+
+-- T60: codes match ignoring capitals and spaces at the ends.
+do $$
+begin
+  perform public.start_sign_up(6003, 'Kim', '  draft-3 ');
+  assert (select held_by_telegram_id = 6003 from public.invites where code = 'DRAFT-3'), 'a code in other capitals was not matched';
+  raise notice 'PASS: T60 codes match ignoring capitals and spaces at the ends';
+end $$;
+
+-- T61: someone already signed up can't start a draft.
+select pg_temp.expect_refused('T61 a signed-up parent starting a draft', $q$select public.start_sign_up(1001, 'Ann', 'DRAFT-4')$q$, 'already signed up');
+
+-- T62: saving an answer updates the draft and its last activity; only the server can, and nobody outside can read drafts.
+do $$
+declare before timestamptz := (select last_activity_at from public.sign_up_drafts where telegram_id = 6001);
+begin
+  perform pg_sleep(0.01);
+  perform public.save_sign_up_step(6001, 'children', pg_temp.answers());
+  assert (select step = 'children' and answers -> 'children' = '["Mia", "Leo"]'::jsonb and last_activity_at > before
+          from public.sign_up_drafts where telegram_id = 6001), 'answer or last activity not saved';
+  assert has_function_privilege('service_role', 'public.save_sign_up_step(bigint, text, jsonb)', 'execute'), 'server cannot save a step';
+  assert not has_function_privilege('anon', 'public.save_sign_up_step(bigint, text, jsonb)', 'execute')
+     and not has_function_privilege('authenticated', 'public.start_sign_up(bigint, text, text)', 'execute'), 'outsiders can change drafts';
+  assert not has_table_privilege('anon', 'public.sign_up_drafts', 'select')
+     and not has_table_privilege('authenticated', 'public.sign_up_drafts', 'select'), 'outsiders can read drafts';
+  raise notice 'PASS: T62 saving an answer updates the draft; only the server can, and outsiders cannot read drafts';
+end $$;
+
+-- T78: [2026-11-12, review P5] a draft holds only the four expected parts, and is size-capped.
+select pg_temp.expect_refused('T78 a draft with an unexpected part',
+  $q$select public.save_sign_up_step(6001, 'children', pg_temp.answers() || '{"notes": "anything"}'::jsonb)$q$, 'only first_name, children, picks and slots');
+select pg_temp.expect_refused('T78 a draft that is too big',
+  $q$select public.save_sign_up_step(6001, 'children', pg_temp.answers() || jsonb_build_object('first_name', repeat('x', 5000)))$q$, 'too big');
+
+-- ---- Group 2: finishing sign-up (the agreement) -----------------------------
+
+-- T63: finishing turns the draft into the real records in one step, then the draft is gone.
+do $$
+declare p bigint;
+begin
+  p := public.finish_sign_up(6001, 'cohort-1', 1200, 'recording-v1-draft', 950, pg_temp.v(), '["baseline"]');
+  assert (select first_name = 'Wei Lieh' and cohort = 'cohort-1' and wrap_up_minute = 1200 from public.parents where id = p), 'parent not created';
+  assert (select array_agg(first_name order by id) = array['Mia', 'Leo'] and bool_and(birth_year is null)
+          from public.children where parent_id = p), 'children not saved by name with no birth year';
+  assert (select count(*) from public.picks where parent_id = p and stopped_at is null) = 2, 'expected 2 picks';
+  assert (select frequency from public.picks where parent_id = p and nudge_id = pg_temp.quick1()) = 'every_2_days', 'pick frequency not kept';
+  assert (select array_agg(start_minute order by start_minute) from public.slots where parent_id = p and schedule = 'school') = array[420, 1140, 1260]::smallint[], 'school times not saved';
+  assert (select count(*) from public.slots where parent_id = p and schedule = 'non_school') = 3, 'weekend times not saved';
+  assert (select answer = 'agreed' and wording_version = 'recording-v1-draft' from public.consents where parent_id = p and topic = 'recording'), 'agreement not recorded';
+  assert (select used_by = p and used_at is not null and held_by_telegram_id is null from public.invites where code = 'DRAFT-1'), 'invite not used';
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where e.parent_id = p and t.name = 'signed_up' and e.telegram_update_id = 950) = 1, 'no signed_up event';
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where e.parent_id = p and t.name = 'pick_chosen') = 2, 'expected a pick_chosen event per pick';
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = 6001), 'the draft was not removed';
+  raise notice 'PASS: T63 finishing makes the parent, children, picks, times, agreement and used invite in one step';
+end $$;
+
+-- T64: finishing is all or nothing: a bad draft saves nothing and is kept.
+do $$
+declare bad jsonb;
+begin
+  foreach bad in array array[
+    pg_temp.answers() || '{"picks": []}'::jsonb,                                                     -- no behaviour
+    pg_temp.answers() || jsonb_build_object('picks', jsonb_build_array(
+      jsonb_build_object('nudge_id', pg_temp.quick1(), 'frequency', 'every_day'),
+      jsonb_build_object('nudge_id', pg_temp.quick2(), 'frequency', 'every_day'),
+      jsonb_build_object('nudge_id', pg_temp.quick3(), 'frequency', 'every_day'))),                   -- 3 quick picks
+    pg_temp.answers('["A", "B", "C", "D"]'),                                                          -- 4 children
+    pg_temp.answers('["Mia", "  "]'),                                                                 -- an empty child name
+    pg_temp.answers('[]'),                                                                            -- no child
+    pg_temp.answers() || '{"slots": {"school": [420, 600, 900, 1140], "non_school": [540]}}'::jsonb,  -- 4 school times
+    pg_temp.answers() || '{"slots": {"school": [], "non_school": [540]}}'::jsonb                      -- no school time
+  ] loop
+    perform public.save_sign_up_step(6003, 'plan', bad);
+    begin
+      perform public.finish_sign_up(6003, 'cohort-1', 1200, 'recording-v1-draft', null, pg_temp.v(), '["baseline"]');
+      raise exception 'FAIL: T64 a bad draft was accepted: %', bad;
+    exception when others then
+      if sqlerrm like 'FAIL:%' then raise; end if;
+    end;
+  end loop;
+  assert not exists (select 1 from public.parents where telegram_id = 6003), 'a bad draft created a parent';
+  assert exists (select 1 from public.sign_up_drafts where telegram_id = 6003), 'a bad draft was thrown away';
+  assert (select used_at is null and held_by_telegram_id = 6003 from public.invites where code = 'DRAFT-3'), 'the code was used by a refused finish';
+  raise notice 'PASS: T64 finishing with a bad draft saves nothing and keeps the draft';
+end $$;
+
+-- T65: at most 3 children per parent, at any time.
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001);
+begin
+  insert into public.children (parent_id, first_name) values (p, 'Ava');
+  raise notice 'PASS: T65 a third child is accepted';
+end $$;
+select pg_temp.expect_refused('T65 a fourth child',
+  $q$insert into public.children (parent_id, first_name) values ((select id from public.parents where telegram_id = 6001), 'Zoe')$q$, 'up to 3 children');
+
+-- T66: a child has a first name and may have no birth year; an empty name is refused.
+do $$
+begin
+  insert into public.children (parent_id, first_name) values (pg_temp.ann(), 'Kai');
+  assert (select birth_year is null from public.children where parent_id = pg_temp.ann() and first_name = 'Kai'), 'birth year not empty';
+  raise notice 'PASS: T66 a child is saved with a first name and no birth year';
+end $$;
+select pg_temp.expect_refused('T66 a child with an empty name', $q$insert into public.children (parent_id, first_name) values (pg_temp.ann(), '  ')$q$);
+select pg_temp.expect_refused('T66 a child with no name', $q$insert into public.children (parent_id, first_name) values (pg_temp.ann(), null)$q$);
+
+-- ---- Group 3: unfinished sign-ups (Q11) -------------------------------------
+
+-- T67: after 7 quiet days the clean-up cuts a draft down, releases its code and counts the stop, with no ID.
+reset role;
+update public.sign_up_drafts set last_activity_at = now() - interval '8 days' where telegram_id = 6003;
+set role service_role;
+do $$
+begin
+  perform public.start_sign_up(6004, 'Lee', 'DRAFT-4');          -- active today: must be untouched
+  perform public.clean_up_sign_ups(pg_temp.v());
+  assert (select answers = '{}'::jsonb and invite_id is null and cut_down_at is not null and step = 'plan'
+          from public.sign_up_drafts where telegram_id = 6003), 'quiet draft not cut down to its Telegram ID and last step';
+  assert (select held_by_telegram_id is null and held_at is null and used_at is null from public.invites where code = 'DRAFT-3'), 'code not released';
+  assert (select count(*) from public.sign_up_stops where last_step = 'plan') = 1, 'the stop was not counted';
+  assert (select count(*) from information_schema.columns where table_schema = 'public' and table_name = 'sign_up_stops'
+          and column_name in ('telegram_id', 'draft_id', 'parent_id', 'first_name')) = 0, 'the stop count holds an ID or name';
+  assert (select answers ->> 'first_name' = 'Lee' and cut_down_at is null from public.sign_up_drafts where telegram_id = 6004), 'an active draft was touched';
+  raise notice 'PASS: T67 a quiet draft is cut down after 7 days, its code released and the stop counted with no ID';
+end $$;
+
+-- T68: after the cut-down, the same person can start again with their original link, fresh.
+do $$
+begin
+  perform public.start_sign_up(6003, 'Kim', 'DRAFT-3');
+  assert (select answers ->> 'first_name' = 'Kim' and cut_down_at is null and invite_id is not null
+          from public.sign_up_drafts where telegram_id = 6003), 'the draft did not start fresh';
+  assert (select held_by_telegram_id = 6003 from public.invites where code = 'DRAFT-3'), 'the original link was not held again';
+  raise notice 'PASS: T68 after a cut-down the same person starts again with their original link';
+end $$;
+
+-- T69: after 90 days the cut-down record is deleted completely.
+reset role;
+update public.sign_up_drafts set last_activity_at = now() - interval '91 days', answers = '{}'::jsonb, invite_id = null, cut_down_at = now() - interval '84 days'
+  where telegram_id = 6004;
+update public.invites set held_by_telegram_id = null, held_at = null where code = 'DRAFT-4';
+set role service_role;
+do $$
+begin
+  perform public.clean_up_sign_ups(pg_temp.v());
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = 6004), 'the 90-day-old record was kept';
+  assert exists (select 1 from public.sign_up_drafts where telegram_id = 6003), 'a recent draft was deleted';
+  raise notice 'PASS: T69 a cut-down record is deleted completely after 90 days';
+end $$;
+
+-- T79: [2026-11-12, review P2] "delete my data" reaches a half-finished sign-up:
+-- the draft is deleted, its code released, and the deletion logged with no ID (rule 1.5).
+do $$
+declare logged int := (select count(*) from public.deletion_log);
+begin
+  perform public.start_sign_up(6005, 'Sam', 'DRAFT-5');
+  perform public.delete_sign_up_draft(6005);
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = 6005), 'the draft was not deleted';
+  assert (select held_by_telegram_id is null and used_at is null from public.invites where code = 'DRAFT-5'), 'the code was not released';
+  assert (select count(*) from public.deletion_log) = logged + 1, 'the deletion was not logged';
+  assert has_function_privilege('service_role', 'public.delete_sign_up_draft(bigint)', 'execute')
+     and not has_function_privilege('anon', 'public.delete_sign_up_draft(bigint)', 'execute'), 'wrong people can delete drafts';
+  raise notice 'PASS: T79 delete my data removes a half-finished sign-up and releases its code';
+end $$;
+
+-- T80: [2026-11-12, review P7] two codes that differ only in capitals or end spaces are refused.
+reset role;
+select pg_temp.expect_refused('T80 a code differing only in capitals', $q$insert into public.invites (code) values ('draft-6')$q$);
+select pg_temp.expect_refused('T80 a code differing only in end spaces', $q$insert into public.invites (code) values (' DRAFT-6 ')$q$);
+set role service_role;
+
+-- ---- Group 4: Start right now (Q3) ------------------------------------------
+
+-- T70: a start-now message names its behaviour, has no slot, never counts as a nudge, writes its event; one per parent.
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001); m bigint;
+begin
+  perform public.record_message_sent(p, 'nudge', pg_temp.quick1(), (select min(e.id) from public.examples e join public.nudges n on n.code = e.nudge_code where n.id = pg_temp.quick1()),
+                                     pg_temp.today(), 1140, pg_temp.v(), '["baseline"]');
+  m := public.record_message_sent(p, 'start_now', pg_temp.quick1(), null, pg_temp.today(), null, pg_temp.v(), '["baseline"]');
+  assert (select kind = 'start_now' and slot_minute is null and example_id is null from public.messages_sent where id = m), 'start-now message not as expected';
+  assert (select count(*) from public.messages_sent where parent_id = p and kind = 'nudge') = 1, 'the start-now message was counted as a nudge';
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where e.parent_id = p and t.name = 'start_now_shown') = 1, 'no start_now_shown event';
+  raise notice 'PASS: T70 a start-now message has no slot, is not a nudge and writes start_now_shown';
+end $$;
+select pg_temp.expect_refused('T70 a second start-now message',
+  $q$select public.record_message_sent((select id from public.parents where telegram_id = 6001), 'start_now', pg_temp.quick1(), null, pg_temp.today(), null, pg_temp.v(), '["baseline"]')$q$);
+select pg_temp.expect_refused('T70 a start-now message with a slot',
+  $q$select public.record_message_sent(pg_temp.ann(), 'start_now', pg_temp.quick1(), null, pg_temp.today(), 1140, pg_temp.v(), '["baseline"]')$q$);
+
+-- T71: an "I've started" log points at that parent's start-now message, and writes start_now_done.
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001);
+        m bigint := (select id from public.messages_sent where parent_id = (select id from public.parents where telegram_id = 6001) and kind = 'start_now');
+begin
+  perform public.save_habit_log(p, pg_temp.quick1(), pg_temp.today(), m, 'start_now', null, 960, pg_temp.v(), '["baseline"]');
+  assert (select logged_via = 'start_now' from public.habit_logs where from_message_id = m), 'start-now log not saved';
+  raise notice 'PASS: T71 an I''ve started log points at its start-now message';
+end $$;
+select pg_temp.expect_refused('T71 a start-now log with no message',
+  $q$select public.save_habit_log(pg_temp.ann(), pg_temp.quick1(), pg_temp.today(), null, 'start_now', null, 961, pg_temp.v(), '["baseline"]')$q$);
+select pg_temp.expect_refused('T71 a start-now log pointing at another parent''s message',
+  $q$select public.save_habit_log(pg_temp.ann(), pg_temp.quick1(), pg_temp.today(),
+       (select id from public.messages_sent where kind = 'start_now' limit 1), 'start_now', null, 962, pg_temp.v(), '["baseline"]')$q$);
+select pg_temp.expect_refused('T71 a Done log pointing at a start-now message',
+  $q$select public.save_habit_log((select id from public.parents where telegram_id = 6001), pg_temp.quick1(), pg_temp.today(),
+       (select id from public.messages_sent where kind = 'start_now' limit 1), 'done_button', null, 963, pg_temp.v(), '["baseline"]')$q$);
+
+-- T72: "I've started" writes start_now_done; "Not now" writes start_now_not_now.
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001);
+begin
+  perform public.record_start_now_not_now(pg_temp.ann(), 964, pg_temp.v(), '["baseline"]');
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where e.parent_id = p and t.name = 'start_now_done') = 1, 'no start_now_done event';
+  assert (select count(*) from public.events e join public.event_types t on t.id = e.event_type_id
+          where e.parent_id = pg_temp.ann() and t.name = 'start_now_not_now') = 1, 'no start_now_not_now event';
+  raise notice 'PASS: T72 I''ve started and Not now each write their own event';
+end $$;
+
+-- T73: each quick behaviour has its fixed start-now line; deliberate ones have none; the server can only read them.
+do $$
+begin
+  assert (select count(*) from public.nudges where category = 'quick' and code <> 'TST' and start_now_line like 'Start right now, and get on the scoreboard straight away by %{child}%') = 4,
+    'expected the 4 quick behaviours to have their start-now line';
+  assert not exists (select 1 from public.nudges where category = 'deliberate' and start_now_line is not null), 'a deliberate behaviour has a start-now line';
+  assert (select start_now_line from public.nudges where name = 'Showing affection')
+    = 'Start right now, and get on the scoreboard straight away by showing {child} some affection. Give {child} a hug!', 'Showing affection line not as agreed';
+  assert not has_table_privilege('service_role', 'public.nudges', 'update'), 'the server can change nudges';
+  raise notice 'PASS: T73 the 4 quick behaviours have their fixed start-now line, read-only for the server';
+end $$;
+
+-- ---- Group 5: two taps at the same instant (known issue, 12 Nov) ------------
+
+-- T74: a second log pointing at the same nudge message is refused.
+select pg_temp.expect_refused('T74 a second log from the same nudge message',
+  $q$select public.save_habit_log((select id from public.parents where telegram_id = 6001), pg_temp.quick1(), pg_temp.today(),
+       (select id from public.messages_sent where kind = 'start_now' and parent_id = (select id from public.parents where telegram_id = 6001)),
+       'start_now', null, 965, pg_temp.v(), '["baseline"]')$q$);
+
+-- T75: a second Not today on the same Singapore day is refused (added the way
+-- the bot adds it: one row in events, src/datastore/supabase-store.ts).
+do $$
+begin
+  insert into public.events (parent_id, event_type_id, settings_version, variants, telegram_update_id)
+  values (pg_temp.ben(), (select id from public.event_types where name = 'not_today'), pg_temp.v(), '["baseline"]', 966);
+  raise notice 'PASS: T75 a first Not today today is saved';
+end $$;
+select pg_temp.expect_refused('T75 a second Not today on the same day',
+  $q$insert into public.events (parent_id, event_type_id, settings_version, variants, telegram_update_id)
+     values (pg_temp.ben(), (select id from public.event_types where name = 'not_today'), pg_temp.v(), '["baseline"]', 967)$q$);
+
+-- T77: [2026-11-12, review S3] a second log from the same real nudge message is refused
+-- (T74 covers a start-now message; this is a nudge with its Done button).
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001);
+        m bigint := (select id from public.messages_sent where parent_id = (select id from public.parents where telegram_id = 6001) and kind = 'nudge');
+begin
+  perform public.save_habit_log(p, pg_temp.quick1(), pg_temp.today(), m, 'done_button', null, 970, pg_temp.v(), '["baseline"]');
+  raise notice 'PASS: T77 a first log from a nudge message is saved';
+end $$;
+select pg_temp.expect_refused('T77 a second log from the same nudge message (another tap)',
+  $q$select public.save_habit_log((select id from public.parents where telegram_id = 6001), pg_temp.quick1(), pg_temp.today(),
+       (select id from public.messages_sent where kind = 'nudge' and parent_id = (select id from public.parents where telegram_id = 6001)),
+       'done_button', null, 971, pg_temp.v(), '["baseline"]')$q$);
+
+-- ---- Group 6: privacy -------------------------------------------------------
+
+-- T76: the Telemetry view of children shows no names.
+do $$
+begin
+  assert not exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'telemetry_children'
+                     and column_name in ('first_name', 'name')), 'the Telemetry view of children shows names';
+  raise notice 'PASS: T76 the Telemetry view of children shows no names';
+end $$;
+
+-- =============================================================================
 -- Reference lists and invites (rules 1.1, 8.6)
 -- =============================================================================
 
@@ -675,6 +1020,8 @@ declare
   ann_id bigint := pg_temp.ann();
   ben_events bigint := (select count(*) from public.events where parent_id = pg_temp.ben());
   ben_logs bigint := (select count(*) from public.habit_logs where parent_id = pg_temp.ben());
+  -- [2026-11-12] Counted first: T79 (a deleted sign-up draft) also writes a log row.
+  logged_before bigint := (select count(*) from public.deletion_log);
   t text; n bigint;
 begin
   perform public.delete_my_data(ann_id);
@@ -687,7 +1034,8 @@ begin
   assert (select count(*) from public.events where parent_id = pg_temp.ben()) = ben_events, 'Ben''s events changed';
   assert (select count(*) from public.habit_logs where parent_id = pg_temp.ben()) = ben_logs, 'Ben''s logs changed';
   raise notice 'PASS: T38 other parents'' rows are untouched';
-  assert (select count(*) from public.deletion_log) = 1 and (select how_many from public.deletion_log) = 1, 'expected one log row';
+  assert (select count(*) from public.deletion_log) = logged_before + 1
+     and (select how_many from public.deletion_log order by id desc limit 1) = 1, 'expected one new log row';
   raise notice 'PASS: T39 one deletion-log row is written, with a day and a count only';
   assert (select used_at is not null and used_by is null from public.invites where code = 'WELCOME-1'), 'invite not cleared';
   raise notice 'PASS: T40 the used invite stays used but no longer points to the parent';
@@ -728,7 +1076,7 @@ begin
     and not exists (select 1 from pg_attribute a where a.attrelid = c.oid and a.attname = 'created_at' and not a.attisdropped);
   assert missing is null, 'tables with no created_at: ' || missing;
   assert (select count(*) from pg_class c where c.relnamespace = 'public'::regnamespace and c.relkind = 'r'
-          and c.relname not in ('nudges', 'examples')) = 17, 'expected 17 Datastore tables (rule 8.3; 3 added by migration 005)';
+          and c.relname not in ('nudges', 'examples')) = 19, 'expected 19 Datastore tables (rule 8.3; 3 added by migration 005, 2 by migration 007 [2026-11-12])';
   raise notice 'PASS: rules 8.3 and 8.12 there are 17 Datastore tables, each with created_at and a comment on every column';
 end $$;
 

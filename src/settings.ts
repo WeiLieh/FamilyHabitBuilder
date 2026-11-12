@@ -107,12 +107,21 @@ export const CONNECTION_ANSWER_WINDOW_HOURS = 24;
 // photo or line (rule 7.7). Checked by the app only: the database can't see
 // the button tap.
 export const MOMENT_WINDOW_HOURS = 24;
+// [2026-11-12] An unfinished sign-up (rule 8.13, Q11, owner 12 Nov): after this
+// many quiet days the draft is cut down to the Telegram ID and the last step,
+// and its invite is released (Q11a); after this many, the cut-down record is
+// deleted completely (Q11d). Read by the database's clean-up (migration 007).
+export const SIGN_UP_DRAFT_KEEP_DAYS = 7;
+export const SIGN_UP_STOPPED_KEEP_DAYS = 90;
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.
 export const SETTINGS_KEYS_THE_DATABASE_READS = {
   undo_window_seconds: UNDO_WINDOW_SECONDS,
   connection_answer_window_hours: CONNECTION_ANSWER_WINDOW_HOURS,
+  // [2026-11-12] Read by clean_up_sign_ups (migration 007).
+  sign_up_draft_keep_days: SIGN_UP_DRAFT_KEEP_DAYS,
+  sign_up_stopped_keep_days: SIGN_UP_STOPPED_KEEP_DAYS,
 } as const;
 
 // ---- Thin slice 1 (owner, 11 Nov) -------------------------------------------
