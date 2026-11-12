@@ -17,6 +17,7 @@ import { toSgt } from "../sgt.js";
 import { THIN_SLICE_NUDGE } from "../settings.js";
 import type { BotDeps } from "./handle-update.js";
 import { WORDS } from "./words.js";
+import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
 
 export type NudgeRunResult = { sent: number; failed: number; skipped: number };
 
@@ -41,7 +42,7 @@ export async function runDailyNudge({ store, telegram, now }: BotDeps): Promise<
       ]);
     } catch (error) {
       // Logged with the parent's number only, never their name or Telegram ID.
-      console.error(`Daily nudge not sent to parent ${c.parentId}:`, error instanceof Error ? error.message : error);
+      logFailure(`Daily nudge not sent to parent ${c.parentId}`, error);
       result.failed++;
       continue;
     }
@@ -51,7 +52,7 @@ export async function runDailyNudge({ store, telegram, now }: BotDeps): Promise<
     } catch (error) {
       // Sent but not recorded: its buttons could never save, so say so honestly
       // and remove them (rule 1.3), rather than leave buttons that fail later.
-      console.error(`Daily nudge sent but not recorded for parent ${c.parentId}:`, error instanceof Error ? error.message : error);
+      logFailure(`Daily nudge sent but not recorded for parent ${c.parentId}`, error);
       result.failed++;
       await telegram.editMessage(c.telegramId, messageId, WORDS.nudgeNotSaved).catch(() => undefined);
     }

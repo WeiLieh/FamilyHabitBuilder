@@ -17,6 +17,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { runDailyNudge } from "./daily-nudge.js";
 import { handleUpdate, type BotDeps } from "./handle-update.js";
 import { parseUpdate } from "./updates.js";
+import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
 
 // Compare two secrets in a way that doesn't leak, through timing, how much of a guess was right.
 function sameSecret(given: string | undefined, expected: string): boolean {
@@ -56,7 +57,7 @@ export function createWebhookHandler(opts: { webhookSecret: string; makeDeps: ()
       await handleUpdate(parseUpdate(body), opts.makeDeps());
     } catch (error) {
       // Logged, then still "received": retrying a broken update for hours helps no one.
-      console.error("Handling a Telegram update failed:", error instanceof Error ? error.message : error);
+      logFailure("Handling a Telegram update failed", error);
     }
     reply(res, 200, { ok: true });
   };

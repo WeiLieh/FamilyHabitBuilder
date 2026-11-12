@@ -28,8 +28,16 @@ export class FakeStore implements Store {
   today = "2026-11-11";
   // Set to true to make every write fail, like a database outage.
   failWrites = false;
-  // [2026-11-12] Set failReads to pretend the database can't answer questions either.
+  // [2026-11-12] Set failReads to pretend the database can't answer any question
+  // ("who is this?", "which nudge?", "already logged?", "already said Not today?").
   failReads = false;
+  // [2026-11-12] Or name just the questions that fail, e.g. failReadsOf.add("logExistsFor").
+  failReadsOf = new Set<string>();
+  // [2026-11-12] The words of a failed read, so a test can check what reaches the logs.
+  readErrorText = "database unavailable (read)";
+  private failReadIfAsked(question: string): void {
+    if (this.failReads || this.failReadsOf.has(question)) throw new Error(this.readErrorText);
+  }
 
   private nextId = 1;
   private failIfAsked(): void {
@@ -37,7 +45,7 @@ export class FakeStore implements Store {
   }
 
   async findParent(telegramId: number): Promise<{ id: number; paused: boolean } | null> {
-    if (this.failReads) throw new Error("database unavailable (read)");
+    this.failReadIfAsked("findParent");
     const p = this.parents.find((x) => x.telegramId === telegramId);
     return p ? { id: p.id, paused: p.paused } : null;
   }
@@ -77,10 +85,12 @@ export class FakeStore implements Store {
     this.sentNudges.push({ id: this.nextId++, ...a });
   }
   async findNudgeMessage(parentId: number, day: string, slotMinute: number): Promise<{ messageId: number; nudgeId: number; nudgeName: string } | null> {
+    this.failReadIfAsked("findNudgeMessage");
     const n = this.sentNudges.find((x) => x.parentId === parentId && x.day === day && x.slotMinute === slotMinute);
     return n ? { messageId: n.id, nudgeId: n.nudgeId, nudgeName: "Showing affection" } : null;
   }
   async logExistsFor(messageId: number): Promise<boolean> {
+    this.failReadIfAsked("logExistsFor");
     return this.logs.some((l) => l.messageId === messageId);
   }
   async saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate"> {
@@ -96,6 +106,7 @@ export class FakeStore implements Store {
     this.events.push({ parentId, type: "not_today", updateId, day: this.today });
   }
   async notTodayOn(parentId: number, day: string): Promise<boolean> {
+    this.failReadIfAsked("notTodayOn");
     return this.events.some((e) => e.parentId === parentId && e.type === "not_today" && e.day === day);
   }
 }
