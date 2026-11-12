@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-12 22:34 SGT] A sign-up draft: holding answers until consent
+- **Concept:** a **draft** (also called a staging area): a temporary place that holds what someone has typed until they confirm, before anything goes into the real records.
+- **In plain English:** while a parent signs up, their name, children and picks wait in one draft row. Only when they tap "I agree" are they turned into the real records, all in one step. If they never agree, the draft is cut down after 7 days and deleted after 90.
+- **Analogy:** a shop holds your order at the counter until you pay, instead of shipping it and asking for it back if you don't.
+- **Why and when to use it:** when people give personal data in several steps before they consent, or when a half-finished process must not leave half-made records. Not needed when everything is saved in one step at the moment of consent.
+- **Best practices:** keep the draft small (only the expected fields, a size cap); turn it into real records in one all-or-nothing step; set a clear time limit and a clean-up; tell people up front how long it's kept.
+- **Where it showed up in this project:** migration 007 (12 Nov): `sign_up_drafts`, `finish_sign_up`, `clean_up_sign_ups`, `delete_sign_up_draft`; the 7-day line at `/start` (review finding P1).
+- **Explain it to others:** "Answers during sign-up sit in a holding area. Nothing reaches the real tables until the parent agrees, and the holding area clears itself after a week."
+- **Governance angle:** a PDPA reviewer will ask whether collecting before consent is allowed, how long it is kept, and whether "delete my data" reaches it (it does: `delete_sign_up_draft`).
+
 ### [2026-11-12 20:55 SGT] A partial failure: saved, but not shown
 - **Concept:** a **partial failure**: one action that is really two jobs (save the answer, then update the screen), where the first succeeds and the second fails.
 - **In plain English:** when you tap ✅ Done, the bot saves your answer in the database, then asks Telegram to remove the buttons and show the receipt. If Telegram hiccups after the save, the answer still counts. The bot must say what actually happened, so it never says "didn't save" after a save.

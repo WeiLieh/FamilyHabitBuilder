@@ -2,6 +2,11 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-12 22:34 SGT] Session 12 (2026-11-12 evening)
+- [2026-11-12 22:34 SGT] **Ended by the owner (handoff, restarting straight away).** About 2 h elapsed (about 20:34 to 22:34 SGT), almost all active in Claude Code, with the owner merging three pull requests and applying migration 007 along the way. Rule 5.10 (#36), the sign-up gap (#37), the onboarding design, migration 007 (#38, applied).
+- **Notes for timeboxing:** the onboarding design questions went fastest as one table of suggested defaults per question (about 5 minutes each); the two drawn "Change times" options took about 15 minutes and settled the question by being rejected. Each review round found real issues for about 10 minutes of fixing.
+- **Started:** about 20:34 SGT
+
 ## [2026-11-11 21:58 SGT] Session 11 (2026-11-11 afternoon and evening)
 - [2026-11-11 21:58 SGT] **Ended by the owner.** About 5 h 5 min elapsed (about 16:52 to 21:58 SGT). Active: about 3 h 30 min in Claude Code plus the owner's setup and UAT time (about 1 h 15 min, 20:40 to 21:55). Target set at the start: 2 to 3 hours for the five answers and migration 005; done in about 45 minutes, so the owner chose to push on to thin slice 1. Also: stale diagram fixed (rule D4); thin slice 1 specified, tested and built (166 tests); migrations 005 and 006 applied; Vercel and Telegram set up; UAT U2 to U10 pass.
 - **Notes for timeboxing:** each review round found real issues for about 10 minutes of fixing. Most owner-side time went on setup slips that tests can't catch (a migration not taking effect, symbols in a secret, a typo in the webhook address); each became a checklist line. Writing the UAT checklist before the setup paid off: every slip was traced in one or two rounds.
