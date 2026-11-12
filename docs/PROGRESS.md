@@ -1,5 +1,25 @@
 # Progress (handoff between sessions)
 
+## [2026-11-12 22:34 SGT] HANDOFF: session 12 ended (read this first)
+- [2026-11-12 22:34 SGT] **State:** everything is in `main` (pull requests #36, #37, #38 merged) except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (183 tests, drift clean); database tests 167 checks pass locally (T1 to T80). Supabase: migrations up to **007** applied and fingerprinted. The live bot still runs thin slice 1 (rule 5.10 and the sign-up gap fix are live).
+- [2026-11-12 22:34 SGT] **First, next session:** (1) the owner's UAT results U12, U14, U15, U16; (2) **pull request 2 of 3, Telegram bot: onboarding screens 2 to 11** on the sign-up draft (spec: `src/telegram-bot/SPEC.md`, "Recorded: group A finished"), test-first, including the invite cases 10a to 10h, the 7-day line at `/start`, the "Already saved." mapping for the one-log-per-message refusal, and removing the old `sign_up` function (review P4, CLAUDE.md rule 12); (3) then pull request 3 (the planner live), which first needs the scheduler decision (Vercel's free cron runs once a day).
+- [2026-11-12 22:34 SGT] **Open for the owner:** the PDPA reviewer items (the 7-day draft line, photo consent wording, withdrawing consent); the onboarding canvas is out of date (screens 6, 7, 10, 11, note s7, B1-6); agreement wording (Q8).
+
+## [2026-11-12 22:34 SGT] Session 12
+### Done
+- [2026-11-12 22:34 SGT] Start-of-session routine: drift check passed (24 checks, no warnings); state summarised. UAT U11 passed (owner).
+- [2026-11-12 22:34 SGT] **Rule 5.10** (owner, after U11): a reply to a nudge is a new message; the nudge keeps its words and loses its buttons. Built test-first; review fixes: "Already answered." for a second, different answer. Pull request #36 merged. Tests 166 to 172.
+- [2026-11-12 22:34 SGT] **Sign-up gap fixed** test-first: honest "didn't work" when any database question at `/start` or on a tap fails; "I agree" never wrongly says "didn't save"; failure log lines blank out long numbers and quoted values (`log-failure.ts`). Pull request #37 merged. Tests 172 to 182.
+- [2026-11-12 22:34 SGT] **Onboarding design finished** with the owner (Q3, Q4, Q7, Q10, Q11 and the sign-up draft), including a "Change times" canvas (both options rejected: changes go to Settings). Recorded in `src/telegram-bot/SPEC.md`; backlog: family accounts.
+- [2026-11-12 22:34 SGT] **Build plan agreed:** three pull requests (Datastore, Telegram bot onboarding, planner live).
+- [2026-11-12 22:34 SGT] **Pull request 1: migration 007** built test-first (sign-up draft, invite holds, children's names up to 3, finish and clean-up, Start right now, one log per message, one Not today a day); both review agents; owner agreed all fixes (P1: the 7-day line at /start for the PDPA reviewer). Pull request #38 merged; **applied on Supabase** (0, 0 before; true, true, 4 after); fingerprint `e708053e6434`. Database checks 129 to 167; app tests 182 to 183.
+### In progress
+- [2026-11-12 22:34 SGT] None.
+### Next steps
+- [2026-11-12 22:34 SGT] Pull request 2 (onboarding screens), then pull request 3 (planner live, scheduler decision first).
+### Blockers
+- [2026-11-12 22:34 SGT] None.
+
 ## [2026-11-11 21:58 SGT] HANDOFF: session 11 ended (read this first)
 - [2026-11-11 21:58 SGT] **State:** everything is in `main` except this session's last notes (end-of-session pull request, habit H9). `npm run check` passes (166 tests, drift clean); database tests T1 to T56 pass locally. Supabase: migrations up to **006** applied and fingerprinted. **Thin slice 1 is live** on Vercel (`family-habit-builder.vercel.app`, webhook set, daily cron 11:00 UTC) for the owner only.
 - [2026-11-11 21:58 SGT] **UAT:** U2 to U10 pass. U11 to U14 wait on the calendar (schedule in `docs/CATCH-UP.md`, section 5).

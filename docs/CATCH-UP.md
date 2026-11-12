@@ -1,8 +1,10 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-11 21:58 SGT]** (session 11: five answers, migrations 005 and 006 live, rule D4, **thin slice 1 built and live**, UAT U2 to U10 pass).
+**Last updated: [2026-11-12 22:34 SGT]** (session 12: rule 5.10 and the sign-up gap fix live, **onboarding fully designed**, migration 007 live: the sign-up draft and Start right now in the database).
 
-> [2026-11-11 21:58 SGT] **⏰ Next session, first:** (1) your remaining UAT results (U11 to U14, schedule below); (2) Claude fixes the sign-up gap (an honest reply if the "already signed up?" check fails), test-first; (3) group C (Settings on the Web app) in Claude Chat, or the next slice. The bot is live for you only: no real families until photo consent and "delete my data" are built.
+> [2026-11-12 22:34 SGT] **⏰ Next session, first:** (1) your UAT results U12, U14, U15, U16 (schedule in section 5); (2) Claude builds **pull request 2 of 3: the onboarding screens** (screens 2 to 11 on the sign-up draft, the invite cases, the 7-day line at `/start`), tests first; (3) then pull request 3, the planner going live, which first needs one decision: how the bot wakes up every 30 minutes (Vercel's free plan runs a scheduled job once a day). The bot is still for you only.
+
+> SUPERSEDED [2026-11-12 22:34 SGT] [2026-11-11 21:58 SGT] **⏰ Next session, first:** (1) your remaining UAT results (U11 to U14, schedule below); (2) Claude fixes the sign-up gap (an honest reply if the "already signed up?" check fails), test-first; (3) group C (Settings on the Web app) in Claude Chat, or the next slice. The bot is live for you only: no real families until photo consent and "delete my data" are built.
 
 > SUPERSEDED [2026-11-11 21:58 SGT] [2026-11-11 17:15 SGT] **⏰ Now:** the five answers are in (11 Nov). Next: migration 005 (the Datastore change, tests first), then group C (Settings on the Web app) in Claude Chat, then the thin-slice build.
 
@@ -26,7 +28,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **17 tables live, migrations up to 006** → (3) Telegram bot ⬅ **thin slice 1 built and live (11 Nov)**: sign-up with an invite, the 7:00 pm nudge, ✅ Done and 😴 Not today; groups A, B1 and B2 designed; group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
+[2026-11-12 22:34 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **19 tables live, migrations up to 007** → (3) Telegram bot ⬅ **thin slice 1 live; onboarding (group A) fully designed 12 Nov; its database side built (migration 007)**; next the onboarding screens (pull request 2), then the planner live (pull request 3); group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
+
+SUPERSEDED [2026-11-12 22:34 SGT] [2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **17 tables live, migrations up to 006** → (3) Telegram bot ⬅ **thin slice 1 built and live (11 Nov)**: sign-up with an invite, the 7:00 pm nudge, ✅ Done and 😴 Not today; groups A, B1 and B2 designed; group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
 
 SUPERSEDED [2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore with event log ✅ **tables live (1 Nov)** → (3) Telegram bot, first deploy ⬅ **design in progress** (group A onboarding designed 3 Nov; next B1 daily loop, B2 Sunday rhythm, C settings on the Web app with the photo store; then a thin-slice build) → (4) Variable rewards, then Nudge engine words → (5) Photo check → (6) Telemetry → (7) Web app.
 
@@ -57,12 +61,12 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-01 16:38 SGT] Every rule is written **once**, with its permanent ID, and each module spec starts with a "rules at a glance" list.
 - **1.1 to 1.5** (users, Singapore time, no fallbacks, numbers live once in code with five kinds, "delete my data" reaches every store): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
 - **2.1 to 2.5, 3.1 to 3.13**: [Nudge engine](../src/nudge-engine/SPEC.md)
-- **4.1 to 4.6**: [Nudge repository](../src/nudge-repository/SPEC.md)
-- **5.1, 5.3, 5.4, 5.6 to 5.9, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 17 tables are listed there, under "Tables")
+- **4.1 to 4.7**: [Nudge repository](../src/nudge-repository/SPEC.md)
+- **5.1, 5.3, 5.4, 5.6 to 5.10, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) (and the onboarding decisions of 12 Nov, section "Recorded: group A finished") · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 19 tables are listed there, under "Tables")
 - **6.1, 6.2**: [Photo check](../src/photo-check/SPEC.md)
 - **7.1 to 7.8**: [Variable rewards](../src/variable-rewards/SPEC.md)
 - **9.1**: [Web app](../src/web-app/SPEC.md) (plus two parked questions)
-- **11.1 to 11.13**: [Experiments](../src/experiments/SPEC.md); the 31 values and their five kinds are in [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)
+- **11.1 to 11.13**: [Experiments](../src/experiments/SPEC.md); the values (38 in use) and their five kinds are in [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)
 - Structure rules (S, R, D, B, P) and retired rule IDs: [docs/SPEC.md](SPEC.md), "Modules and structure"
 
 ---
@@ -70,6 +74,11 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ## 4. Questions to think about before next session
 
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
+
+**4.0 Decided in session 12 (12 Nov)** ([2026-11-12 22:34 SGT])
+- Rule 5.10: a reply to a nudge is a new message; the nudge stays, without buttons. Cases 7 and 8 (the connection question) unchanged.
+- Onboarding: the sign-up draft; Change name stays in Telegram; up to 3 children; no Change on screens 6 and 7 (Settings instead); screen 10 uses the first quick behaviour with fixed words, its own kind of message, prompted; one child per message, taking turns, told once; invites held at `/start`, used at agreement; 7-day draft, one reminder, 90-day deletion; the 7-day line at `/start`. Q3, Q4, Q7, Q10, Q11 are answered.
+- **Questions to think about for next time:** (1) the scheduler for the planner: Supabase's own scheduler, a service such as Upstash QStash, or Vercel's paid plan (Claude brings the trade-offs before pull request 3); (2) Q8 agreement wording and the 7-day line, for your PDPA reviewer; (3) whether to update the onboarding canvas to match the 12 Nov decisions.
 
 **4a. Rule changes**
 - [2026-11-09 21:49 SGT] **Recorded 9 Nov from the Chat handoffs:** 5.1 typed messages · 5.4 today only, unchosen = reflection, repeat celebrated · 3.12 any activity triggers the Wrap Up, two messages · 7.6 Monday receipt retired · 7.8 new summary, steady weeks and monthly view on My page. **Waiting for your go-ahead:** the texts of 5.6 (24 hours, "Answered: 4, quite connected") and 7.7 (24-hour window, consent buttons).
@@ -115,6 +124,10 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-12 22:34 SGT] **UAT, remaining** ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)): U11 passed 12 Nov. **Just after midnight tonight** U12 (tap last night's nudge if you left it untapped: "Reminder has expired"); **next nudges** U15 (✅ Done: the nudge stays, the receipt is a new message) and U16 (😴 Not today, the same); **after an hour's quiet** U14 (reply speed).
+- [2026-11-12 22:34 SGT] **PDPA reviewer:** the 7-day sign-up draft and its line at `/start`, plus the photo consent wording and withdrawing consent.
+- [2026-11-12 22:34 SGT] DONE: migration 007 applied on Supabase (0, 0 before; true, true, 4 after); fingerprint recorded.
+- [2026-11-12 22:34 SGT] The onboarding canvas is out of date in places (screens 6, 7, 10, 11, note s7, B1-6): say if you want Claude to update it.
 - [2026-11-11 21:58 SGT] **UAT of thin slice 1** ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)): U2 to U10 pass. Remaining, in the quickest order: **12 Nov before 7 pm** U13 (pause, Run, no message, un-pause), then leave the 7 pm nudge untapped; **13 Nov just after midnight** U12 (tap that nudge's ✅ Done: "Reminder has expired"); **13 Nov 7 pm** U11 (😴 Not today); **any time after an hour's quiet** U14 (reply speed).
 - [2026-11-11 22:02 SGT] DONE: Vercel team checked: the owner is the only member (Owner role), so nobody else can see the project's secrets.
 - SUPERSEDED [2026-11-11 22:02 SGT] [2026-11-11 21:58 SGT] Vercel: confirm you are the only member of the "Vibe Coding S…" team (others could see the project's secrets); if not, transfer the project to your personal account.
