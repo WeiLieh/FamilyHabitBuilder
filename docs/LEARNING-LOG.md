@@ -2,6 +2,15 @@
 
 ## Notebook
 
+### [2026-11-12 20:55 SGT] A partial failure: saved, but not shown
+- **Concept:** a **partial failure**: one action that is really two jobs (save the answer, then update the screen), where the first succeeds and the second fails.
+- **In plain English:** when you tap ✅ Done, the bot saves your answer in the database, then asks Telegram to remove the buttons and show the receipt. If Telegram hiccups after the save, the answer still counts. The bot must say what actually happened, so it never says "didn't save" after a save.
+- **Analogy:** a courier leaves your parcel at the door, then their phone fails to send the "delivered" text. Telling you "we couldn't deliver" would make you order again and pay twice.
+- **Why and when to use it:** whenever one tap triggers several steps, decide what the person is told if each step fails. Not needed when there is only one step.
+- **Best practices:** do the important step (saving) first; report each step's failure honestly, never a blanket "it failed"; write the failure to the log (rule 1.3); test the in-between case on purpose.
+- **Where it showed up in this project:** rule 5.10 (12 Nov): Done and Not today now take two Telegram steps (remove the buttons, send a new message). Two new tests check that a failure in the first step still sends the reply and never says "didn't save".
+- **Explain it to others:** "A button tap does two things: save, then show. We test the case where saving worked but showing failed, so the app never tells a parent something untrue."
+
 ### [2026-11-11 21:59 SGT] A thin slice, with a webhook and a cron job
 - **Concept:** a **thin slice** (the smallest piece of the real product that works end to end), reached by Telegram through a **webhook** (a web address Telegram calls whenever something happens) protected by a **shared secret**, and woken daily by a **cron job** (a scheduled alarm, here Vercel's).
 - **In plain English:** instead of building each part fully, we built a tiny version of every part at once: sign-up, one nudge, one button, one receipt, on the real Telegram, Vercel and Supabase. Telegram sends each message to our address with a password only it knows; Vercel's alarm wakes the bot at 7 pm with its own password.
@@ -193,6 +202,7 @@
 - **Governance angle:** A reviewer can trace every decision to a dated entry, which helps with audits and change approvals.
 
 ## Still unclear
+- [2026-11-12 20:55 SGT] CONFIRMED: owner understands tests 3 and 4; moved to the Notebook ("A partial failure: saved, but not shown").
 - [2026-11-12 20:51 SGT] **Tests 3 and 4 for rule 5.10 (a Telegram hiccup after saving):** when you tap a button, the bot does two separate jobs: it saves your answer in the database, then tells Telegram what to show. If the second job fails, the first has still happened, so the bot must not say "didn't save". Explained again with the parcel-delivery analogy. Waiting for the owner to confirm it is clear.
 - [2026-10-25 07:34 SGT] **Two tables linked by name (nudges and examples):** proposed design where `nudges` holds each nudge's settings once (with an ID number used by parents' choices) and `examples` holds one row per example, naming its nudge. Explained with a mock-up and the contacts-list / message-log analogy. Waiting for the owner to confirm it is clear. CONFIRMED [2026-10-25 07:42 SGT]: moved to the Notebook.
 - [2026-10-24 17:39 SGT] Nothing yet. SUPERSEDED [2026-10-25 07:34 SGT]

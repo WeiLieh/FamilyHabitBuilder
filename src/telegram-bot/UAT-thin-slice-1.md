@@ -33,6 +33,8 @@ The automated tests (166, run on every pull request, including the honest "didn'
 
 ## Part 2: test cases
 
+[2026-11-12 20:54 SGT] **Results, 12 Nov (owner):** U11 **pass** (the nudge turned into the comforting note, as designed then). The owner found a disappearing nudge not intuitive, so rule 5.10 changes it: U10 and U11 describe the old behaviour; **U15 and U16 check the new one** after the update is deployed.
+
 [2026-11-11 21:55 SGT] **Results, 11 Nov (owner):** U2 to U10 **pass** (U4's reply was slow to show in Telegram Web; U5 needed the webhook address fixed first, see `docs/ERROR-LOG.md`). Still to run: U11, U12 and U13 (need tomorrow's nudge), U14.
 
 [2026-11-11 21:31 SGT] **Tip:** if a bot reply seems missing in **Telegram Web**, refresh the page (F5) or look in the phone app first: Telegram Web can be slow to show new messages. If it is still missing, Vercel's Logs show whether the bot sent it (an outgoing `sendMessage` call, and the Error count stays 0).
@@ -54,5 +56,7 @@ The automated tests (166, run on every pull request, including the honest "didn'
 | U12 | Leave one day's nudge untapped; after midnight, tap its **✅ Done** | A pop-up: "Reminder has expired. Tap a behaviour on the keyboard to log today." Nothing saved | Telegram; no new row in `habit_logs` | [ ] |
 | U13 | Pause yourself: `update parents set paused = true where id = <your id from U5>;` then run the cron job (as U8) on a day you haven't had a nudge | No message. Then undo it: `update parents set paused = false where id = <your id from U5>;` | Telegram | [ ] |
 | U14 | Note how long the bot takes to answer the first message after a quiet hour (a "cold start") | Under about 3 seconds is fine; tell Claude Code if it is slower | Your phone | [ ] |
+| U15 | [2026-11-12 20:54 SGT] After the rule 5.10 update is deployed: on a new nudge, tap **✅ Done** | The nudge **stays** with its words unchanged and its buttons go; below it, a new message "✅ Saved: Showing affection today." | Telegram; `select for_day, logged_via from habit_logs;` shows today, `done_button` | [ ] |
+| U16 | [2026-11-12 20:54 SGT] After the rule 5.10 update is deployed: on another day's nudge, tap **😴 Not today** | The nudge **stays** and its buttons go; below it, a new message "😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow." | Telegram; no new row in `habit_logs` | [ ] |
 
 **Expected gaps in this slice** (not failures): no child's name, no choice of behaviour or time, no keyboard, no Undo, no photos, no Claude replies, no Wrap Up; typed text always gets "Unrecognised text.".
