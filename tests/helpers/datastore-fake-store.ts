@@ -22,7 +22,10 @@ export class FakeStore implements Store {
   consents: { parentId: number; topic: string; answer: string }[] = [];
   sentNudges: SentNudge[] = [];
   logs: Log[] = [];
-  events: { parentId: number; type: string; updateId: number | null }[] = [];
+  // [2026-11-12] "day" is the Singapore day an event happened (used by notTodayOn).
+  events: { parentId: number; type: string; updateId: number | null; day?: string }[] = [];
+  // [2026-11-12] The pretend "today" in Singapore; the real database uses its own clock.
+  today = "2026-11-11";
   // Set to true to make every write fail, like a database outage.
   failWrites = false;
 
@@ -87,7 +90,10 @@ export class FakeStore implements Store {
   async recordNotToday(parentId: number, updateId: number): Promise<void> {
     this.failIfAsked();
     if (this.events.some((e) => e.updateId === updateId)) return; // a resent message is saved once
-    this.events.push({ parentId, type: "not_today", updateId });
+    this.events.push({ parentId, type: "not_today", updateId, day: this.today });
+  }
+  async notTodayOn(parentId: number, day: string): Promise<boolean> {
+    return this.events.some((e) => e.parentId === parentId && e.type === "not_today" && e.day === day);
   }
 }
 

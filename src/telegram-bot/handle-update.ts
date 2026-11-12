@@ -104,8 +104,17 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
     return;
   }
 
+  // [2026-11-12] Rule 5.10: once a nudge is answered one way, a tap on its other
+  // button saves nothing (its buttons may still show if removing them failed).
+  const doneAlready = await store.logExistsFor(nudge.messageId);
+  const notTodayAlready = await store.notTodayOn(parent.id, day);
+  if ((action === "skip" && (doneAlready || notTodayAlready)) || (action === "done" && notTodayAlready)) {
+    await telegram.answerTap(t.tapId, WORDS.alreadyAnswered);
+    return;
+  }
+
   if (action === "done") {
-    if (await store.logExistsFor(nudge.messageId)) {
+    if (doneAlready) {
       await telegram.answerTap(t.tapId, WORDS.alreadySaved);
       return;
     }

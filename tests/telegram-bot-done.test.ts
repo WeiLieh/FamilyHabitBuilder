@@ -27,6 +27,7 @@ async function tap(data: string, now = evening): Promise<void> {
 
 beforeEach(async () => {
   store = new FakeStore();
+  store.today = today; // [2026-11-12] the pretend database's "today" matches the tap
   telegram = new FakeTelegram();
   store.invites.set("WELCOME-1", null);
   const r = await store.signUp({ telegramId: ME, firstName: "Wei Lieh", code: "WELCOME-1", updateId: 1 });
@@ -95,6 +96,39 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     await tap(`skip:${today}`);
     expect(store.events).toContainEqual(expect.objectContaining({ parentId, type: "not_today" })); // really recorded
     expect(telegram.sentTexts()).toEqual(["😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow."]);
+  });
+
+  // [2026-11-12] New (rule 5.10, review finding P3): if the buttons could not be removed,
+  // a second, different answer on the same nudge must not be saved as well.
+  it("after ✅ Done, a 😴 Not today tap on the same nudge saves nothing and shows 'Already answered.'", async () => {
+    await tap(`done:${today}`);
+    await tap(`skip:${today}`);
+    expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(0);
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: "Already answered." });
+  });
+
+  it("after 😴 Not today, a ✅ Done tap on the same nudge saves nothing and shows 'Already answered.'", async () => {
+    await tap(`skip:${today}`);
+    await tap(`done:${today}`);
+    expect(store.logs).toEqual([]);
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: "Already answered." });
+  });
+
+  it("a second 😴 Not today tap (a new tap, not a resend) is recorded once and shows 'Already answered.'", async () => {
+    await tap(`skip:${today}`);
+    await tap(`skip:${today}`);
+    expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(1);
+    expect(telegram.sentTexts()).toHaveLength(1); // the comforting note only once
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: "Already answered." });
+  });
+
+  // [2026-11-12] New (rule 5.10, review findings P5 and S1).
+  it("if sending the receipt fails after saving, the log stays saved and the parent is never told it didn't save", async () => {
+    telegram.failNextSend = true;
+    await tap(`done:${today}`);
+    expect(store.logs).toHaveLength(1);
+    expect(telegram.calls).toContainEqual({ kind: "removeButtons", chatId: ME, messageId: 55 });
+    expect(telegram.sentTexts()).not.toContain("Sorry, that didn't save. Please try again.");
   });
 
   it("😴 Not today delivered twice by Telegram is recorded once", async () => {

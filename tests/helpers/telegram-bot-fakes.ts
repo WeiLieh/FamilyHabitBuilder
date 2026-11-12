@@ -25,10 +25,16 @@ export class FakeTelegram implements TelegramApi {
   failFor = new Set<number>();
   // [2026-11-12] When true, removing a message's buttons fails (e.g. Telegram is briefly down).
   failRemoveButtons = false;
+  // [2026-11-12] When true, only the next message fails to send; later ones work.
+  failNextSend = false;
 
   private nextMessageId = 500;
   async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<number> {
     if (this.failFor.has(chatId)) throw new Error(`Telegram refused to send to ${chatId}`);
+    if (this.failNextSend) {
+      this.failNextSend = false;
+      throw new Error("Telegram refused this one message");
+    }
     this.calls.push({ kind: "send", chatId, text, buttons });
     return this.nextMessageId++; // Telegram's number for the new message
   }
