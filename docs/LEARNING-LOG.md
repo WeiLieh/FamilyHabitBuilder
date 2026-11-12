@@ -1,5 +1,7 @@
 # Learning Log (study notebook)
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/LEARNING-LOG-superseded.md](archive/LEARNING-LOG-superseded.md) to keep this file short (owner approved).
+
 ## Notebook
 
 ### [2026-11-12 23:20 SGT] A bookmark for a multi-step form (a "state machine")
@@ -225,4 +227,3 @@
 - [2026-11-12 20:55 SGT] CONFIRMED: owner understands tests 3 and 4; moved to the Notebook ("A partial failure: saved, but not shown").
 - [2026-11-12 20:51 SGT] **Tests 3 and 4 for rule 5.10 (a Telegram hiccup after saving):** when you tap a button, the bot does two separate jobs: it saves your answer in the database, then tells Telegram what to show. If the second job fails, the first has still happened, so the bot must not say "didn't save". Explained again with the parcel-delivery analogy. Waiting for the owner to confirm it is clear.
 - [2026-10-25 07:34 SGT] **Two tables linked by name (nudges and examples):** proposed design where `nudges` holds each nudge's settings once (with an ID number used by parents' choices) and `examples` holds one row per example, naming its nudge. Explained with a mock-up and the contacts-list / message-log analogy. Waiting for the owner to confirm it is clear. CONFIRMED [2026-10-25 07:42 SGT]: moved to the Notebook.
-- [2026-10-24 17:39 SGT] Nothing yet. SUPERSEDED [2026-10-25 07:34 SGT]

@@ -1,5 +1,7 @@
 # Variable Rewards Spec (v0.2 draft, adapted to our rules)
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/variable-rewards-DESIGN-superseded.md](../../docs/archive/variable-rewards-DESIGN-superseded.md) to keep this file short (owner approved).
+
 [2026-10-29 22:02 SGT] Draft by Claude for the owner's review. Based on the owner's v0.1 (`docs/variable-rewards-spec-v0.1-original.md`, kept unchanged), adapted to the rules agreed so far (rule IDs from `docs/CATCH-UP.md`, section 3). Nothing here is final until the owner answers the decisions in section 1. Items marked "(tune)" are starting guesses to adjust after the trial.
 
 **How to review:** read section 1 (decisions needed) and section 2 (what clashed and how it was resolved) first. Sections 3 onward are the adapted spec.
@@ -14,7 +16,6 @@
 |---|---|---|---|---|
 | 1 | Validation reply after each log | v0.1 | Tribe | **MVP (agreed)** |
 [2026-10-31 17:52 SGT] | 2 | Surprise activity card | v0.1 | Hunt | **MVP (agreed)**; folded into varied nudge messages (D6 answered; no "Another idea" button) |
-SUPERSEDED [2026-10-31 17:52 SGT]: | 2 | Surprise activity card | v0.1 | Hunt | **MVP (agreed)**; how: folded into varied nudge messages (D6, to review) |
 | 3 | Weekly streak | v0.1 | Self | **MVP (agreed)**; details D3 to D5 to review |
 | 4 | Completion checklist (one-tap logging) | v0.1 | Self | **MVP (agreed)** |
 | 5 | Co-parent reaction | v0.1 | Tribe | Later |
@@ -46,7 +47,6 @@ Each has a suggestion; "agree" is enough. Numbers D1 to D9 are only for this rev
 | **D4** ✅ ANSWERED [2026-10-29 22:37 SGT]: steady week = own chosen frequency with some slack (bars in rule 7.6). | **What makes a "steady week"?** v0.1: at least 3 logged days. | Clash with rule 2.1 (user-led): a parent who chose only 1 deliberate behaviour once a week can never reach 3 days, so they could never earn a steady week or a badge. | **A steady week = the parent met their own chosen frequency for the week** (the same idea as metric 6, target-hit). Example: chose "Showing affection, every 2 days" → 3 or 4 logged days that week. |
 | **D5** ✅ ANSWERED [2026-10-31 17:52 SGT]: no repair pass in the MVP (Later list, revisit if parents ask). **D5b** (added): the week **closes at midnight Sunday**; a Monday log for Sunday is saved (history, album) but counts toward neither week, and the receipt says so (rule 7.6). | **Repair pass: keep?** v0.1: one free pass a week, up to 48 hours after a missed day. | Clash with rule 5.4 (log back to yesterday only), and it adds a new mechanic to explain. With D4, a steady week already tolerates missed days. | **No repair pass in the MVP.** Logging up to yesterday (5.4) plus "own frequency" (D4) covers forgetful days. Revisit if parents ask. |
 | **D6** ✅ ANSWERED [2026-10-31 17:52 SGT]: (1) folded into nudge messages, a fresh unused example each time (rule 3.13); (2) **no "Another idea" button in the MVP** (owner: it adds complexity and parents might tap it instead of acting; backlog); (3) the 7 v0.1 cards approved as example rows ("funniest thing today" skipped: overlaps TWC "What made you laugh today?"); (4) 25 more drafted examples approved for now (content review in the backlog). | **Surprise activity cards: separate feature, or folded into nudge messages?** | v0.1's cards replace "the daily prompt" at random. We have no single daily prompt (we have slots, rule 3.1), we dropped the random surprise (7.2), and cards outside the 9 nudges are out of scope. | **Fold into nudge messages:** each nudge message uses a different example (no repeats until all are used), so every message is a small surprise. v0.1's cards become **new example rows** under the matching nudge (section 7). Add an **"Another idea"** button (v0.1's Swap), once per message. |
-| **D7** ✅ ANSWERED [2026-10-31 17:52 SGT]: replaced by the **Weekly Wrap Up** (rule 3.12): a new kind of message, not a nudge message; Sunday at a time the parent can change (default 8:00pm); no slot needed; not counted toward the cap; only if the parent logged that week; at most once a week; can be turned off (SUPERSEDED [2026-11-09 18:18 SGT]: no own switch since 9 Nov, rule 3.12; the one Pause switch stops it); not sent when paused; "Not today" doesn't block it; says "this week so far". Combines the weekly snapshot and the album prompt. | **Weekly album prompt: allowed, and does it count toward the 3-a-day cap?** | v0.1 adds a Sunday-evening prompt. Rule 3.4 caps bot-initiated messages at 3 a day. | **Allowed, once a week, in the parent's last Sunday slot, and it counts as one of that day's nudge messages.** Sent only if the parent logged at least once that week (nothing to save otherwise). |
 | **D8** ✅ ANSWERED [2026-10-31 18:00 SGT]: option A, one photo and/or one line about any moment that week, saved until the next Wrap Up as an album entry, not a log (rule 7.7). | **Album photos: only from logs, or any photo?** | Rule 4.3: photos are allowed only for nudges with "photo upload allowed" (the 5 deliberate ones). v0.1's weekly prompt invites any photo. | **The weekly prompt may take a photo or a line about any moment that week**, saved as an album entry (not a log, so no target, streak or badge effect). Photo rules 5.5 (optional, consent, kept until deleted) apply. |
 | **D10** ✅ ANSWERED [2026-10-31 18:00 SGT]: weekly = the Weekly Wrap Up with 5 items; monthly = a "last month" section in the first Wrap Up of each calendar month (rule 7.8). (Earlier: partly answered [2026-10-29 22:25 SGT]: snapshots are part of feature 6, the album; timing still to confirm) | **Snapshots: what and when?** (added [2026-10-29 22:22 SGT]) | Agreed for the MVP; the Definition of done requires them. Each is a bot-initiated message, so rule 3.4 (cap) applies. | **Weekly:** in the parent's last Sunday slot, **combined with the album prompt (D7)** into one message: days this week, steady weeks so far, photos and lines saved this week, a one-tap web link, and "want to save one more moment?". **Monthly:** on the 1st of the month, in the parent's first slot: the month's numbers, a few saved photos or lines, and the link. Each counts as one nudge message that day. |
 | **D11** ✅ ANSWERED [2026-10-29 22:25 SGT]: (a) all 9 start unlocked (rule 2.2 changed). | **Locked nudges without unlocks** (added [2026-10-29 22:22 SGT]) | Unlocks are out of the MVP, but rule 2.2 locks 3 deliberate nudges (Setting a good example, Incidental teaching, Ask-say-do). Without unlocks they can never be picked. | Choose: **(a) start all 9 unlocked in the MVP** (parents see the full menu; unlocks return later), or **(b) keep the 3 locked and simply unavailable in the MVP** (a smaller, simpler menu of 6). |
@@ -62,10 +62,8 @@ Each has a suggestion; "agree" is enough. Numbers D1 to D9 are only for this rev
 | Checklist buttons [Praised effort] [Asked about feelings] [Played together] [Something else] [Skip today] | 3.5: ✅ Done and 😴 Not today on every nudge message; 5.1: "Log something" any time | Buttons = our Done / Not today; "Log something" lists the parent's chosen nudges plus "Something else" (unchosen, rule 5.4) |
 | "Skip today" | 3.5 "Not today" | Same thing; we keep the name "Not today" |
 [2026-10-31 17:52 SGT] | One daily prompt plus one weekly album prompt, nothing more | 3.1, 3.4: up to 3 slots a day, at most 3 nudge messages a day | Our slots and cap apply to nudge messages; the album prompt becomes the Weekly Wrap Up (D7, rule 3.12), outside the cap |
-SUPERSEDED [2026-10-31 17:52 SGT]: | One daily prompt plus one weekly album prompt, nothing more | 3.1, 3.4: up to 3 slots a day, at most 3 nudge messages a day | Our slots and cap apply; album prompt per D7 |
 | Surprise activity card on ~3 random days a week | 7.2: random surprise dropped; 3.1 slots; out of scope: strategies not in the 9 nudges | D6: folded into nudge messages as varied examples |
 [2026-10-31 17:52 SGT] | [Swap] on a card | (new) | D6: no "Another idea" button in the MVP (backlog) |
-SUPERSEDED [2026-10-31 17:52 SGT]: | [Swap] on a card | (new) | D6: "Another idea" button, once per message |
 | Weekly streak, 3 logged days, 48-hour repair pass | 7.3 per-behaviour streaks; 5.4 log back to yesterday only; 2.1 user-led frequency | D3, D4, D5 |
 | XP and levels: later or skip | 7.1, 7.2 (XP, double XP for unprompted logs) | D1 |
 | Validation library of 20+ variants | v1.1: AI-written messages; 1.3 no fallbacks | D2 |
@@ -89,7 +87,6 @@ The Variable rewards module makes logging a bonding moment feel noticed and wort
 **In the MVP (if the suggestions in section 1 are agreed):**
 - Feature 1: Validation reply after every log
 - [2026-10-31 17:52 SGT] Feature 2: Varied nudge messages (a fresh example each time), replacing separate surprise cards
-- SUPERSEDED [2026-10-31 17:52 SGT]: Feature 2: Varied nudge messages ("Another idea"), replacing separate surprise cards
 - Feature 3: Weekly progress and steady weeks
 - Feature 4: One-tap logging (our Done / Not today / Log something)
 - Feature 6: Family memory album
@@ -118,14 +115,8 @@ The Telegram bot carries steps 1 to 3 so the action stays one tap; the Web app m
 ### Feature 1: Validation reply (Tribe)
 - **When:** after every log (Done, Log something, or a free-text log). **Every log always gets a reply** (v0.1 section 6). Replies never count toward the 3-a-day cap (rule 3.4).
 - [2026-10-31 17:52 SGT] **What:** an honest receipt first, then one short, warm message **written by Claude** that names what the parent did (D2, rule 7.5). If Claude fails, the receipt stands and the failure is recorded (rule 1.3).
-- SUPERSEDED [2026-10-31 17:52 SGT]: **What:** one short, warm message that names what the parent did, chosen from a **library of variants per nudge code** (D2), at least 3 per nudge to start (tune), 20+ in total.
 - [2026-10-31 17:52 SGT] **Variety:** Claude is told the parent's recent replies and avoids repeating them (details with the words half, step 4).
-- SUPERSEDED [2026-10-31 17:52 SGT]: **Variety:** never repeat a variant within the parent's last 10 replies (tune).
 - [2026-10-31 17:52 SGT] **Special replies (written by Claude, guided by these cases):**
-- SUPERSEDED [2026-10-31 17:52 SGT]: **Special replies (still from the library):**
-  - [2026-11-09 00:14 SGT] Correction: "unprompted" now means that behaviour was **not nudged earlier the same Singapore day** (rule 5.2 changed on 9 Nov); the 4-hour wording on the next line is SUPERSEDED.
-  - **Unprompted log** (no nudge message in the 4 hours before, rule 5.2): a variant that notices they did it on their own (replaces double XP if D1 is agreed).
-  - **Repeat log** of the same nudge in a day, or a **behaviour they didn't choose** (rule 5.4): a variant that celebrates the extra effort (closes the "celebrate repeat logs" WIP item).
 - **Rules:** praise the action, not the parent as a person; no points; no comparison; never mention a missed day.
 - **Web app:** the latest reply on the Today page; past replies kept with the album entry for that day.
 
@@ -133,7 +124,6 @@ The Telegram bot carries steps 1 to 3 so the action stays one tap; the Web app m
 - Each nudge message carries **one example** for the behaviour being nudged, chosen at random among the nudge's active examples **not yet used for this parent**; repeats only after all have been used (D6).
 - Claude adds the time-of-day framing (rule 3.11). The example list itself lives in the Nudge repository (rule 4.1), so new ideas are new example rows.
 - [2026-10-31 17:52 SGT] **No "Another idea" button in the MVP** (D6, owner: complexity, and parents might tap it instead of acting). Parked in `docs/PRODUCT-BACKLOG.md`.
-- SUPERSEDED [2026-10-31 17:52 SGT]: **"Another idea" button** (v0.1's Swap): swaps in a different example, **once per nudge message** (tune). Does not count as a new nudge message.
 - v0.1's starter cards become example rows (section 7).
 - **Web app:** "Ideas you've tried": examples the parent marked Done, with dates. No locked slots, no counts.
 
@@ -149,17 +139,13 @@ The Telegram bot carries steps 1 to 3 so the action stays one tap; the Web app m
 
 ### Feature 4: One-tap logging (Self)
 - [2026-10-31 17:52 SGT] **On every nudge message:** ✅ Done and 😴 Not today only (rule 3.5).
-- SUPERSEDED [2026-10-31 17:52 SGT]: **On every nudge message:** ✅ Done, 😴 Not today (rule 3.5), and "Another idea" (feature 2).
 - **Any time:** a "Log something" menu listing the parent's chosen nudges plus "Something else" (rules 5.1, 5.4), one tap each.
 - After the tap: "Want to add one line?" (optional description, up to 280 characters, rule 5.3) and, for nudges that allow it, an optional photo.
 - **Not today has no penalty** and is never called a failure.
 
 ### Feature 6: Family memory album (Self, investment)
 - [2026-10-31 17:52 SGT] **Holds:** the optional descriptions and photos from logs (rules 5.3, 5.5), plus anything saved in reply to the Weekly Wrap Up: one photo and/or one line about any moment that week (D8, rule 7.7).
-- SUPERSEDED [2026-10-31 17:52 SGT]: **Holds:** the optional descriptions and photos from logs (rules 5.3, 5.5), plus entries from the weekly album prompt (D8).
 - [2026-11-09 18:18 SGT] Correction to the line below: the Wrap Up no longer has its own on/off switch (owner, 9 Nov, rule 3.12); the one Pause switch stops it.
-- SUPERSEDED [2026-11-09 18:18 SGT] [2026-10-31 17:52 SGT] **Weekly Wrap Up (D7, rule 3.12):** Sunday at the parent's chosen time (default 8:00pm), only if they logged that week: "this week so far" (the weekly snapshot) plus "Want to save one moment from this week?". Not a nudge message: no slot, not counted toward the cap, can be turned off. Final week results show in the Web app.
-- SUPERSEDED [2026-10-31 17:52 SGT]: **Weekly album prompt (D7):** in the parent's last Sunday slot, only if they logged that week: "Want to save one moment from this week? Send a photo or one line." Counts toward that day's cap.
 - **Web app:** a simple monthly timeline, private to the parent who saved it; the parent can delete any entry (and all data, rule 9.1).
 - **Privacy:** photos optional; consent once at sign-up; kept until deleted (rule 5.5). The open PDPA retention risk stays in known issues.
 
@@ -219,7 +205,6 @@ All are time-agnostic (rule 4.5). They would be added as example rows after the 
 | Do parents keep logging? | Logged days per week; steady weeks | Metrics 3 (stickiness), 6 (target-hit) |
 | Is the action easy enough? | Share of nudge messages followed by a log; one-tap vs typed logs | Metric 8 (nudge-to-action) + new: one-tap share |
 [2026-10-31 17:52 SGT] | Do the varied examples land? | Done and Not today rates per example | New; cut examples with a high Not today rate |
-SUPERSEDED [2026-10-31 17:52 SGT]: | Do the varied examples land? | Done, Not today and "Another idea" rates per example | New; cut examples with high Not today or "Another idea" |
 | Do parents feel closer? | Weekly 1 to 5 connection rating | Metric 10 |
 | Is the reward crowding out the real thing? | Logs bunched on Sunday; parents saying they logged "for the badge" | New; end-of-trial interview |
 | Do parents trust the album? | Photos saved, entries deleted, privacy comments | New; end-of-trial interview |

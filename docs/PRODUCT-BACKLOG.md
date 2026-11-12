@@ -1,5 +1,7 @@
 # Product Backlog
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PRODUCT-BACKLOG-superseded.md](archive/PRODUCT-BACKLOG-superseded.md) to keep this file short (owner approved).
+
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
 ## [2026-11-12 22:04 SGT] Family accounts (two parents linked)
@@ -138,7 +140,6 @@ One entry per item: Item / Why it matters / Priority / Status. Newest first.
 - **Status:** [2026-10-25 06:59 SGT] In progress (WIP). Defined together with the rewards. Replaces the item below.
 
 ## [2026-10-24 18:26 SGT] WIP: Rule for unlocking more behaviours
-- [2026-10-25 06:59 SGT] SUPERSEDED by the item above: an unlock now opens more nudges, it does not allow choosing more at once.
 - **Why it matters:** [2026-10-24 18:26 SGT] Parents start with 2 quick and 1 deliberate behaviour. Choosing more is an unlock they earn; the earning rule is not decided yet.
 - **Priority:** [2026-10-24 18:26 SGT] Medium
 - **Status:** [2026-10-24 18:26 SGT] In progress (WIP). Defined together with the rewards.

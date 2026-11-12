@@ -1,5 +1,7 @@
 # Context: current state of the project
 
+[2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CONTEXT-superseded.md](archive/CONTEXT-superseded.md) to keep this file short (owner approved).
+
 ## Purpose
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
@@ -30,7 +32,6 @@
 - [2026-10-24 21:19 SGT] Secrets: copy `.env.example` to `.env` for local use (Git ignores `.env`). Real values live in Vercel only.
 - [2026-10-24 18:47 SGT] Package manager: npm, with `package-lock.json` as the only lockfile. Runtime: Node.js.
 - [2026-10-24 18:47 SGT] Check command (run before every commit): `npm run check` = type check, then tests (Vitest), then build. Same as the SG Weather project. Exact scripts are written when the project skeleton is set up.
-- [2026-10-24 17:39 SGT] Not decided yet. The check command (type check, tests and build) is picked together with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Architecture summary
 - [2026-10-31 09:30 SGT] **`shared/` renamed to `src/`** (restructure PR 1; owner's decision). All app code now lives under `src/`: `src/nudge-engine/`, `src/nudge-repository.ts`, `src/settings.ts`, `src/sgt.ts`. Older entries below still say `shared/`; they are history and are not rewritten. Path-move map: `docs/SPEC.md`, change notes.
@@ -52,9 +53,7 @@
 - [2026-10-25 06:25 SGT] **Batch 1 code (step 1 of the development order):**
   - `shared/nudge-repository.ts` (Nudge repository): `readNudgeRows` checks raw rows from the Supabase `nudges` table with `zod`. Valid rows become Nudge objects; broken rows are left out and returned as problems (row ID plus every reason). Duplicated names (ignoring capitals and spaces) or IDs: all rows involved are left out.
   - `shared/nudge-engine/choices.ts` (Nudge engine): `checkChoices` checks a parent's picks against the guardrails and returns targets or every reason, in words the bot can show.
-  - SUPERSEDED [2026-10-31 19:20 SGT] (numbers now live once in `src/settings.ts`, rule 1.4; nothing is mirrored) `shared/settings.ts`: starting values (choice limits, 2 deliberate times a week in total), mirrored from `docs/EXPERIMENTS.md`. [2026-10-31 18:59 SGT] Now `src/settings.ts` (moved 31 Oct).
   - [2026-10-25 06:59 SGT] Supabase `nudges` table columns (planned, used by the tests): `id` (generated automatically), `name`, `category`, `example_1` to `example_5`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`, `active` (no = retired), `starts_unlocked`. `checkChoices` also takes the IDs a parent has unlocked, refuses retired nudges and refuses locked nudges the parent has not unlocked.
-  - SUPERSEDED [2026-10-25 06:59 SGT] Supabase `nudges` table columns (planned, used by the tests): `id`, `name`, `category`, `example_1` to `example_5`, `self_report_allowed`, `description_max_chars`, `photo_upload_allowed`, `photo_idea`.
 - [2026-10-24 21:34 SGT] **Official module names** (from the owner's diagram, `docs/architecture-diagram.png`). Use only these names in code, docs and conversation:
   1. **Telegram bot**: chat with the parent. Talks to the Nudge engine, sends photos to the Photo check, writes to the Datastore.
   2. SUPERSEDED [2026-10-31 19:09 SGT] (experiments are now their own module, item 9 below) **Nudge engine**: the brain plus experiments. Reads from the Nudge repository, reads and writes the Datastore, triggers Variable rewards.
@@ -80,7 +79,6 @@
   - **Supabase** stores parents, targets, logged actions, photos, reward events and telemetry. **Upstash Redis** holds short-term chat context.
   - **A scheduler** wakes the app at nudge moments (to be confirmed: see the pending items under "Key decisions").
   - **Web pages** are plain HTML served by Vercel functions, reached by a one-tap sign-in link from the bot.
-- [2026-10-24 17:39 SGT] Not decided yet. Waiting for spec clarifications and the technology stack choice. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## Key decisions and why
 - [2026-11-12 23:20 SGT] **Scheduler confirmed (owner, 12 Nov): Supabase Cron**, for pull request 3 (the planner live). Free, in Singapore, no new vendor, and the same as the 24 Oct choice below. Alternatives weighed: Upstash QStash (retries and a dashboard, but a new vendor outside Singapore and signature checking), Vercel Pro (simplest, about US$20 a month), GitHub Actions (free but often late). Until then, the sign-up clean-up runs with Vercel's daily 7:00 pm job (temporary, decision D4).
@@ -121,15 +119,8 @@
   - **Scheduler: Supabase Cron** wakes the app every few minutes; our code decides who is due a nudge. Because Vercel's free scheduler runs at most once a day.
   - **GitHub Actions** runs `npm run check` on every pull request, as a second check before merge.
   - [2026-10-24 21:24 SGT] **Regions (owner's update):** everything in Singapore for consistency: Supabase (Singapore), Upstash Redis (Singapore region, chosen when the owner creates it) and Vercel functions (region `sin1`, set in `vercel.json`). Stored and processed family data stays in Singapore, except what is sent to Claude.
-  - **Regions:** SUPERSEDED [2026-10-24 21:24 SGT] Supabase in Singapore, so stored family data stays in Singapore. Vercel functions stay in Washington, D.C. (Vercel's default), the owner's choice. Trade-off: each database call travels Singapore to Washington and back, so bot replies may be slightly slower; data passes through the US while being processed (it also does when sent to Claude). Can be moved to Singapore later in Vercel settings.
   - **Database changes:** written as SQL files in the repo; the owner runs them in the Supabase dashboard. No extra tool, and the owner sees every change.
   - **Spend limit:** the owner sets a monthly limit in the Anthropic Console (about US$10).
-- [2026-10-24 18:47 SGT] **Pending owner approval** (proposed with the stack, not yet agreed): SUPERSEDED [2026-10-24 18:50 SGT]
-  - **Scheduler:** Supabase Cron, because Vercel's free scheduler runs at most once a day and nudges need 3 moments a day.
-  - **GitHub Actions** to run `npm run check` automatically on every pull request (free).
-  - **Singapore regions** for Vercel functions and Supabase, to keep family data in Singapore (a likely PDPA reviewer question).
-  - **How database changes are applied:** SQL files kept in the repo and run by the owner in the Supabase dashboard (no extra tool), or the Supabase command-line tool.
-  - **A monthly spend limit** set in the Anthropic Console, as in Haze Uncle.
 - [2026-10-24 18:44 SGT] **Follow the proven patterns from the owner's SG Weather / Haze Uncle project (`WeiLieh/SGDataAPI`)**, because they already worked in production:
   - Talk to Telegram with plain web requests (no Telegram library), so there is one fewer library to approve and maintain.
   - Keep the bot's "brain" separate from the Telegram layer (the spec's "thin layer"), so the brain can be tested on its own and another channel could be added later without changing it.
@@ -148,15 +139,12 @@
   - `zod`: check that data from outside (Claude, Telegram, Supabase) has the expected shape before we trust it.
   - Development only: `typescript`, `vitest`, `@types/node`.
   - Telegram and Upstash Redis are called with plain web requests (no library). Anything else needs the owner's approval first.
-- [2026-10-24 18:47 SGT] Package manager: npm (one lockfile, `package-lock.json`). Tools approved as part of the stack: TypeScript, Vitest. Exact library list still to be approved (see Key decisions, pending items). SUPERSEDED [2026-10-24 18:50 SGT]
-- [2026-10-24 17:39 SGT] None yet. Package manager and lockfile to be chosen with the technology stack. SUPERSEDED [2026-10-24 18:47 SGT]
 
 ## UI decisions
 <!-- Empty until the product manager supplies the look. -->
 
 ## Git and release workflow
 - [2026-10-24 18:26 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirmed by the product manager).
-- [2026-10-24 17:39 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirm with the product manager). SUPERSEDED [2026-10-24 18:26 SGT]
 - [2026-10-24 17:39 SGT] Never work on `main`. One branch per task. Merge into `main` only through a pull request, after the product manager approves.
 - [2026-10-24 17:39 SGT] Current working branch: `claude/festive-einstein-nf623s`.
 
