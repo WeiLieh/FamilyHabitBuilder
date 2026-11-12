@@ -2,6 +2,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-12 22:04 SGT] Family accounts (two parents linked)
+- **Item:** [2026-11-12 22:04 SGT] Let two parents of the same family link their accounts, so they share children and see each other's logs (onboarding Q10b, 12 Nov).
+- **Why it matters:** [2026-11-12 22:04 SGT] In the MVP each parent signs up alone with their own invite; families with two engaged parents may want one shared view.
+- **Priority:** [2026-11-12 22:04 SGT] Low (review after the trial)
+- **Status:** [2026-11-12 22:04 SGT] Not started
+
 ## [2026-11-09 21:49 SGT] Grace period after midnight for logging
 - **Item:** [2026-11-09 21:49 SGT] A short grace period after midnight, for example a log before 3 am still counts as the previous day (B1 part 2 handoff, backlog idea).
 - **Why it matters:** [2026-11-09 21:49 SGT] Logging is now for today only (rule 5.4); a parent who logs at 12:30 am about the evening would otherwise lose it.
