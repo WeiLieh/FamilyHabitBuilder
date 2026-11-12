@@ -1,8 +1,10 @@
 # Catch-up page: read this first after time away
 
-**Last updated: [2026-11-12 22:34 SGT]** (session 12: rule 5.10 and the sign-up gap fix live, **onboarding fully designed**, migration 007 live: the sign-up draft and Start right now in the database).
+**Last updated: [2026-11-12 23:20 SGT]** (session 13: **the full onboarding is built and merged** (#40), scheduler chosen: Supabase Cron; next session is a **build** session).
 
-> [2026-11-12 22:34 SGT] **⏰ Next session, first:** (1) your UAT results U12, U14, U15, U16 (schedule in section 5); (2) Claude builds **pull request 2 of 3: the onboarding screens** (screens 2 to 11 on the sign-up draft, the invite cases, the 7-day line at `/start`), tests first; (3) then pull request 3, the planner going live, which first needs one decision: how the bot wakes up every 30 minutes (Vercel's free plan runs a scheduled job once a day). The bot is still for you only.
+> [2026-11-12 23:20 SGT] **⏰ Next session (you asked to build first):** (1) quickly: your UAT results U12, U14, U15, U16, and the onboarding ones U17 to U28 if you ran them ([checklist](../src/telegram-bot/UAT-onboarding.md)); (2) have you run **migration 008**? (3) then Claude builds **pull request 3 of 3: the planner live on Supabase Cron**: the 30-minute alarm, your own behaviours and times instead of the fixed 7:00 pm "Showing affection", the 24-hour sign-up reminder, and removing the temporary 7:00 pm wording. Claude shows you the tests in plain English first. The bot is still for you only.
+
+> SUPERSEDED [2026-11-12 23:20 SGT] [2026-11-12 22:34 SGT] **⏰ Next session, first:** (1) your UAT results U12, U14, U15, U16 (schedule in section 5); (2) Claude builds **pull request 2 of 3: the onboarding screens** (screens 2 to 11 on the sign-up draft, the invite cases, the 7-day line at `/start`), tests first; (3) then pull request 3, the planner going live, which first needs one decision: how the bot wakes up every 30 minutes (Vercel's free plan runs a scheduled job once a day). The bot is still for you only.
 
 > SUPERSEDED [2026-11-12 22:34 SGT] [2026-11-11 21:58 SGT] **⏰ Next session, first:** (1) your remaining UAT results (U11 to U14, schedule below); (2) Claude fixes the sign-up gap (an honest reply if the "already signed up?" check fails), test-first; (3) group C (Settings on the Web app) in Claude Chat, or the next slice. The bot is live for you only: no real families until photo consent and "delete my data" are built.
 
@@ -28,7 +30,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-12 22:34 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **19 tables live, migrations up to 007** → (3) Telegram bot ⬅ **thin slice 1 live; onboarding (group A) fully designed 12 Nov; its database side built (migration 007)**; next the onboarding screens (pull request 2), then the planner live (pull request 3); group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
+[2026-11-12 23:20 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **19 tables live, migrations up to 007** (008 written) → (3) Telegram bot ⬅ **onboarding built and merged 12 Nov (#40)**; next pull request 3, the planner live on Supabase Cron; group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
+
+SUPERSEDED [2026-11-12 23:20 SGT] [2026-11-12 22:34 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **19 tables live, migrations up to 007** → (3) Telegram bot ⬅ **thin slice 1 live; onboarding (group A) fully designed 12 Nov; its database side built (migration 007)**; next the onboarding screens (pull request 2), then the planner live (pull request 3); group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
 
 SUPERSEDED [2026-11-12 22:34 SGT] [2026-11-11 21:58 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **17 tables live, migrations up to 006** → (3) Telegram bot ⬅ **thin slice 1 built and live (11 Nov)**: sign-up with an invite, the 7:00 pm nudge, ✅ Done and 😴 Not today; groups A, B1 and B2 designed; group C (Settings on the Web app) still to design → (4) Variable rewards, then Nudge engine words (Claude's replies) → (5) Photo check → (6) Telemetry → (7) Web app.
 
@@ -74,6 +78,11 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ## 4. Questions to think about before next session
 
 [2026-11-08 22:34 SGT] Session 9 recorded your answers to the group A questions. Each changed rule keeps its old text, marked SUPERSEDED, in its spec; the dated summary is change note 1.14 in [docs/SPEC.md](SPEC.md).
+
+**4.0a Decided in session 13 (12 Nov)** ([2026-11-12 23:20 SGT])
+- Scheduler for pull request 3: **Supabase Cron** (your 24 Oct choice, confirmed). PDPA wording stays a placeholder until you go live.
+- Onboarding build decisions: D1 the true 7:00 pm time until pull request 3 (temporary); D2 no Skip on screen 5 without a quick pick; D3 screen 8 title "From what you chose, your reminders are:"; D4 the clean-up runs daily from now on. Placeholder pages My Page and Settings. Review fixes F1 to F5 done; known issues K1 to K5 recorded.
+- **Questions for next time (only if you have a moment; none block the build):** (1) K1: take the 90-day record line to your PDPA reviewer with Q8; (2) the draft wordings in `src/telegram-bot/words.ts` marked "draft" (for example "Picked: …", "Sorry, Start right now couldn't be shown. You're signed up."); (3) `docs/SPEC.md` is over 300 lines: may Claude move the oldest change notes into `docs/archive/`?
 
 **4.0 Decided in session 12 (12 Nov)** ([2026-11-12 22:34 SGT])
 - Rule 5.10: a reply to a nudge is a new message; the nudge stays, without buttons. Cases 7 and 8 (the connection question) unchanged.
@@ -124,6 +133,9 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
+- [2026-11-12 23:20 SGT] **UAT, onboarding** ([checklist](../src/telegram-bot/UAT-onboarding.md)): S1 (Vercel deploy) to S5 (migration 008), U17 to U28. Use a second Telegram account (S3a), or ask Claude for a removal script for your test parent (S3b).
+- [2026-11-12 23:20 SGT] **UAT, thin slice 1, still to report:** U12, U14, U15, U16.
+- [2026-11-12 23:20 SGT] DONE: the onboarding canvas updated to the 12 Nov decisions (session 13).
 - [2026-11-12 22:34 SGT] **UAT, remaining** ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)): U11 passed 12 Nov. **Just after midnight tonight** U12 (tap last night's nudge if you left it untapped: "Reminder has expired"); **next nudges** U15 (✅ Done: the nudge stays, the receipt is a new message) and U16 (😴 Not today, the same); **after an hour's quiet** U14 (reply speed).
 - [2026-11-12 22:34 SGT] **PDPA reviewer:** the 7-day sign-up draft and its line at `/start`, plus the photo consent wording and withdrawing consent.
 - [2026-11-12 22:34 SGT] DONE: migration 007 applied on Supabase (0, 0 before; true, true, 4 after); fingerprint recorded.

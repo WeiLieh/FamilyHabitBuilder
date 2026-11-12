@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart LR
-    telegram["Telegram bot<br/>Thin slice built"]:::part
+    telegram["Telegram bot<br/>Onboarding built"]:::part
     engine["Nudge engine<br/>Decisions built"]:::part
     repository["Nudge repository<br/>Built and live"]:::done
     photo["Photo check<br/>Designed, not built"]:::part

@@ -2,6 +2,16 @@
 
 ## Notebook
 
+### [2026-11-12 23:20 SGT] A bookmark for a multi-step form (a "state machine")
+- **Concept:** a state machine: a program that is always on exactly one step, and only certain actions move it to the next.
+- **In plain English:** each person's sign-up draft remembers the one screen they are on (its "step"). A button only works on the screen it belongs to, and each answer moves the bookmark on. That is why someone can stop and carry on days later, and why tapping an old button higher up the chat does nothing.
+- **Analogy:** a paper form handed over page by page at a counter: the clerk only accepts the page you're on, and keeps your place if you step out.
+- **Why and when to use it:** whenever a conversation has a fixed order (sign-up, checkout, a questionnaire) and people can wander off or tap old buttons. Not worth it for a single question and answer.
+- **Best practices:** save the step together with the answer; check the step before acting on any button; show the current screen again when someone returns ("Welcome back!"); keep the list of steps in one place.
+- **Where it showed up in this project:** `src/telegram-bot/onboarding.ts` (pull request #40): steps name, children, quick, deliberate, school_times, weekend_times, plan, agreement; test 19 checks that old buttons save nothing.
+- **Explain it to others:** "The bot keeps a bookmark for each person signing up. Every answer moves the bookmark on, and buttons only work on the page they belong to, so people can stop and come back, and stray taps can't scramble anything."
+- **Governance angle:** a reviewer may ask whether the order is also enforced by the database (here only by the code; known issue K5).
+
 ### [2026-11-12 22:34 SGT] A sign-up draft: holding answers until consent
 - **Concept:** a **draft** (also called a staging area): a temporary place that holds what someone has typed until they confirm, before anything goes into the real records.
 - **In plain English:** while a parent signs up, their name, children and picks wait in one draft row. Only when they tap "I agree" are they turned into the real records, all in one step. If they never agree, the draft is cut down after 7 days and deleted after 90.
