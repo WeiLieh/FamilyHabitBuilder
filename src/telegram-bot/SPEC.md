@@ -89,6 +89,8 @@
 [2026-11-12 22:04 SGT] Answers to Q3, Q4, Q7, Q10 and Q11 and a conflict with rule 8.13, settled one at a time in session 12. **Recorded, not built**: built with the planner in the next slice. The rule texts named below (5.2, 8.13, 3.4, 10.2 and the Datastore's message kinds and log sources) are changed, test-first, in that build's spec, with the old text marked SUPERSEDED. Screens 6 and 7 below change the 8 Nov table above.
 
 **Sign-up draft (conflict with rule 8.13, Option A)**
+- [2026-11-12 22:27 SGT] **The database side is built** (migration 007, pull request 1 of 3; not yet applied). The bot side (screens 2 to 11) is pull request 2. That pull request also **removes the old thin-slice `sign_up` function** (it creates a parent with no draft or agreement; CLAUDE.md rule 12, review finding P4, 12 Nov).
+- [2026-11-12 22:27 SGT] **Telling people at `/start` (owner, 12 Nov, review finding P1):** the first message also says "We'll keep your answers for 7 days while you set up. Nothing is saved for good until you agree." so the draft is not a surprise (Singapore's Personal Data Protection Act (PDPA): consent at or before collection; the owner takes it to their PDPA reviewer).
 - [2026-11-12 22:04 SGT] Answers given during sign-up (first name, children, picks, times, last step) are held in **one sign-up draft per person**, not in the real tables. Tapping ✅ I agree turns the draft into the parent, children and choices in **one all-or-nothing step**. Nothing personal sits in the real tables before the agreement. The live bot, which saves the parent at `/start`, changes to this in the next build.
 
 **Q7, the Change buttons**
@@ -121,7 +123,8 @@
 - [2026-11-12 22:04 SGT] **11b:** **one reminder**, 24 hours after they stop: "You're almost there! Tap below to finish setting up. It takes about a minute." with **Carry on**. No more.
 - [2026-11-12 22:04 SGT] **11c:** dropped: someone coming back after 7 days uses their original link again.
 - [2026-11-12 22:04 SGT] **11d:** the cut-down record is deleted completely after **90 days** (PDPA: kept no longer than needed).
-- [2026-11-12 22:04 SGT] **11e:** a "sign-up stopped" event with the last step reached, and no name or other details (the onboarding funnel).
+- [2026-11-12 22:27 SGT] **11e:** a "sign-up stopped" **count**, with the last step reached and no name or other details, kept in its own table (`sign_up_stops`), not as an event: every event belongs to a parent, and a person who never agreed is not one (review finding, 12 Nov).
+- SUPERSEDED [2026-11-12 22:27 SGT] [2026-11-12 22:04 SGT] **11e:** a "sign-up stopped" event with the last step reached, and no name or other details (the onboarding funnel).
 
 ## Design in progress: group B1, the daily loop (owner decision, design chat, 2026-11-08)
 [2026-11-08 23:42 SGT] Recorded from the [handoff of 8 Nov](../../docs/handoffs/2026-11-08-telegram-b1-daily-loop.md) (previews: the private canvas "Onboarding: Telegram previews (low fidelity)", row 4, boards B1-1 to B1-5). **Recorded, not built.** The sample words on the boards (nudge ideas, warm replies) are examples; Claude writes the real ones within [NUDGE-CONTEXT.md](../nudge-engine/NUDGE-CONTEXT.md). Rules 3.4, 5.4, 7.5 and 7.6 are used as they stand.

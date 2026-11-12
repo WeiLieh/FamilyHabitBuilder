@@ -2,6 +2,18 @@
 
 ## Open
 
+### [2026-11-12 22:27 SGT] A sign-up draft holds personal data before the agreement
+- **Issue:** [2026-11-12 22:27 SGT] While someone signs up, their first name, children's names and picks are held in a draft for up to 7 days before they tap "I agree" (rule 8.13, migration 007). Singapore's Personal Data Protection Act (PDPA) normally expects consent at or before collection (privacy review of migration 007, finding P1, High; owner decided 12 Nov).
+- **Impact:** [2026-11-12 22:27 SGT] Low for the trial (invite-only, a few known parents); matters before real families join.
+- **Workaround:** [2026-11-12 22:27 SGT] Owner's choice (a): the first message at `/start` says "We'll keep your answers for 7 days while you set up. Nothing is saved for good until you agree." Take the wording and the 7 days to the owner's PDPA reviewer.
+### [2026-11-12 22:27 SGT] Many accounts could each hold an invite for 7 days
+- **Issue:** [2026-11-12 22:27 SGT] Each Telegram account holds at most one code, but many accounts (or bots) with forwarded links could each hold one for 7 days; there is no cap on holds (privacy review of migration 007, finding P8; owner agreed to log it, 12 Nov).
+- **Impact:** [2026-11-12 22:27 SGT] Low: the trial is invite-only and small; the owner can see holds in Supabase.
+- **Workaround:** [2026-11-12 22:27 SGT] Watch `invites.held_by_telegram_id` during the trial; add a cap before a wider launch.
+### [2026-11-12 22:27 SGT] Two child inserts at the same instant could pass the limit of 3
+- **Issue:** [2026-11-12 22:27 SGT] The "up to 3 children" check counts existing children before each insert, so two inserts at the same moment could both pass (privacy review of migration 007, finding P9; owner agreed to log it, 12 Nov).
+- **Impact:** [2026-11-12 22:27 SGT] Very low: children are added one at a time, in sign-up and later in Settings.
+- **Workaround:** [2026-11-12 22:27 SGT] If it matters later, lock the parent's row while adding a child.
 ### [2026-11-11 18:14 SGT] The real database connection is checked only by the owner's UAT
 - **Issue:** [2026-11-11 18:14 SGT] `src/datastore/supabase-store.ts` (thin slice 1) talks to the real Supabase project, so the app tests use a pretend store instead. The database functions it calls are tested (T1 to T56), but the connection code itself is not.
 - **Impact:** [2026-11-11 18:14 SGT] A mistake in a column name or a query would show only when the owner runs the UAT (src/telegram-bot/UAT-thin-slice-1.md), not in `npm run check`.
@@ -68,6 +80,7 @@
 - **Workaround:** [2026-11-08 22:34 SGT] Leave out full names and private links in future handoff files; review before any repository is made public.
 
 ### [2026-11-01 16:32 SGT] Telemetry's limited views are a convention until Telemetry has its own role
+- [2026-11-12 22:27 SGT] Wider since migration 007 (review finding P3): the same server role can also read `sign_up_drafts.answers` and `children.first_name` (children's names). Telemetry's own role must not be able to read either.
 - **Issue:** [2026-11-01 16:32 SGT] Rule 8.11: the Telemetry views hide names, Telegram IDs, descriptions and photo links, but Telemetry currently reads through our server's role, which can also read the full tables (privacy review of the Datastore build; owner agreed to log it).
 - **Impact:** [2026-11-01 16:32 SGT] Low now (nothing reads Telemetry yet). If Telemetry code queried the full tables, the database would not stop it.
 - **Workaround:** [2026-11-01 16:32 SGT] When building Telemetry, give it its own database role that can read only the `telemetry_` views, with a test.

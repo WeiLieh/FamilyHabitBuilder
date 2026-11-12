@@ -734,6 +734,12 @@ begin
   raise notice 'PASS: T62 saving an answer updates the draft; only the server can, and outsiders cannot read drafts';
 end $$;
 
+-- T78: [2026-11-12, review P5] a draft holds only the four expected parts, and is size-capped.
+select pg_temp.expect_refused('T78 a draft with an unexpected part',
+  $q$select public.save_sign_up_step(6001, 'children', pg_temp.answers() || '{"notes": "anything"}'::jsonb)$q$, 'only first_name, children, picks and slots');
+select pg_temp.expect_refused('T78 a draft that is too big',
+  $q$select public.save_sign_up_step(6001, 'children', pg_temp.answers() || jsonb_build_object('first_name', repeat('x', 5000)))$q$, 'too big');
+
 -- ---- Group 2: finishing sign-up (the agreement) -----------------------------
 
 -- T63: finishing turns the draft into the real records in one step, then the draft is gone.
@@ -852,6 +858,27 @@ begin
   raise notice 'PASS: T69 a cut-down record is deleted completely after 90 days';
 end $$;
 
+-- T79: [2026-11-12, review P2] "delete my data" reaches a half-finished sign-up:
+-- the draft is deleted, its code released, and the deletion logged with no ID (rule 1.5).
+do $$
+declare logged int := (select count(*) from public.deletion_log);
+begin
+  perform public.start_sign_up(6005, 'Sam', 'DRAFT-5');
+  perform public.delete_sign_up_draft(6005);
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = 6005), 'the draft was not deleted';
+  assert (select held_by_telegram_id is null and used_at is null from public.invites where code = 'DRAFT-5'), 'the code was not released';
+  assert (select count(*) from public.deletion_log) = logged + 1, 'the deletion was not logged';
+  assert has_function_privilege('service_role', 'public.delete_sign_up_draft(bigint)', 'execute')
+     and not has_function_privilege('anon', 'public.delete_sign_up_draft(bigint)', 'execute'), 'wrong people can delete drafts';
+  raise notice 'PASS: T79 delete my data removes a half-finished sign-up and releases its code';
+end $$;
+
+-- T80: [2026-11-12, review P7] two codes that differ only in capitals or end spaces are refused.
+reset role;
+select pg_temp.expect_refused('T80 a code differing only in capitals', $q$insert into public.invites (code) values ('draft-6')$q$);
+select pg_temp.expect_refused('T80 a code differing only in end spaces', $q$insert into public.invites (code) values (' DRAFT-6 ')$q$);
+set role service_role;
+
 -- ---- Group 4: Start right now (Q3) ------------------------------------------
 
 -- T70: a start-now message names its behaviour, has no slot, never counts as a nudge, writes its event; one per parent.
@@ -934,6 +961,20 @@ select pg_temp.expect_refused('T75 a second Not today on the same day',
   $q$insert into public.events (parent_id, event_type_id, settings_version, variants, telegram_update_id)
      values (pg_temp.ben(), (select id from public.event_types where name = 'not_today'), pg_temp.v(), '["baseline"]', 967)$q$);
 
+-- T77: [2026-11-12, review S3] a second log from the same real nudge message is refused
+-- (T74 covers a start-now message; this is a nudge with its Done button).
+do $$
+declare p bigint := (select id from public.parents where telegram_id = 6001);
+        m bigint := (select id from public.messages_sent where parent_id = (select id from public.parents where telegram_id = 6001) and kind = 'nudge');
+begin
+  perform public.save_habit_log(p, pg_temp.quick1(), pg_temp.today(), m, 'done_button', null, 970, pg_temp.v(), '["baseline"]');
+  raise notice 'PASS: T77 a first log from a nudge message is saved';
+end $$;
+select pg_temp.expect_refused('T77 a second log from the same nudge message (another tap)',
+  $q$select public.save_habit_log((select id from public.parents where telegram_id = 6001), pg_temp.quick1(), pg_temp.today(),
+       (select id from public.messages_sent where kind = 'nudge' and parent_id = (select id from public.parents where telegram_id = 6001)),
+       'done_button', null, 971, pg_temp.v(), '["baseline"]')$q$);
+
 -- ---- Group 6: privacy -------------------------------------------------------
 
 -- T76: the Telemetry view of children shows no names.
@@ -979,6 +1020,8 @@ declare
   ann_id bigint := pg_temp.ann();
   ben_events bigint := (select count(*) from public.events where parent_id = pg_temp.ben());
   ben_logs bigint := (select count(*) from public.habit_logs where parent_id = pg_temp.ben());
+  -- [2026-11-12] Counted first: T79 (a deleted sign-up draft) also writes a log row.
+  logged_before bigint := (select count(*) from public.deletion_log);
   t text; n bigint;
 begin
   perform public.delete_my_data(ann_id);
@@ -991,7 +1034,8 @@ begin
   assert (select count(*) from public.events where parent_id = pg_temp.ben()) = ben_events, 'Ben''s events changed';
   assert (select count(*) from public.habit_logs where parent_id = pg_temp.ben()) = ben_logs, 'Ben''s logs changed';
   raise notice 'PASS: T38 other parents'' rows are untouched';
-  assert (select count(*) from public.deletion_log) = 1 and (select how_many from public.deletion_log) = 1, 'expected one log row';
+  assert (select count(*) from public.deletion_log) = logged_before + 1
+     and (select how_many from public.deletion_log order by id desc limit 1) = 1, 'expected one new log row';
   raise notice 'PASS: T39 one deletion-log row is written, with a day and a count only';
   assert (select used_at is not null and used_by is null from public.invites where code = 'WELCOME-1'), 'invite not cleared';
   raise notice 'PASS: T40 the used invite stays used but no longer points to the parent';

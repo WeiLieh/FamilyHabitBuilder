@@ -19,6 +19,9 @@
 --      source, its three events, and the fixed line for each quick behaviour.
 --   7. One log per nudge message, and one Not today per parent per day, even
 --      if two taps arrive at the same instant.
+--   8. [2026-11-12 review fixes] "Delete my data" for a half-finished sign-up,
+--      only the expected parts in a draft (size-capped), no two codes differing
+--      only in capitals, and a clean-up that locks the rows it changes.
 --
 -- Why it is built this way: like a shop holding your order at the counter
 -- until you pay, nothing personal reaches the real tables before the person
@@ -30,7 +33,7 @@
 -- once, AFTER migration 006. After it has run on the real project, never edit
 -- it (rule B1). It refuses to run if any child row already exists (children
 -- had no name before), so nothing is guessed (rule 1.3).
--- Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T57 to T76, T9 rewritten).
+-- Tested by: src/datastore/supabase/tests/datastore-tables.test.sql (T57 to T80, T9 rewritten).
 -- =============================================================================
 
 begin;
@@ -51,6 +54,10 @@ alter table public.invites
   add constraint invites_used_not_held check (used_at is null or held_by_telegram_id is null);
 comment on column public.invites.held_by_telegram_id is 'The Telegram account this code is held for during sign-up (Q10a); empty when free or used. Cleared when the draft is cut down.';
 comment on column public.invites.held_at is 'When the code was held at /start; empty when free or used.';
+-- Codes are matched ignoring capitals and end spaces (Q10g), so two codes that
+-- differ only in those are refused: one person's link could otherwise find the
+-- other's code (review finding, 12 Nov).
+create unique index invites_code_ignoring_case on public.invites (upper(btrim(code)));
 
 -- ---- 3. The sign-up draft and the stop count (rule 8.13) ---------------------
 create table public.sign_up_drafts (
@@ -214,6 +221,14 @@ comment on function public.start_sign_up(bigint, text, text) is 'Sign-up starts:
 create function public.save_sign_up_step(p_telegram_id bigint, p_step text, p_answers jsonb)
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
+  -- Only the four expected parts, and a size cap: before consent, the draft
+  -- holds no more than sign-up needs (review finding, 12 Nov).
+  if exists (select 1 from jsonb_object_keys(p_answers) k where k not in ('first_name', 'children', 'picks', 'slots')) then
+    raise exception 'A sign-up draft holds only first_name, children, picks and slots.';
+  end if;
+  if octet_length(p_answers::text) > 4000 then
+    raise exception 'These sign-up answers are too big (more than 4,000 bytes).';
+  end if;
   update sign_up_drafts set step = p_step, answers = p_answers, last_activity_at = now()
   where telegram_id = p_telegram_id and cut_down_at is null;
   if not found then raise exception 'No sign-up in progress for this Telegram account.'; end if;
@@ -275,17 +290,34 @@ returns void language plpgsql security definer set search_path = public, pg_temp
 declare keep_days numeric := setting_number(p_version, 'sign_up_draft_keep_days');
         record_days numeric := setting_number(p_version, 'sign_up_stopped_keep_days');
 begin
-  insert into sign_up_stops (on_day, last_step)
-  select sgt_today(), step from sign_up_drafts
-  where cut_down_at is null and last_activity_at < now() - make_interval(days => keep_days::int);
-  update invites set held_by_telegram_id = null, held_at = null
-  where id in (select invite_id from sign_up_drafts
-               where cut_down_at is null and last_activity_at < now() - make_interval(days => keep_days::int));
-  update sign_up_drafts set answers = '{}'::jsonb, invite_id = null, cut_down_at = now()
-  where cut_down_at is null and last_activity_at < now() - make_interval(days => keep_days::int);
+  -- One statement, rows locked first: a step saved at the same moment waits,
+  -- then finds the draft cut down (review finding, 12 Nov).
+  with quiet as (
+    select id, step, invite_id from sign_up_drafts
+    where cut_down_at is null and last_activity_at < now() - make_interval(days => keep_days::int)
+    for update
+  ), counted as (
+    insert into sign_up_stops (on_day, last_step) select sgt_today(), step from quiet
+  ), released as (
+    update invites set held_by_telegram_id = null, held_at = null where id in (select invite_id from quiet)
+  )
+  update sign_up_drafts set answers = '{}'::jsonb, invite_id = null, cut_down_at = now() where id in (select id from quiet);
   delete from sign_up_drafts where last_activity_at < now() - make_interval(days => record_days::int);
 end $$;
 comment on function public.clean_up_sign_ups(bigint) is 'Cut down sign-up drafts quiet for 7 days (code released, stop counted with no ID) and delete those quiet for 90 (rule 8.13, Q11). The windows come from the settings version (rule 1.4).';
+
+-- "Delete my data" for someone part-way through sign-up (rule 1.5): delete the
+-- draft, release its code, and log the deletion with no name or ID.
+create function public.delete_sign_up_draft(p_telegram_id bigint)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare inv bigint;
+begin
+  delete from sign_up_drafts where telegram_id = p_telegram_id returning invite_id into inv;
+  if not found then raise exception 'No sign-up draft for this Telegram account.'; end if;
+  update invites set held_by_telegram_id = null, held_at = null where id = inv;
+  insert into deletion_log (on_day, how_many) values (sgt_today(), 1);
+end $$;
+comment on function public.delete_sign_up_draft(bigint) is '"Delete my data" for a half-finished sign-up: the draft goes, its code is released, the deletion is logged with no ID (rule 1.5).';
 
 -- ---- 8. Start right now: recording the message, the log and Not now ---------
 create or replace function public.record_message_sent(p_parent bigint, p_kind text, p_nudge bigint, p_example bigint, p_day date, p_slot integer,
@@ -334,11 +366,11 @@ grant select on public.sign_up_drafts, public.sign_up_stops to service_role;
 revoke all on function public.guard_children_limit() from public, anon, authenticated, service_role;
 revoke all on function public.start_sign_up(bigint, text, text), public.save_sign_up_step(bigint, text, jsonb),
   public.finish_sign_up(bigint, text, integer, text, bigint, bigint, jsonb), public.clean_up_sign_ups(bigint),
-  public.record_start_now_not_now(bigint, bigint, bigint, jsonb)
+  public.record_start_now_not_now(bigint, bigint, bigint, jsonb), public.delete_sign_up_draft(bigint)
   from public, anon, authenticated, service_role;
 grant execute on function public.start_sign_up(bigint, text, text), public.save_sign_up_step(bigint, text, jsonb),
   public.finish_sign_up(bigint, text, integer, text, bigint, bigint, jsonb), public.clean_up_sign_ups(bigint),
-  public.record_start_now_not_now(bigint, bigint, bigint, jsonb)
+  public.record_start_now_not_now(bigint, bigint, bigint, jsonb), public.delete_sign_up_draft(bigint)
   to service_role;
 revoke all on all sequences in schema public from public, anon, authenticated;
 
