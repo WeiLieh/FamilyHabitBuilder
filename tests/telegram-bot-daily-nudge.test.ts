@@ -19,19 +19,35 @@ let telegram: FakeTelegram;
 const today = "2026-11-11";
 const sevenPm = sgtInstant(today, 19 * 60);
 
+// [2026-11-12] A parent as the database holds them (sign-up itself is tested in
+// telegram-bot-onboarding.test.ts). "agreed: false" stands for a thin-slice-1
+// parent who signed up but never tapped "I agree".
 async function addParent(telegramId: number, opts: { agreed: boolean; paused?: boolean }): Promise<number> {
-  const code = `C-${telegramId}`;
-  store.invites.set(code, null);
-  const r = await store.signUp({ telegramId, firstName: "P", code, updateId: telegramId });
-  const id = r.ok ? r.parentId : 0;
-  if (opts.agreed) await store.recordAgreement(id);
-  if (opts.paused) store.parents.find((p) => p.id === id)!.paused = true;
-  return id;
+  return store.addParent({ telegramId, firstName: "P", agreed: opts.agreed, paused: opts.paused });
 }
 
 beforeEach(() => {
   store = new FakeStore();
   telegram = new FakeTelegram();
+});
+
+// [2026-11-12] Test 29 (owner's decision D4): the 7-day promise at /start is kept
+// from day one by running the sign-up clean-up with the daily job, until the
+// every-30-minutes scheduler arrives (pull request 3).
+describe("29. The sign-up clean-up runs with the daily job", () => {
+  it("runs the clean-up once, and still sends the nudges", async () => {
+    await addParent(1010, { agreed: true });
+    await runDailyNudge({ store, telegram, now: sevenPm });
+    expect(store.cleanUps).toBe(1);
+    expect(telegram.calls).toHaveLength(1);
+  });
+
+  it("if the clean-up fails, the nudges still go out", async () => {
+    await addParent(1011, { agreed: true });
+    store.failCleanUp = true;
+    const result = await runDailyNudge({ store, telegram, now: sevenPm });
+    expect(result.sent).toBe(1);
+  });
 });
 
 describe("The daily nudge (thin slice 1)", () => {

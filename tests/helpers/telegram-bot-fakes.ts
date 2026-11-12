@@ -10,12 +10,13 @@
 // database is in datastore-fake-store.ts.
 // =============================================================================
 
-import type { Button, TelegramApi } from "../../src/telegram-bot/telegram-api.js";
+import type { Buttons, TelegramApi } from "../../src/telegram-bot/telegram-api.js";
 
 // One thing the bot did in Telegram, as the parent would see it.
 export type TelegramCall =
-  | { kind: "send"; chatId: number; text: string; buttons: Button[] }
-  | { kind: "edit"; chatId: number; messageId: number; text: string }
+  | { kind: "send"; chatId: number; text: string; buttons: Buttons }
+  // [2026-11-12] "buttons" is there only when the edit replaced them (e.g. a tick on screen 4).
+  | { kind: "edit"; chatId: number; messageId: number; text: string; buttons?: Buttons }
   | { kind: "removeButtons"; chatId: number; messageId: number } // [2026-11-12] the text stays, only the buttons go
   | { kind: "answer"; tapId: string; popup: string | null };
 
@@ -31,7 +32,7 @@ export class FakeTelegram implements TelegramApi {
   failEdits = false;
 
   private nextMessageId = 500;
-  async sendMessage(chatId: number, text: string, buttons: Button[] = []): Promise<number> {
+  async sendMessage(chatId: number, text: string, buttons: Buttons = []): Promise<number> {
     if (this.failFor.has(chatId)) throw new Error(`Telegram refused to send to ${chatId}`);
     if (this.failNextSend) {
       this.failNextSend = false;
@@ -40,9 +41,9 @@ export class FakeTelegram implements TelegramApi {
     this.calls.push({ kind: "send", chatId, text, buttons });
     return this.nextMessageId++; // Telegram's number for the new message
   }
-  async editMessage(chatId: number, messageId: number, text: string): Promise<void> {
+  async editMessage(chatId: number, messageId: number, text: string, buttons?: Buttons): Promise<void> {
     if (this.failEdits) throw new Error("Telegram refused to edit the message");
-    this.calls.push({ kind: "edit", chatId, messageId, text });
+    this.calls.push({ kind: "edit", chatId, messageId, text, ...(buttons ? { buttons } : {}) });
   }
   // [2026-11-12] Keep the message's words, take away only its buttons.
   async removeButtons(chatId: number, messageId: number): Promise<void> {
