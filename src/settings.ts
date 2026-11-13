@@ -117,6 +117,9 @@ export const SIGN_UP_STOPPED_KEEP_DAYS = 90;
 // ("You're almost there!") this many hours after their last answer, and never
 // another (Q11b). Read by the database's claim_sign_up_reminders (migration 009).
 export const SIGN_UP_REMINDER_AFTER_HOURS = 24;
+// [2026-11-13] How far ahead "your next reminder is …" looks for a slot the
+// planner would use (rule 3.17). Beyond this, the parent is told no reminder is planned.
+export const NEXT_REMINDER_LOOK_AHEAD_DAYS = 14;
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.

@@ -63,6 +63,7 @@
 | 40 | Tuneable | [2026-11-12 23:07 SGT] Name length: the longest first name or child's name sign-up accepts (Q7a). | Characters. Today: 40 | settings.ts |
 | 41 | Tuneable | [2026-11-12 23:07 SGT] Default frequencies at sign-up (rule 2.5). | Today: quick every 2 days, deliberate once a week | settings.ts |
 | 42 | Tuneable | [2026-11-13 22:31 SGT] Sign-up reminder: how long after someone's last answer they get the one "You're almost there!" reminder (rule 8.13, Q11b). | Hours. Today: 24 | settings.ts |
+| 43 | Fixed | [2026-11-13 22:45 SGT] Next-reminder look-ahead: how far ahead "your next reminder is …" searches for a slot the planner would use (rule 3.17). | Days. Today: 14 | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
