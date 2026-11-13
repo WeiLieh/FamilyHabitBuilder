@@ -9,6 +9,7 @@
 - [2026-11-13 22:38 SGT] **Pull request 3a built test-first:** migration 009 (`sign_up_drafts.reminded_at`, `claim_sign_up_reminders`), setting `SIGN_UP_REMINDER_AFTER_HOURS` = 24 (value 42). Both review agents run (no High); owner agreed the fixes: rule 8.4 edit 10, one reminder ever (option A), refuse below 1 hour (T90), two known issues. App tests 211 to 212; database checks 162 to 171 PASS lines (T82 to T90).
 - [2026-11-13 22:48 SGT] **Pull request 3b built test-first** (Nudge engine): `examples.ts` (rule 3.13), `child-turn.ts` (new rule 3.16), `next-reminder.ts` (new rule 3.17), setting `NEXT_REMINDER_LOOK_AHEAD_DAYS` = 14 (item 43). Both review agents run (no High); owner: "fix all" (a wrong count refused, test C5; 3.16 covers the Wrap Up; wording). App tests 212 to 231. Pushed onto pull request #43 with 3a (the stop hook requires every commit pushed; separate commits).
 ### In progress
+- [2026-11-13 22:51 SGT] Pull request #43 would not merge: GitHub gave a server error (502), then "Merge already in progress" for about 90 minutes, although its checks passed and GitHub reported it "clean". A new commit on the branch (this note) was pushed to clear GitHub's stuck merge lock, then the merge was retried once.
 - [2026-11-13 22:38 SGT] Pull request 3a on GitHub for the owner to merge (it also carries the session 14 handoff note).
 ### Next steps
 - [2026-11-13 22:38 SGT] Owner: merge 3a; apply migration 009 (any time after 008; nothing calls it until 3c); onboarding UAT U17 to U27, then migration 008; U12 after midnight.
