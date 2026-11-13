@@ -92,12 +92,13 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - Habits H1 to H5 (what Claude does at the start and end of each session and before each pull request) are in [CLAUDE.md](../CLAUDE.md).
 
 ### Module table
+[2026-11-14 00:16 SGT] Telegram bot status: "Onboarding built" → "Planner built, not live" (pull request 3c, #45, waits for the owner's UAT and merge).
 [2026-11-11 17:44 SGT] Statuses brought up to date with the owner (11 Nov): Telegram bot, Photo check, Telemetry and Experiments had stayed "Not started" although designed; Variable rewards is designed and partly built. Rule D4 now checks each box's colour fits its status.
 [2026-10-31 09:40 SGT] Official names (from the owner's diagram), slugs, folders and status. "Migrated" is the ratchet: per-module checks (S1, S5, R3) apply only to rows marked yes; each restructure pull request flips one row. Status must match the diagram.
 
 | Module | Slug | Folder | Spec | Status | Migrated |
 |---|---|---|---|---|---|
-| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Onboarding built | yes |
+| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Planner built, not live | yes |
 | Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | yes |
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, not built | yes |

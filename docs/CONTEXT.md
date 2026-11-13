@@ -133,6 +133,7 @@
 - [2026-10-24 17:39 SGT] Project memory files created in `docs/` (plus `CLAUDE.md` at the root), so each new session can pick up where the last one stopped.
 
 ## Approved libraries
+- [2026-11-14 00:16 SGT] Owner re-confirmed `@anthropic-ai/sdk` for the Claude personality build (rules 3.11, 7.5). It was already on this list (24 Oct); nothing else added.
 - [2026-10-24 18:50 SGT] Approved by the owner (npm, one lockfile `package-lock.json`):
   - `@anthropic-ai/sdk`: talk to Claude.
   - `@supabase/supabase-js`: talk to Supabase (database and photo storage).

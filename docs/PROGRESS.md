@@ -2,6 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-14 00:16 SGT] HANDOFF: session 15 ended (read this first)
+- [2026-11-14 00:16 SGT] **State:** `main` has pull requests 3a and 3b (#44, merged by pushing the merge with the owner's permission; GitHub's merge button kept failing with 502). **Pull request #45 (3c, the planner live) is open, not to be merged before U15 and U16.** `npm run check` passes (249 tests, drift clean); database checks 171 PASS lines locally. Supabase: migrations up to 007 applied; **008 and 009 written, not applied.** This session uses the new personal environment "Family Habit Builder" (allows `family-habit-builder.vercel.app`).
+- [2026-11-14 00:16 SGT] **UAT:** U0 to U4, U6, U8, U9, U12, U13 pass; U5, U7, U10, U11 replaced. Left: U14, U15, U16, U17 to U27, U28 (optional). The owner's working list: U0 to U28 with status (sent in chat).
+- [2026-11-14 00:16 SGT] **Next session (Claude Code, owner's plan):** (1) the owner runs **U17 to U27** with the second Telegram account (Claude helps step by step), then **migration 008** and **009** (record both fingerprints, rule B1); (2) **build B1: log any time, the keyboard, /log and Undo** (rules 5.1, 5.7, 5.8), tests first, on a **second branch** (owner gave permission, 14 Nov, for example `claude/b1-keyboard-undo`) with its own pull request, so #45 stays separate. Then **U15** at 7:00 pm Saturday.
+- [2026-11-14 00:16 SGT] **In Claude Chat (owner):** design the **Web app** (My Page and Settings). Rule 6: the look comes only from the owner; "UI decisions" in `docs/CONTEXT.md` is still empty. Bring back a handoff file (habit H10).
+- [2026-11-14 00:16 SGT] **Sunday:** U16, merge #45, go live (G1 to G5 in `src/telegram-bot/UAT-planner.md`, then U29 to U39), then build the Claude personality and warm reply (`@anthropic-ai/sdk` already approved).
+
 ## [2026-11-13 22:38 SGT] Session 15: pull request 3 planned, 3a built
 ### Done
 - [2026-11-13 22:38 SGT] Start-of-session routine: drift check passed (24 checks). UAT: U12 waits for midnight; onboarding UAT U17 to U27 not run yet, so migration 008 is not applied (check query showed the old `sign_up` still there; owner applies 008 after U27).
