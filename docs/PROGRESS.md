@@ -12,7 +12,8 @@
 - [2026-11-13 22:38 SGT] Pull request 3a on GitHub for the owner to merge (it also carries the session 14 handoff note).
 ### Next steps
 - [2026-11-13 22:38 SGT] Owner: merge 3a; apply migration 009 (any time after 008; nothing calls it until 3c); onboarding UAT U17 to U27, then migration 008; U12 after midnight.
-- [2026-11-13 22:38 SGT] Claude: pull request 3b (Nudge engine: the example choice 3.13, the child's turn, "your next reminder is …"), tests shown to the owner first.
+- [2026-11-13 22:48 SGT] Claude: pull request 3c (Telegram bot: the every-10-minutes run, sending, buttons with the slot, the 24-hour reminder, the clean-up moved, screens 10 and 11 from rule 3.17, Supabase Cron set-up, removals); the new words and the tests shown to the owner first.
+- SUPERSEDED [2026-11-13 22:48 SGT] [2026-11-13 22:38 SGT] Claude: pull request 3b (Nudge engine: the example choice 3.13, the child's turn, "your next reminder is …"), tests shown to the owner first.
 ### Blockers
 - [2026-11-13 22:38 SGT] None.
 
