@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-13 22:31 SGT] Measure whether the sign-up reminder helps
+- **Item:** [2026-11-13 22:31 SGT] Keep a count, with no name or ID, of sign-ups that were reminded (Q11b) and whether they then finished, so we can see if the 24-hour reminder works.
+- **Why it matters:** [2026-11-13 22:31 SGT] Today the "reminded" mark lives on the sign-up draft, which disappears when the person finishes or is cleaned up, so the answer is lost.
+- **Priority:** [2026-11-13 22:31 SGT] Low
+- **Status:** [2026-11-13 22:31 SGT] Not started
+
 ## [2026-11-12 22:04 SGT] Family accounts (two parents linked)
 - **Item:** [2026-11-12 22:04 SGT] Let two parents of the same family link their accounts, so they share children and see each other's logs (onboarding Q10b, 12 Nov).
 - **Why it matters:** [2026-11-12 22:04 SGT] In the MVP each parent signs up alone with their own invite; families with two engaged parents may want one shared view.

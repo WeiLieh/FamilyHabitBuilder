@@ -113,6 +113,13 @@ export const MOMENT_WINDOW_HOURS = 24;
 // deleted completely (Q11d). Read by the database's clean-up (migration 007).
 export const SIGN_UP_DRAFT_KEEP_DAYS = 7;
 export const SIGN_UP_STOPPED_KEEP_DAYS = 90;
+// [2026-11-13] Someone who stops part-way through sign-up gets one reminder
+// ("You're almost there!") this many hours after their last answer, and never
+// another (Q11b). Read by the database's claim_sign_up_reminders (migration 009).
+export const SIGN_UP_REMINDER_AFTER_HOURS = 24;
+// [2026-11-13] How far ahead "your next reminder is …" looks for a slot the
+// planner would use (rule 3.17). Beyond this, the parent is told no reminder is planned.
+export const NEXT_REMINDER_LOOK_AHEAD_DAYS = 14;
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.
@@ -122,6 +129,8 @@ export const SETTINGS_KEYS_THE_DATABASE_READS = {
   // [2026-11-12] Read by clean_up_sign_ups (migration 007).
   sign_up_draft_keep_days: SIGN_UP_DRAFT_KEEP_DAYS,
   sign_up_stopped_keep_days: SIGN_UP_STOPPED_KEEP_DAYS,
+  // [2026-11-13] Read by claim_sign_up_reminders (migration 009).
+  sign_up_reminder_after_hours: SIGN_UP_REMINDER_AFTER_HOURS,
 } as const;
 
 // ---- Thin slice 1 (owner, 11 Nov) -------------------------------------------

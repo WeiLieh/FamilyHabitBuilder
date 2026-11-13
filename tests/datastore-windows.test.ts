@@ -11,6 +11,8 @@
 // in a version is right: these tests check the values the app sends.
 // [2026-11-12] Two more, read by the sign-up clean-up (migration 007, Q11): an
 // unfinished sign-up draft is kept 7 days, its cut-down record 90 days.
+// [2026-11-13] One more (migration 009, Q11b): the one sign-up reminder goes
+// 24 hours after someone stops part-way through sign-up.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
@@ -19,6 +21,7 @@ import {
   MOMENT_WINDOW_HOURS,
   SETTINGS_KEYS_THE_DATABASE_READS,
   SIGN_UP_DRAFT_KEEP_DAYS,
+  SIGN_UP_REMINDER_AFTER_HOURS,
   SIGN_UP_STOPPED_KEEP_DAYS,
   UNDO_WINDOW_SECONDS,
 } from "../src/settings.js";
@@ -36,13 +39,19 @@ describe("Time windows (rules 5.6, 5.8, 7.7)", () => {
     expect(SIGN_UP_STOPPED_KEEP_DAYS).toBe(90);
   });
 
-  // [2026-11-12] Rewritten (migration 007 reads two more windows): was "names the two windows".
-  it("names the four windows the database checks, with the values it will find in each settings version", () => {
+  // [2026-11-13] New (Q11b; owner, 12 Nov): one reminder, 24 hours after someone stops.
+  it("sends the one sign-up reminder 24 hours after someone stops part-way", () => {
+    expect(SIGN_UP_REMINDER_AFTER_HOURS).toBe(24);
+  });
+
+  // [2026-11-13] Rewritten (migration 009 reads one more window): was "names the four windows".
+  it("names the five windows the database checks, with the values it will find in each settings version", () => {
     expect(SETTINGS_KEYS_THE_DATABASE_READS).toEqual({
       undo_window_seconds: 30,
       connection_answer_window_hours: 24,
       sign_up_draft_keep_days: 7,
       sign_up_stopped_keep_days: 90,
+      sign_up_reminder_after_hours: 24,
     });
   });
 });

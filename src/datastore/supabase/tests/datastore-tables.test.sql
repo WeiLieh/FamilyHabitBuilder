@@ -23,6 +23,9 @@
 -- [2026-11-12] Also runs migration 007 (the sign-up draft, invite holds,
 -- children's names, Start right now, one log per nudge message) and checks it
 -- in T57 to T76.
+--
+-- [2026-11-13] Also runs migration 009 (the one 24-hour sign-up reminder, Q11b,
+-- pull request 3a) and checks it in T82 to T90.
 -- =============================================================================
 
 \set ON_ERROR_STOP on
@@ -39,6 +42,7 @@ alter role service_role bypassrls;
 \i src/datastore/supabase/migrations/006_sign_up.sql
 \i src/datastore/supabase/migrations/007_onboarding.sql
 \i src/datastore/supabase/migrations/008_remove_thin_slice_sign_up.sql
+\i src/datastore/supabase/migrations/009_sign_up_reminder.sql
 
 -- Helper: try one statement and expect the database to refuse it. Same idea as
 -- in nudge-repository.test.sql. It runs as whichever role is active.
@@ -1082,6 +1086,103 @@ begin
       or (column_name in ('start_minute', 'slot_minute', 'wrap_up_minute') and data_type <> 'smallint'));
   assert bad is null, 'columns stored the wrong way: ' || bad;
   raise notice 'PASS: fix 7 every moment, day and minute column uses the agreed type';
+end $$;
+
+-- ---- Group 5: the one 24-hour sign-up reminder (Q11b, migration 009) ------
+-- [2026-11-13] claim_sign_up_reminders marks and returns, in one step, the
+-- drafts due their reminder, so two overlapping alarm runs never send two.
+reset role;
+-- Three settings versions: 24 hours (as in src/settings.ts), 48 hours, and one
+-- with no reminder hours at all.
+create function pg_temp.v24() returns bigint language sql as $$
+  select public.record_settings_version('T82 24 hours', '{"sign_up_reminder_after_hours": 24}'::jsonb) $$;
+create function pg_temp.v48() returns bigint language sql as $$
+  select public.record_settings_version('T87 48 hours', '{"sign_up_reminder_after_hours": 48}'::jsonb) $$;
+create function pg_temp.vnone() returns bigint language sql as $$
+  select public.record_settings_version('T88 no hours', '{"undo_window_seconds": 30}'::jsonb) $$;
+-- Made-up people part-way through sign-up (Telegram IDs 7001 to 7005).
+insert into public.sign_up_drafts (telegram_id, step, last_activity_at) values
+  (7001, 'children', now() - interval '25 hours'),   -- T82: due
+  (7002, 'quick',    now() - interval '23 hours'),   -- T85: not yet
+  (7004, 'plan',     now() - interval '30 hours');   -- T87: due at 24, not at 48
+insert into public.sign_up_drafts (telegram_id, step, last_activity_at, cut_down_at) values
+  (7003, 'children', now() - interval '8 days', now() - interval '1 day');  -- T86: cut down
+select pg_temp.v24(), pg_temp.v48(), pg_temp.vnone();
+create table pg_temp.vers as select pg_temp.v24() as v24, pg_temp.v48() as v48, pg_temp.vnone() as vnone;
+grant select on pg_temp.vers to service_role;
+set role service_role;
+
+-- T87: with 48 hours in the settings, someone quiet for 30 hours is not returned.
+do $$
+begin
+  assert not exists (select 1 from public.claim_sign_up_reminders((select v48 from pg_temp.vers)) where telegram_id = 7004),
+    'returned at 30 hours although the settings say 48';
+  raise notice 'PASS: T87 the 24 hours come from the settings version';
+end $$;
+
+-- T82, T85, T86: quiet 25 hours is returned once with its last step and marked;
+-- quiet 23 hours is not; a cut-down draft is not.
+do $$
+declare got int; step_seen text;
+begin
+  select count(*) filter (where telegram_id = 7001), max(step) filter (where telegram_id = 7001)
+    into got, step_seen
+    from public.claim_sign_up_reminders((select v24 from pg_temp.vers));
+  assert got = 1 and step_seen = 'children', 'the 25-hour draft was not returned once with its step';
+  assert (select reminded_at is not null from public.sign_up_drafts where telegram_id = 7001), 'the draft was not marked as reminded';
+  raise notice 'PASS: T82 a draft quiet for 25 hours is returned once, with its last step, and marked';
+  assert (select reminded_at is null from public.sign_up_drafts where telegram_id = 7002), 'the 23-hour draft was reminded';
+  raise notice 'PASS: T85 a draft quiet for 23 hours is not returned yet';
+  assert (select reminded_at is null from public.sign_up_drafts where telegram_id = 7003), 'a cut-down draft was reminded';
+  raise notice 'PASS: T86 a cut-down draft is never returned';
+end $$;
+
+-- T83: running it again straight after returns nothing for the same person.
+do $$
+begin
+  assert not exists (select 1 from public.claim_sign_up_reminders((select v24 from pg_temp.vers)) where telegram_id = 7001),
+    'a second reminder was returned';
+  raise notice 'PASS: T83 a second run returns nothing for someone already reminded';
+end $$;
+
+-- T84: after the reminder they answer one more screen, then go quiet again: still nothing.
+do $$
+begin
+  perform public.save_sign_up_step(7001, 'quick', '{}'::jsonb);
+  assert (select reminded_at is not null from public.sign_up_drafts where telegram_id = 7001), 'saving a step cleared the reminder mark';
+end $$;
+reset role;
+update public.sign_up_drafts set last_activity_at = now() - interval '25 hours' where telegram_id = 7001;
+set role service_role;
+do $$
+begin
+  assert not exists (select 1 from public.claim_sign_up_reminders((select v24 from pg_temp.vers)) where telegram_id = 7001),
+    'a second reminder was returned after going quiet again';
+  raise notice 'PASS: T84 one reminder per person, ever, even after going quiet again';
+end $$;
+
+-- T88: a settings version without the reminder hours is refused, never guessed.
+select pg_temp.expect_refused('T88 a settings version with no reminder hours',
+  $q$select * from public.claim_sign_up_reminders((select vnone from pg_temp.vers))$q$, 'has no sign_up_reminder_after_hours');
+
+-- T90: [2026-11-13, review] a reminder setting below 1 hour is refused, so a
+-- mistyped 0 can never remind everyone part-way through sign-up at once.
+reset role;
+create table pg_temp.vers0 as select public.record_settings_version('T90 zero hours', '{"sign_up_reminder_after_hours": 0}'::jsonb) as v0;
+grant select on pg_temp.vers0 to service_role;
+set role service_role;
+select pg_temp.expect_refused('T90 a reminder setting of 0 hours',
+  $q$select * from public.claim_sign_up_reminders((select v0 from pg_temp.vers0))$q$, 'at least 1 hour');
+
+-- T89: only our server can run it.
+reset role;
+do $$
+begin
+  assert has_function_privilege('service_role', 'public.claim_sign_up_reminders(bigint)', 'execute'), 'our server cannot run it';
+  assert not has_function_privilege('anon', 'public.claim_sign_up_reminders(bigint)', 'execute')
+     and not has_function_privilege('authenticated', 'public.claim_sign_up_reminders(bigint)', 'execute')
+     and not has_function_privilege('public', 'public.claim_sign_up_reminders(bigint)', 'execute'), 'outsiders can run it';
+  raise notice 'PASS: T89 only our server can claim sign-up reminders';
 end $$;
 
 \echo ALL DATASTORE TABLE TESTS PASSED

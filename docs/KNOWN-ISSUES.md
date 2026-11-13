@@ -4,6 +4,16 @@
 
 ## Open
 
+### [2026-11-13 22:38 SGT] The sign-up reminder goes to someone who has not agreed yet
+- **Issue:** [2026-11-13 22:38 SGT] Someone who stops part-way through sign-up gets one "You're almost there!" message 24 hours later, before they have tapped "I agree" (rule 8.13, Q11b, migration 009). The only way to avoid it is to finish, or delete the draft.
+- **Impact:** [2026-11-13 22:38 SGT] Low for the trial (invite-only, a few known parents); a PDPA reviewer may ask about messaging people before consent.
+- **Workaround:** [2026-11-13 22:38 SGT] Owner's choice: pull request 3c adds to the `/start` notice that we may send one reminder to finish. Take it to the owner's PDPA reviewer with the "draft before agreement" item below.
+
+### [2026-11-13 22:38 SGT] "Never two reminders at once" is not tested
+- **Issue:** [2026-11-13 22:38 SGT] Two alarm runs at the same moment can't both take the same person's reminder: the database locks the rows it takes (`for update skip locked`, migration 009). The database tests run one claim after another, so this protection is in the code but no test proves it (spec review, 13 Nov).
+- **Impact:** [2026-11-13 22:38 SGT] Low: at worst, someone gets two identical reminders in the same minute.
+- **Workaround:** [2026-11-13 22:38 SGT] Accepted by the owner (13 Nov). A real test needs two database connections at once, which our test set-up doesn't have.
+
 ### [2026-11-12 23:16 SGT] The /start line mentions 7 days, not the 90-day record (K1)
 - **Issue:** [2026-11-12 23:16 SGT] After 7 quiet days a sign-up draft is cut down, but its Telegram ID and last step are kept for 90 days (rule 8.13, Q11d). The `/start` line only says "We'll keep your answers for 7 days… Nothing is saved for good until you agree." (privacy review of pull request 2, Medium).
 - **Impact:** [2026-11-12 23:16 SGT] Low for the trial; people are not told about the 90-day record.

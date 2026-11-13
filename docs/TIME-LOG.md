@@ -4,6 +4,7 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 
 ## [2026-11-12 23:27 SGT] Session 14 (2026-11-12 late evening)
 - [2026-11-12 23:27 SGT] About 5 min elapsed (about 23:22 to 23:28 SGT), all active. Shortened the long Markdown files: history moved word for word into `docs/archive/`.
+- [2026-11-12 23:33 SGT] Ended by the owner (resume tomorrow). About 15 min in total (about 23:22 to 23:33 SGT): also rewrote catch-up sections 4 and 5 to open items only and added the H2 addition to CLAUDE.md.
 
 ## [2026-11-12 23:20 SGT] Session 13 (2026-11-12 late evening)
 - [2026-11-12 23:20 SGT] **Ended by the owner (handoff; building first next session).** About 45 min elapsed (about 22:37 to 23:20 SGT), all active in Claude Code, with the owner merging pull request #40. Start-of-session routine, scheduler options (Supabase Cron confirmed), the onboarding canvas updated, pull request 2 (onboarding screens, 29 tests then 3 review tests, 183 to 211) built, reviewed and merged.
