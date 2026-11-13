@@ -41,6 +41,7 @@ One entry per item: Item / Why it matters / Priority / Status. Newest first.
 - **Status:** [2026-10-31 19:06 SGT] Not started
 
 ## [2026-10-31 19:06 SGT] Check the technology stack holds at 1,000 to 5,000 parents, before alpha
+- **Item:** [2026-11-13 23:33 SGT] **Design for the alarm run at scale (owner, 13 Nov, after the pull request 3c review).** Today each 10-minute run reads every parent's last 14 days, and stops with an error if any answer reaches Supabase's 1,000-row cap (about 50 parents). At 5,000 parents: about 200,000 rows a run, most parents on the same default 7:00 pm slot, and about 3 minutes to send 5,000 nudges at Telegram's roughly 30 a second, longer than one Vercel run is allowed. Design: (1) ask the database only for parents whose slot is now; (2) read and plan in pages of about 200 parents; (3) spread the sending over the slot's three runs, each sending a share (the one-nudge-per-slot rule 8.6 stops doubles); (4) if still too slow, a sending queue (a new vendor: owner's approval). Test with made-up parents before alpha.
 - **Item:** [2026-10-31 19:06 SGT] The stack was chosen for about 50 trial users (Supabase Free plan, Vercel, Upstash). Before alpha, check limits, costs and the scheduler at 1,000 to 5,000 parents.
 - **Why it matters:** [2026-10-31 19:06 SGT] Scaling problems are cheaper to find before strangers rely on the app.
 - **Priority:** [2026-10-31 19:06 SGT] Medium (before alpha)

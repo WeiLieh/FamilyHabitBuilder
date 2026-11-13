@@ -89,8 +89,11 @@ export interface Store {
   recordStartNowNotNow(parentId: number, updateId: number): Promise<void>;
   // The sign-up clean-up: cut down drafts quiet for 7 days, delete after 90 (Q11).
   cleanUpSignUps(): Promise<void>;
-  // [2026-11-13] Everyone the planner may nudge, with their choices and history,
-  // and the holidays; "day" is today in Singapore.
+  // [2026-11-13] Everyone the planner may nudge, with their choices and their
+  // last 14 days, and the holidays; "day" is today in Singapore. To read as
+  // little as possible (privacy review), it leaves out children's names and the
+  // full history (children, childMessagesBefore and examplesUsed come back empty):
+  // planningDataFor gives those, for the one parent about to get a nudge.
   planningData(day: string): Promise<{ holidays: Holidays; parents: PlanParent[] }>;
   // [2026-11-13] The same for one parent (the re-check before sending, rule 3.6;
   // and "your next reminder is …", rule 3.17). Null if they are not a parent.

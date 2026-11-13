@@ -93,7 +93,14 @@ async function nudges(deps: BotDeps, result: SchedulerResult): Promise<void> {
   for (const parent of data.parents) {
     // Only parents who agreed to recording (rule 11.9); "paused" is the planner's first check.
     if (!parent.agreed) continue;
-    if (!planNudge(plannerInput(parent, data.holidays, now)).send) continue;
+    // [2026-11-13, review] One parent's error is logged and skipped; the others still get theirs.
+    try {
+      if (!planNudge(plannerInput(parent, data.holidays, now)).send) continue;
+    } catch (error) {
+      logFailure(`Planning for parent ${parent.parentId} failed`, error);
+      result.failed++;
+      continue;
+    }
     await sendNudge(parent.parentId, deps, result);
   }
 }
@@ -126,7 +133,14 @@ async function sendNudge(parentId: number, { store, telegram, now }: BotDeps, re
   }
   const p = fresh.parent;
   if (!p || !p.agreed) return;
-  const plan = planNudge(plannerInput(p, fresh.holidays, now));
+  let plan;
+  try {
+    plan = planNudge(plannerInput(p, fresh.holidays, now));
+  } catch (error) {
+    logFailure(`Planning for parent ${parentId} failed`, error);
+    result.failed++;
+    return;
+  }
   if (!plan.send) return; // e.g. logged a moment ago: nothing to send
 
   // The idea (rule 3.13) and the child (rule 3.16). Never made up (rule 1.3).
@@ -167,6 +181,7 @@ async function sendNudge(parentId: number, { store, telegram, now }: BotDeps, re
     // Sent but not recorded: its buttons could never save, so say so and remove them (W6).
     logFailure(`Nudge sent but not recorded for parent ${parentId}`, error);
     result.failed++;
-    await telegram.editMessage(p.telegramId, messageId, WORDS.nudgeNotSaved).catch(() => undefined);
+    // [2026-11-13, review] A failed edit is logged too (rule 1.3).
+    await telegram.editMessage(p.telegramId, messageId, WORDS.nudgeNotSaved).catch((e) => logFailure(`Editing the unsaved nudge for parent ${parentId} failed`, e));
   }
 }

@@ -63,32 +63,47 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
   // [2026-11-13] How far back the planner looks: 14 days covers the 7-day
   // streak (rule 3.9), the week's deliberate count (rule 3.7) and yesterday.
   const LOOK_BACK_DAYS = 14;
+  // [2026-11-13, review] Supabase answers at most this many rows per question
+  // (its usual setting). An answer that reaches it may be missing rows, so it
+  // is refused with an error rather than planned from (rule 1.3). The design
+  // for thousands of parents is in docs/PRODUCT-BACKLOG.md.
+  const ROW_CAP = 1000;
+  function whole<T>(rows: T[] | null, what: string): T[] {
+    const list = rows ?? [];
+    if (list.length >= ROW_CAP) throw new Error(`${what}: ${list.length} rows reached Supabase's limit, so some may be missing`);
+    return list;
+  }
 
   // [2026-11-13] The planner's view of some parents (all of them, or one).
   async function loadPlan(day: string, onlyParent: number | null): Promise<{ holidays: Holidays; parents: PlanParent[] }> {
     // Adds "only this parent" to a question when reading for one parent.
     const one = <Q>(q: Q, column = "parent_id"): Q => (onlyParent === null ? q : (q as unknown as { eq: (c: string, v: number) => Q }).eq(column, onlyParent));
     const since = addDays(day, -LOOK_BACK_DAYS);
-    const parents = check(await one(db.from("parents").select("id, telegram_id, paused"), "id"), "Reading parents") ?? [];
-    const consents = check(await one(db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording")), "Reading consents") ?? [];
-    const nudges = check(await db.from("nudges").select("id, category"), "Reading the behaviours") ?? [];
-    const picks = check(await one(db.from("picks").select("parent_id, nudge_id, frequency").is("stopped_at", null).order("id")), "Reading picks") ?? [];
-    const slots = check(await one(db.from("slots").select("parent_id, schedule, start_minute, created_at")), "Reading slots") ?? [];
-    const logs = check(await one(db.from("habit_logs").select("parent_id, nudge_id, for_day").is("undone_at", null).gte("for_day", since)), "Reading logs") ?? [];
-    const sent = check(
-      await one(db.from("messages_sent").select("parent_id, kind, nudge_id, example_id, for_day, slot_minute").in("kind", ["nudge", "start_now"]).order("id")),
-      "Reading sent messages",
-    ) ?? [];
-    const children = check(await one(db.from("children").select("id, parent_id, first_name, replaces_id").order("id")), "Reading children") ?? [];
+    const full = onlyParent !== null; // one parent: also their children and full history (privacy review)
+    const parents = whole(check(await one(db.from("parents").select("id, telegram_id, paused"), "id"), "Reading parents"), "Reading parents");
+    const consents = whole(check(await one(db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording")), "Reading consents"), "Reading consents");
+    const nudges = whole(check(await db.from("nudges").select("id, category"), "Reading the behaviours"), "Reading the behaviours");
+    const picks = whole(check(await one(db.from("picks").select("parent_id, nudge_id, frequency").is("stopped_at", null).order("id")), "Reading picks"), "Reading picks");
+    const slots = whole(check(await one(db.from("slots").select("parent_id, schedule, start_minute, created_at")), "Reading slots"), "Reading slots");
+    const logs = whole(check(await one(db.from("habit_logs").select("parent_id, nudge_id, for_day").is("undone_at", null).gte("for_day", since)), "Reading logs"), "Reading logs");
+    // All parents: only the last 14 days of nudges. One parent: their whole history (ideas used, children named).
+    const sentQuery = db.from("messages_sent").select("parent_id, kind, nudge_id, example_id, for_day, slot_minute").in("kind", ["nudge", "start_now"]).order("id");
+    const sent = whole(check(await one(full ? sentQuery : sentQuery.gte("for_day", since)), "Reading sent messages"), "Reading sent messages");
+    const children = full
+      ? whole(check(await one(db.from("children").select("id, parent_id, first_name, replaces_id").order("id")), "Reading children"), "Reading children")
+      : [];
     const notTodayType = need(await db.from("event_types").select("id").eq("name", "not_today").single(), "Reading the event type");
-    const notToday = check(
-      await one(
-        db.from("events").select("parent_id").eq("event_type_id", notTodayType.id)
-          .gte("occurred_at", sgtInstant(day, 0).toISOString()).lt("occurred_at", sgtInstant(addDays(day, 1), 0).toISOString()),
+    const notToday = whole(
+      check(
+        await one(
+          db.from("events").select("parent_id").eq("event_type_id", notTodayType.id)
+            .gte("occurred_at", sgtInstant(day, 0).toISOString()).lt("occurred_at", sgtInstant(addDays(day, 1), 0).toISOString()),
+        ),
+        "Reading Not today",
       ),
       "Reading Not today",
-    ) ?? [];
-    const holidayRows = check(await db.from("holiday_dates").select("day, kind"), "Reading holidays") ?? [];
+    );
+    const holidayRows = whole(check(await db.from("holiday_dates").select("day, kind"), "Reading holidays"), "Reading holidays");
 
     const category = new Map(nudges.map((n) => [Number(n.id), n.category as "quick" | "deliberate"]));
     const replaced = new Set(children.map((c) => c.replaces_id).filter((x) => x !== null).map(Number));
@@ -127,8 +142,8 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
           notTodayDate: of(notToday, id).length > 0 ? day : null,
           // Current names only (an edited name replaces its old row), oldest first.
           children: of(children, id).filter((c) => !replaced.has(Number(c.id))).map((c) => String(c.first_name)),
-          childMessagesBefore: mySent.length, // every nudge and start-now message names a child (rule 3.16)
-          examplesUsed: mySent
+          childMessagesBefore: full ? mySent.length : 0, // every nudge and start-now message names a child (rule 3.16)
+          examplesUsed: (full ? mySent : [])
             .filter((m) => m.kind === "nudge" && m.example_id !== null)
             .map((m) => ({ nudgeId: Number(m.nudge_id), exampleId: Number(m.example_id) })),
         };

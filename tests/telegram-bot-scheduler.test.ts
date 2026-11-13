@@ -168,6 +168,13 @@ describe("S. Nudges from the planner", () => {
     expect(telegram.sentTexts().map((t) => t.split("\n")[0])).toEqual(["With Leo: Showing affection", "With Ava: Talking with children"]);
   });
 
+  // S13 [2026-11-13, spec review]
+  it("S13. with no child recorded, the nudge reads 'With your child: …' (W1)", async () => {
+    addPlannedParent(1021, { children: [] });
+    await run();
+    expect(telegram.sentTexts()[0]).toBe(`With your child: Showing affection\n\nIdea: ${HUG}`);
+  });
+
   // S12
   it("S12. a public holiday uses the non-school slots (Thursday 9:00 am)", async () => {
     addPlannedParent(1017);

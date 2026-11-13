@@ -218,7 +218,11 @@ export class FakeStore implements Store {
   }
   async planningData(): Promise<{ holidays: Holidays; parents: PlanParent[] }> {
     this.failReadIfAsked("planningData");
-    const answer = { holidays: this.holidayLists(), parents: this.parents.map((p) => this.planParent(p)) };
+    // [2026-11-13] As the real store: no children's names or full history here (planningDataFor has them).
+    const answer = {
+      holidays: this.holidayLists(),
+      parents: this.parents.map((p) => ({ ...this.planParent(p), children: [], childMessagesBefore: 0, examplesUsed: [] })),
+    };
     const after = this.afterPlanningRead;
     this.afterPlanningRead = null;
     after?.();
