@@ -6,15 +6,16 @@
 //     any request without our secret (rule 5.9), then hands the update to
 //     handle-update.ts. It answers Telegram "received" (200) for every real
 //     update, even one we ignore, or Telegram would keep resending it.
-//   - createNudgeHandler: the daily nudge (GET on the same address), started
-//     by Vercel's alarm (a "cron job"), which sends our cron secret.
+//   - createSchedulerHandler: [2026-11-13] the alarm run (GET on the same
+//     address), started every 10 minutes by Supabase Cron, which sends our
+//     cron secret (pull request 3c; replaces the 7:00 pm daily nudge).
 // Why it is separate from api/: the tests run these exact handlers with a
 // pretend Telegram and database.
 // =============================================================================
 
 import { timingSafeEqual } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { runDailyNudge } from "./daily-nudge.js";
+import { runScheduler } from "./scheduler.js";
 import { handleUpdate, type BotDeps } from "./handle-update.js";
 import { parseUpdate } from "./updates.js";
 import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
@@ -63,14 +64,14 @@ export function createWebhookHandler(opts: { webhookSecret: string; makeDeps: ()
   };
 }
 
-export function createNudgeHandler(opts: { cronSecret: string; makeDeps: () => BotDeps }) {
+export function createSchedulerHandler(opts: { cronSecret: string; makeDeps: () => BotDeps }) {
   return async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
-    // Vercel's alarm sends "Authorization: Bearer <CRON_SECRET>"; anyone else is refused.
+    // The alarm sends "Authorization: Bearer <CRON_SECRET>"; anyone else is refused.
     const auth = req.headers.authorization;
     const token = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : undefined;
     if (!sameSecret(token, opts.cronSecret)) return reply(res, 401, { ok: false });
-    const result = await runDailyNudge(opts.makeDeps());
-    // A failure shows as a failure (rule 1.3): Vercel marks the run red.
+    const result = await runScheduler(opts.makeDeps());
+    // A failure shows as a failure (rule 1.3): the run is marked as failed (500).
     reply(res, result.failed > 0 ? 500 : 200, result);
   };
 }

@@ -13,14 +13,21 @@
 // The database functions it calls have their own tests (T1 to T56), and the
 // owner's step-by-step checks (UAT) cover the whole path.
 //
+// [2026-11-13] Pull request 3c: the thin-slice fixedNudge and nudgeCandidates
+// are replaced by planningData (each parent's picks, slots, logs, sent
+// messages, Not today, children, ideas used, and the holidays, read from the
+// tables our server may read) and claimSignUpReminders (migration 009).
+//
 // Secrets: the Supabase address and server key come only from Vercel's
 // settings. Errors are thrown, never replaced with made-up values (rule 1.3).
 // =============================================================================
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import { SETTINGS_KEYS_THE_DATABASE_READS, THIN_SLICE_NUDGE, WEEK_ONE_COHORT, WEEK_ONE_VARIANTS, DEFAULT_WEEKLY_WRAP_UP, AGREEMENT_WORDING_VERSION } from "../settings.js";
+import { SETTINGS_KEYS_THE_DATABASE_READS, WEEK_ONE_COHORT, WEEK_ONE_VARIANTS, DEFAULT_WEEKLY_WRAP_UP, AGREEMENT_WORDING_VERSION } from "../settings.js";
 import { currentConsent, type ConsentRow } from "./consents.js";
-import type { Behaviour, DraftAnswers, NudgeCandidate, StartSignUpResult, Store } from "./store.js";
+import type { Behaviour, DraftAnswers, ExampleIdea, PlanParent, StartSignUpResult, Store } from "./store.js";
+import type { Holidays } from "../nudge-engine/schedule.js";
+import type { Frequency } from "../nudge-engine/choices.js";
 import { addDays, sgtInstant } from "../sgt.js";
 
 // Stop with a clear message if Supabase reports an error.
@@ -51,6 +58,82 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       ) as number;
     }
     return version;
+  }
+
+  // [2026-11-13] How far back the planner looks: 14 days covers the 7-day
+  // streak (rule 3.9), the week's deliberate count (rule 3.7) and yesterday.
+  const LOOK_BACK_DAYS = 14;
+
+  // [2026-11-13] The planner's view of some parents (all of them, or one).
+  async function loadPlan(day: string, onlyParent: number | null): Promise<{ holidays: Holidays; parents: PlanParent[] }> {
+    // Adds "only this parent" to a question when reading for one parent.
+    const one = <Q>(q: Q, column = "parent_id"): Q => (onlyParent === null ? q : (q as unknown as { eq: (c: string, v: number) => Q }).eq(column, onlyParent));
+    const since = addDays(day, -LOOK_BACK_DAYS);
+    const parents = check(await one(db.from("parents").select("id, telegram_id, paused"), "id"), "Reading parents") ?? [];
+    const consents = check(await one(db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording")), "Reading consents") ?? [];
+    const nudges = check(await db.from("nudges").select("id, category"), "Reading the behaviours") ?? [];
+    const picks = check(await one(db.from("picks").select("parent_id, nudge_id, frequency").is("stopped_at", null).order("id")), "Reading picks") ?? [];
+    const slots = check(await one(db.from("slots").select("parent_id, schedule, start_minute, created_at")), "Reading slots") ?? [];
+    const logs = check(await one(db.from("habit_logs").select("parent_id, nudge_id, for_day").is("undone_at", null).gte("for_day", since)), "Reading logs") ?? [];
+    const sent = check(
+      await one(db.from("messages_sent").select("parent_id, kind, nudge_id, example_id, for_day, slot_minute").in("kind", ["nudge", "start_now"]).order("id")),
+      "Reading sent messages",
+    ) ?? [];
+    const children = check(await one(db.from("children").select("id, parent_id, first_name, replaces_id").order("id")), "Reading children") ?? [];
+    const notTodayType = need(await db.from("event_types").select("id").eq("name", "not_today").single(), "Reading the event type");
+    const notToday = check(
+      await one(
+        db.from("events").select("parent_id").eq("event_type_id", notTodayType.id)
+          .gte("occurred_at", sgtInstant(day, 0).toISOString()).lt("occurred_at", sgtInstant(addDays(day, 1), 0).toISOString()),
+      ),
+      "Reading Not today",
+    ) ?? [];
+    const holidayRows = check(await db.from("holiday_dates").select("day, kind"), "Reading holidays") ?? [];
+
+    const category = new Map(nudges.map((n) => [Number(n.id), n.category as "quick" | "deliberate"]));
+    const replaced = new Set(children.map((c) => c.replaces_id).filter((x) => x !== null).map(Number));
+    const holidays: Holidays = {
+      publicHolidays: holidayRows.filter((h) => h.kind === "public_holiday").map((h) => String(h.day)),
+      schoolHolidays: holidayRows.filter((h) => h.kind === "school_holiday").map((h) => String(h.day)),
+    };
+    const of = <T extends { parent_id: unknown }>(rows: T[], id: number) => rows.filter((r) => Number(r.parent_id) === id);
+    return {
+      holidays,
+      parents: parents.map((p): PlanParent => {
+        const id = Number(p.id);
+        const mySlots = of(slots, id);
+        const myConsents: ConsentRow[] = of(consents, id).map((c) => ({ topic: c.topic, answer: c.answer, createdAt: c.created_at }));
+        const mySent = of(sent, id);
+        const changed = mySlots.map((x) => Date.parse(String(x.created_at))).filter((t) => !Number.isNaN(t));
+        return {
+          parentId: id,
+          telegramId: Number(p.telegram_id),
+          paused: Boolean(p.paused),
+          agreed: currentConsent(myConsents, "recording") === "agreed",
+          targets: of(picks, id).map((x) => {
+            const cat = category.get(Number(x.nudge_id));
+            if (!cat) throw new Error(`Behaviour ${x.nudge_id} has no category`);
+            return { nudgeId: Number(x.nudge_id), category: cat, frequency: x.frequency as Frequency };
+          }),
+          schedules: {
+            school: mySlots.filter((x) => x.schedule === "school").map((x) => Number(x.start_minute)).sort((a, b) => a - b),
+            nonSchool: mySlots.filter((x) => x.schedule === "non_school").map((x) => Number(x.start_minute)).sort((a, b) => a - b),
+          },
+          slotsChangedAt: changed.length > 0 ? new Date(Math.max(...changed)) : null,
+          logs: of(logs, id).map((l) => ({ nudgeId: Number(l.nudge_id), date: String(l.for_day) })),
+          messagesSent: mySent
+            .filter((m) => m.kind === "nudge" && String(m.for_day) >= since)
+            .map((m) => ({ kind: "nudge" as const, date: String(m.for_day), slotStart: Number(m.slot_minute), nudgeId: Number(m.nudge_id) })),
+          notTodayDate: of(notToday, id).length > 0 ? day : null,
+          // Current names only (an edited name replaces its old row), oldest first.
+          children: of(children, id).filter((c) => !replaced.has(Number(c.id))).map((c) => String(c.first_name)),
+          childMessagesBefore: mySent.length, // every nudge and start-now message names a child (rule 3.16)
+          examplesUsed: mySent
+            .filter((m) => m.kind === "nudge" && m.example_id !== null)
+            .map((m) => ({ nudgeId: Number(m.nudge_id), exampleId: Number(m.example_id) })),
+        };
+      }),
+    };
   }
 
   return {
@@ -166,39 +249,27 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       check(await db.rpc("clean_up_sign_ups", { p_version: await settingsVersion() }), "Cleaning up sign-ups");
     },
 
-    async fixedNudge(day) {
-      const nudge = need(await db.from("nudges").select("id, name").eq("code", THIN_SLICE_NUDGE.code).single(), "Reading the nudge");
-      const examples = check(
-        await db.from("examples").select("id, example").eq("nudge_code", THIN_SLICE_NUDGE.code).eq("active", true).order("id"),
-        "Reading the examples",
-      );
-      if (!examples || examples.length === 0) throw new Error("The fixed nudge has no active examples");
-      // A different example each day, in turn (a simple stand-in for rule 3.13's rotation).
-      const dayNumber = Math.floor(Date.parse(`${day}T00:00:00Z`) / 86_400_000);
-      const ex = examples[dayNumber % examples.length]!;
-      return { nudgeId: Number(nudge.id), name: String(nudge.name), exampleId: Number(ex.id), example: String(ex.example) };
+    async planningData(day) {
+      return loadPlan(day, null);
     },
 
-    async nudgeCandidates(day, slotMinute): Promise<NudgeCandidate[]> {
-      const parents = check(await db.from("parents").select("id, telegram_id, paused"), "Reading parents");
-      const consents = check(await db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording"), "Reading consents");
-      const sent = check(
-        await db.from("messages_sent").select("parent_id").eq("kind", "nudge").eq("for_day", day).eq("slot_minute", slotMinute),
-        "Reading tonight's nudges",
-      );
-      const sentTo = new Set((sent ?? []).map((s) => Number(s.parent_id)));
-      return (parents ?? []).map((p) => {
-        const rows: ConsentRow[] = (consents ?? [])
-          .filter((c) => Number(c.parent_id) === Number(p.id))
-          .map((c) => ({ topic: c.topic, answer: c.answer, createdAt: c.created_at }));
-        return {
-          parentId: Number(p.id),
-          telegramId: Number(p.telegram_id),
-          paused: Boolean(p.paused),
-          recordingConsent: currentConsent(rows, "recording"),
-          alreadySent: sentTo.has(Number(p.id)),
-        };
-      });
+    async planningDataFor(parentId, day) {
+      const { holidays, parents } = await loadPlan(day, parentId);
+      return { holidays, parent: parents[0] ?? null };
+    },
+
+    async nudgeExamples(nudgeId): Promise<ExampleIdea[]> {
+      const nudge = need(await db.from("nudges").select("code").eq("id", nudgeId).single(), "Reading the behaviour");
+      const rows = check(await db.from("examples").select("id, example, active").eq("nudge_code", nudge.code).order("id"), "Reading the ideas") ?? [];
+      return rows.map((e) => ({ id: Number(e.id), active: Boolean(e.active), example: String(e.example) }));
+    },
+
+    // [2026-11-13] Migration 009: marks and returns, in one step, who is due their one reminder.
+    async claimSignUpReminders() {
+      const rows = check(await db.rpc("claim_sign_up_reminders", { p_version: await settingsVersion() }), "Claiming sign-up reminders") as
+        | { telegram_id: number; step: string }[]
+        | null;
+      return (rows ?? []).map((r) => ({ telegramId: Number(r.telegram_id), step: String(r.step) }));
     },
 
     async recordNudgeSent(a) {

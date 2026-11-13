@@ -7,6 +7,9 @@
 //   4 quick behaviours (tick up to 2) → 5 deliberate behaviour (or skip) →
 //   6 and 7 the default times (OK) → 8 the plan (OK) → 9 "✅ I agree" →
 //   10 "Start right now" (only with a quick pick) → 11 "All set".
+// [2026-11-13] Pull request 3c: screens 10 and 11 state the planner's real
+// next reminder (rule 3.17, W2, W3) instead of the fixed 7:00 pm (D1, removed);
+// the 24-hour sign-up reminder's Continue button carries on (W5, Q11b).
 // Every answer is saved in the person's sign-up draft as they go, with the
 // step reached, so they can stop and carry on later ("Welcome back!", Q10e).
 // Nothing personal reaches the real tables until "I agree", which turns the
@@ -24,12 +27,14 @@
 
 import type { Behaviour, Draft, DraftAnswers } from "../datastore/store.js";
 import { toSgt } from "../sgt.js";
-import { DEFAULT_FREQUENCIES, DEFAULT_SCHEDULES, DEFAULT_WEEKLY_WRAP_UP, MAX_CHILDREN, NAME_MAX_CHARS, STARTING_CHOICE_LIMITS, THIN_SLICE_NUDGE, WEB_PAGES } from "../settings.js";
+import { DEFAULT_FREQUENCIES, DEFAULT_SCHEDULES, DEFAULT_WEEKLY_WRAP_UP, MAX_CHILDREN, NAME_MAX_CHARS, STARTING_CHOICE_LIMITS, WEB_PAGES } from "../settings.js";
+import { nextReminder } from "../nudge-engine/next-reminder.js";
+import { plannerInput } from "./scheduler.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import type { Button } from "./telegram-api.js";
 import type { Incoming } from "./updates.js";
-import { spacedTime, WORDS } from "./words.js";
+import { spacedTime, whenWords, WORDS } from "./words.js";
 
 type Start = Extract<Incoming, { kind: "start" }>;
 type Tap = Extract<Incoming, { kind: "tap" }>;
@@ -119,6 +124,15 @@ export async function onboardingTap(t: Tap, draft: Draft, deps: BotDeps): Promis
   const step = draft.step as Step;
   const children = a.children ?? [];
   const picks = a.picks ?? [];
+
+  // [2026-11-13] Continue on the 24-hour sign-up reminder (W5, Q11b): carry on
+  // where they stopped, as when they reopen their invite link (Q10e).
+  if (t.data === "signup:continue") {
+    await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+    await quietly("Sending 'welcome back' failed", () => telegram.sendMessage(t.chatId, WORDS.welcomeBack));
+    await showStep(t.chatId, draft, deps);
+    return;
+  }
 
   // Move on: save the new step first, then take the old screen's buttons away
   // (its words stay, or are replaced by "doneText"), then show the next screen.
@@ -236,7 +250,7 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
     // [2026-11-12] Review fix F3: say so, rather than skip screen 10 in silence (rule 1.3).
     logFailure("Reading the behaviours for Start right now failed", error);
     await quietly("Sending the start-now failure note failed", () => telegram.sendMessage(t.chatId, WORDS.startNowNotShown));
-    await allSet(t.chatId, firstName, deps);
+    await allSet(t.chatId, firstName, parentId, deps);
     return;
   }
   const first = (draft.answers.picks ?? [])
@@ -246,7 +260,7 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
   if (!first || !first.startNowLine || !child) {
     // Only a deliberate pick: screen 10 is skipped (Q3). A missing line is never made up (rule 1.3).
     if (first && (!first.startNowLine || !child)) logFailure("Start right now skipped: no fixed line or child", new Error("missing data"));
-    await allSet(t.chatId, firstName, deps);
+    await allSet(t.chatId, firstName, parentId, deps);
     return;
   }
   // Send first, record after: a message is recorded only once it was really sent.
@@ -260,7 +274,7 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
     ]);
   } catch (error) {
     logFailure("Sending Start right now failed", error);
-    await allSet(t.chatId, firstName, deps);
+    await allSet(t.chatId, firstName, parentId, deps);
     return;
   }
   try {
@@ -269,7 +283,7 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
     // Its buttons could never save: say so and take them away (rule 1.3).
     logFailure("Start right now sent but not recorded", error);
     await quietly("Replacing the start-now buttons failed", () => telegram.editMessage(t.chatId, messageId, WORDS.startNowNotSaved));
-    await allSet(t.chatId, firstName, deps);
+    await allSet(t.chatId, firstName, parentId, deps);
   }
 }
 
@@ -310,29 +324,48 @@ export async function startNowTap(t: Tap, parent: { id: number; firstName: strin
   // then the reply arrives as new messages below it.
   await quietly("Saved, but removing the start-now buttons failed", () => telegram.removeButtons(t.chatId, t.messageId));
   await quietly("Saved, but sending the reply failed", () =>
-    telegram.sendMessage(t.chatId, done ? WORDS.receipt(m.nudgeName) : WORDS.notNow(nextReminder(now))),
+    done ? telegram.sendMessage(t.chatId, WORDS.receipt(m.nudgeName)) : notNowLine(t.chatId, parent.id, deps),
   );
-  await allSet(t.chatId, parent.firstName, deps);
+  await allSet(t.chatId, parent.firstName, parent.id, deps);
   await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+}
+
+// [2026-11-13] When this parent's next reminder is, from the planner (rule
+// 3.17): words like "on Friday at 7:00 am" (W2), "none" (paused, or nothing
+// due in 14 days: W3), or "unknown" if the database can't answer (rule 1.3:
+// shown as a failure, never a guessed time).
+async function nextReminderWords(parentId: number, { store, now }: BotDeps): Promise<string | "none" | "unknown"> {
+  try {
+    const { holidays, parent } = await store.planningDataFor(parentId, toSgt(now).date);
+    if (!parent) throw new Error("The new parent was not found");
+    const next = nextReminder(plannerInput(parent, holidays, now));
+    return next ? whenWords(now, next) : "none";
+  } catch (error) {
+    logFailure("Working out the next reminder failed", error);
+    return "unknown";
+  }
+}
+
+// "Not now" on screen 10: the first reminder's time (W2, W3).
+async function notNowLine(chatId: number, parentId: number, deps: BotDeps): Promise<void> {
+  const when = await nextReminderWords(parentId, deps);
+  const text = when === "none" ? WORDS.notNowNoReminder : when === "unknown" ? WORDS.notNowUnknown : WORDS.notNow(when);
+  await deps.telegram.sendMessage(chatId, text);
 }
 
 // Screen 11: "You're all set" and the link to My page (a placeholder until the Web app).
 // [2026-11-12] Review fix F2: without a first name, that line is left out rather
 // than shown with a blank (rule 1.3); the database never lets this happen for a parent.
-async function allSet(chatId: number, firstName: string | undefined, { telegram, now }: BotDeps): Promise<void> {
-  if (firstName) await quietly("Sending 'all set' failed", () => telegram.sendMessage(chatId, WORDS.allSet(firstName, nextReminder(now))));
-  else logFailure("'All set' left out: no first name", new Error("missing data"));
+async function allSet(chatId: number, firstName: string | undefined, parentId: number, deps: BotDeps): Promise<void> {
+  const { telegram } = deps;
+  if (firstName) {
+    const when = await nextReminderWords(parentId, deps);
+    const text = when === "none" ? WORDS.allSetNoReminder(firstName) : when === "unknown" ? WORDS.allSetUnknown(firstName) : WORDS.allSet(firstName, when);
+    await quietly("Sending 'all set' failed", () => telegram.sendMessage(chatId, text));
+  } else logFailure("'All set' left out: no first name", new Error("missing data"));
   await quietly("Sending the page link failed", () =>
     telegram.sendMessage(chatId, WORDS.myPage, [[{ text: WORDS.openMyPageButton, url: WEB_PAGES.myPage }]]),
   );
-}
-
-// [2026-11-12] TEMPORARY until pull request 3 (owner's decision D1): the only
-// reminder is thin slice 1's 7:00 pm one, so that is the true next time. The
-// planner's real next slot replaces this, and this function is then removed.
-export function nextReminder(now: Date): string {
-  const at = spacedTime(THIN_SLICE_NUDGE.slotMinute);
-  return toSgt(now).minutes < THIN_SLICE_NUDGE.slotMinute ? `today at ${at}` : `tomorrow at ${at}`;
 }
 
 // ---- Showing a screen --------------------------------------------------------

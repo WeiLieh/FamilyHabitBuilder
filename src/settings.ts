@@ -120,6 +120,9 @@ export const SIGN_UP_REMINDER_AFTER_HOURS = 24;
 // [2026-11-13] How far ahead "your next reminder is …" looks for a slot the
 // planner would use (rule 3.17). Beyond this, the parent is told no reminder is planned.
 export const NEXT_REMINDER_LOOK_AHEAD_DAYS = 14;
+// [2026-11-13] The hours the one sign-up reminder may be sent (owner's D7): the
+// slot hours, 7:00 am (420) to 9:30 pm (1290), in minutes after midnight, Singapore time.
+export const SIGN_UP_REMINDER_HOURS = { from: 7 * 60, until: 21 * 60 + 30 } as const;
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.
@@ -138,10 +141,9 @@ export const SETTINGS_KEYS_THE_DATABASE_READS = {
 export const WEEK_ONE_COHORT = "cohort-1";
 // The experiment stamp on every event in week one (rule 11.3).
 export const WEEK_ONE_VARIANTS: readonly string[] = ["baseline"];
-// The one fixed nudge of thin slice 1: Showing affection, every day at 7:00 pm
-// (19 x 60 = 1140 minutes after midnight, Singapore time). Replaced by the
-// parent's own picks and times in a later slice.
-export const THIN_SLICE_NUDGE = { code: "SAF", slotMinute: 19 * 60 } as const;
+// [2026-11-13] The thin slice's one fixed nudge (Showing affection at 7:00 pm)
+// is removed: the planner sends each parent's own picks in their own slots
+// (pull request 3c; CLAUDE.md rule 12).
 // The wording version of the recording agreement shown at sign-up (still a draft, Q8).
 export const AGREEMENT_WORDING_VERSION = "draft-2026-11-11";
 

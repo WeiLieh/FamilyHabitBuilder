@@ -11,9 +11,16 @@
 // as the real one (src/datastore/store.ts). Set failWrites to pretend the
 // database is down, so tests can check the bot never pretends a failure worked
 // (rule 1.3).
+// [2026-11-13] Pull request 3c: it also answers the planner's questions
+// (planningData), keeps example ideas, holidays and the people due their
+// sign-up reminder; the thin-slice fixedNudge and nudgeCandidates are gone.
 // =============================================================================
 
-import type { Behaviour, Draft, DraftAnswers, NudgeCandidate, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
+import type { Behaviour, Draft, DraftAnswers, ExampleIdea, PlanParent, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
+// [2026-11-13] The planner's types, taken from the store's menu (so this helper
+// stays a Datastore helper, rule S5).
+type Holidays = Awaited<ReturnType<Store["planningData"]>>["holidays"];
+type Frequency = PlanParent["targets"][number]["frequency"];
 
 // [2026-11-12] The nine behaviours as first loaded (src/datastore/supabase/seed/nudges-first-load.csv).
 const line = (rest: string) => `Start right now, and get on the scoreboard straight away by ${rest}`;
@@ -41,7 +48,18 @@ export class FakeStore implements Store {
   private draftCode = new Map<number, string>(); // the code each draft holds
   children: { parentId: number; firstName: string }[] = [];
   picks: { parentId: number; nudgeId: number; frequency: string }[] = [];
-  slots: { parentId: number; school: number[]; nonSchool: number[] }[] = [];
+  slots: { parentId: number; school: number[]; nonSchool: number[]; changedAt?: Date }[] = [];
+  // [2026-11-13] Pull request 3c: example ideas per behaviour (each behaviour
+  // gets one active idea unless a test sets its own), holidays, and the
+  // people the database would say are due their sign-up reminder.
+  examples = new Map<number, ExampleIdea[]>();
+  holidays: { day: string; kind: "public_holiday" | "school_holiday" }[] = [];
+  dueForReminder = new Set<number>();
+  reminderClaims = 0; // how many times "who is due a reminder?" was asked
+  failRecordNudge = false; // make only recording a sent nudge fail
+  // Runs once, right after planningData answers: lets a test change the
+  // database between the first look and the re-check before sending (rule 3.6).
+  afterPlanningRead: (() => void) | null = null;
   startNow: { id: number; parentId: number; nudgeId: number; day: string }[] = [];
   cleanUps = 0; // how many times the sign-up clean-up ran
   failStartNow = false; // make only recording the start-now message fail
@@ -167,22 +185,64 @@ export class FakeStore implements Store {
     if (this.failCleanUp) throw new Error("database unavailable (clean-up)");
     this.cleanUps++;
   }
-  async fixedNudge(): Promise<{ nudgeId: number; name: string; exampleId: number; example: string }> {
-    return { nudgeId: 2, name: "Showing affection", exampleId: 7, example: "Give a long hug before bed." };
-  }
-  async nudgeCandidates(day: string, slotMinute: number): Promise<NudgeCandidate[]> {
-    return this.parents.map((p) => ({
+  // [2026-11-13] The planner's view of one parent, from the lists above.
+  private planParent(p: Parent): PlanParent {
+    const all = [...QUICK, ...DELIBERATE];
+    const slots = this.slots.find((x) => x.parentId === p.id);
+    return {
       parentId: p.id,
       telegramId: p.telegramId,
       paused: p.paused,
-      recordingConsent: this.consents.some((c) => c.parentId === p.id && c.topic === "recording" && c.answer === "agreed")
-        ? "agreed"
-        : "missing",
-      alreadySent: this.sentNudges.some((n) => n.parentId === p.id && n.day === day && n.slotMinute === slotMinute),
-    }));
+      agreed: this.consents.some((c) => c.parentId === p.id && c.topic === "recording" && c.answer === "agreed"),
+      targets: this.picks
+        .filter((x) => x.parentId === p.id)
+        .map((x) => ({ nudgeId: x.nudgeId, category: all.find((b) => b.id === x.nudgeId)!.category, frequency: x.frequency as Frequency })),
+      schedules: { school: slots?.school ?? [], nonSchool: slots?.nonSchool ?? [] },
+      slotsChangedAt: slots?.changedAt ?? null,
+      logs: this.logs.filter((l) => l.parentId === p.id).map((l) => ({ nudgeId: l.nudgeId, date: l.day })),
+      messagesSent: this.sentNudges
+        .filter((n) => n.parentId === p.id)
+        .map((n) => ({ kind: "nudge" as const, date: n.day, slotStart: n.slotMinute, nudgeId: n.nudgeId })),
+      notTodayDate: this.events.some((e) => e.parentId === p.id && e.type === "not_today" && e.day === this.today) ? this.today : null,
+      children: this.children.filter((c) => c.parentId === p.id).map((c) => c.firstName),
+      childMessagesBefore:
+        this.sentNudges.filter((n) => n.parentId === p.id).length + this.startNow.filter((m) => m.parentId === p.id).length,
+      examplesUsed: this.sentNudges.filter((n) => n.parentId === p.id).map((n) => ({ nudgeId: n.nudgeId, exampleId: n.exampleId })),
+    };
+  }
+  private holidayLists(): Holidays {
+    return {
+      publicHolidays: this.holidays.filter((h) => h.kind === "public_holiday").map((h) => h.day),
+      schoolHolidays: this.holidays.filter((h) => h.kind === "school_holiday").map((h) => h.day),
+    };
+  }
+  async planningData(): Promise<{ holidays: Holidays; parents: PlanParent[] }> {
+    this.failReadIfAsked("planningData");
+    const answer = { holidays: this.holidayLists(), parents: this.parents.map((p) => this.planParent(p)) };
+    const after = this.afterPlanningRead;
+    this.afterPlanningRead = null;
+    after?.();
+    return answer;
+  }
+  async planningDataFor(parentId: number): Promise<{ holidays: Holidays; parent: PlanParent | null }> {
+    this.failReadIfAsked("planningDataFor");
+    const p = this.parents.find((x) => x.id === parentId);
+    return { holidays: this.holidayLists(), parent: p ? this.planParent(p) : null };
+  }
+  async nudgeExamples(nudgeId: number): Promise<ExampleIdea[]> {
+    this.failReadIfAsked("nudgeExamples");
+    return this.examples.get(nudgeId) ?? [{ id: nudgeId * 10 + 1, active: true, example: `Idea for behaviour ${nudgeId}.` }];
+  }
+  async claimSignUpReminders(): Promise<{ telegramId: number; step: string }[]> {
+    this.failIfAsked();
+    this.reminderClaims++;
+    const due = [...this.dueForReminder].map((telegramId) => ({ telegramId, step: this.drafts.get(telegramId)?.step ?? "name" }));
+    this.dueForReminder.clear(); // claimed: never returned again (migration 009)
+    return due;
   }
   async recordNudgeSent(a: { parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number }): Promise<void> {
     this.failIfAsked();
+    if (this.failRecordNudge) throw new Error("database unavailable (record nudge)");
     if (this.sentNudges.some((n) => n.parentId === a.parentId && n.day === a.day && n.slotMinute === a.slotMinute)) {
       throw new Error("one nudge message per parent, day and slot");
     }
@@ -191,7 +251,8 @@ export class FakeStore implements Store {
   async findNudgeMessage(parentId: number, day: string, slotMinute: number): Promise<{ messageId: number; nudgeId: number; nudgeName: string } | null> {
     this.failReadIfAsked("findNudgeMessage");
     const n = this.sentNudges.find((x) => x.parentId === parentId && x.day === day && x.slotMinute === slotMinute);
-    return n ? { messageId: n.id, nudgeId: n.nudgeId, nudgeName: "Showing affection" } : null;
+    // [2026-11-13] The real behaviour's name (was always "Showing affection" in thin slice 1).
+    return n ? { messageId: n.id, nudgeId: n.nudgeId, nudgeName: [...QUICK, ...DELIBERATE].find((b) => b.id === n.nudgeId)!.name } : null;
   }
   async logExistsFor(messageId: number): Promise<boolean> {
     this.failReadIfAsked("logExistsFor");

@@ -10,6 +10,8 @@
 //   - Screen 10's buttons from a new parent: "I've started!" and "Not now" (onboarding.ts)
 //   - ✅ Done: save today's log from that nudge, show the fixed receipt (rules 5.4, 7.5)
 //   - 😴 Not today: record it, show the comforting note (rule 3.5)
+//   [2026-11-13] Pull request 3c: nudge buttons name their day and slot (up to
+//   3 nudges a day); Continue on the 24-hour sign-up reminder (W5, W7).
 //   [2026-11-12] For both, the nudge keeps its words and loses its buttons, and
 //   the receipt or note arrives as a new message below it (rule 5.10).
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
@@ -21,7 +23,6 @@
 
 import type { Store } from "../datastore/store.js";
 import { toSgt } from "../sgt.js";
-import { THIN_SLICE_NUDGE } from "../settings.js";
 import type { TelegramApi } from "./telegram-api.js";
 import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
@@ -114,7 +115,11 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
       return;
     }
     if (draft) await onboardingTap(t, draft, deps);
-    else await telegram.answerTap(t.tapId, WORDS.signUpFirst);
+    // [2026-11-13] Continue on the sign-up reminder after the draft was cut down (W7).
+    else if (t.data === "signup:continue") {
+      await telegram.sendMessage(t.chatId, WORDS.signUpExpired).catch((error) => logFailure("Sending 'sign-up expired' failed", error));
+      await telegram.answerTap(t.tapId).catch(() => undefined);
+    } else await telegram.answerTap(t.tapId, WORDS.signUpFirst);
     return;
   }
 
@@ -124,20 +129,30 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
     return;
   }
 
-  // Nudge buttons carry the day they were sent for: "done:2026-11-11" or "skip:2026-11-11".
-  const button = /^(done|skip):(\d{4}-\d{2}-\d{2})$/.exec(t.data);
+  // [2026-11-13] The sign-up reminder's Continue, from someone who has since finished.
+  if (t.data === "signup:continue") {
+    await telegram.sendMessage(t.chatId, WORDS.alreadySignedUp).catch((error) => logFailure("Sending 'already signed up' failed", error));
+    await telegram.answerTap(t.tapId).catch(() => undefined);
+    return;
+  }
+
+  // [2026-11-13] Nudge buttons carry the day and slot they were sent for:
+  // "done:2026-11-11:1140" or "skip:2026-11-11:1140" (up to 3 nudges a day).
+  // A button from before pull request 3c (no slot) is treated as unknown.
+  const button = /^(done|skip):(\d{4}-\d{2}-\d{2}):(\d{1,4})$/.exec(t.data);
   if (!button) {
     await telegram.answerTap(t.tapId); // an old or unknown button: just stop Telegram's loading spinner
     return;
   }
-  const [, action, day] = button as unknown as [string, "done" | "skip", string];
+  const [, action, day, slotText] = button as unknown as [string, "done" | "skip", string, string];
+  const slot = Number(slotText);
 
   // [2026-11-12] The questions this tap asks the database before saving anything.
   // If any of them can't be answered, say so honestly and stop the button's
   // spinner, rather than stay silent (rule 1.3; review finding P1, 12 Nov).
   let found;
   try {
-    found = await lookUpNudge(parent.id, day, deps);
+    found = await lookUpNudge(parent.id, day, slot, deps);
   } catch (error) {
     logFailure("Looking up a tapped nudge failed", error);
     await telegram.sendMessage(t.chatId, WORDS.signUpFailed).catch(() => undefined);
@@ -183,9 +198,9 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
 // [2026-11-12] Which nudge was tapped, and has it been answered already? Nothing
 // (null) if it isn't today's nudge: logging is for today only (rule 5.4), so a
 // tap on an earlier day's nudge saves nothing. Any database failure is thrown.
-async function lookUpNudge(parentId: number, day: string, { store, now }: BotDeps) {
+async function lookUpNudge(parentId: number, day: string, slot: number, { store, now }: BotDeps) {
   if (day !== toSgt(now).date) return null;
-  const nudge = await store.findNudgeMessage(parentId, day, THIN_SLICE_NUDGE.slotMinute);
+  const nudge = await store.findNudgeMessage(parentId, day, slot);
   if (!nudge) return null;
   const doneAlready = await store.logExistsFor(nudge.messageId);
   const notTodayAlready = await store.notTodayOn(parentId, day);
