@@ -5,7 +5,7 @@
 // their next reminder comes. nextReminder walks forward through the parent's
 // slots, from now on, and asks the planner at each slot's start: "would you
 // send a nudge here?" The first yes is the answer. It looks
-// NEXT_REMINDER_LOOK_AHEAD_DAYS (14) days ahead, assuming nothing more is
+// NEXT_REMINDER_LOOK_AHEAD_DAYS days ahead (src/settings.ts), assuming nothing more is
 // logged; no yes in that time, or paused, means "no next reminder".
 //
 // Why reuse the planner instead of a second set of rules: the promise on
@@ -41,5 +41,5 @@ export function nextReminder(input: PlannerInput): NextReminder | null {
       if (plan.send) return { date, slotStart, nudgeId: plan.nudgeId };
     }
   }
-  return null; // nothing would be sent in the next 14 days
+  return null; // nothing would be sent within the look-ahead (NEXT_REMINDER_LOOK_AHEAD_DAYS)
 }

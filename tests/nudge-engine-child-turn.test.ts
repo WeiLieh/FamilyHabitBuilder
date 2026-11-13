@@ -37,4 +37,11 @@ describe("Taking turns naming the children (rule 3.16)", () => {
   it("names no child when none is recorded (the words then say \"your child\")", () => {
     expect(childForMessage([], 0)).toBeNull();
   });
+
+  // C5 [2026-11-13, privacy review]
+  it("refuses a count that isn't a whole number of 0 or more, rather than quietly name no child (rule 1.3)", () => {
+    expect(() => childForMessage(["Mia", "Leo"], -1)).toThrow(/count/i);
+    expect(() => childForMessage(["Mia", "Leo"], 1.5)).toThrow(/count/i);
+    expect(() => childForMessage(["Mia", "Leo"], Number.NaN)).toThrow(/count/i);
+  });
 });
