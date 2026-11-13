@@ -26,6 +26,7 @@
 - [2026-11-01 16:56 SGT] `design/`: the owner's reading copies of the Datastore design pages (PDF), explained in [design/README.md](design/README.md). **Claude never reads them** (habit H8); the rules are in this spec.
 
 ## Planned for the Datastore build
+- [2026-11-13 22:24 SGT] **Migration 009 (pull request 3a, for the 24-hour sign-up reminder, Q11b):** a new column `sign_up_drafts.reminded_at`, and a function `claim_sign_up_reminders` that, in one step, marks and returns the drafts due a reminder: not cut down, never reminded, quiet for at least `sign_up_reminder_after_hours` (24, from the settings version, rule 1.4). Marking before sending means two overlapping runs can never send two reminders; a send that then fails is logged and not retried (one reminder only, owner's Q11b: "No more"). The bot decides the hours (D7, Telegram bot spec). Not built yet.
 
 ## Tables (design agreed 2026-11-01)
 [2026-11-01 16:07 SGT] Agreed with the owner on 1 Nov after three drafts and a schema review (rules 8.3 to 8.12). Every table also has `created_at` and a plain-English comment on each column (rule 8.12). "Server" = our app's server role. "Personal" = deleted with the parent (rule 8.5).
