@@ -125,10 +125,12 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-12 23:16 SGT] Minimum test count: 211 (pull request 2 review fixes F2 to F4, 12 Nov).
+- [2026-11-13 22:31 SGT] Minimum test count: 212 (pull request 3a, the 24-hour reminder setting, 13 Nov).
+- SUPERSEDED [2026-11-13 22:31 SGT] [2026-11-12 23:16 SGT] Minimum test count: 211 (pull request 2 review fixes F2 to F4, 12 Nov).
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
 
 ## Change notes
+- [2026-11-13 22:31 SGT] **Pull request 3a, migration 009 (Datastore, 13 Nov):** the one 24-hour sign-up reminder's database side, built test-first: `sign_up_drafts.reminded_at` and `claim_sign_up_reminders` (marks and returns who is due in one step; one reminder per person, ever). Rule **8.13** changed (the reminder part). New setting `SIGN_UP_REMINDER_AFTER_HOURS` = 24. App tests 211 to 212 (one new, one rewritten: "names the five windows"); database checks T82 to T89. Not yet applied on Supabase.
 - [2026-11-13 22:24 SGT] **Pull request 3 planned (owner, 13 Nov):** the planner goes live in three pull requests (3a Datastore, 3b Nudge engine, 3c Telegram bot); alarm clock every 10 minutes; nudge words = behaviour, an unused example and one child's name taking turns; the 24-hour sign-up reminder only between 7:00 am and 9:30 pm. Decisions D5 to D8 in [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md); migration 009 planned in [src/datastore/SPEC.md](../src/datastore/SPEC.md). No rule changed yet.
 - [2026-11-12 23:27 SGT] **Long files shortened (owner approved, 12 Nov):** history moved word for word into `docs/archive/` (no rule changed, nothing reworded): replaced (SUPERSEDED) lines from 20 files, change notes before 8 Nov, progress sessions 7 to 11, resolved known issues, time log sessions 1 to 6. Each file keeps a dated pointer to its archive. This file is now under 300 lines.
 - [2026-11-12 23:20 SGT] **Diagram and Module table:** Telegram bot status "Thin slice built" → "Onboarding built" (pull request #40 merged, 12 Nov).
