@@ -125,13 +125,15 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-13 22:48 SGT] Minimum test count: 231 (pull request 3b review fix C5, 13 Nov).
+- [2026-11-13 23:26 SGT] Minimum test count: 248 (pull request 3c, the planner live, 13 Nov).
+- SUPERSEDED [2026-11-13 23:26 SGT] [2026-11-13 22:48 SGT] Minimum test count: 231 (pull request 3b review fix C5, 13 Nov).
 - SUPERSEDED [2026-11-13 22:48 SGT] [2026-11-13 22:45 SGT] Minimum test count: 230 (pull request 3b, Nudge engine: examples, children's turns, next reminder, 13 Nov).
 - SUPERSEDED [2026-11-13 22:45 SGT] [2026-11-13 22:31 SGT] Minimum test count: 212 (pull request 3a, the 24-hour reminder setting, 13 Nov).
 - SUPERSEDED [2026-11-13 22:31 SGT] [2026-11-12 23:16 SGT] Minimum test count: 211 (pull request 2 review fixes F2 to F4, 12 Nov).
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
 
 ## Change notes
+- [2026-11-13 23:26 SGT] **Pull request 3c, Telegram bot: the planner live (13 Nov):** built test-first. An alarm run every 10 minutes (Supabase Cron): the sign-up clean-up, the one 24-hour sign-up reminder (7:00 am to 9:30 pm, Continue), and the planner's nudges in each parent's own slots ("With Mia: …", an unused idea, children taking turns, re-checked before sending). Buttons name their day and slot. Screens 10 and 11 show the planner's next reminder. New rules **5.11**, **5.12**, **5.13**; rules 3.6 and 8.13 now fully tested; D1 ended. Removed (CLAUDE.md rule 12): the fixed 7:00 pm nudge and Vercel's alarm, with their tests (named in [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)). App tests 231 to 248. Go-live: [src/telegram-bot/UAT-planner.md](../src/telegram-bot/UAT-planner.md).
 - [2026-11-13 22:48 SGT] **Pull request 3b, review fixes (owner: "fix all", 13 Nov):** rule **3.16** also covers the Weekly Wrap Up when it names a child (as Q4) and refuses a wrong count (new test C5); rule **3.17** reads "item 43 in the values list" and requires honest "no next reminder" words in 3c; the Friday example in the onboarding spec is really 7:00 am (corrected in 3c). App tests 230 to 231.
 - [2026-11-13 22:45 SGT] **Pull request 3b, Nudge engine (13 Nov):** built test-first, pure logic: `examples.ts` (rule **3.13** now tested: the least-used active example; refused if none), `child-turn.ts` (new rule **3.16**, children take turns, from Q4), `next-reminder.ts` (new rule **3.17**, the first slot the planner would use, 14 days ahead). New setting `NEXT_REMINDER_LOOK_AHEAD_DAYS` = 14 (value 43). App tests 212 to 230 (18 new). Used by the bot in pull request 3c.
 - [2026-11-13 22:38 SGT] **Pull request 3a, review fixes (owner agreed, 13 Nov):** rule **8.4** gains edit 10 (the reminder mark); rule **8.13** states one reminder ever, even after a restart (option A); a reminder setting below 1 hour is refused (T90); the `sign_up_drafts` table entry lists `reminded_at`. Two known issues added (the reminder before consent, for the PDPA reviewer; the untested simultaneous-run lock). Pull request 3c will add a reminder line to the `/start` notice and log failures without Telegram IDs.
