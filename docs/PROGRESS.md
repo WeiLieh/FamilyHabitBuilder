@@ -2,6 +2,19 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-13 22:38 SGT] Session 15: pull request 3 planned, 3a built
+### Done
+- [2026-11-13 22:38 SGT] Start-of-session routine: drift check passed (24 checks). UAT: U12 waits for midnight; onboarding UAT U17 to U27 not run yet, so migration 008 is not applied (check query showed the old `sign_up` still there; owner applies 008 after U27).
+- [2026-11-13 22:38 SGT] Owner's decisions for pull request 3: D5 alarm every 10 minutes; D6 nudge words = behaviour, an unused example, one child's name taking turns; D7 the 24-hour sign-up reminder only 7:00 am to 9:30 pm; D8 three pull requests (3a Datastore, 3b Nudge engine, 3c Telegram bot). Recorded in `src/telegram-bot/SPEC.md`.
+- [2026-11-13 22:38 SGT] **Pull request 3a built test-first:** migration 009 (`sign_up_drafts.reminded_at`, `claim_sign_up_reminders`), setting `SIGN_UP_REMINDER_AFTER_HOURS` = 24 (value 42). Both review agents run (no High); owner agreed the fixes: rule 8.4 edit 10, one reminder ever (option A), refuse below 1 hour (T90), two known issues. App tests 211 to 212; database checks 162 to 171 PASS lines (T82 to T90).
+### In progress
+- [2026-11-13 22:38 SGT] Pull request 3a on GitHub for the owner to merge (it also carries the session 14 handoff note).
+### Next steps
+- [2026-11-13 22:38 SGT] Owner: merge 3a; apply migration 009 (any time after 008; nothing calls it until 3c); onboarding UAT U17 to U27, then migration 008; U12 after midnight.
+- [2026-11-13 22:38 SGT] Claude: pull request 3b (Nudge engine: the example choice 3.13, the child's turn, "your next reminder is …"), tests shown to the owner first.
+### Blockers
+- [2026-11-13 22:38 SGT] None.
+
 ## [2026-11-12 23:33 SGT] HANDOFF: session 14 ended (read this first)
 - [2026-11-12 23:33 SGT] **State:** pull request #42 (long files shortened, catch-up sections 4 and 5 rewritten, CLAUDE.md H2 addition) is open for the owner to merge. `npm run check` passes (211 tests, drift clean). No code or database change this session.
 - [2026-11-12 23:33 SGT] **Next session (resume tomorrow):** unchanged from the session 13 handoff below: UAT results (U12, U14 to U16, U17 to U28), migration 008, then build pull request 3 (the planner live on Supabase Cron), spec and tests agreed first.

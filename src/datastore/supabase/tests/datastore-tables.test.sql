@@ -25,7 +25,7 @@
 -- in T57 to T76.
 --
 -- [2026-11-13] Also runs migration 009 (the one 24-hour sign-up reminder, Q11b,
--- pull request 3a) and checks it in T82 to T89.
+-- pull request 3a) and checks it in T82 to T90.
 -- =============================================================================
 
 \set ON_ERROR_STOP on
@@ -1164,6 +1164,15 @@ end $$;
 -- T88: a settings version without the reminder hours is refused, never guessed.
 select pg_temp.expect_refused('T88 a settings version with no reminder hours',
   $q$select * from public.claim_sign_up_reminders((select vnone from pg_temp.vers))$q$, 'has no sign_up_reminder_after_hours');
+
+-- T90: [2026-11-13, review] a reminder setting below 1 hour is refused, so a
+-- mistyped 0 can never remind everyone part-way through sign-up at once.
+reset role;
+create table pg_temp.vers0 as select public.record_settings_version('T90 zero hours', '{"sign_up_reminder_after_hours": 0}'::jsonb) as v0;
+grant select on pg_temp.vers0 to service_role;
+set role service_role;
+select pg_temp.expect_refused('T90 a reminder setting of 0 hours',
+  $q$select * from public.claim_sign_up_reminders((select v0 from pg_temp.vers0))$q$, 'at least 1 hour');
 
 -- T89: only our server can run it.
 reset role;
