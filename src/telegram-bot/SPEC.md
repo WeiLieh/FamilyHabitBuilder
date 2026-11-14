@@ -124,6 +124,7 @@
 - [2026-11-12 22:04 SGT] **10b:** each parent has their own invite and sign-up; two parents are not linked in the MVP (backlog: family accounts).
 - [2026-11-12 22:04 SGT] **10c:** a code someone else used: "Sorry, that invite code doesn't work. Please ask the person who invited you for your own link."
 - [2026-11-12 22:04 SGT] **10d:** no code: "Hi! This app is invite-only for now. Please use the invite link you were sent."
+- [2026-11-14 10:37 SGT] **10e addition (owner, 14 Nov, after UAT U21):** when the bot sends the current screen again ("Welcome back", and **Continue** on the one sign-up reminder, rule 5.13), it also **removes the buttons from the earlier copy** of that screen, so only one set of buttons is left. Today the old copy keeps its buttons: tapping them does nothing (U24 passed), but two identical buttons are confusing. Not built yet: next Claude Code session, with B1, tests first. The "You can pick up to 2." pop-up stays as it is (a box with OK; owner accepted, 14 Nov).
 - [2026-11-12 22:04 SGT] **10e:** someone halfway who taps their link again: "Welcome back! Let's carry on.", then the screen they were on. **10f:** a different link halfway is ignored; they keep their first code. **10g:** codes match ignoring capitals and spaces at the ends. **10h:** invites don't expire in the trial; the owner can delete an unused one in Supabase.
 
 **Q11, an unfinished sign-up (rule 8.13 details)**

@@ -4,6 +4,16 @@
 
 ## Notebook
 
+### [2026-11-14 10:37 SGT] A pull request built on top of another (a "stacked" pull request)
+- **Concept:** a stacked pull request: a branch that starts from another branch still waiting for review, instead of from `main`.
+- **In plain English:** pull request #45 holds the newest notes and specs but isn't merged yet (it waits for U15 and U16). Today's notes build on those, so today's branch starts from #45's branch. Its pull request is pointed at #45's branch, so it shows only today's changes; once #45 is merged, it is pointed at `main`.
+- **Analogy:** writing chapter 6 while your editor still has chapter 5: you write from your copy of chapter 5, and they read chapter 6 as "what changed since chapter 5".
+- **Why and when to use it:** when new work depends on work that is waiting for review and you don't want to wait or redo it. Not when the two pieces are unrelated (then branch from `main`), and not in long chains (each link waits on the one before).
+- **Best practices:** merge in order (the lower one first); keep each one small; say in the description which pull request it sits on.
+- **Where it showed up in this project:** session 16's notes (UAT results, migrations 008 and 009) sit on top of #45.
+- **Explain it to others:** "Our last change is still in review, so today's work is stacked on it. Reviewers see only today's changes, and we merge them in order."
+- **Governance angle:** a reviewer may ask whether anything unreviewed slips into `main`: no, each pull request is still reviewed and merged on its own, in order.
+
 ### [2026-11-14 00:17 SGT] Take a ticket before you act ("claim, then send")
 - **Concept:** Claiming work in one step (a database "claim": mark and return in a single statement, with the rows locked).
 - **In plain English:** When an alarm runs every 10 minutes, two runs can overlap. If each one first asks "who needs a reminder?" and only later marks them, both can send the same reminder. Instead, the database marks the people as "reminded" and hands them over in the same step, so only one run can ever take each person.

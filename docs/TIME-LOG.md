@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-14 10:37 SGT] Session 16 (2026-11-14 morning)
+- [2026-11-14 10:37 SGT] About 1 h 5 min elapsed (about 09:38 to 10:45 SGT), all active. Start-of-session routine (drift check clean); onboarding UAT U17 to U27 run live with the owner step by step (all pass) on a second Telegram account; migrations 008 and 009 applied and their fingerprints recorded; handoff for the Claude Chat design work and the B1 build.
+- **Notes for timeboxing:** one screenshot per test case, checked against the expected words, kept each case to 2 to 3 minutes; setting up the second Telegram account took about 10 minutes (a number already on Telegram logs into that person's real account, so ask first).
+
 ## [2026-11-14 00:16 SGT] Session 15 (2026-11-13 evening to 2026-11-14 after midnight)
 - [2026-11-14 00:16 SGT] About 3 hours elapsed (about 21:15 to 00:20 SGT, from commit times and the chat), all active, including a short Experiment 1 detour (adding a parent, the removed name columns). Pull request 3 planned (D5 to D8) and built in three parts: 3a migration 009, 3b the Nudge engine logic, 3c the planner live, each test-first with both review agents; #43 and #44 hit GitHub merge errors (merged by a pushed merge). UAT U0 to U2 automated; U12 and U13 with the owner. App tests 211 to 249.
 
