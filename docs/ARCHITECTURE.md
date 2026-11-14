@@ -4,13 +4,13 @@
 
 ```mermaid
 flowchart LR
-    telegram["Telegram bot<br/>Planner and B1 built, not live"]:::part
+    telegram["Telegram bot<br/>Planner and B1 live"]:::part
     engine["Nudge engine<br/>Decisions built"]:::part
     repository["Nudge repository<br/>Built and live"]:::done
     photo["Photo check<br/>Designed, not built"]:::part
     rewards["Variable rewards<br/>Designed, partly built"]:::part
     datastore["Datastore<br/>Tables live"]:::part
-    webapp["Web app<br/>Not started"]:::todo
+    webapp["Web app<br/>Design in progress"]:::part
     telemetry["Telemetry<br/>Designed, not built"]:::part
     experiments["Experiments<br/>Designed, not built"]:::part
 
@@ -41,5 +41,7 @@ flowchart LR
 **Colours:** [2026-11-11 17:48 SGT] green = built (a status starting with "Built"); yellow = in design or partly built; grey = "Not started" (rule D4).
 
 SUPERSEDED [2026-11-11 17:48 SGT] **Colours:** green = built and tested; yellow = partly built or in design; grey = not started.
+
+[2026-11-14 22:24 SGT] Statuses brought up to date: Web app "Design in progress" (the Week so far tab recorded, 14 Nov); Telegram bot "Planner and B1 live" (both went live on 14 Nov).
 
 [2026-11-11 17:44 SGT] Statuses brought up to date (owner, 11 Nov). The drift test now also checks each box's colour fits its status (rule D4 in [docs/SPEC.md](SPEC.md)).

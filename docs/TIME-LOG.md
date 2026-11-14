@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-14 22:24 SGT] Session 18 (2026-11-14 late evening)
+- [2026-11-14 22:24 SGT] About 20 min elapsed (about 22:13 to 22:35 SGT), all active. Start-of-session routine; #48 merged; the Web app Week so far handoff recorded (rules 9.2 to 9.7, cross-reference notes, a Datastore draft, open items logged), both review agents run.
+- **Notes for timeboxing:** a recording-only handoff with a clear "what to do" section takes about 20 minutes; most time goes into checking it against the existing rules (rule 5.6 wording, rule 8.4 deletes).
+
 ## [2026-11-14 21:40 SGT] Session 17 (2026-11-14 afternoon and evening)
 - [2026-11-14 21:40 SGT] About 7 h 50 min elapsed (about 13:50 to 21:40 SGT); active about 4 h: the build and reviews (about 13:50 to 14:30), go-live and UAT with the owner (about 14:30 to 16:00), then two short UAT check-ins (5:20 pm, 9:30 pm). B1 built test-first (migration 010, 26 new app tests, 8 database tests), reviewed, merged as #47; #45 merged and the planner put live (alarm, new cron secret); migration 010 applied; test accounts tidied; most UAT passed.
 - **Notes for timeboxing:** the agreed test list from session 16 let the build run in about 40 minutes with one decision (B1-D10). Go-live took longer than the code: about 1.5 hours of setup steps and screenshots, including a secret change after it showed in a screenshot. Checks that need a reminder or "tomorrow" can't be hurried; list them with their time.

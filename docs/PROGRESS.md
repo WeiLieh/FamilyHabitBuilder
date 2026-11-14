@@ -2,6 +2,19 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-14 22:24 SGT] Session 18: the Web app's Week so far tab recorded (Claude Chat handoff)
+### Done
+- [2026-11-14 22:24 SGT] Start-of-session routine: drift check passed (24 checks). Session 17's notes merged into `main` as #48 (owner: "open and merge"; it was already open).
+- [2026-11-14 22:24 SGT] **Handoff recorded, nothing built** (branch `handoff/2026-11-14-web-app-week-so-far`, pull request #49; owner: recording only): [Web app, Week so far tab](handoffs/2026-11-14-web-app-week-so-far-tab.md) with three layout files. New rules **9.2 to 9.7** in `src/web-app/SPEC.md` (four tabs, sign-in, Week so far, the connection card, deleting leaves the log, older weeks); 9.1 stands with an addition. Notes for 5.4 and 5.6 in `src/telegram-bot/SPEC.md`; for 7.6 to 7.8 in `src/variable-rewards/SPEC.md` (where those rules live, rule R1, not the Telegram bot spec). Datastore draft "what the Web app pages need" in `src/datastore/SPEC.md` (the note's section 7). Layouts treated as layout, not a look: "UI decisions" in `docs/CONTEXT.md` left empty (rule 6).
+- [2026-11-14 22:24 SGT] Open items from the note's section 8 **not decided**: three known issues (the "about the same" band, the line-only tile, list order) and three backlog items (tab 2, tabs 3 and 4, the empty states). Six small questions found while recording, in `docs/CATCH-UP.md` 4a.
+- [2026-11-14 22:24 SGT] Module statuses: Web app "Design in progress"; Telegram bot corrected to "Planner and B1 live". Change note Version 1.25. `npm run check` passes (275 tests, unchanged).
+### In progress
+- [2026-11-14 22:24 SGT] Pull request #49 waits for the owner's review; not merged (owner's instruction).
+### Next steps
+- [2026-11-14 22:24 SGT] Owner: answer `docs/CATCH-UP.md` 4a (titles, band, line-only tile, small questions, the Datastore draft and how the Web app reaches the database). Then Claude Code writes the Week so far tests in plain English for approval before building.
+### Blockers
+- [2026-11-14 22:24 SGT] Building the Week so far tab waits on the parked question "how the Web app reaches the database" and the Datastore draft's approval.
+
 ## [2026-11-14 21:40 SGT] HANDOFF: session 17 ended (read this first)
 - [2026-11-14 21:40 SGT] **State:** `main` has the planner (#45) and B1 (#47); both are **live** on Vercel. Supabase: migrations up to **010** applied, fingerprints recorded; the alarm job `fhb-alarm` runs every 10 minutes (new cron secret). BotFather Menu set. `npm run check` passes (**275 tests**, drift clean); database checks 182 PASS lines locally. Only one parent left: the owner (id 3, child "Riley"); Test Parent and the old thin-slice record were deleted. This session's notes go to `main` in a small pull request (H9).
 - [2026-11-14 21:40 SGT] **UAT still to run:** U40, U41 (tomorrow morning), U45 (next reminder: tap the keyboard, not ✅ Done), U33, U35 and U46, U14; optional U52, U53. Not possible now: U34, U36, U37. Full list in `docs/CATCH-UP.md`, section 5.

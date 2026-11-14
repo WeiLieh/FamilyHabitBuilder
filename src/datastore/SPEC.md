@@ -140,6 +140,24 @@
 - [2026-11-09 21:48 SGT] When a log is undone, delete its line and photo (your 9 Nov decision): confirm it also covers a photo that was already checked.
 - [2026-11-09 21:48 SGT] Keep the text of reflections for as long as the parent stays (like log lines), or delete it after a set time? (Ties to the typed-text privacy known issue.)
 
+## Proposed: what the Web app pages need (from the 14 Nov handoff; DRAFT, waiting for the owner)
+[2026-11-14 22:24 SGT] Recorded from section 7 of the [Web app handoff of 14 Nov](../../docs/handoffs/2026-11-14-web-app-week-so-far-tab.md) (rules 9.4 to 9.7 in [src/web-app/SPEC.md](../web-app/SPEC.md)). **Nothing built; the owner approves this before any code.** No new tables are needed: the pages read `habit_logs`, `photos`, `reflections`, `moment_lines` and `connection_answers` (one per parent per week, `week_starting` = Monday). Analogy: the diary already holds every page; the Web app needs a few windows to read it through, and a few narrow erasers.
+
+**Reads (one function each, for one parent only)**
+- [2026-11-14 22:24 SGT] **One week:** for one parent and one Monday: the habit logs (habit, child, day, line), the photos and the log each belongs to, the reflections (text, `for_day`, matched habit or none), the moment's photo and line, and the connection answer. Undone logs are left out (rule 5.8).
+- [2026-11-14 22:24 SGT] **Older weeks, a page at a time:** the next N weeks before a given Monday (N = 4 to start, a number for `src/settings.ts`), with small pictures and the counts (days with a habit log, reflections, photos), and how many weeks remain, so the button's label matches what it loads (rule 9.7).
+- [2026-11-14 22:24 SGT] **Connection history:** the answers of the 3 weeks before a Monday, and their plain mean (rule 9.5).
+
+**Narrow deletes (rule 8.4 would grow from ten edits; each acts only on that parent's rows, writes an event, and leaves the habit log in place, rule 9.6)**
+- [2026-11-14 22:24 SGT] **Delete one photo** (a log's or a moment's): edit 6 already allows it; no copy is left anywhere (rule 8.5 order: the file goes first).
+- [2026-11-14 22:24 SGT] **Delete one line:** a log's line (blank `habit_logs.description`, as Undo does in edit 5), a reflection, or a moment's line. **New narrow edit(s).**
+- [2026-11-14 22:24 SGT] **Delete one moment** (its photo and its line together). **New narrow edit**, or the two deletes above in one all-or-nothing step (rule 8.7).
+
+**Questions for the owner before any migration**
+- [2026-11-14 22:24 SGT] Rule 8.4 says only "delete my data" removes a parent's rows. For a reflection or a moment's line: **remove the row**, or keep the row and **blank its text** (like Undo)? Blanking keeps the counts honest but leaves an empty entry; removing leaves nothing. A reflection with its text blanked would no longer be a reflection, so removing looks more natural; your call.
+- [2026-11-14 22:24 SGT] Is "delete one moment" its own button, or is it the photo's dustbin and the line's dustbin separately? (Rule 9.4 shows one dustbin beside the moment.)
+- [2026-11-14 22:24 SGT] How the Web app reaches these functions (parked question in [src/web-app/SPEC.md](../web-app/SPEC.md): the server with the master key, or limited per-parent access) must be decided first; it changes how each function checks "this parent only".
+
 ## Rules at a glance
 5.5 photos: optional, consent at the first photo, kept until deleted · 8.1 everything in Singapore · 8.2 locked by default · 8.3 the tables · 8.4 add only, ten narrow edits · 8.5 delete follows the parent · 8.6 no duplicates · 8.7 all or nothing · 8.8 structure only · 8.9 links by nudge ID · 8.10 children: name, birth year later · 8.11 least access for Telemetry · 8.12 labelled and timed · 8.13 unfinished sign-up: Telegram ID and last step only
 
