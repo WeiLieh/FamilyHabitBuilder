@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week so far top options</title>
+<style>
+  /* Wireframe only: plain greys, no look (CLAUDE.md rule 6). */
+  :root { --ink:#222; --muted:#666; --line:#999; --soft:#ddd; --bg:#fff; --pic:#ccc; --note:#f4f4f4; --tick:#555; --hl:#fff3b0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --tick:#ccc; --hl:#4a4320; } }
+  :root[data-theme="dark"] { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --tick:#ccc; --hl:#4a4320; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 16px; }
+  .opts { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+  .phone { flex:1 1 320px; max-width:360px; border:2px dashed var(--line); border-radius:16px; padding:14px; box-sizing:border-box; }
+  .optname { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px; }
+  .optdesc { font-size:12px; color:var(--muted); margin-bottom:12px; min-height:32px; }
+  .hi { font-size:19px; font-weight:700; }
+  .hisub { font-size:13px; color:var(--muted); margin-bottom:14px; }
+  .sect { font-size:15px; font-weight:700; margin:16px 0 6px; }
+  .box { border:1.5px solid var(--line); border-radius:10px; padding:10px; }
+  .hero .bigpic { height:150px; background:var(--pic); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
+  .hero .cap { display:flex; gap:8px; margin-top:8px; align-items:flex-start; }
+  .tag { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .strip { display:flex; justify-content:space-between; margin-bottom:6px; }
+  .d { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; color:var(--muted); }
+  .d i { width:22px; height:22px; border-radius:50%; border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-style:normal; font-size:12px; }
+  .d i.on { background:var(--tick); border-color:var(--tick); color:var(--bg); }
+  .row { display:flex; gap:8px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--soft); }
+  .row:first-of-type { border-top:0; }
+  .row.dup { background:var(--hl); border-radius:6px; padding:8px 4px; }
+  .pic { width:44px; height:44px; flex:none; background:var(--pic); border-radius:5px; font-size:9px; color:var(--muted); display:flex; align-items:center; justify-content:center; }
+  .txt { flex:1; min-width:0; }
+  .h { font-weight:700; font-size:13px; }
+  .meta { font-size:11px; color:var(--muted); }
+  .l { font-size:12px; line-height:1.3; }
+  .bin { flex:none; width:26px; height:26px; border:1.5px dashed var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; }
+  .refl { font-style:italic; font-size:12px; }
+  .bars { display:flex; justify-content:space-around; align-items:flex-end; height:80px; }
+  .b { display:flex; flex-direction:column; align-items:center; font-size:10px; color:var(--muted); gap:2px; }
+  .b .r { width:18px; background:var(--pic); border-radius:2px; }
+  .btn { margin-top:14px; border:1.5px dashed var(--line); border-radius:18px; text-align:center; padding:8px; font-size:12px; color:var(--muted); }
+  .tabs { margin-top:14px; border-top:1.5px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); text-align:center; font-size:10px; padding-top:6px; color:var(--muted); }
+  .tabs b { color:var(--ink); }
+  .why { background:var(--note); border-radius:8px; padding:8px; font-size:12px; line-height:1.4; margin-top:12px; }
+  .flag { font-size:11px; font-weight:700; color:var(--muted); }
+</style></head>
+<body><main>
+<h1>Week so far: what sits at the top</h1>
+<p class="sub">A wireframe of where things go, not the look. Sample: Saturday 14 Nov, week 9 to 15 Nov. Logs: Mon (photo), Tue, Wed, Thu, Sat (photo). The moment is no longer on this page in any option (it lives in its older week).</p>
+<div class="opts" id="opts"></div>
+</main>
+<script>
+// Sample data for the wireframe. Newest first, as on the page (rule 9.4).
+const logs = [
+  { day:"Sat", habit:"Showing affection", child:"Mia",  line:"A long hug at the gate after football.", photo:true },
+  { day:"Thu", habit:"Giving attention",  child:"Ethan", line:"Phone down for one minute. He kept going for five.", photo:false },
+  { day:"Wed", habit:"Descriptive praise", child:"Mia", line:"Told her exactly what she did well.", photo:false },
+  { day:"Tue", habit:"Talking with children", child:"Ethan", line:"Asked what made him laugh today.", photo:false },
+  { day:"Mon", habit:"Showing affection", child:"Mia",  line:"Hug before bed.", photo:true },
+];
+const ticks = ["M","T","W","T","F","S","S"], on = [1,1,1,1,0,1,0];
+
+// One log row. "dup" marks a row that repeats the photo shown at the top.
+function row(l, dup) {
+  return `<div class="row${dup ? " dup" : ""}">${l.photo ? '<div class="pic">photo</div>' : ""}
+    <div class="txt"><div class="h">${l.habit}</div><div class="meta">${l.day} · ${l.child}</div><div class="l">${l.line}</div>
+    ${dup ? '<div class="flag">↑ same as the photo at the top</div>' : ""}</div><div class="bin">🗑</div></div>`;
+}
+// The big "latest photo" block at the top (options B and C).
+function hero(l) {
+  return `<div class="box hero"><div class="tag">Latest photo this week</div><div class="bigpic">photo</div>
+    <div class="cap"><div class="txt"><div class="h">${l.habit}</div><div class="meta">${l.day} · ${l.child}</div><div class="l">${l.line}</div></div><div class="bin">🗑</div></div></div>`;
+}
+// The days-logged block: the strip, then the rows passed in.
+function daysBlock(rows) {
+  const strip = ticks.map((t,i) => `<div class="d">${t}<i class="${on[i] ? "on" : ""}">${on[i] ? "✓" : ""}</i></div>`).join("");
+  return `<div class="sect">5 days logged this week</div><div class="box"><div class="strip">${strip}</div>${rows}</div>`;
+}
+// Everything below the logs is the same in all three options.
+const rest = `<div class="sect">1 reflection this week</div><div class="box"><div class="row"><div class="txt refl">“Made pancakes together on Saturday.”</div><div class="bin">🗑</div></div></div>
+  <div class="sect">How connected did you feel with your child?</div><div class="box"><div class="bars">
+  <div class="b">3<div class="r" style="height:30px"></div>12 Oct</div><div class="b">3<div class="r" style="height:30px"></div>19 Oct</div>
+  <div class="b">–<div class="r" style="height:0"></div>26 Oct</div><div class="b">4<div class="r" style="height:40px"></div>2 Nov</div></div></div>
+  <div class="btn">Show 4 older weeks - back to 12 Oct</div>
+  <div class="tabs"><b>Week so far</b><span>Habits so far</span><span style="opacity:.4">Rewards</span><span>Settings</span></div>`;
+const head = `<div class="hi">Hi John</div><div class="hisub">9 to 15 Nov with Mia and Ethan</div>`;
+
+const options = [
+  { name:"A · Days-logged strip on top", desc:"No picture at the top. The strip and the rows lead the page.",
+    body: head + daysBlock(logs.map(l => row(l)).join("")),
+    why:"Plain and factual. Always has something once Monday is logged. No photo at the top, even when there is one." },
+  { name:"B · Latest photo on top (recommended)", desc:"The newest photo of this week leads. Its row moves up, so it is not shown twice.",
+    body: head + hero(logs[0]) + daysBlock(logs.slice(1).map(l => row(l)).join("")),
+    why:"A new photo changes the top of the page. Saturday's row lives in the top block, so the list shows 4 rows for 5 days logged (the strip still ticks Saturday). With no photo this week, the page looks like A." },
+  { name:"C · Latest photo on top + full list", desc:"The newest photo leads, and every row stays in the list, so the photo appears twice.",
+    body: head + hero(logs[0]) + daysBlock(logs.map((l,i) => row(l, i === 0)).join("")),
+    why:"The list stays complete (5 rows for 5 days), but the Saturday photo and line appear twice (highlighted). Two dustbins delete the same photo." },
+];
+document.getElementById("opts").innerHTML = options.map(o =>
+  `<section class="phone"><div class="optname">${o.name}</div><div class="optdesc">${o.desc}</div>${o.body}<div class="why">${o.why}</div></section>`).join("");
+</script>
+</body></html>

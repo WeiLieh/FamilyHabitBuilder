@@ -4,6 +4,7 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 
 ## [2026-11-14 22:24 SGT] Session 18 (2026-11-14 late evening)
 - [2026-11-14 22:24 SGT] About 20 min elapsed (about 22:13 to 22:35 SGT), all active. Start-of-session routine; #48 merged; the Web app Week so far handoff recorded (rules 9.2 to 9.7, cross-reference notes, a Datastore draft, open items logged), both review agents run.
+- [2026-11-15 00:04 SGT] Extended: about 1 h 50 min in total (about 22:13 to 00:05 SGT), all active. After the recording: the review findings and section 4a decided one by one with the owner, with six wireframes (connection card, deleting, the top of Week so far, B1 and B2, the moment in older weeks, View wrap up). Paused for the night before writing the decisions into the rules.
 - **Notes for timeboxing:** a recording-only handoff with a clear "what to do" section takes about 20 minutes; most time goes into checking it against the existing rules (rule 5.6 wording, rule 8.4 deletes).
 
 ## [2026-11-14 21:40 SGT] Session 17 (2026-11-14 afternoon and evening)

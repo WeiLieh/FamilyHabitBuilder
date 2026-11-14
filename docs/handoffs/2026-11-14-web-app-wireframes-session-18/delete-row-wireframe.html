@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delete row wireframe</title>
+<style>
+  /* Wireframe only: plain greys, no look (CLAUDE.md rule 6). */
+  :root { --ink:#222; --muted:#666; --line:#999; --soft:#ddd; --bg:#fff; --pic:#ccc; --note:#f4f4f4; --dim:rgba(0,0,0,.35); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --dim:rgba(0,0,0,.55); } }
+  :root[data-theme="dark"] { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --dim:rgba(0,0,0,.55); }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:28px 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 12px; }
+  .steps { display:flex; flex-wrap:wrap; gap:14px; align-items:stretch; }
+  .step { flex:1 1 210px; max-width:260px; border:2px dashed var(--line); border-radius:14px; padding:12px; box-sizing:border-box; position:relative; }
+  .label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:10px; }
+  .row { display:flex; gap:10px; align-items:flex-start; border:1.5px solid var(--line); border-radius:10px; padding:10px; }
+  .pic { width:56px; height:56px; flex:none; background:var(--pic); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); }
+  .txt { flex:1; min-width:0; }
+  .h { font-weight:700; font-size:14px; }
+  .meta { font-size:11px; color:var(--muted); margin:2px 0 4px; }
+  .l { font-size:13px; line-height:1.35; }
+  .bin { flex:none; width:32px; height:32px; border:1.5px dashed var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .bin.tap { border-style:solid; border-width:3px; }
+  .dialog { margin-top:10px; border:1.5px solid var(--ink); border-radius:10px; padding:10px; background:var(--bg); }
+  .dialog p { margin:0 0 8px; font-size:13px; }
+  .dialog .q { font-weight:700; font-size:14px; }
+  .btns { display:flex; gap:8px; }
+  .btns span { flex:1; text-align:center; border:1.5px solid var(--line); border-radius:16px; padding:6px; font-size:13px; }
+  .btns span.go { font-weight:700; border-color:var(--ink); }
+  .arrow { align-self:center; font-size:22px; color:var(--muted); }
+  .why { background:var(--note); border-radius:8px; padding:8px; font-size:12px; line-height:1.4; margin-top:10px; color:var(--muted); }
+  .open { border:2px solid var(--ink); border-radius:8px; padding:8px; font-size:13px; margin-top:24px; }
+</style></head>
+<body><main>
+<h1>One dustbin, one layer per tap</h1>
+<p class="sub">A wireframe of where things go, not the look. Sample: a "Showing affection" log for Mia on Saturday, with a photo and a line. The habit log itself is never removed (rule 9.6).</p>
+
+<h2>Example 1: a log with a photo and a line</h2>
+<div class="steps">
+  <div class="step">
+    <div class="label">1 · Start</div>
+    <div class="row">
+      <div class="pic">photo</div>
+      <div class="txt"><div class="h">Showing affection</div><div class="meta">Sat · Mia</div><div class="l">A long hug at the gate after football.</div></div>
+      <div class="bin tap" aria-label="dustbin, tapped">🗑</div>
+    </div>
+    <div class="why">The parent taps the dustbin (thick circle).</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="step">
+    <div class="label">2 · Are you sure?</div>
+    <div class="dialog">
+      <p class="q">Delete this photo?</p>
+      <p>It will be gone for good. Your log and your line stay.</p>
+      <div class="btns"><span>Cancel</span><span class="go">Delete photo</span></div>
+    </div>
+    <div class="why">Open question: ask every time? (recommended, because there is no undo)</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="step">
+    <div class="label">3 · Photo gone</div>
+    <div class="row">
+      <div class="txt"><div class="h">Showing affection</div><div class="meta">Sat · Mia</div><div class="l">A long hug at the gate after football.</div></div>
+      <div class="bin tap" aria-label="dustbin, tapped">🗑</div>
+    </div>
+    <div class="why">The row now shows the line only. The dustbin stays. The parent taps it again.</div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="step">
+    <div class="label">4 · Are you sure?</div>
+    <div class="dialog">
+      <p class="q">Delete this line?</p>
+      <p>It will be gone for good. Your log stays.</p>
+      <div class="btns"><span>Cancel</span><span class="go">Delete line</span></div>
+    </div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="step">
+    <div class="label">5 · Line gone</div>
+    <div class="row">
+      <div class="txt"><div class="h">Showing affection</div><div class="meta">Sat · Mia</div></div>
+    </div>
+    <div class="why">Only the fact remains: the habit was done. No dustbin. The day still counts.</div>
+  </div>
+</div>
+
+<h2>Example 2: a log with a photo, no line</h2>
+<div class="steps">
+  <div class="step">
+    <div class="label">1 · Start</div>
+    <div class="row">
+      <div class="pic">photo</div>
+      <div class="txt"><div class="h">Showing affection</div><div class="meta">Mon · Mia</div></div>
+      <div class="bin tap">🗑</div>
+    </div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="step">
+    <div class="label">2 · Photo gone</div>
+    <div class="row">
+      <div class="txt"><div class="h">Showing affection</div><div class="meta">Mon · Mia</div></div>
+    </div>
+    <div class="why">After "Delete photo": nothing left to delete, so no dustbin.</div>
+  </div>
+</div>
+
+<h2>Example 3: a keyboard tap (nothing added)</h2>
+<div class="steps">
+  <div class="step">
+    <div class="label">Always</div>
+    <div class="row">
+      <div class="txt"><div class="h">Giving attention</div><div class="meta">Thu · Ethan</div></div>
+    </div>
+    <div class="why">No photo, no line: no dustbin. To take a log back, only Telegram's 10-minute Undo (rule 5.8).</div>
+  </div>
+</div>
+
+<div class="open"><b>Your open choice:</b> should every dustbin tap ask "Are you sure?" (steps 2 and 4)? Without it, steps 1 → 3 → 5 happen with single taps.</div>
+</main></body></html>

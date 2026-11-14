@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment in older weeks</title>
+<style>
+  /* Wireframe only: plain greys, no look (CLAUDE.md rule 6). */
+  :root { --ink:#222; --muted:#666; --line:#999; --soft:#ddd; --bg:#fff; --pic:#ccc; --note:#f4f4f4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; } }
+  :root[data-theme="dark"] { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 16px; }
+  .opts { display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start; }
+  .phone { flex:1 1 320px; max-width:360px; border:2px dashed var(--line); border-radius:16px; padding:14px; box-sizing:border-box; }
+  .optname { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
+  .wk { font-size:15px; font-weight:700; }
+  .count { font-size:12px; color:var(--muted); margin:2px 0 6px; }
+  .count b { color:var(--ink); }
+  .card { border:1.5px solid var(--line); border-radius:10px; padding:8px; display:flex; gap:6px; align-items:center; }
+  .t { width:52px; height:52px; border-radius:6px; flex:none; display:flex; align-items:center; justify-content:center; text-align:center; font-size:9px; color:var(--muted); background:var(--pic); }
+  .t.text { background:none; border:1.5px solid var(--line); }
+  .t.moment { outline:2px solid var(--ink); outline-offset:1px; }
+  .chev { margin-left:auto; color:var(--muted); }
+  .back { font-size:14px; font-weight:700; margin-bottom:8px; }
+  .day { font-size:14px; font-weight:700; margin:14px 0 2px; }
+  .meta { font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .bigpic { height:120px; background:var(--pic); border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
+  .cap { display:flex; gap:8px; margin-top:6px; font-size:12px; align-items:flex-start; }
+  .cap span { flex:1; }
+  .bin { flex:none; width:26px; height:26px; border:1.5px dashed var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; }
+  .mbox { border:2px solid var(--ink); border-radius:10px; padding:8px; }
+  .tag { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .why { background:var(--note); border-radius:8px; padding:8px; font-size:12px; line-height:1.4; margin-top:12px; }
+</style></head>
+<body><main>
+<h1>The moment, now living in its own older week</h1>
+<p class="sub">A wireframe of where things go, not the look. Sample week 2 to 8 Nov: Mon log with photo, Tue log with photo, Thu reflection, Sat log (keyboard, nothing added), and a moment (photo and line) added from Sunday's Wrap Up.</p>
+<div class="opts">
+
+  <section class="phone">
+    <div class="optname">1 · The older-weeks list (one week card)</div>
+    <div class="wk">2 to 8 Nov</div>
+    <div class="count">Version X: 3 days logged - 3 habits, 1 reflection</div>
+    <div class="count">Version Y: 3 days logged - 3 habits, 1 reflection, <b>1 moment</b></div>
+    <div class="card">
+      <div class="t moment">moment photo</div>
+      <div class="t">photo Mon</div>
+      <div class="t">photo Tue</div>
+      <div class="t text">“ Read two…</div>
+      <div class="t text">✓ Giving attention</div>
+      <span class="chev">›</span>
+    </div>
+    <div class="why">The moment is the <b>first tile</b> (outlined), then the logs and the reflection in date order. The whole card opens the week's own page. Your choice: count line X (moment not counted) or Y (moment counted).</div>
+  </section>
+
+  <section class="phone">
+    <div class="optname">2 · The week's own page</div>
+    <div class="back">‹ Back</div>
+    <div class="wk">2 to 8 Nov</div>
+    <div class="count">with Mia and Ethan · 3 days logged - 3 habits, 1 reflection</div>
+    <div class="mbox">
+      <div class="tag">This week's moment</div>
+      <div class="bigpic">moment photo (big)</div>
+      <div class="cap"><span>Ethan told the whole table about his science fair.</span><div class="bin">🗑</div></div>
+    </div>
+    <div class="day">Mon 2 Nov</div><div class="meta">Showing affection · Ethan</div>
+    <div class="bigpic">photo (big)</div><div class="cap"><span>Hug before bed.</span><div class="bin">🗑</div></div>
+    <div class="day">Tue 3 Nov</div><div class="meta">Descriptive praise · Mia</div>
+    <div class="bigpic">photo (big)</div><div class="cap"><span>She shared her snack without being asked.</span><div class="bin">🗑</div></div>
+    <div class="day">Thu 5 Nov</div><div class="meta">Reflection</div>
+    <div class="cap"><span><i>“Read two chapters before bed.”</i></span><div class="bin">🗑</div></div>
+    <div class="day">Sat 7 Nov</div><div class="meta">Giving attention · Ethan</div>
+    <div class="why">The moment sits <b>at the top</b>, above Monday (this replaces "no weekly moment on this page"). Its dustbin peels one layer per tap, with "Are you sure?". The keyboard log on Saturday has no dustbin.</div>
+  </section>
+
+</div>
+</main></body></html>
