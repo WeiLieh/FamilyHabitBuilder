@@ -75,6 +75,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 **4b. For Claude Chat today (bring each back as a handoff file, habit H10)**
 - [2026-11-14 10:38 SGT] (1) **Web app:** what My Page shows (logs, the week, photos later) and what Settings changes (times, behaviours, frequency, children's names, pause, Wrap Up time, delete my data); the look (rule 6: "UI decisions" in `docs/CONTEXT.md` is still empty); the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); how a parent signs in.
 - [2026-11-14 10:38 SGT] (2) **Readable bot messages:** the words are right but dense. Decide the house style: line breaks, **bold** for the behaviour, emoji, short lines, where buttons go. Today's screenshots (screens 1 to 11) are a good starting point. The words live in `src/telegram-bot/words.ts`.
+- [2026-11-14 12:12 SGT] (3) **Reminder:** when you refine the messages, also go over the **/help** text Claude drafts in the B1 build (B1-D2).
 
 **4c. Questions for you (only if you have a moment; none block the build)**
 - [2026-11-14 10:38 SGT] (1) Draft words still open: "Sorry, we couldn't check when your next reminder is." (screen 11, rule 1.3), and the earlier drafts in `src/telegram-bot/words.ts` marked "draft" (could be settled with item 4b (2)).

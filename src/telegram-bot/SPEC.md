@@ -153,6 +153,12 @@
 
 **Removed or rewritten (CLAUDE.md rule 12):** the thin-slice sign-up (parent created at `/start`, agreement later) and its store items `signUp` and `recordAgreement`; the line "You're all set. Your reminder comes every day at 7:00 pm."; the database function `sign_up` (migration 008). Tests: `tests/telegram-bot-sign-up.test.ts` removed (its 10 tests are replaced by onboarding tests 1 to 6, 21 and 22 and the step-save test); the webhook's "saved once" test rewritten (one draft, one held code); the done and daily-nudge tests now set up parents with a test helper; database checks T54 to T56 retired (T81 checks the function is gone).
 
+## Build: B1, log any time (agreed with the owner, 2026-11-14)
+- [2026-11-14 12:12 SGT] **Scope:** the persistent keyboard and /log (rule 5.1), the Menu (rule 5.7), Undo (rule 5.8), and the "Welcome back" fix (10e addition). **Not in B1:** typed messages (they need Claude; built with the Claude personality). Built on top of pull request #45 (same files), so its pull request waits until #45 is merged.
+- [2026-11-14 12:12 SGT] **B1-D1 Undo (owner, option "10 min + late tap clears"):** Undo works for **10 minutes** (was 30 seconds: `UNDO_WINDOW_SECONDS` 30 to 600, a settings change recorded in `src/experiments/EXPERIMENTS.md` at build time, rule 1.4). A tap after the window **removes the button on the spot** and shows a short pop-up "Too late to undo."; the 10-minute alarm removes any leftover Undo buttons. Reason: the server can only act when something wakes it (a tap or the alarm), and a "too late" reply that leaves the button looking usable is confusing (owner). Rule 5.8's text is updated when B1 is built.
+- [2026-11-14 12:12 SGT] **B1-D2 /help:** Claude drafts the words; the owner approves them, and refines them with the rest of the bot's messages in the Claude Chat readability work.
+- [2026-11-14 12:12 SGT] **B1-D3 /pause, /mypage, /settings:** link to the placeholder pages for now; the Web app design (Claude Chat) replaces the pages later, not the commands.
+
 ## Build: pull request 3, the planner live (agreed with the owner, 2026-11-13)
 [2026-11-13 22:24 SGT] **Goal:** the planner (`src/nudge-engine/planner.ts`, already built and tested) runs for real: an alarm clock wakes the bot, which sends each parent's nudges in their own slots about their own behaviours. Also the one 24-hour sign-up reminder (Q11b), the clean-up moved off the 7:00 pm job (D4), and the temporary pieces removed (CLAUDE.md rule 12).
 
