@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-14 21:40 SGT] Session 17 (2026-11-14 afternoon and evening)
+- [2026-11-14 21:40 SGT] About 7 h 50 min elapsed (about 13:50 to 21:40 SGT); active about 4 h: the build and reviews (about 13:50 to 14:30), go-live and UAT with the owner (about 14:30 to 16:00), then two short UAT check-ins (5:20 pm, 9:30 pm). B1 built test-first (migration 010, 26 new app tests, 8 database tests), reviewed, merged as #47; #45 merged and the planner put live (alarm, new cron secret); migration 010 applied; test accounts tidied; most UAT passed.
+- **Notes for timeboxing:** the agreed test list from session 16 let the build run in about 40 minutes with one decision (B1-D10). Go-live took longer than the code: about 1.5 hours of setup steps and screenshots, including a secret change after it showed in a screenshot. Checks that need a reminder or "tomorrow" can't be hurried; list them with their time.
+
 ## [2026-11-14 10:37 SGT] Session 16 (2026-11-14 morning)
 - [2026-11-14 10:37 SGT] About 1 h 5 min elapsed (about 09:38 to 10:45 SGT), all active. Start-of-session routine (drift check clean); onboarding UAT U17 to U27 run live with the owner step by step (all pass) on a second Telegram account; migrations 008 and 009 applied and their fingerprints recorded; handoff for the Claude Chat design work and the B1 build.
 - [2026-11-14 13:48 SGT] Extended: about 2 h 50 min in total (about 09:38 to 12:30 SGT, including breaks between UAT steps). B1 planned: nine decisions (B1-D1 to B1-D9) and the test list agreed; the build starts in a fresh session.

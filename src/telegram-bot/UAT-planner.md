@@ -13,6 +13,10 @@
 - [ ] **G4.** SQL Editor > a fresh tab > paste `src/datastore/supabase/content/2026-11-13_alarm_every_10_minutes.sql`, replace `<YOUR-CRON-SECRET>` with the `CRON_SECRET` from Vercel's settings (typed in Supabase only), Run.
 - [ ] **G5.** Check: `select jobname, schedule, active from cron.job;` shows `fhb-alarm`, `*/10 * * * *`, `true`.
 
+[2026-11-14 15:32 SGT] **Results, 14 Nov (owner):** #45 merged; G2 to G5 **done** (Vercel "Ready"; pg_cron and pg_net on; the alarm job `fhb-alarm`, every 10 minutes, active). The cron secret was replaced with a new one after the first one was shown in a screenshot (never reached the job). U29 **pass** (runs at 07:00, 07:10, 07:20 UTC, each 200). U15 and U16 of the thin slice were not run: replaced by U31 and U35 here (owner, 14 Nov). Still to run: U30 to U39 as reminders arrive.
+
+[2026-11-14 21:40 SGT] **Results, 14 Nov evening (owner):** U30 **pass** ("With Riley: Talking with children", 7:00 pm, a new idea); U31 **pass** (✅ Done: the nudge kept its words, the receipt below); U32 **pass** (no 9:00 pm reminder); U38 and U39 **pass** (seen in the owner's re-sign-up: the /start notice, "Your next reminder is today at 7:00 pm"). Still to run: U33, U35. Not possible now: U34 (one child), U36, U37 (need a second Telegram account; covered by app tests R1 to R3, W2).
+
 ## Test cases
 Use the test account you signed up with in U17 to U27 (it has picks, times and a child's name). Your old thin-slice account has no picks or times, so it now gets **no** nudges: that is correct.
 

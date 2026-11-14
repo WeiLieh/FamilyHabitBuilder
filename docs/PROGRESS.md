@@ -2,15 +2,25 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-14 21:40 SGT] HANDOFF: session 17 ended (read this first)
+- [2026-11-14 21:40 SGT] **State:** `main` has the planner (#45) and B1 (#47); both are **live** on Vercel. Supabase: migrations up to **010** applied, fingerprints recorded; the alarm job `fhb-alarm` runs every 10 minutes (new cron secret). BotFather Menu set. `npm run check` passes (**275 tests**, drift clean); database checks 182 PASS lines locally. Only one parent left: the owner (id 3, child "Riley"); Test Parent and the old thin-slice record were deleted. This session's notes go to `main` in a small pull request (H9).
+- [2026-11-14 21:40 SGT] **UAT still to run:** U40, U41 (tomorrow morning), U45 (next reminder: tap the keyboard, not ✅ Done), U33, U35 and U46, U14; optional U52, U53. Not possible now: U34, U36, U37. Full list in `docs/CATCH-UP.md`, section 5.
+- [2026-11-14 21:40 SGT] **Owner, in Claude Chat:** the Web app design and the message readability work (including the B1 draft words and two UAT notes: /help says "keyboard below" for a parent with no habits; the "Undo expired." box). Bring each back as a handoff file (H10).
+- [2026-11-14 21:40 SGT] **Next Claude Code session (owner's choice):** record the UAT results first; then the Claude personality and warm reply (rules 3.11, 7.5; `@anthropic-ai/sdk` approved; needs the owner's nudge personality), or the Web app once its handoff arrives.
+
 ## [2026-11-14 14:20 SGT] Session 17: B1 built (log any time)
 ### Done
 - [2026-11-14 14:20 SGT] Start-of-session routine: drift check passed (24 checks); owner: Claude Chat designs still in progress; draft words and Q5, Q9, Q12 not yet.
 - [2026-11-14 14:20 SGT] Owner's decision **B1-D10**: the sign-up draft keeps only its latest screen's number, replaced per screen (inside rule 8.4 edit 8; no new narrow edit).
 - [2026-11-14 14:20 SGT] **Migration 010** written test-first (T91 to T98; database checks 171 to 182 PASS lines). **Not applied yet.**
 - [2026-11-14 14:20 SGT] **B1 built test-first:** keyboard, /log, Undo for 10 minutes, the Menu per person, /help, the "Welcome back" fix (`log-any-time.ts`, `menu.ts`; tests/telegram-bot-log-any-time.test.ts). Rules 5.1, 5.7, 5.8, 5.10, 8.4, 8.13 updated. Four tests rewritten, none removed. App tests 249 to 275.
+- [2026-11-14 16:08 SGT] **Go-live (owner, 14 Nov):** #45 merged; G2 to G5 and U29 pass (the alarm runs every 10 minutes, answered 200; the cron secret was replaced after it showed in a screenshot). #46 closed (its notes came with #47); #47 (B1) merged; migration 010 applied (fingerprint 0d06a087a859); BotFather Menu set. B1 UAT: S1 to S4, U42, U43, U47 to U51, U54, U55 pass.
+- [2026-11-14 16:08 SGT] **Test accounts tidied (owner, 14 Nov):** the owner's thin-slice record (parent 1, no habits) and Test Parent (parent 2, the second account's holder no longer testing) deleted with `delete_my_data`; the owner signed up again (parent 3) with a fresh code. Only parent 3 is left. The test account is no longer on the owner's phone.
+- [2026-11-14 21:40 SGT] **Evening UAT (owner):** U44 pass ("Undo expired." after 14 minutes); planner U30, U31, U32 pass ("With Riley: Talking with children" at 7:00 pm, ✅ Done, no 9:00 pm reminder); U38 and U39 seen in the re-sign-up. U45 still to run (✅ Done was tapped instead of the keyboard).
 - [2026-11-14 14:20 SGT] Both review agents (H3): no High. Owner chose all four fixes (K8 "Already saved.", tests K9 and K10, the migration comment, a known issue). Owner checklist: `src/telegram-bot/UAT-b1.md` (S1 to S4, U40 to U55).
 ### In progress
-- [2026-11-14 14:20 SGT] None. Branch `claude/kind-gates-5u8dbm` pushed; B1's pull request waits until #45 is merged (it is stacked on #45).
+- [2026-11-14 21:40 SGT] None. B1 is merged (#47) and live.
+- SUPERSEDED [2026-11-14 21:40 SGT] [2026-11-14 14:20 SGT] None. Branch `claude/kind-gates-5u8dbm` pushed; B1's pull request waits until #45 is merged (it is stacked on #45).
 ### Next steps
 - [2026-11-14 14:20 SGT] Owner: U15 tonight, U16 Sunday, merge #45 and go live (UAT-planner.md); then migration 010 and B1's go-live (UAT-b1.md); tell Claude Code the 010 check result so the fingerprint is recorded.
 - [2026-11-14 14:20 SGT] Claude Chat: Web app design and message readability (also the B1 draft words and /help).
