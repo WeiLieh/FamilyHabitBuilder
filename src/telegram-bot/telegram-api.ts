@@ -7,6 +7,9 @@
 // buttons while keeping its words (rule 5.10), and answer a button tap
 // (optionally with a short pop-up). Telegram is called with plain web requests, no library
 // (docs/CONTEXT.md, "Approved libraries").
+// [2026-11-14] B1: send a message with the keyboard of behaviour buttons under
+// the chat (a "reply keyboard", rule 5.1), and change one person's Menu (the
+// list of commands next to the typing box, B1-D8).
 //
 // Why it is an interface: the tests swap in a pretend Telegram that only
 // writes down what would have been sent (tests/helpers/telegram-bot-fakes.ts).
@@ -20,6 +23,8 @@ export type Button = { text: string; data: string } | { text: string; url: strin
 // [2026-11-12] Buttons can be one row side by side (a plain list), or several
 // rows, one list per row (a list of lists), e.g. one behaviour per row.
 export type Buttons = Button[] | Button[][];
+// [2026-11-14] One line of the Menu: the command without its "/", and what it does.
+export type MenuCommand = { command: string; description: string };
 
 export interface TelegramApi {
   // Returns Telegram's number for the new message, so it can be edited later.
@@ -30,6 +35,12 @@ export interface TelegramApi {
   // [2026-11-12] Keep the message's words, take away its buttons (rule 5.10).
   removeButtons(chatId: number, messageId: number): Promise<void>;
   answerTap(tapId: string, popup?: string): Promise<void>;
+  // [2026-11-14] Send a message and put the keyboard under the chat: one button
+  // per label, one per row, kept until replaced (rule 5.1). Returns its number.
+  sendWithKeyboard(chatId: number, text: string, labels: string[]): Promise<number>;
+  // [2026-11-14] Give this one chat its own Menu; null takes it back to
+  // everyone's default Menu (B1-D8).
+  setMenu(chatId: number, commands: MenuCommand[] | null): Promise<void>;
 }
 
 // The real Telegram. The bot token is a secret: it only ever comes from Vercel's
@@ -55,13 +66,28 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
     const rows = (buttons.length > 0 && Array.isArray(buttons[0]) ? buttons : [buttons]) as Button[][];
     return { inline_keyboard: rows.map((row) => row.map((b) => ("url" in b ? { text: b.text, url: b.url } : { text: b.text, callback_data: b.data }))) };
   };
+  // Telegram answers { ok: true, result: { message_id: … } }; anything else is a failure.
+  const messageNumber = (reply: unknown): number => {
+    const id = (reply as { result?: { message_id?: unknown } }).result?.message_id;
+    if (typeof id !== "number") throw new Error("Telegram sendMessage gave no message number");
+    return id;
+  };
   return {
     async sendMessage(chatId, text, buttons = []) {
-      const reply = await call("sendMessage", { chat_id: chatId, text, ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) });
-      // Telegram answers { ok: true, result: { message_id: … } }; anything else is a failure.
-      const id = (reply as { result?: { message_id?: unknown } }).result?.message_id;
-      if (typeof id !== "number") throw new Error("Telegram sendMessage gave no message number");
-      return id;
+      return messageNumber(await call("sendMessage", { chat_id: chatId, text, ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) }));
+    },
+    // [2026-11-14] A "reply keyboard": buttons that sit in place of the phone's
+    // keyboard. A tap sends the label as an ordinary message. is_persistent
+    // keeps it showing; resize_keyboard makes it only as tall as it needs.
+    async sendWithKeyboard(chatId, text, labels) {
+      const reply_markup = { keyboard: labels.map((label) => [{ text: label }]), is_persistent: true, resize_keyboard: true };
+      return messageNumber(await call("sendMessage", { chat_id: chatId, text, reply_markup }));
+    },
+    // [2026-11-14] A Menu for one chat only ("scope" chat); deleting it shows the default again.
+    async setMenu(chatId, commands) {
+      const scope = { type: "chat", chat_id: chatId };
+      if (commands === null) await call("deleteMyCommands", { scope });
+      else await call("setMyCommands", { commands, scope });
     },
     // Editing without reply_markup removes the buttons; with it, they are replaced.
     async editMessage(chatId, messageId, text, buttons) {

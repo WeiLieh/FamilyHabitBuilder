@@ -14,9 +14,14 @@
 // [2026-11-13] Pull request 3c: it also answers the planner's questions
 // (planningData), keeps example ideas, holidays and the people due their
 // sign-up reminder; the thin-slice fixedNudge and nudgeCandidates are gone.
+// [2026-11-14] B1: keyboard and /log logs, Undo by the database's own clock
+// ("clock", the Undo window from src/settings.ts, as the real database reads
+// it from the settings version), /resume, and migration 010's Telegram
+// message numbers (on sent nudges and a draft's latest screen).
 // =============================================================================
 
 import type { Behaviour, Draft, DraftAnswers, ExampleIdea, PlanParent, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
+import { UNDO_WINDOW_SECONDS } from "../../src/settings.js";
 // [2026-11-13] The planner's types, taken from the store's menu (so this helper
 // stays a Datastore helper, rule S5).
 type Holidays = Awaited<ReturnType<Store["planningData"]>>["holidays"];
@@ -35,8 +40,19 @@ export const DELIBERATE: Behaviour[] = ["Spending quality time", "Interesting ac
 );
 
 type Parent = { id: number; telegramId: number; firstName: string; paused: boolean };
-type SentNudge = { id: number; parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number };
-type Log = { id: number; parentId: number; nudgeId: number; day: string; messageId: number; updateId: number; via: "done_button" | "start_now" };
+type SentNudge = { id: number; parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number; telegramMessageId: number | null };
+// [2026-11-14] B1: messageId is empty for a log that answered no nudge; undoneAt is set by Undo.
+type Log = {
+  id: number;
+  parentId: number;
+  nudgeId: number;
+  day: string;
+  messageId: number | null;
+  updateId: number;
+  via: "done_button" | "start_now" | "keyboard" | "log_command";
+  loggedAt?: Date; // older tests add logs by hand without these two
+  undoneAt?: Date | null;
+};
 
 export class FakeStore implements Store {
   parents: Parent[] = [];
@@ -71,6 +87,8 @@ export class FakeStore implements Store {
   events: { parentId: number; type: string; updateId: number | null; day?: string }[] = [];
   // [2026-11-12] The pretend "today" in Singapore; the real database uses its own clock.
   today = "2026-11-11";
+  // [2026-11-14] The pretend database's clock, for when a log was saved and Undo's 10 minutes.
+  clock = new Date();
   // Set to true to make every write fail, like a database outage.
   failWrites = false;
   // [2026-11-12] Set failReads to pretend the database can't answer any question
@@ -106,7 +124,7 @@ export class FakeStore implements Store {
   async findDraft(telegramId: number): Promise<Draft | null> {
     this.failReadIfAsked("findDraft");
     const d = this.drafts.get(telegramId);
-    return d ? { step: d.step, answers: structuredClone(d.answers) } : null;
+    return d ? { step: d.step, answers: structuredClone(d.answers), screenMessageId: d.screenMessageId } : null;
   }
   async startSignUp(a: { telegramId: number; firstName: string; code: string }): Promise<StartSignUpResult> {
     this.failIfAsked();
@@ -116,14 +134,24 @@ export class FakeStore implements Store {
     const code = [...this.invites.keys()].find((c) => c.trim().toUpperCase() === a.code.trim().toUpperCase());
     if (code === undefined || this.invites.get(code) !== null || this.holds.has(code)) return { ok: false, reason: "bad_code" };
     this.holds.set(code, a.telegramId);
-    this.drafts.set(a.telegramId, { step: "name", answers: { first_name: a.firstName } });
+    this.drafts.set(a.telegramId, { step: "name", answers: { first_name: a.firstName }, screenMessageId: null });
     this.draftCode.set(a.telegramId, code);
     return { ok: true };
   }
   async saveSignUpStep(telegramId: number, step: string, answers: DraftAnswers): Promise<void> {
     this.failIfAsked();
-    if (!this.drafts.has(telegramId)) throw new Error("No sign-up in progress for this Telegram account.");
-    this.drafts.set(telegramId, { step, answers: structuredClone(answers) });
+    const d = this.drafts.get(telegramId);
+    if (!d) throw new Error("No sign-up in progress for this Telegram account.");
+    // [2026-11-14] A new step means a new screen: the old screen's number is cleared (migration 010).
+    this.drafts.set(telegramId, { step, answers: structuredClone(answers), screenMessageId: d.step === step ? d.screenMessageId : null });
+  }
+  failRecordScreen = false; // [2026-11-14] make only noting a screen number fail
+  async recordSignUpScreen(telegramId: number, messageId: number): Promise<void> {
+    this.failIfAsked();
+    if (this.failRecordScreen) throw new Error("database unavailable (screen number)");
+    const d = this.drafts.get(telegramId);
+    if (!d) throw new Error("No sign-up in progress for this Telegram account.");
+    d.screenMessageId = messageId;
   }
   async finishSignUp(a: { telegramId: number; updateId: number }): Promise<number> {
     this.failIfAsked();
@@ -162,7 +190,7 @@ export class FakeStore implements Store {
     const m = this.startNow.find((x) => x.parentId === parentId);
     if (!m) return null;
     const nudge = [...QUICK, ...DELIBERATE].find((b) => b.id === m.nudgeId)!;
-    const answer = this.logs.some((l) => l.messageId === m.id)
+    const answer = this.logs.some((l) => l.messageId === m.id && !l.undoneAt)
       ? "done"
       : this.events.some((e) => e.parentId === parentId && e.type === "start_now_not_now")
         ? "not_now"
@@ -172,7 +200,7 @@ export class FakeStore implements Store {
   async saveStartNowLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate"> {
     this.failIfAsked();
     if (this.logs.some((l) => l.updateId === a.updateId || l.messageId === a.messageId)) return "duplicate";
-    this.logs.push({ id: this.nextId++, ...a, via: "start_now" });
+    this.logs.push({ id: this.nextId++, ...a, via: "start_now", loggedAt: this.clock, undoneAt: null });
     this.events.push({ parentId: a.parentId, type: "habit_logged", updateId: a.updateId }, { parentId: a.parentId, type: "start_now_done", updateId: null });
     return "saved";
   }
@@ -199,7 +227,7 @@ export class FakeStore implements Store {
         .map((x) => ({ nudgeId: x.nudgeId, category: all.find((b) => b.id === x.nudgeId)!.category, frequency: x.frequency as Frequency })),
       schedules: { school: slots?.school ?? [], nonSchool: slots?.nonSchool ?? [] },
       slotsChangedAt: slots?.changedAt ?? null,
-      logs: this.logs.filter((l) => l.parentId === p.id).map((l) => ({ nudgeId: l.nudgeId, date: l.day })),
+      logs: this.logs.filter((l) => l.parentId === p.id && !l.undoneAt).map((l) => ({ nudgeId: l.nudgeId, date: l.day })),
       messagesSent: this.sentNudges
         .filter((n) => n.parentId === p.id)
         .map((n) => ({ kind: "nudge" as const, date: n.day, slotStart: n.slotMinute, nudgeId: n.nudgeId })),
@@ -244,13 +272,14 @@ export class FakeStore implements Store {
     this.dueForReminder.clear(); // claimed: never returned again (migration 009)
     return due;
   }
-  async recordNudgeSent(a: { parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number }): Promise<void> {
+  // [2026-11-14] Older tests record a nudge without Telegram's number (as before migration 010).
+  async recordNudgeSent(a: { parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number; telegramMessageId?: number | null }): Promise<void> {
     this.failIfAsked();
     if (this.failRecordNudge) throw new Error("database unavailable (record nudge)");
     if (this.sentNudges.some((n) => n.parentId === a.parentId && n.day === a.day && n.slotMinute === a.slotMinute)) {
       throw new Error("one nudge message per parent, day and slot");
     }
-    this.sentNudges.push({ id: this.nextId++, ...a });
+    this.sentNudges.push({ id: this.nextId++, ...a, telegramMessageId: a.telegramMessageId ?? null });
   }
   async findNudgeMessage(parentId: number, day: string, slotMinute: number): Promise<{ messageId: number; nudgeId: number; nudgeName: string } | null> {
     this.failReadIfAsked("findNudgeMessage");
@@ -260,12 +289,12 @@ export class FakeStore implements Store {
   }
   async logExistsFor(messageId: number): Promise<boolean> {
     this.failReadIfAsked("logExistsFor");
-    return this.logs.some((l) => l.messageId === messageId);
+    return this.logs.some((l) => l.messageId === messageId && !l.undoneAt);
   }
   async saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate"> {
     this.failIfAsked();
     if (this.logs.some((l) => l.updateId === a.updateId)) return "duplicate";
-    this.logs.push({ id: this.nextId++, ...a, via: "done_button" });
+    this.logs.push({ id: this.nextId++, ...a, via: "done_button", loggedAt: this.clock, undoneAt: null });
     this.events.push({ parentId: a.parentId, type: "habit_logged", updateId: a.updateId });
     return "saved";
   }
@@ -277,6 +306,51 @@ export class FakeStore implements Store {
   async notTodayOn(parentId: number, day: string): Promise<boolean> {
     this.failReadIfAsked("notTodayOn");
     return this.events.some((e) => e.parentId === parentId && e.type === "not_today" && e.day === day);
+  }
+
+  // ---- [2026-11-14] B1, log any time ----
+  async chosenBehaviours(parentId: number): Promise<{ id: number; name: string }[]> {
+    this.failReadIfAsked("chosenBehaviours");
+    const all = [...QUICK, ...DELIBERATE];
+    return this.picks.filter((p) => p.parentId === parentId).map((p) => ({ id: p.nudgeId, name: all.find((b) => b.id === p.nudgeId)!.name }));
+  }
+  async waitingNudge(parentId: number, day: string, nudgeId: number): Promise<{ messageId: number; telegramMessageId: number | null } | null> {
+    this.failReadIfAsked("waitingNudge");
+    if (await this.notTodayOn(parentId, day)) return null; // Not today answers every nudge of the day (rule 5.10)
+    const n = this.sentNudges.find(
+      (x) => x.parentId === parentId && x.day === day && x.nudgeId === nudgeId && !this.logs.some((l) => l.messageId === x.id && !l.undoneAt),
+    );
+    return n ? { messageId: n.id, telegramMessageId: n.telegramMessageId } : null;
+  }
+  async loggedToday(parentId: number, nudgeId: number, day: string): Promise<boolean> {
+    this.failReadIfAsked("loggedToday");
+    return this.logs.some((l) => l.parentId === parentId && l.nudgeId === nudgeId && l.day === day && !l.undoneAt);
+  }
+  async saveLog(a: { parentId: number; nudgeId: number; day: string; messageId: number | null; via: "keyboard" | "log_command"; updateId: number }): Promise<{ logId: number } | "duplicate"> {
+    this.failIfAsked();
+    // A resent Telegram message, or a second log from the same nudge, is saved once (rule 8.6, migration 007).
+    if (this.logs.some((l) => l.updateId === a.updateId || (a.messageId !== null && l.messageId === a.messageId && !l.undoneAt))) return "duplicate";
+    const id = this.nextId++;
+    this.logs.push({ id, ...a, loggedAt: this.clock, undoneAt: null });
+    this.events.push({ parentId: a.parentId, type: "habit_logged", updateId: a.updateId });
+    return { logId: id };
+  }
+  async undoLog(parentId: number, logId: number): Promise<"undone" | "expired" | "not_allowed"> {
+    this.failIfAsked();
+    const l = this.logs.find((x) => x.id === logId);
+    // The same refusals as undo_log (migration 005).
+    if (!l || l.parentId !== parentId || l.via !== "keyboard" || !!l.undoneAt) return "not_allowed";
+    if (this.clock.getTime() > (l.loggedAt ?? this.clock).getTime() + UNDO_WINDOW_SECONDS * 1000) return "expired";
+    l.undoneAt = this.clock;
+    this.events.push({ parentId, type: "log_undone", updateId: null });
+    return "undone";
+  }
+  async resumeReminders(parentId: number): Promise<void> {
+    this.failIfAsked();
+    const p = this.parents.find((x) => x.id === parentId);
+    if (!p) throw new Error(`No parent ${parentId}`);
+    p.paused = false;
+    this.events.push({ parentId, type: "settings_changed", updateId: null });
   }
 }
 

@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-14 10:37 SGT] "Welcome back" removes the old copy's buttons
+- **Item:** [2026-11-14 10:37 SGT] When the bot sends a sign-up screen again ("Welcome back", or **Continue** on the one sign-up reminder), remove the buttons from the earlier copy of that screen (Telegram bot spec, 10e addition).
+- **Why it matters:** [2026-11-14 10:37 SGT] Found in UAT U21 (14 Nov): two identical OK buttons on screen; the old one does nothing, which is confusing.
+- **Priority:** [2026-11-14 10:37 SGT] High (owner: fix it; build with B1 in the next Claude Code session)
+- **Status:** [2026-11-14 10:37 SGT] Not started
+
 ## [2026-11-13 22:31 SGT] Measure whether the sign-up reminder helps
 - **Item:** [2026-11-13 22:31 SGT] Keep a count, with no name or ID, of sign-ups that were reminded (Q11b) and whether they then finished, so we can see if the 24-hour reminder works.
 - **Why it matters:** [2026-11-13 22:31 SGT] Today the "reminded" mark lives on the sign-up draft, which disappears when the person finishes or is cleaned up, so the answer is lost.

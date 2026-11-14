@@ -13,6 +13,10 @@
 // planner's nudge ("With Mia: …"), the next reminder's real time, the /start
 // notice, the 24-hour sign-up reminder and Continue. The fixed "7:00 pm"
 // wording (D1) is gone.
+// [2026-11-14] B1, log any time: the keyboard's labels and receipts, Undo, /log,
+// the Menu and /help (src/telegram-bot/SPEC.md, "Build: B1"). The owner's
+// words are marked "owner"; the rest are drafts, refined with the readability
+// work in Claude Chat.
 // =============================================================================
 
 import { daysBetween, formatTime, toSgt, weekdayOf } from "../sgt.js";
@@ -148,4 +152,38 @@ export const WORDS = {
   didNotSave: "Sorry, that didn't save. Please try again.", // draft, rule 1.3
   signUpFailed: "Sorry, that didn't work. Please try again.", // draft, rule 1.3
   nudgeNotSaved: "Sorry, this reminder couldn't be saved, so its buttons won't work.", // [2026-11-13] W6, rule 1.3
+
+  // ---- [2026-11-14] B1: log any time ----
+  // The keyboard's button for a behaviour (rule 5.1); a tap sends exactly this text.
+  keyboardLabel: (name: string) => `✅ ${name}`,
+  // K4: the same behaviour again today (agreed with the B1 tests, 14 Nov).
+  receiptAgain: (name: string) => `✅ Saved: ${name}, again today. It counts once for your week.`,
+  undoButton: "Undo",
+  undone: "Undone. It won't count.", // rule 5.8
+  undoExpired: "Undo expired.", // owner, B1-D1
+  logPrompt: "Which one did you do today?", // draft
+  noBehaviours: "You haven't chosen any habits yet. You can choose them in Settings.", // draft
+  myPageLink: "Here's your page.", // draft
+  settingsLink: "Change your times and habits in Settings.", // draft
+  openSettingsButton: "Open Settings ↗", // draft
+  pauseLink: "To pause your reminders, open Settings.", // draft (B1-D3: pausing happens in Settings)
+  alreadyPaused: "Your reminders are already paused.", // draft, B1-D8
+  alreadyOn: "Your reminders are already on.", // draft, B1-D8
+  resumeQuestion: "Resume your reminders?", // owner, B1 tests
+  resumeButton: "✅ Resume",
+  cancelButton: "Cancel",
+  resumed: "✅ Your reminders are back on.", // draft
+  resumeCancelled: "OK, your reminders stay paused.", // draft
+  // B1-D9 (owner: OK for now; refine in the readability work).
+  help:
+    "How this works:\n• Tap a behaviour on the keyboard below to log it for today.\n• Reminders come at your chosen times. Tap ✅ Done or 😴 Not today.\n• Menu: /log to log · /mypage your page · /settings your times and habits · /pause and /resume your reminders.",
+  // The Menu's lines (B1-D8), drafts.
+  menu: {
+    log: "Log a behaviour for today",
+    mypage: "Your page",
+    settings: "Your times and habits",
+    pause: "Pause your reminders",
+    resume: "Resume your reminders",
+    help: "How this works",
+  },
 } as const;

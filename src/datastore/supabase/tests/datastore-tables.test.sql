@@ -26,6 +26,10 @@
 --
 -- [2026-11-13] Also runs migration 009 (the one 24-hour sign-up reminder, Q11b,
 -- pull request 3a) and checks it in T82 to T90.
+--
+-- [2026-11-14] Also runs migration 010 (Telegram's message numbers on nudges
+-- and on the sign-up draft's latest screen, B1-D7 and B1-D10) and checks it,
+-- with the 10-minute Undo window (B1-D1), in T91 to T98.
 -- =============================================================================
 
 \set ON_ERROR_STOP on
@@ -43,6 +47,7 @@ alter role service_role bypassrls;
 \i src/datastore/supabase/migrations/007_onboarding.sql
 \i src/datastore/supabase/migrations/008_remove_thin_slice_sign_up.sql
 \i src/datastore/supabase/migrations/009_sign_up_reminder.sql
+\i src/datastore/supabase/migrations/010_telegram_message_numbers.sql
 
 -- Helper: try one statement and expect the database to refuse it. Same idea as
 -- in nudge-repository.test.sql. It runs as whichever role is active.
@@ -1184,5 +1189,115 @@ begin
      and not has_function_privilege('public', 'public.claim_sign_up_reminders(bigint)', 'execute'), 'outsiders can run it';
   raise notice 'PASS: T89 only our server can claim sign-up reminders';
 end $$;
+
+-- =============================================================================
+-- [2026-11-14] Migration 010: Telegram's message numbers (B1-D7, B1-D10) and
+-- the 10-minute Undo (B1-D1). A nudge keeps the number Telegram gave it, so a
+-- keyboard or /log tap that answers it can remove its buttons (rule 5.10); a
+-- sign-up draft keeps its latest screen's number, so "Welcome back" and
+-- Continue can remove the earlier copy's buttons (10e addition).
+-- =============================================================================
+reset role;
+create table pg_temp.v010 as select
+  public.record_settings_version('T98 Undo 10 minutes', '{"undo_window_seconds": 600}'::jsonb) as undo600,
+  public.record_settings_version('T95 clean-up', '{"sign_up_draft_keep_days": 7, "sign_up_stopped_keep_days": 90}'::jsonb) as keep;
+grant select on pg_temp.v010 to service_role;
+-- A parent still here at this point (earlier tests deleted Ann's data).
+create function pg_temp.someone() returns bigint language sql as $$ select min(id) from public.parents $$;
+insert into public.sign_up_drafts (telegram_id, step, last_activity_at) values
+  (7101, 'quick', now()),                      -- T93, T94
+  (7102, 'plan',  now() - interval '8 days');  -- T95: quiet for 8 days
+insert into public.sign_up_drafts (telegram_id, step, last_activity_at, cut_down_at) values
+  (7103, 'children', now() - interval '8 days', now() - interval '1 day');  -- T96: cut down
+set role service_role;
+
+-- T91: a nudge recorded with Telegram's message number keeps it; one recorded
+-- the old way (no number, as before migration 010) has none.
+do $$
+declare m1 bigint; m2 bigint;
+begin
+  m1 := public.record_message_sent(pg_temp.someone(), 'nudge', pg_temp.twc(), pg_temp.ex(), pg_temp.today(), 1300, pg_temp.v(), '["baseline"]', 98765);
+  m2 := public.record_message_sent(pg_temp.someone(), 'nudge', pg_temp.twc(), pg_temp.ex(), pg_temp.today(), 1310, pg_temp.v(), '["baseline"]');
+  assert (select telegram_message_id from public.messages_sent where id = m1) = 98765, 'the nudge lost its Telegram message number';
+  assert (select telegram_message_id is null from public.messages_sent where id = m2), 'a nudge recorded without a number got one';
+  raise notice 'PASS: T91 a nudge keeps the Telegram message number it was recorded with';
+end $$;
+
+-- T92: once recorded, the number is never changed: our server can't edit sent messages.
+select pg_temp.expect_refused('T92 the server changing a nudge''s Telegram message number',
+  $q$update public.messages_sent set telegram_message_id = 1 where slot_minute = 1300$q$);
+
+-- T93: a draft keeps its latest screen's number; a newer screen replaces it.
+do $$
+begin
+  perform public.record_sign_up_screen(7101, 501);
+  assert (select screen_message_id from public.sign_up_drafts where telegram_id = 7101) = 501, 'the screen number was not saved';
+  perform public.record_sign_up_screen(7101, 502);
+  assert (select screen_message_id from public.sign_up_drafts where telegram_id = 7101) = 502, 'a newer screen did not replace it';
+  raise notice 'PASS: T93 a draft keeps its latest screen''s Telegram message number';
+end $$;
+
+-- T94: saving the same step (a tick on screen 4) keeps it; moving to a new step clears it.
+do $$
+begin
+  perform public.save_sign_up_step(7101, 'quick', '{}'::jsonb);
+  assert (select screen_message_id from public.sign_up_drafts where telegram_id = 7101) = 502, 'a tick on the same screen cleared the number';
+  perform public.save_sign_up_step(7101, 'deliberate', '{}'::jsonb);
+  assert (select screen_message_id is null from public.sign_up_drafts where telegram_id = 7101), 'a new step kept the old screen''s number';
+  raise notice 'PASS: T94 the screen number stays for the same step and is cleared at the next step';
+end $$;
+
+-- T95: cutting a quiet draft down clears the number too: a cut-down draft keeps
+-- only its Telegram ID and last step (rule 8.13).
+do $$
+begin
+  perform public.record_sign_up_screen(7102, 601);
+  perform public.clean_up_sign_ups((select keep from pg_temp.v010));
+  assert (select cut_down_at is not null and screen_message_id is null from public.sign_up_drafts where telegram_id = 7102),
+    'the cut-down draft kept its screen number';
+  raise notice 'PASS: T95 the clean-up clears the screen number when it cuts a draft down';
+end $$;
+
+-- T96: no screen number without an active draft (none at all, or cut down).
+select pg_temp.expect_refused('T96 a screen number for someone with no draft',
+  $q$select public.record_sign_up_screen(7199, 1)$q$, 'No sign-up in progress');
+select pg_temp.expect_refused('T96 a screen number for a cut-down draft',
+  $q$select public.record_sign_up_screen(7103, 1)$q$, 'No sign-up in progress');
+select pg_temp.expect_refused('T96 the server changing a screen number directly',
+  $q$update public.sign_up_drafts set screen_message_id = 1 where telegram_id = 7101$q$);
+
+-- T97: only our server can record a nudge or a screen number.
+reset role;
+do $$
+declare f text;
+begin
+  foreach f in array array['public.record_sign_up_screen(bigint, bigint)',
+                           'public.record_message_sent(bigint, text, bigint, bigint, date, integer, bigint, jsonb, bigint)'] loop
+    assert has_function_privilege('service_role', f, 'execute'), 'our server cannot run ' || f;
+    assert not has_function_privilege('anon', f, 'execute') and not has_function_privilege('authenticated', f, 'execute')
+       and not has_function_privilege('public', f, 'execute'), 'outsiders can run ' || f;
+  end loop;
+  raise notice 'PASS: T97 only our server can record a nudge or a screen number';
+end $$;
+
+-- T98: the Undo window is read from the settings version: with 600 seconds
+-- (src/settings.ts since B1), a keyboard log 9 minutes old can be undone and
+-- one 11 minutes old can't (rule 5.8, B1-D1).
+set role service_role;
+select public.save_habit_log(pg_temp.someone(), pg_temp.twc(), pg_temp.today(), null, 'keyboard', null, 9101, pg_temp.v(), '["baseline"]');
+select public.save_habit_log(pg_temp.someone(), pg_temp.twc(), pg_temp.today(), null, 'keyboard', null, 9102, pg_temp.v(), '["baseline"]');
+reset role;
+update public.habit_logs set logged_at = now() - interval '9 minutes' where telegram_update_id = 9101;
+update public.habit_logs set logged_at = now() - interval '11 minutes' where telegram_update_id = 9102;
+set role service_role;
+do $$
+begin
+  perform public.undo_log(pg_temp.someone(), (select id from public.habit_logs where telegram_update_id = 9101), (select undo600 from pg_temp.v010), '["baseline"]');
+  assert (select undone_at is not null from public.habit_logs where telegram_update_id = 9101), 'the 9-minute-old log was not undone';
+  raise notice 'PASS: T98 with a 600-second window, a 9-minute-old keyboard log can be undone';
+end $$;
+select pg_temp.expect_refused('T98 undoing an 11-minute-old keyboard log with a 600-second window',
+  $q$select public.undo_log(pg_temp.someone(), (select id from public.habit_logs where telegram_update_id = 9102), (select undo600 from pg_temp.v010), '["baseline"]')$q$, 'Undo window');
+reset role;
 
 \echo ALL DATASTORE TABLE TESTS PASSED

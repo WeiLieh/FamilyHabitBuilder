@@ -2,6 +2,42 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-14 14:20 SGT] Session 17: B1 built (log any time)
+### Done
+- [2026-11-14 14:20 SGT] Start-of-session routine: drift check passed (24 checks); owner: Claude Chat designs still in progress; draft words and Q5, Q9, Q12 not yet.
+- [2026-11-14 14:20 SGT] Owner's decision **B1-D10**: the sign-up draft keeps only its latest screen's number, replaced per screen (inside rule 8.4 edit 8; no new narrow edit).
+- [2026-11-14 14:20 SGT] **Migration 010** written test-first (T91 to T98; database checks 171 to 182 PASS lines). **Not applied yet.**
+- [2026-11-14 14:20 SGT] **B1 built test-first:** keyboard, /log, Undo for 10 minutes, the Menu per person, /help, the "Welcome back" fix (`log-any-time.ts`, `menu.ts`; tests/telegram-bot-log-any-time.test.ts). Rules 5.1, 5.7, 5.8, 5.10, 8.4, 8.13 updated. Four tests rewritten, none removed. App tests 249 to 275.
+- [2026-11-14 14:20 SGT] Both review agents (H3): no High. Owner chose all four fixes (K8 "Already saved.", tests K9 and K10, the migration comment, a known issue). Owner checklist: `src/telegram-bot/UAT-b1.md` (S1 to S4, U40 to U55).
+### In progress
+- [2026-11-14 14:20 SGT] None. Branch `claude/kind-gates-5u8dbm` pushed; B1's pull request waits until #45 is merged (it is stacked on #45).
+### Next steps
+- [2026-11-14 14:20 SGT] Owner: U15 tonight, U16 Sunday, merge #45 and go live (UAT-planner.md); then migration 010 and B1's go-live (UAT-b1.md); tell Claude Code the 010 check result so the fingerprint is recorded.
+- [2026-11-14 14:20 SGT] Claude Chat: Web app design and message readability (also the B1 draft words and /help).
+### Blockers
+- [2026-11-14 14:20 SGT] None.
+
+## [2026-11-14 10:38 SGT] HANDOFF: session 16 ended (read this first)
+- [2026-11-14 10:38 SGT] **State:** onboarding UAT **U17 to U27 pass** (live bot, a second Telegram account with its holder's agreement, renamed "Test Parent"; made-up children's names). **Migrations 008 and 009 applied** on Supabase, fingerprints recorded (rule B1). UAT: 25 of 29 done; U28 skipped (owner). `npm run check` passes (249 tests, drift clean). Pull request #45 (3c, the planner live) still open, not to be merged before U15 and U16. This session's branch `claude/kind-gates-5u8dbm` is stacked on #45's branch.
+- [2026-11-14 10:38 SGT] **Owner today (14 Nov):** U14 any time, **U15 at 7:00 pm** (your own account; Test Parent gets a 7:00 pm nudge too), U16 Sunday or later. In **Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) **make the bot's chat messages easier to read** (today they are correct but dense: line breaks, bold, emoji, shorter lines). Both are look-and-feel, so they come from the owner (rule 6); bring each back as a handoff file (habit H10).
+- [2026-11-14 12:13 SGT] **B1 decisions recorded (owner, 14 Nov):** Undo for 10 minutes, a late tap removes the button with "Undo expired.", the alarm sweeps leftovers (B1-D1); Claude drafts /help for approval (B1-D2); /pause, /mypage and /settings link to the placeholder pages (B1-D3); B1 stacked on #45. See "Build: B1" in `src/telegram-bot/SPEC.md`. Owner chose to start B1 in a fresh session.
+- SUPERSEDED [2026-11-14 12:13 SGT] [2026-11-14 12:12 SGT] **B1 decisions recorded (owner, 14 Nov):** Undo for 10 minutes, a late tap removes the button with "Too late to undo.", the alarm sweeps leftovers (B1-D1); Claude drafts /help for approval (B1-D2); /pause, /mypage and /settings link to the placeholder pages (B1-D3); B1 stacked on #45. See "Build: B1" in `src/telegram-bot/SPEC.md`. Owner chose to start B1 in a fresh session.
+- [2026-11-14 13:48 SGT] **Next Claude Code session: build B1 from the agreed test list** (owner approved, 14 Nov): "Build: B1" in `src/telegram-bot/SPEC.md` holds the decisions B1-D1 to B1-D9 and the tests K1 to K7, U1 to U4, L1, L2, M1 to M5, W1, W2 and migration 010 (database tests from T91). Write the tests first, see them fail, then build, stacked on #45. Then both review agents (H3), and a UAT checklist for the owner (migration 010 is applied before B1 goes live; set the Menu once).
+- SUPERSEDED [2026-11-14 13:48 SGT] [2026-11-14 10:38 SGT] **Next Claude Code session:** build **B1: log any time (the keyboard, /log and Undo)** (rules 5.1, 5.7, 5.8), tests first in plain English, on its own branch; plus the **"Welcome back" fix** (Telegram bot spec, 10e addition: remove the old copy's buttons when a screen is sent again, also for Continue, rule 5.13). Then, once the Chat handoffs arrive, record them and build the message readability changes.
+- [2026-11-14 10:38 SGT] **Sunday:** U16, merge #45, go live (G1 to G5 and U29 to U39 in `src/telegram-bot/UAT-planner.md`), then the Claude personality and warm reply.
+
+## [2026-11-14 10:38 SGT] Session 16: onboarding UAT and migrations 008, 009
+### Done
+- [2026-11-14 10:38 SGT] Start-of-session routine: drift check passed (24 checks). Correction: the first summary read `main`'s notes; the latest were on #45's branch (3c already built).
+- [2026-11-14 10:38 SGT] UAT U17 to U27 run with the owner step by step, all **pass** (U21 on screen 6, U24 with the old screen 6 OK). Owner: U28 skipped; fix the leftover buttons after "Welcome back" (backlog, High); keep the "pick up to 2" pop-up box.
+- [2026-11-14 10:38 SGT] Migrations 008 (removes the thin-slice `sign_up`) and 009 (the sign-up reminder mark and claim function) applied by the owner; both check queries matched; fingerprints 3388637096e4 and e27ca8752a5b recorded in `src/datastore/SPEC.md`.
+### In progress
+- [2026-11-14 10:38 SGT] None.
+### Next steps
+- [2026-11-14 10:38 SGT] See the session 16 handoff above.
+### Blockers
+- [2026-11-14 10:38 SGT] None.
+
 ## [2026-11-14 00:16 SGT] HANDOFF: session 15 ended (read this first)
 - [2026-11-14 00:16 SGT] **State:** `main` has pull requests 3a and 3b (#44, merged by pushing the merge with the owner's permission; GitHub's merge button kept failing with 502). **Pull request #45 (3c, the planner live) is open, not to be merged before U15 and U16.** `npm run check` passes (249 tests, drift clean); database checks 171 PASS lines locally. Supabase: migrations up to 007 applied; **008 and 009 written, not applied.** This session uses the new personal environment "Family Habit Builder" (allows `family-habit-builder.vercel.app`).
 - [2026-11-14 00:16 SGT] **UAT:** U0 to U4, U6, U8, U9, U12, U13 pass; U5, U7, U10, U11 replaced. Left: U14, U15, U16, U17 to U27, U28 (optional). The owner's working list: U0 to U28 with status (sent in chat).
