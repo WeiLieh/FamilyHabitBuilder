@@ -30,6 +30,7 @@
 - [2026-11-01 16:56 SGT] `design/`: the owner's reading copies of the Datastore design pages (PDF), explained in [design/README.md](design/README.md). **Claude never reads them** (habit H8); the rules are in this spec.
 
 ## Planned for the Datastore build
+- [2026-11-14 13:48 SGT] **Migration 010 (B1, owner approved 14 Nov), not built yet:** Telegram's message number on each nudge row (`messages_sent`) and on the sign-up draft's latest screen, each filled in once and never changed (a new narrow edit to rule 8.4), so the bot can remove old buttons (rule 5.10; Telegram bot spec, B1-D7). Written test-first with database tests from T91.
 - [2026-11-14 10:31 SGT] **Migrations 008 and 009 applied** on 14 Nov: see "Files in this folder".
 - SUPERSEDED [2026-11-14 10:31 SGT] [2026-11-13 22:31 SGT] **Migration 009 built** (pull request 3a), not yet applied: see "Files in this folder".
 - [2026-11-13 22:24 SGT] **Migration 009 (pull request 3a, for the 24-hour sign-up reminder, Q11b):** a new column `sign_up_drafts.reminded_at`, and a function `claim_sign_up_reminders` that, in one step, marks and returns the drafts due a reminder: not cut down, never reminded, quiet for at least `sign_up_reminder_after_hours` (24, from the settings version, rule 1.4). Marking before sending means two overlapping runs can never send two reminders; a send that then fails is logged and not retried (one reminder only, owner's Q11b: "No more"). The bot decides the hours (D7, Telegram bot spec). Not built yet.

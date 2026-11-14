@@ -4,6 +4,7 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 
 ## [2026-11-14 10:37 SGT] Session 16 (2026-11-14 morning)
 - [2026-11-14 10:37 SGT] About 1 h 5 min elapsed (about 09:38 to 10:45 SGT), all active. Start-of-session routine (drift check clean); onboarding UAT U17 to U27 run live with the owner step by step (all pass) on a second Telegram account; migrations 008 and 009 applied and their fingerprints recorded; handoff for the Claude Chat design work and the B1 build.
+- [2026-11-14 13:48 SGT] Extended: about 2 h 50 min in total (about 09:38 to 12:30 SGT, including breaks between UAT steps). B1 planned: nine decisions (B1-D1 to B1-D9) and the test list agreed; the build starts in a fresh session.
 - **Notes for timeboxing:** one screenshot per test case, checked against the expected words, kept each case to 2 to 3 minutes; setting up the second Telegram account took about 10 minutes (a number already on Telegram logs into that person's real account, so ask first).
 
 ## [2026-11-14 00:16 SGT] Session 15 (2026-11-13 evening to 2026-11-14 after midnight)

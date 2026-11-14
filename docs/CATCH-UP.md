@@ -2,9 +2,11 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-14 10:38 SGT]** (session 16: onboarding UAT **U17 to U27 passed**; **migrations 008 and 009 applied**; #45 still waits for U15 and U16).
+**Last updated: [2026-11-14 13:48 SGT]** (session 16: onboarding UAT **U17 to U27 passed**; **migrations 008 and 009 applied**; **B1 decisions and tests agreed**; #45 still waits for U15 and U16).
 
-> [2026-11-14 10:38 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** (log any time: keyboard, /log, Undo) and the **"Welcome back" fix**, tests first. **Sunday:** merge #45 and go live.
+> [2026-11-14 13:48 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** from the **agreed test list** (keyboard, /log, Undo for 10 minutes, the Menu, the "Welcome back" fix, migration 010). **Sunday:** merge #45 and go live.
+>
+> SUPERSEDED [2026-11-14 13:48 SGT] [2026-11-14 10:38 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** (log any time: keyboard, /log, Undo) and the **"Welcome back" fix**, tests first. **Sunday:** merge #45 and go live.
 >
 > SUPERSEDED [2026-11-14 10:38 SGT] [2026-11-14 00:17 SGT] **⏰ Next session (Claude Code):** (1) UAT **U17 to U27** with your second Telegram account, then **migrations 008 and 009**; (2) build **B1: log any time (keyboard, /log, Undo)**, tests first, on a second branch. **In Claude Chat:** design the **Web app** (My Page, Settings). **Saturday 7:00 pm:** U15. **Sunday:** U16, merge #45, go live, then the Claude personality.
 >
@@ -70,6 +72,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-14 10:38 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-14-session-16.md](archive/CATCH-UP-sections-4-5-to-2026-11-14-session-16.md), word for word.
 
 **4a. Latest decisions (session 16, 14 Nov)**
+- [2026-11-14 13:48 SGT] **B1 agreed:** Undo for 10 minutes, a late tap removes the button with "Undo expired." (no sweep); /log has no Undo and shows only chosen behaviours; migration 010 so old buttons can be removed; the Menu shows /pause or /resume, whichever applies; "Resume your reminders?"; the /help draft. Tests agreed (Telegram bot spec, "Build: B1").
 - [2026-11-14 10:38 SGT] Onboarding UAT U17 to U27 passed; U28 skipped. **Fix:** when a screen is sent again ("Welcome back", Continue), remove the old copy's buttons. **Keep:** the "pick up to 2" pop-up box. Migrations 008 and 009 applied. Today: Web app and message readability in Claude Chat; B1 in Claude Code.
 
 **4b. For Claude Chat today (bring each back as a handoff file, habit H10)**
