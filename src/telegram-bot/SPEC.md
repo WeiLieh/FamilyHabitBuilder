@@ -287,6 +287,11 @@
 
 **Owner setup** (step-by-step in the session): create the bot in BotFather; create the Vercel project from this repository; enter the secrets in Vercel only (`TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`); tell Telegram the webhook address; run migration 006; add an invite code.
 
+## Recorded: links from the Web app design (owner, design chat, 2026-11-14)
+[2026-11-14 22:24 SGT] From the [Web app handoff of 14 Nov](../../docs/handoffs/2026-11-14-web-app-week-so-far-tab.md) (rules 9.2 to 9.7 in [src/web-app/SPEC.md](../web-app/SPEC.md)). **Recorded, not built; rules 5.4 and 5.6 keep their text.** Rules 7.6 to 7.8 live in [src/variable-rewards/SPEC.md](../variable-rewards/SPEC.md), so their notes are there (one rule, one spec).
+- [2026-11-14 22:24 SGT] **Rule 5.4 (owner confirmed, 14 Nov):** a reflection is not a habit log. On My page it is listed **next to** the count of days logged ("3 days logged, 1 reflection"), never inside it.
+- [2026-11-14 22:24 SGT] **Rule 5.6:** the answer is shown on My page's connection card (rule 9.5), saved against that week's Monday. The design's card reads "How connected did you feel with your child ?" (a space before "?") without "(1 = not much, 5 = very)"; whether the bot's fixed words change too is a question for the owner (Web app spec).
+
 ## Rules at a glance
 5.1 log any time, for today: Done, keyboard, /log, typed text · 5.3 optional description (the Investment) · 5.4 today only; unchosen = reflection; repeat logs · 3.14 the plan summary on sign-up screen 8 · 5.6 weekly connection question: one tap · 5.7 the Menu, with /log · 5.8 Undo within 10 minutes · 5.9 only Telegram can call the webhook · 5.10 a reply to a nudge is a new message · 5.11 the alarm run every 10 minutes · 5.12 buttons name their day and slot · 5.13 the one sign-up reminder and Continue
 

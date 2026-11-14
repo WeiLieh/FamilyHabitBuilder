@@ -4,6 +4,21 @@
 
 ## Open
 
+### [2026-11-14 22:24 SGT] The connection card's "about the same" band is not chosen
+- **Issue:** [2026-11-14 22:24 SGT] The Week so far connection card (rule 9.5) picks its title by comparing this week's answer with the average of the 3 weeks before. Nobody has chosen how close counts as "about the same" (proposed: half a point either way). The titles themselves are a default awaiting the owner's wording.
+- **Impact:** [2026-11-14 22:24 SGT] The card can't be built until the owner chooses; the number will live in `src/settings.ts` (rule 1.4).
+- **Workaround:** [2026-11-14 22:24 SGT] None needed yet (nothing built). Owner to decide (`docs/CATCH-UP.md`, section 4).
+
+### [2026-11-14 22:24 SGT] A logged day with a line but no photo has no tile in the older-weeks list
+- **Issue:** [2026-11-14 22:24 SGT] In the older-weeks list (rule 9.7) each thing logged gets a tile: a photo tile or a reflection tile. A log with only a line has no tile in the design, so the tiles could show fewer things than the count line says.
+- **Impact:** [2026-11-14 22:24 SGT] The list could look like it is missing days. Blocks building that part of rule 9.7.
+- **Workaround:** [2026-11-14 22:24 SGT] Owner to decide; a text tile like the reflection tile is the obvious candidate.
+
+### [2026-11-14 22:24 SGT] This week's logs read newest first, an older week's oldest first
+- **Issue:** [2026-11-14 22:24 SGT] Week so far lists this week's log rows newest first (rule 9.4); an older week's page reads day by day, oldest first (rule 9.7). The owner said "leave it for now".
+- **Impact:** [2026-11-14 22:24 SGT] Low: a parent may notice the two pages read in opposite directions.
+- **Workaround:** [2026-11-14 22:24 SGT] Build as designed; revisit after UAT.
+
 ### [2026-11-14 14:20 SGT] Failure logs name the parent's internal number
 - **Issue:** [2026-11-14 14:20 SGT] When the alarm run fails for one parent, Vercel's log line names that parent's internal database number (for example "Nudge not sent to parent 12"). It is not a Telegram ID or a name, but it points to one person (privacy review of B1; the lines date from pull request 3c, `src/telegram-bot/scheduler.ts`).
 - **Impact:** [2026-11-14 14:20 SGT] Low: only someone with Vercel access and database access could link it to a person. A PDPA reviewer may still ask.

@@ -4,6 +4,24 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-14 22:24 SGT] Design My page tab 2, "Habits so far"
+- **Item:** [2026-11-14 22:24 SGT] Design tab 2 of My page (rule 9.2): steady weeks, Wrap Up counts, the monthly view, trends; perhaps where older weeks' connection answers show.
+- **Why it matters:** [2026-11-14 22:24 SGT] Its job is "show me we're growing", and rule 7.8 moved steady weeks and the monthly view to My page.
+- **Priority:** [2026-11-14 22:24 SGT] High (the owner's second priority tab)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
+## [2026-11-14 22:24 SGT] Design My page tabs 3 (Rewards) and 4 (Settings)
+- **Item:** [2026-11-14 22:24 SGT] Rewards is greyed out for now; Settings is a placeholder holding pause, delete a photo or line, delete my data, sign out, reminder times, children and consents (rules 9.1, 9.2).
+- **Why it matters:** [2026-11-14 22:24 SGT] Settings is where "delete my data" and pause live, which the privacy known issues wait for.
+- **Priority:** [2026-11-14 22:24 SGT] Medium (Settings), Low (Rewards)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
+## [2026-11-14 22:24 SGT] Week so far: the states not designed yet
+- **Item:** [2026-11-14 22:24 SGT] A quiet week, a week with no photo, a first-ever week, a parent with no older weeks (button hidden); monthly grouping of older weeks once there are many; a "With us since [date]" line.
+- **Why it matters:** [2026-11-14 22:24 SGT] Every parent meets at least one of these in the first weeks; without a design the page could look broken.
+- **Priority:** [2026-11-14 22:24 SGT] Medium (before the Web app goes live)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
 ## [2026-11-14 10:37 SGT] "Welcome back" removes the old copy's buttons
 - **Item:** [2026-11-14 10:37 SGT] When the bot sends a sign-up screen again ("Welcome back", or **Continue** on the one sign-up reminder), remove the buttons from the earlier copy of that screen (Telegram bot spec, 10e addition).
 - **Why it matters:** [2026-11-14 10:37 SGT] Found in UAT U21 (14 Nov): two identical OK buttons on screen; the old one does nothing, which is confusing.

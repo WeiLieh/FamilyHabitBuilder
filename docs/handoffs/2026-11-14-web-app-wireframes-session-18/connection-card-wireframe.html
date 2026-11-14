@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connection card wireframe</title>
+<style>
+  /* Wireframe only: plain greys, no look (CLAUDE.md rule 6). */
+  :root { --ink:#222; --muted:#666; --line:#999; --soft:#ddd; --bg:#fff; --bar:#bbb; --bar-new:#555; --note:#f4f4f4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --bar:#666; --bar-new:#ccc; --note:#262626; } }
+  :root[data-theme="dark"] { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --bar:#666; --bar-new:#ccc; --note:#262626; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 20px; }
+  .states { display:flex; flex-wrap:wrap; gap:20px; }
+  .phone { flex:1 1 320px; max-width:370px; border:2px dashed var(--line); border-radius:16px; padding:16px; box-sizing:border-box; }
+  .label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:12px; }
+  .ghost { color:var(--muted); font-size:13px; border:1px dashed var(--soft); border-radius:8px; padding:8px; margin-bottom:16px; }
+  .title { font-size:18px; font-weight:700; margin:0 0 8px; }
+  .card { border:1.5px solid var(--line); border-radius:10px; padding:14px; }
+  .bars { display:flex; justify-content:space-around; align-items:flex-end; height:150px; gap:8px; }
+  .b { display:flex; flex-direction:column; align-items:center; gap:4px; font-size:12px; color:var(--muted); width:56px; }
+  .b .n { font-size:15px; font-weight:700; color:var(--ink); }
+  .b .r { width:30px; background:var(--bar); border-radius:3px; }
+  .b.new .r { background:var(--bar-new); }
+  .b.new { color:var(--ink); font-weight:700; }
+  .avg { border-top:1px solid var(--soft); margin-top:12px; padding-top:10px; font-size:13px; color:var(--muted); }
+  .opt { border:1px dashed var(--line); border-radius:6px; padding:2px 6px; }
+  .empty { color:var(--muted); font-size:15px; text-align:center; padding:28px 8px; }
+  .btn { margin-top:16px; border:1px dashed var(--soft); border-radius:20px; text-align:center; padding:10px; font-size:13px; color:var(--muted); }
+  .why { background:var(--note); border-radius:8px; padding:10px; font-size:13px; line-height:1.45; margin-top:14px; }
+</style></head>
+<body><main>
+<h1>Connection card: three moments in the week</h1>
+<p class="sub">A wireframe of where things go, not the look. Sample week 9 to 15 Nov. Earlier answers: 12 Oct = 2, 19 Oct = 3, 26 Oct = 3, 2 Nov = 4. This Sunday's answer = 4.</p>
+
+<div class="states">
+
+  <section class="phone" aria-label="Monday to Sunday before answering">
+    <div class="label">1 · Monday to Sunday, before answering</div>
+    <div class="ghost">… 1 reflection this week (box above) …</div>
+    <div class="title">How connected did you feel with your child?</div>
+    <div class="card">
+      <div class="bars">
+        <div class="b"><span class="n">2</span><div class="r" style="height:44px"></div><span>12 Oct</span></div>
+        <div class="b"><span class="n">3</span><div class="r" style="height:66px"></div><span>19 Oct</span></div>
+        <div class="b"><span class="n">3</span><div class="r" style="height:66px"></div><span>26 Oct</span></div>
+        <div class="b"><span class="n">4</span><div class="r" style="height:88px"></div><span>2 Nov</span></div>
+      </div>
+      <div class="avg"><span class="opt">optional</span> 3.0/5 average over these 4 weeks</div>
+    </div>
+    <div class="btn">Show 4 older weeks - back to 12 Oct</div>
+    <div class="why">Your last 4 answers. Nothing is empty: the card only uses answers already given.</div>
+  </section>
+
+  <section class="phone" aria-label="Sunday after answering">
+    <div class="label">2 · Sunday, after answering 4</div>
+    <div class="ghost">… 1 reflection this week (box above) …</div>
+    <div class="title">How connected did you feel with your child?</div>
+    <div class="card">
+      <div class="bars">
+        <div class="b"><span class="n">3</span><div class="r" style="height:66px"></div><span>19 Oct</span></div>
+        <div class="b"><span class="n">3</span><div class="r" style="height:66px"></div><span>26 Oct</span></div>
+        <div class="b"><span class="n">4</span><div class="r" style="height:88px"></div><span>2 Nov</span></div>
+        <div class="b new"><span class="n">4</span><div class="r" style="height:88px"></div><span>This week</span></div>
+      </div>
+      <div class="avg"><span class="opt">optional</span> 3.5/5 average over these 4 weeks</div>
+    </div>
+    <div class="btn">Show 4 older weeks - back to 12 Oct</div>
+    <div class="why">The new answer appears on the right as "This week" (picked out); the oldest bar (12 Oct) drops off. From Monday it is labelled "9 Nov".</div>
+  </section>
+
+  <section class="phone" aria-label="Before the first answer">
+    <div class="label">3 · Before your very first answer</div>
+    <div class="ghost">… days logged this week (box above) …</div>
+    <div class="title">How connected did you feel with your child?</div>
+    <div class="card">
+      <div class="empty">Your first answer arrives on Sunday.</div>
+    </div>
+    <div class="why">No bars yet, one plain line. The title stays the same in every state.</div>
+  </section>
+
+</div>
+</main></body></html>
