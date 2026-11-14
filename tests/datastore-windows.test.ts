@@ -2,7 +2,7 @@
 // tests/datastore-windows.test.ts: the time windows the database also checks
 //
 // [2026-11-11] Three waits have a fixed length decided by the owner:
-//   - Undo: 30 seconds after a keyboard log (rule 5.8)
+//   - Undo: 10 minutes after a keyboard log (rule 5.8; 30 seconds until 14 Nov)
 //   - the weekly connection question: 24 hours after it is sent (rule 5.6)
 //   - "Add a moment": 24 hours after the button is tapped (rule 7.7)
 // The numbers live once, in src/settings.ts (rule 1.4). The database reads the
