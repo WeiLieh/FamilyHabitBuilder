@@ -11,6 +11,7 @@
 // Each test checks what the parent would see in Telegram and what was saved.
 // =============================================================================
 
+import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
 import { handleUpdate, type BotDeps } from "../src/telegram-bot/handle-update.js";
 import { menuCommands } from "../src/telegram-bot/menu.js";
@@ -293,6 +294,9 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
   it("M5 the default Menu is /log, /mypage, /settings, /pause, /help; a paused person's shows /resume instead of /pause", async () => {
     expect(menuCommands(false).map((c) => c.command)).toEqual(["log", "mypage", "settings", "pause", "help"]);
     expect(menuCommands(true).map((c) => c.command)).toEqual(["log", "mypage", "settings", "resume", "help"]);
+    // The owner sets the default Menu once in BotFather (UAT-b1.md, S3): those lines must match the code's.
+    const uat = readFileSync("src/telegram-bot/UAT-b1.md", "utf8");
+    for (const c of menuCommands(false)) expect(uat).toContain(`\n  ${c.command} - ${c.description}\n`);
     // Typed anyway while paused: /pause says so, and that person's Menu switches to /resume.
     store.parents[0]!.paused = true;
     await say("/pause");
