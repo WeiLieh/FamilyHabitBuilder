@@ -8,13 +8,16 @@
 // tests can check the bot never pretends a failure worked (rule 1.3). The
 // builders make Telegram updates shaped like Telegram's own JSON. The pretend
 // database is in datastore-fake-store.ts.
+// [2026-11-14] B1: it also writes down the keyboard under a message (as
+// "keyboard", the button labels) and a change to one person's Menu ("menu").
 // =============================================================================
 
-import type { Buttons, TelegramApi } from "../../src/telegram-bot/telegram-api.js";
+import type { Buttons, MenuCommand, TelegramApi } from "../../src/telegram-bot/telegram-api.js";
 
 // One thing the bot did in Telegram, as the parent would see it.
 export type TelegramCall =
-  | { kind: "send"; chatId: number; text: string; buttons: Buttons }
+  | { kind: "send"; chatId: number; text: string; buttons: Buttons; keyboard?: string[] } // [2026-11-14] keyboard: B1
+  | { kind: "menu"; chatId: number; commands: MenuCommand[] | null } // [2026-11-14] null: back to everyone's default Menu
   // [2026-11-12] "buttons" is there only when the edit replaced them (e.g. a tick on screen 4).
   | { kind: "edit"; chatId: number; messageId: number; text: string; buttons?: Buttons }
   | { kind: "removeButtons"; chatId: number; messageId: number } // [2026-11-12] the text stays, only the buttons go
@@ -32,14 +35,33 @@ export class FakeTelegram implements TelegramApi {
   failEdits = false;
 
   private nextMessageId = 500;
-  async sendMessage(chatId: number, text: string, buttons: Buttons = []): Promise<number> {
+  // [2026-11-14] Telegram's number for the last message sent, so a test can name it.
+  lastSentId = 0;
+  private refuseSend(chatId: number): void {
     if (this.failFor.has(chatId)) throw new Error(`Telegram refused to send to ${chatId}`);
     if (this.failNextSend) {
       this.failNextSend = false;
       throw new Error("Telegram refused this one message");
     }
+  }
+  async sendMessage(chatId: number, text: string, buttons: Buttons = []): Promise<number> {
+    this.refuseSend(chatId);
     this.calls.push({ kind: "send", chatId, text, buttons });
-    return this.nextMessageId++; // Telegram's number for the new message
+    this.lastSentId = this.nextMessageId++; // Telegram's number for the new message
+    return this.lastSentId;
+  }
+  // [2026-11-14] A message with the keyboard of behaviour buttons under the chat (rule 5.1).
+  async sendWithKeyboard(chatId: number, text: string, labels: string[]): Promise<number> {
+    this.refuseSend(chatId);
+    this.calls.push({ kind: "send", chatId, text, buttons: [], keyboard: labels });
+    this.lastSentId = this.nextMessageId++;
+    return this.lastSentId;
+  }
+  // [2026-11-14] When true, changing a person's Menu fails.
+  failMenu = false;
+  async setMenu(chatId: number, commands: MenuCommand[] | null): Promise<void> {
+    if (this.failMenu) throw new Error("Telegram refused to change the Menu");
+    this.calls.push({ kind: "menu", chatId, commands });
   }
   async editMessage(chatId: number, messageId: number, text: string, buttons?: Buttons): Promise<void> {
     if (this.failEdits) throw new Error("Telegram refused to edit the message");

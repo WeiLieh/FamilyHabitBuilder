@@ -18,6 +18,11 @@
 // messages, Not today, children, ideas used, and the holidays, read from the
 // tables our server may read) and claimSignUpReminders (migration 009).
 //
+// [2026-11-14] B1, log any time: the keyboard's and /log's logs (saveLog,
+// waitingNudge, loggedToday, chosenBehaviours), Undo (undoLog, through the
+// database's undo_log), /resume (update_parent_settings), and migration 010's
+// Telegram message numbers (recordNudgeSent, findDraft, recordSignUpScreen).
+//
 // Secrets: the Supabase address and server key come only from Vercel's
 // settings. Errors are thrown, never replaced with made-up values (rule 1.3).
 // =============================================================================
@@ -160,10 +165,17 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
     // [2026-11-12] Pull request 2: sign-up on the draft (migration 007).
     async findDraft(telegramId) {
       const row = check(
-        await db.from("sign_up_drafts").select("step, answers").eq("telegram_id", telegramId).is("cut_down_at", null).maybeSingle(),
+        await db.from("sign_up_drafts").select("step, answers, screen_message_id").eq("telegram_id", telegramId).is("cut_down_at", null).maybeSingle(),
         "Finding the sign-up draft",
       );
-      return row ? { step: String(row.step), answers: row.answers as DraftAnswers } : null;
+      return row
+        ? { step: String(row.step), answers: row.answers as DraftAnswers, screenMessageId: row.screen_message_id === null ? null : Number(row.screen_message_id) }
+        : null;
+    },
+
+    // [2026-11-14] Migration 010 (B1-D10).
+    async recordSignUpScreen(telegramId, messageId) {
+      check(await db.rpc("record_sign_up_screen", { p_telegram_id: telegramId, p_message_id: messageId }), "Noting the sign-up screen's number");
     },
 
     async startSignUp(a): Promise<StartSignUpResult> {
@@ -292,6 +304,7 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         await db.rpc("record_message_sent", {
           p_parent: a.parentId, p_kind: "nudge", p_nudge: a.nudgeId, p_example: a.exampleId,
           p_day: a.day, p_slot: a.slotMinute, p_version: await settingsVersion(), p_variants: variants,
+          p_telegram_message: a.telegramMessageId, // [2026-11-14] migration 010
         }),
         "Recording the nudge as sent",
       );
@@ -351,6 +364,81 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         "Checking for Not today",
       );
       return (rows ?? []).length > 0;
+    },
+
+    // ---- [2026-11-14] B1, log any time ----
+    async chosenBehaviours(parentId) {
+      const picks = check(
+        await db.from("picks").select("nudge_id").eq("parent_id", parentId).is("stopped_at", null).order("id"),
+        "Reading the chosen behaviours",
+      ) ?? [];
+      if (picks.length === 0) return [];
+      const ids = picks.map((p) => Number(p.nudge_id));
+      const names = check(await db.from("nudges").select("id, name").in("id", ids), "Reading the behaviours' names") ?? [];
+      return ids.map((id) => {
+        const n = names.find((x) => Number(x.id) === id);
+        if (!n) throw new Error(`Behaviour ${id} has no name`); // never a made-up name (rule 1.3)
+        return { id, name: String(n.name) };
+      });
+    },
+
+    // Today's nudges for this behaviour, newest first: the first with no log from it,
+    // unless Not today was tapped today (it answers every nudge of the day, rule 5.10).
+    async waitingNudge(parentId, day, nudgeId) {
+      if (await this.notTodayOn(parentId, day)) return null;
+      const sent = check(
+        await db.from("messages_sent").select("id, telegram_message_id").eq("parent_id", parentId).eq("kind", "nudge")
+          .eq("for_day", day).eq("nudge_id", nudgeId).order("id", { ascending: false }),
+        "Finding a waiting nudge",
+      ) ?? [];
+      for (const m of sent) {
+        if (!(await this.logExistsFor(Number(m.id)))) {
+          return { messageId: Number(m.id), telegramMessageId: m.telegram_message_id === null ? null : Number(m.telegram_message_id) };
+        }
+      }
+      return null;
+    },
+
+    async loggedToday(parentId, nudgeId, day) {
+      const rows = check(
+        await db.from("habit_logs").select("id").eq("parent_id", parentId).eq("nudge_id", nudgeId).eq("for_day", day).is("undone_at", null).limit(1),
+        "Checking today's logs",
+      );
+      return (rows ?? []).length > 0;
+    },
+
+    async saveLog(a) {
+      const r = await db.rpc("save_habit_log", {
+        p_parent: a.parentId, p_nudge: a.nudgeId, p_day: a.day, p_from_message: a.messageId, p_via: a.via,
+        p_description: null, p_update: a.updateId, p_version: await settingsVersion(), p_variants: variants,
+      });
+      // 23505: a log from this nudge already exists (a Done tap at the same instant, migration 007).
+      if ((r.error as { code?: string } | null)?.code === "23505") return "duplicate";
+      const id = check(r, "Saving the log");
+      return id === null ? "duplicate" : { logId: Number(id) };
+    },
+
+    // The database decides (its own clock, the window from the settings
+    // version) and explains a refusal in words (migration 005).
+    async undoLog(parentId, logId) {
+      const r = await db.rpc("undo_log", { p_parent: parentId, p_log: logId, p_version: await settingsVersion(), p_variants: variants });
+      const message = r.error?.message ?? "";
+      if (message.includes("Undo window has passed")) return "expired";
+      if (message.includes("does not belong") || message.includes("already undone") || message.includes("Only a keyboard log")) return "not_allowed";
+      check(r, "Undoing the log");
+      return "undone";
+    },
+
+    // Rule 8.4 edit 1 changes paused and the Wrap Up time together, so the
+    // Wrap Up time is read first and kept as it is.
+    async resumeReminders(parentId) {
+      const p = need(await db.from("parents").select("wrap_up_minute").eq("id", parentId).single(), "Reading the parent's settings");
+      check(
+        await db.rpc("update_parent_settings", {
+          p_parent: parentId, p_paused: false, p_wrap_up_minute: Number(p.wrap_up_minute), p_version: await settingsVersion(), p_variants: variants,
+        }),
+        "Resuming reminders",
+      );
     },
   };
 }

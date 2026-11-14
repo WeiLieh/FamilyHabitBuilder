@@ -14,6 +14,10 @@
 //   3 nudges a day); Continue on the 24-hour sign-up reminder (W5, W7).
 //   [2026-11-12] For both, the nudge keeps its words and loses its buttons, and
 //   the receipt or note arrives as a new message below it (rule 5.10).
+//   - [2026-11-14] B1, log any time (log-any-time.ts, menu.ts): a keyboard
+//     button's text ("✅ Showing affection") logs that behaviour; the Menu's
+//     commands (/log, /mypage, /settings, /pause, /resume, /help, also typed
+//     without the "/"); the Undo, /log and Resume buttons.
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
 // See src/telegram-bot/SPEC.md, "Build: thin slice 1".
 //
@@ -28,6 +32,8 @@ import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
 import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
 import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./onboarding.js";
+import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap } from "./log-any-time.js";
+import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 
 export type BotDeps = { store: Store; telegram: TelegramApi; now: Date };
 
@@ -86,8 +92,48 @@ async function handleMessage(m: Extract<Incoming, { kind: "message" }>, deps: Bo
       await onboardingText(m.chatId, m.telegramId, m.text, draft, deps);
       return;
     }
+    // [2026-11-14] B1: a parent's command or keyboard button.
+    let parent;
+    try {
+      parent = await store.findParent(m.telegramId);
+    } catch (error) {
+      logFailure("Finding who sent a message failed", error);
+      await telegram.sendMessage(m.chatId, WORDS.signUpFailed);
+      return;
+    }
+    if (parent) {
+      await parentText(m, m.text, parent, deps);
+      return;
+    }
   }
   await telegram.sendMessage(m.chatId, WORDS.unrecognised);
+}
+
+// [2026-11-14] B1: a Menu command (rule 5.7), a keyboard button (rule 5.1), or
+// "Unrecognised text." (typed messages come later, with Claude).
+async function parentText(m: Extract<Incoming, { kind: "message" }>, text: string, parent: { id: number; paused: boolean }, deps: BotDeps): Promise<void> {
+  const { telegram } = deps;
+  const command = parseCommand(text);
+  if (command === "log") return sendLogChoice(m.chatId, parent, deps);
+  if (command === "help") {
+    await sendHelp(m.chatId, parent, deps);
+    await syncMenu(m.chatId, parent, telegram);
+    return;
+  }
+  if (command !== null) return runMenuCommand(command, m.chatId, parent, deps);
+  let behaviour;
+  try {
+    behaviour = await matchKeyboard(text, parent, deps);
+  } catch (error) {
+    logFailure("Reading the chosen behaviours failed", error);
+    await telegram.sendMessage(m.chatId, WORDS.didNotSave);
+    return;
+  }
+  if (!behaviour) {
+    await telegram.sendMessage(m.chatId, WORDS.unrecognised); // K7
+    return;
+  }
+  await logBehaviour(m.chatId, parent, behaviour, "keyboard", m.updateId, deps);
 }
 
 async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): Promise<void> {
@@ -135,6 +181,13 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
     await telegram.answerTap(t.tapId).catch(() => undefined);
     return;
   }
+
+  // [2026-11-14] B1: Undo, /log's buttons, and Resume or Cancel.
+  const undo = /^undo:(\d+)$/.exec(t.data);
+  if (undo) return undoTap(t, parent, Number(undo[1]), deps);
+  const log = /^log:(\d+)$/.exec(t.data);
+  if (log) return logTap(t, parent, Number(log[1]), deps);
+  if (t.data === "resume:yes" || t.data === "resume:no") return resumeTap(t, parent, deps);
 
   // [2026-11-13] Nudge buttons carry the day and slot they were sent for:
   // "done:2026-11-11:1140" or "skip:2026-11-11:1140" (up to 3 nudges a day).

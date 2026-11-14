@@ -21,6 +21,12 @@
 // choices and history instead, "nudgeExamples" the ideas to choose from, and
 // "claimSignUpReminders" the people due their one sign-up reminder (Q11b).
 
+// [2026-11-14] B1, log any time (src/telegram-bot/SPEC.md, "Build: B1"): the
+// keyboard and /log save logs (saveLog), answering a waiting nudge
+// (waitingNudge); Undo (undoLog, rule 5.8); /resume (resumeReminders); the
+// Telegram message numbers of migration 010 (recordNudgeSent's
+// telegramMessageId, a draft's screenMessageId and recordSignUpScreen).
+
 import type { Target } from "../nudge-engine/choices.js";
 import type { LogEntry, SentMessage } from "../nudge-engine/planner.js";
 import type { Holidays, Schedules } from "../nudge-engine/schedule.js";
@@ -36,7 +42,9 @@ export type DraftAnswers = {
   slots?: { school: number[]; non_school: number[] }; // minutes after midnight, Singapore time
 };
 // A sign-up in progress: the last step reached, and the answers so far.
-export type Draft = { step: string; answers: DraftAnswers };
+// [2026-11-14] With Telegram's number for its latest screen with buttons, if
+// one was noted (migration 010), so "Welcome back" can remove that copy's buttons.
+export type Draft = { step: string; answers: DraftAnswers; screenMessageId: number | null };
 
 // One behaviour (a nudge row) as sign-up shows it. Quick behaviours carry their
 // fixed "Start right now" line, with {child} where the child's name goes.
@@ -73,7 +81,10 @@ export interface Store {
   // /start with a code: hold the code and start a draft, or carry on an active one (Q10a, 10e, 10f).
   startSignUp(a: { telegramId: number; firstName: string; code: string }): Promise<StartSignUpResult>;
   // Save the answers so far and the step reached (rule 8.13).
+  // [2026-11-14] A new step clears the noted screen number (migration 010).
   saveSignUpStep(telegramId: number, step: string, answers: DraftAnswers): Promise<void>;
+  // [2026-11-14] Note Telegram's number for the latest sign-up screen with buttons (B1-D10).
+  recordSignUpScreen(telegramId: number, messageId: number): Promise<void>;
   // "I agree": the draft becomes the parent, children, picks, times, agreement
   // and used invite, all or nothing (rule 11.9). Returns the new parent's number.
   finishSignUp(a: { telegramId: number; updateId: number }): Promise<number>;
@@ -104,7 +115,8 @@ export interface Store {
   // reminder (Q11b; migration 009). Telegram IDs only, never names.
   claimSignUpReminders(): Promise<{ telegramId: number; step: string }[]>;
   // A nudge message was sent (one per parent, day and slot, rule 8.6).
-  recordNudgeSent(a: { parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number }): Promise<void>;
+  // [2026-11-14] With Telegram's number for the message (migration 010, B1-D7).
+  recordNudgeSent(a: { parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number; telegramMessageId: number }): Promise<void>;
   // The nudge message this parent got on that day and slot, if any.
   findNudgeMessage(parentId: number, day: string, slotMinute: number): Promise<{ messageId: number; nudgeId: number; nudgeName: string } | null>;
   // Has a log already been saved from this nudge message?
@@ -116,4 +128,23 @@ export interface Store {
   // [2026-11-12] Did this parent already tap "Not today" on this Singapore day?
   // Not today stops the whole day (rule 3.5), so it answers every nudge of that day (rule 5.10).
   notTodayOn(parentId: number, day: string): Promise<boolean>;
+
+  // ---- [2026-11-14] B1, log any time ----
+  // The behaviours this parent has chosen now, in the order picked (the keyboard and /log).
+  chosenBehaviours(parentId: number): Promise<{ id: number; name: string }[]>;
+  // Today's nudge for this behaviour, if it is still waiting for an answer (no
+  // log from it, no Not today today): the keyboard or /log then answers it
+  // (rule 5.10). telegramMessageId is empty for nudges sent before migration 010.
+  waitingNudge(parentId: number, day: string, nudgeId: number): Promise<{ messageId: number; telegramMessageId: number | null } | null>;
+  // Has this behaviour already been logged today (not undone)? For "again today" (K4).
+  loggedToday(parentId: number, nudgeId: number, day: string): Promise<boolean>;
+  // Save a log from the keyboard or /log, linked to the nudge it answers (if
+  // any). Returns the new log's number, or "duplicate" if already saved.
+  saveLog(a: { parentId: number; nudgeId: number; day: string; messageId: number | null; via: "keyboard" | "log_command"; updateId: number }): Promise<{ logId: number } | "duplicate">;
+  // Undo a keyboard log (rule 5.8). The database decides, by its own clock and
+  // the Undo window: "undone", "expired", or "not_allowed" (another parent's
+  // log, not a keyboard log, or already undone). Other failures are thrown.
+  undoLog(parentId: number, logId: number): Promise<"undone" | "expired" | "not_allowed">;
+  // /resume: turn this parent's reminders back on (rule 8.4 edit 1, with an event).
+  resumeReminders(parentId: number): Promise<void>;
 }

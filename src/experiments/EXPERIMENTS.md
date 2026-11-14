@@ -52,7 +52,8 @@
 | 29 | Fixed | At least 1 slot: every parent must have at least one nudge time. | Always at least 1 | schedule.ts |
 | 30 | RETIRED [2026-11-09 18:16 SGT] | ~~Weekly Wrap Up on by default.~~ The Wrap Up's own on/off switch was removed (owner, 9 Nov, rule 3.12): one Pause switch stops everything. Number 30 is not reused. | n/a | n/a |
 | 31 | Named rule | Wrap Up day: the day the Weekly Wrap Up is sent. | A day of the week. Today: Sunday | settings.ts |
-| 32 | Tuneable | [2026-11-11 17:28 SGT] Undo window: how long a keyboard log can be undone (rule 5.8). | Seconds. Today: 30 | settings.ts |
+| 32 | Tuneable | [2026-11-14 13:55 SGT] Undo window: how long a keyboard log can be undone (rule 5.8). Changed from 30 to 600 seconds (10 minutes) by the owner, B1-D1, 14 Nov. | Seconds. Today: 600 | settings.ts |
+| 32 | SUPERSEDED [2026-11-14 13:55 SGT] | [2026-11-11 17:28 SGT] Undo window: how long a keyboard log can be undone (rule 5.8). | Seconds. Today: 30 | settings.ts |
 | 33 | Tuneable | [2026-11-11 17:28 SGT] Connection question window: how long the weekly question can be answered (rule 5.6). | Hours. Today: 24 | settings.ts |
 | 34 | Tuneable | [2026-11-11 17:28 SGT] Moment window: how long the bot waits for a moment's photo or line after the button (rule 7.7). | Hours. Today: 24 | settings.ts |
 | 35 | Named rule | [2026-11-11 18:13 SGT] Week-one cohort: the label every parent joins with in week one (rule 11.11). | A neutral label. Today: cohort-1 | settings.ts |

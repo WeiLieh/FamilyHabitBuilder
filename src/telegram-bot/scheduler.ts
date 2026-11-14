@@ -175,7 +175,8 @@ async function sendNudge(parentId: number, { store, telegram, now }: BotDeps, re
     return;
   }
   try {
-    await store.recordNudgeSent({ parentId, nudgeId: plan.nudgeId, exampleId, day, slotMinute: plan.slotStart });
+    // [2026-11-14] With Telegram's number, so a keyboard or /log tap can remove its buttons (B1-D7, rule 5.10).
+    await store.recordNudgeSent({ parentId, nudgeId: plan.nudgeId, exampleId, day, slotMinute: plan.slotStart, telegramMessageId: messageId });
     result.nudgesSent++;
   } catch (error) {
     // Sent but not recorded: its buttons could never save, so say so and remove them (W6).

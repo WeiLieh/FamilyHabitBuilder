@@ -10,6 +10,10 @@
 // [2026-11-13] Pull request 3c: screens 10 and 11 state the planner's real
 // next reminder (rule 3.17, W2, W3) instead of the fixed 7:00 pm (D1, removed);
 // the 24-hour sign-up reminder's Continue button carries on (W5, Q11b).
+// [2026-11-14] B1: screen 11 ("You're all set") brings the keyboard of the
+// parent's behaviours (K1); each screen with buttons has its Telegram number
+// noted in the draft, so "Welcome back" and Continue remove the earlier
+// copy's buttons before showing the screen again (10e addition, W1, W2).
 // Every answer is saved in the person's sign-up draft as they go, with the
 // step reached, so they can stop and carry on later ("Welcome back!", Q10e).
 // Nothing personal reaches the real tables until "I agree", which turns the
@@ -35,6 +39,7 @@ import { logFailure } from "./log-failure.js";
 import type { Button } from "./telegram-api.js";
 import type { Incoming } from "./updates.js";
 import { spacedTime, whenWords, WORDS } from "./words.js";
+import { keyboardLabels } from "./log-any-time.js";
 
 type Start = Extract<Incoming, { kind: "start" }>;
 type Tap = Extract<Incoming, { kind: "tap" }>;
@@ -58,6 +63,7 @@ export async function startOnboarding(s: Start, deps: BotDeps): Promise<void> {
   }
   // Halfway through: carry on, whatever link they used (Q10e, 10f).
   if (draft) {
+    await clearEarlierCopy(s.chatId, draft, deps); // [2026-11-14] W1
     await telegram.sendMessage(s.chatId, WORDS.welcomeBack);
     await showStep(s.chatId, draft, deps);
     return;
@@ -129,6 +135,7 @@ export async function onboardingTap(t: Tap, draft: Draft, deps: BotDeps): Promis
   // where they stopped, as when they reopen their invite link (Q10e).
   if (t.data === "signup:continue") {
     await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+    await clearEarlierCopy(t.chatId, draft, deps); // [2026-11-14] W2
     await quietly("Sending 'welcome back' failed", () => telegram.sendMessage(t.chatId, WORDS.welcomeBack));
     await showStep(t.chatId, draft, deps);
     return;
@@ -356,12 +363,22 @@ async function notNowLine(chatId: number, parentId: number, deps: BotDeps): Prom
 // Screen 11: "You're all set" and the link to My page (a placeholder until the Web app).
 // [2026-11-12] Review fix F2: without a first name, that line is left out rather
 // than shown with a blank (rule 1.3); the database never lets this happen for a parent.
+// [2026-11-14] B1 (K1): it brings the keyboard, one button per chosen behaviour.
+// If the choices can't be read, the line is sent without it (/help brings it later).
 async function allSet(chatId: number, firstName: string | undefined, parentId: number, deps: BotDeps): Promise<void> {
-  const { telegram } = deps;
+  const { store, telegram } = deps;
   if (firstName) {
     const when = await nextReminderWords(parentId, deps);
     const text = when === "none" ? WORDS.allSetNoReminder(firstName) : when === "unknown" ? WORDS.allSetUnknown(firstName) : WORDS.allSet(firstName, when);
-    await quietly("Sending 'all set' failed", () => telegram.sendMessage(chatId, text));
+    let labels: string[] = [];
+    try {
+      labels = keyboardLabels(await store.chosenBehaviours(parentId));
+    } catch (error) {
+      logFailure("Reading the behaviours for the keyboard failed", error);
+    }
+    await quietly("Sending 'all set' failed", () =>
+      labels.length > 0 ? telegram.sendWithKeyboard(chatId, text, labels) : telegram.sendMessage(chatId, text),
+    );
   } else logFailure("'All set' left out: no first name", new Error("missing data"));
   await quietly("Sending the page link failed", () =>
     telegram.sendMessage(chatId, WORDS.myPage, [[{ text: WORDS.openMyPageButton, url: WEB_PAGES.myPage }]]),
@@ -371,10 +388,17 @@ async function allSet(chatId: number, firstName: string | undefined, parentId: n
 // ---- Showing a screen --------------------------------------------------------
 
 // Show the screen for a step: after moving on, and after "Welcome back!".
-async function showStep(chatId: number, draft: Draft, deps: BotDeps): Promise<void> {
+// [2026-11-14] A screen with buttons has its Telegram number noted in the
+// draft (B1-D10). In a private chat the chat's number is the person's
+// Telegram ID. If noting fails, only the "Welcome back" clean-up is lost.
+async function showStep(chatId: number, draft: Pick<Draft, "step" | "answers">, deps: BotDeps): Promise<void> {
   const { store, telegram } = deps;
   const a = draft.answers;
-  const send = (text: string, buttons?: Button[][]) => quietly("Showing a sign-up screen failed", () => telegram.sendMessage(chatId, text, buttons));
+  const send = (text: string, buttons?: Button[][]) =>
+    quietly("Showing a sign-up screen failed", async () => {
+      const id = await telegram.sendMessage(chatId, text, buttons);
+      if (buttons && buttons.length > 0) await quietly("Noting the screen's number failed", () => store.recordSignUpScreen(chatId, id));
+    });
   switch (draft.step as Step) {
     case "name":
       return send(WORDS.childQuestion);
@@ -447,6 +471,13 @@ function quickButtons(behaviours: Behaviour[], picked: number[]): Button[][] {
 const deliberateIntro = (quickCount: number) => (quickCount > 0 ? WORDS.deliberateIntro : WORDS.deliberateNeeded);
 
 // ---- Helpers -----------------------------------------------------------------
+
+// [2026-11-14] "Welcome back" (10e addition): take the buttons off the earlier
+// copy of this screen, so only the new copy looks usable. None noted: nothing to do.
+async function clearEarlierCopy(chatId: number, draft: Draft, { telegram }: BotDeps): Promise<void> {
+  const earlier = draft.screenMessageId;
+  if (earlier !== null) await quietly("Removing the earlier screen's buttons failed", () => telegram.removeButtons(chatId, earlier));
+}
 
 // Save a step to the draft. If it fails, say so honestly and stay on this
 // screen (rule 1.3). Returns true when saved.

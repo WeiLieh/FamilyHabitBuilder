@@ -9,6 +9,7 @@
 // nudge of thin slice 1), whose tests are rewritten here (CLAUDE.md rule 12).
 // Test day: Wednesday 11 Nov 2026 (a school day). Default slots: school days
 // 7:00 am, 7:00 pm, 9:00 pm; non-school days 9:00 am, 12:30 pm, 7:00 pm.
+// [2026-11-14] B1: S3 also checks the nudge is recorded with Telegram's message number (B1-D7).
 // =============================================================================
 
 import { createServer, type Server } from "node:http";
@@ -69,7 +70,10 @@ describe("S. Nudges from the planner", () => {
         ],
       },
     ]);
-    expect(store.sentNudges).toEqual([expect.objectContaining({ parentId: id, nudgeId: 2, exampleId: 21, day: today, slotMinute: 1140 })]);
+    // [2026-11-14] B1-D7: recorded with Telegram's number for the message, so its buttons can be removed later (rule 5.10).
+    expect(store.sentNudges).toEqual([
+      expect.objectContaining({ parentId: id, nudgeId: 2, exampleId: 21, day: today, slotMinute: 1140, telegramMessageId: telegram.lastSentId }),
+    ]);
   });
 
   // S4

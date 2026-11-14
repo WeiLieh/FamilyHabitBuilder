@@ -49,7 +49,8 @@ describe("A. Starting with /start", () => {
     await type("/start WELCOME-1");
     expect(store.parents).toEqual([]); // nothing personal in the real tables (rule 8.13)
     expect(store.holds.get("WELCOME-1")).toBe(ME);
-    expect(store.drafts.get(ME)).toEqual({ step: "name", answers: { first_name: "John" } });
+    // [2026-11-14] Rewritten (B1-D10): the draft also notes its latest screen; none with buttons yet.
+    expect(store.drafts.get(ME)).toEqual({ step: "name", answers: { first_name: "John" }, screenMessageId: null });
     expect(telegram.calls[0]).toMatchObject({ kind: "send", text: WELCOME, buttons: [[{ text: "Change name", data: "name:change" }]] });
     expect(telegram.sentTexts()[1]).toBe(CHILD_QUESTION);
   });
@@ -285,6 +286,8 @@ describe("D. Times and plan", () => {
         picks: [{ nudge_id: QUICK[1]!.id, frequency: "every_2_days" }],
         slots: { school: [420, 1140, 1260], non_school: [540, 750, 1140] },
       },
+      // [2026-11-14] Rewritten (B1-D10): the draft also notes the agreement screen's Telegram number.
+      screenMessageId: telegram.lastSentId,
     });
     expect(lastSend()).toMatchObject({ buttons: [[{ text: "✅ I agree", data: "agree" }]] });
   });

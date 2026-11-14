@@ -99,7 +99,8 @@ export const CHILD_AGE_TARGET = { youngest: 7, oldest: 12 };
 
 // ---- Time windows (rules 5.6, 5.8, 7.7; owner, 8 and 9 Nov; added 11 Nov) ------
 // Undo: a keyboard log can be undone for this many seconds (rule 5.8).
-export const UNDO_WINDOW_SECONDS = 30;
+// [2026-11-14] 10 minutes, was 30 seconds (owner, B1-D1; src/experiments/EXPERIMENTS.md item 32).
+export const UNDO_WINDOW_SECONDS = 600;
 // The weekly connection question can be answered for this many hours after it
 // is sent (rule 5.6). The message says "Question expires in 24 hrs".
 export const CONNECTION_ANSWER_WINDOW_HOURS = 24;
@@ -157,6 +158,8 @@ export const DEFAULT_FREQUENCIES = { quick: "every_2_days", deliberate: "once_a_
 // [2026-11-12] The placeholder web page until the Web app exists (owner, 12 Nov):
 // public/my-page.html on the live Vercel address. (public/settings.html exists
 // too, but nothing links to it yet: the /settings command comes with the Menu.)
+// [2026-11-14] B1-D3: /settings and /pause link to public/settings.html.
 export const WEB_PAGES = {
   myPage: "https://family-habit-builder.vercel.app/my-page.html",
+  settings: "https://family-habit-builder.vercel.app/settings.html",
 } as const;
