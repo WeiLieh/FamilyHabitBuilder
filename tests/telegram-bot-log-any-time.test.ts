@@ -3,7 +3,8 @@
 //
 // [2026-11-14] What a parent can do without waiting for a reminder
 // (src/telegram-bot/SPEC.md, "Build: B1", tests agreed with the owner on 14 Nov):
-//   - K1 to K7: the keyboard under the chat, one button per chosen behaviour (rule 5.1)
+//   - K1 to K7: the keyboard under the chat, one button per chosen behaviour (rule 5.1);
+//     [2026-11-14] K8 to K10 added after the B1 reviews (owner chose these fixes)
 //   - U1 to U4: Undo under a keyboard log's receipt, for 10 minutes (rule 5.8, B1-D1)
 //   - L1 to L3: /log, the same choice as buttons (rules 5.1, 5.7; no Undo, B1-D5)
 //   - M1 to M5: the Menu: /mypage, /settings, /pause, /resume, /help (rule 5.7, B1-D3, B1-D8)
@@ -116,6 +117,30 @@ describe("The keyboard (rule 5.1)", () => {
     await say("✅ Hug");
     expect(store.logs).toEqual([]);
     expect(telegram.sentTexts()).toEqual(["Unrecognised text.", "Unrecognised text."]);
+  });
+});
+
+describe("Keyboard, after the B1 review (owner, 14 Nov)", () => {
+  it("K8 the same keyboard message saved twice (Telegram resent it) replies 'Already saved.', never a second receipt", async () => {
+    await handleUpdate(parseUpdate(textUpdate(ME, "Wei Lieh", "✅ Showing affection", 9999)), deps());
+    await handleUpdate(parseUpdate(textUpdate(ME, "Wei Lieh", "✅ Showing affection", 9999)), deps());
+    expect(store.logs).toHaveLength(1);
+    expect(telegram.sentTexts()).toEqual([RECEIPT, "Already saved."]);
+  });
+
+  it("K9 a nudge sent before migration 010 (no Telegram number) is still answered; only its buttons can't be removed", async () => {
+    await store.recordNudgeSent({ parentId, nudgeId: 2, exampleId: 21, day: today, slotMinute: 1140 });
+    await say("✅ Showing affection");
+    expect(store.logs).toEqual([expect.objectContaining({ messageId: store.sentNudges[0]!.id })]);
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }]);
+  });
+
+  it("K10 once saved, a Telegram failure removing the nudge's buttons never says 'didn't save' (rule 1.3)", async () => {
+    await sendNudge();
+    telegram.failRemoveButtons = true;
+    await say("✅ Showing affection");
+    expect(store.logs).toHaveLength(1);
+    expect(telegram.sentTexts()).toEqual([RECEIPT]);
   });
 });
 

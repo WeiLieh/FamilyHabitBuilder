@@ -133,7 +133,9 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
     await telegram.sendMessage(m.chatId, WORDS.unrecognised); // K7
     return;
   }
-  await logBehaviour(m.chatId, parent, behaviour, "keyboard", m.updateId, deps);
+  const result = await logBehaviour(m.chatId, parent, behaviour, "keyboard", m.updateId, deps);
+  // [2026-11-14] Review fix (owner): already saved (Telegram resent it, or a tap at the same instant): say so, never a second receipt (K8).
+  if (result === "duplicate") await telegram.sendMessage(m.chatId, WORDS.alreadySaved).catch((error) => logFailure("Sending 'already saved' failed", error));
 }
 
 async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): Promise<void> {

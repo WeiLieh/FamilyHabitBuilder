@@ -18,8 +18,11 @@
 --      draft edit (rule 8.4, edit 8), owner's choice, 14 Nov (B1-D10).
 --
 -- Why it is built this way: like writing a parcel's tracking number on the
--- delivery note when it is posted, so it can be found later. Telegram's
--- number is not personal data (it only counts the messages in one chat).
+-- delivery note when it is posted, so it can be found later. [2026-11-14
+-- SGT, review] Stored next to the parent, Telegram's number is personal data
+-- (it belongs to one identifiable person's chat), but low-risk: it says
+-- nothing about the family, and it is deleted with the parent ("delete my
+-- data", rule 1.5) or with the draft.
 -- The 10-minute Undo window (B1-D1) needs no change here: undo_log already
 -- reads the window from the settings version (migration 005, rule 1.4).
 --

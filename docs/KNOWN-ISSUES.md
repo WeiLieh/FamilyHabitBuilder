@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-14 14:20 SGT] Failure logs name the parent's internal number
+- **Issue:** [2026-11-14 14:20 SGT] When the alarm run fails for one parent, Vercel's log line names that parent's internal database number (for example "Nudge not sent to parent 12"). It is not a Telegram ID or a name, but it points to one person (privacy review of B1; the lines date from pull request 3c, `src/telegram-bot/scheduler.ts`).
+- **Impact:** [2026-11-14 14:20 SGT] Low: only someone with Vercel access and database access could link it to a person. A PDPA reviewer may still ask.
+- **Workaround:** [2026-11-14 14:20 SGT] Owner's choice (14 Nov): leave it for now. Later options: drop the number, or log a short one-way code instead.
+
 ### [2026-11-13 23:34 SGT] The alarm run handles about 50 parents
 - **Issue:** [2026-11-13 23:34 SGT] Each 10-minute run reads every parent's last 14 days in one answer per table. Supabase answers at most about 1,000 rows, so past roughly 50 active parents the run stops with an error rather than plan from missing data (rule 1.3; pull request 3c review).
 - **Impact:** [2026-11-13 23:34 SGT] None for the trial (a handful of families). Before alpha, nudges would stop until the design changes.
