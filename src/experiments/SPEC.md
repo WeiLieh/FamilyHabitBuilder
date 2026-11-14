@@ -12,6 +12,7 @@
 - Uses: the [Datastore](../datastore/SPEC.md) (settings versions, experiment definitions, assignments). Used by: the [Nudge engine](../nudge-engine/SPEC.md) (which passes reward settings on to [Variable rewards](../variable-rewards/SPEC.md)) and [Telemetry](../telemetry/SPEC.md) (results split by variant), per the arrows in [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
 
 ## Code in this folder
+- [2026-11-13 23:24 SGT] Still none. Values 42 and 43 (the sign-up reminder after 24 hours; the next-reminder look-ahead of 14 days) were added to [EXPERIMENTS.md](EXPERIMENTS.md) for pull requests 3a and 3b; the numbers stay in `src/settings.ts`.
 - [2026-11-12 23:10 SGT] Still none. Values 40 and 41 (name length, default frequencies) were added to [EXPERIMENTS.md](EXPERIMENTS.md) for the onboarding screens; the numbers stay in `src/settings.ts`.
 - [2026-10-31 19:06 SGT] None yet. The adjustable numbers are still in the cross-cutting file `src/settings.ts` (rule 1.4).
 

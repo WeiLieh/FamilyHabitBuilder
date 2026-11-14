@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-13 23:34 SGT] The alarm run handles about 50 parents
+- **Issue:** [2026-11-13 23:34 SGT] Each 10-minute run reads every parent's last 14 days in one answer per table. Supabase answers at most about 1,000 rows, so past roughly 50 active parents the run stops with an error rather than plan from missing data (rule 1.3; pull request 3c review).
+- **Impact:** [2026-11-13 23:34 SGT] None for the trial (a handful of families). Before alpha, nudges would stop until the design changes.
+- **Workaround:** [2026-11-13 23:34 SGT] The design for 1,000 to 5,000 parents is in `docs/PRODUCT-BACKLOG.md` (only parents whose slot is now, pages of about 200, sending spread over the slot). Vercel's Logs show the error if it ever happens.
+
 ### [2026-11-13 22:38 SGT] The sign-up reminder goes to someone who has not agreed yet
 - **Issue:** [2026-11-13 22:38 SGT] Someone who stops part-way through sign-up gets one "You're almost there!" message 24 hours later, before they have tapped "I agree" (rule 8.13, Q11b, migration 009). The only way to avoid it is to finish, or delete the draft.
 - **Impact:** [2026-11-13 22:38 SGT] Low for the trial (invite-only, a few known parents); a PDPA reviewer may ask about messaging people before consent.

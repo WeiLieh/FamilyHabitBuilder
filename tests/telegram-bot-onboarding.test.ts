@@ -33,8 +33,9 @@ const lastSend = () => [...telegram.calls].reverse().find((c) => c.kind === "sen
 const buttonTexts = (call: ReturnType<typeof lastSend>) =>
   call.kind === "send" ? call.buttons.flat().map((b) => b.text) : [];
 
+// [2026-11-13] N3 (W4, owner): the notice now says one reminder may come (rewritten, rule 8.13, PDPA).
 const WELCOME =
-  "Thanks for joining, John!\n\nWe'll keep your answers for 7 days while you set up. Nothing is saved for good until you agree.";
+  "Thanks for joining, John!\n\nWe'll keep your answers for 7 days while you set up, and may send you one reminder to finish. Nothing is saved for good until you agree.";
 const CHILD_QUESTION = "What's your child's name? Type their first name, a nickname works too.";
 
 beforeEach(() => {
@@ -320,5 +321,30 @@ describe("E. Agreeing", () => {
     await type("Mia");
     expect(store.drafts.get(ME)?.answers.children).toBeUndefined();
     expect(telegram.sentTexts().at(-1)).toBe("Sorry, that didn't save. Please try again.");
+  });
+});
+
+// [2026-11-13] Pull request 3c: tapping Continue on the 24-hour sign-up reminder (Q11b, W5, W7).
+describe("R. Continue on the sign-up reminder", () => {
+  // R4
+  it("R4. while still signing up: 'Welcome back! Let's carry on.' and the screen they stopped on", async () => {
+    await type("/start WELCOME-1");
+    await type("Mia");
+    telegram.calls = [];
+    await tap("signup:continue", 777);
+    expect(telegram.sentTexts()).toEqual(["Welcome back! Let's carry on.", "Mia. Any other children?"]);
+  });
+
+  // R5
+  it("R5. after the sign-up was cut down (7 quiet days): told it has expired, to open the invite link again", async () => {
+    await tap("signup:continue", 777);
+    expect(telegram.sentTexts()).toEqual(["This sign-up has expired. Please open your invite link again to start over."]);
+  });
+
+  // R6
+  it("R6. after finishing sign-up: 'You're already signed up.'", async () => {
+    store.addParent({ telegramId: ME, firstName: "John", agreed: true });
+    await tap("signup:continue", 777);
+    expect(telegram.sentTexts()).toEqual(["You're already signed up."]);
   });
 });

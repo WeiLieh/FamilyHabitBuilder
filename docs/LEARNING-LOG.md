@@ -4,6 +4,16 @@
 
 ## Notebook
 
+### [2026-11-14 00:17 SGT] Take a ticket before you act ("claim, then send")
+- **Concept:** Claiming work in one step (a database "claim": mark and return in a single statement, with the rows locked).
+- **In plain English:** When an alarm runs every 10 minutes, two runs can overlap. If each one first asks "who needs a reminder?" and only later marks them, both can send the same reminder. Instead, the database marks the people as "reminded" and hands them over in the same step, so only one run can ever take each person.
+- **Analogy:** A deli counter's ticket machine: once you pull number 42, nobody else can get 42, even if two people reach for the machine at once.
+- **Why and when to use it:** for anything that must happen at most once (a reminder, a payment, a nudge per slot) when more than one worker can run at the same time. Not needed when only one worker ever runs, or when doing it twice is harmless.
+- **Best practices:** mark and return in one statement; decide what a failure after claiming means (here: logged, not retried, because one reminder is the promise); keep a database rule as a second lock (one nudge per slot, rule 8.6).
+- **Where it showed up in this project:** migration 009's `claim_sign_up_reminders` (pull request 3a) and the one-nudge-per-slot rule that lets the 10-minute alarm run safely (pull request 3c).
+- **Explain it to others:** "Our alarm runs every 10 minutes and runs can overlap, so the database hands out reminders like tickets from a deli machine: each person can only be taken once, so nobody ever gets the same reminder twice."
+- **Governance angle:** a reviewer may ask "what stops a double send?" Answer: the claim is one locked statement, and the database refuses a second nudge per slot.
+
 ### [2026-11-12 23:20 SGT] A bookmark for a multi-step form (a "state machine")
 - **Concept:** a state machine: a program that is always on exactly one step, and only certain actions move it to the next.
 - **In plain English:** each person's sign-up draft remembers the one screen they are on (its "step"). A button only works on the screen it belongs to, and each answer moves the bookmark on. That is why someone can stop and carry on days later, and why tapping an old button higher up the chat does nothing.

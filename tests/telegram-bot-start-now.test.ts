@@ -6,6 +6,9 @@
 // planner is live (pull request 3), the only reminder is the 7:00 pm one, so
 // that is the time these screens state (owner's decision D1, 12 Nov). The
 // numbers in the test names are the owner's agreed test list of 12 Nov.
+// [2026-11-13] Pull request 3c: the reminder time is now the planner's real
+// next reminder (rule 3.17), not the fixed 7:00 pm (D1, removed). Tests 24 and
+// 27 expect the planner's answer; test 28 is rewritten as N1; N2 is new.
 // =============================================================================
 
 import { beforeEach, describe, expect, it } from "vitest";
@@ -51,7 +54,8 @@ describe("F. Start right now and All set", () => {
     await tap("start:done", 900);
     expect(store.logs).toEqual([expect.objectContaining({ nudgeId: QUICK[1]!.id, day: "2026-11-11", messageId: store.startNow[0]!.id, via: "start_now" })]);
     expect(telegram.calls[0]).toEqual({ kind: "removeButtons", chatId: ME, messageId: 900 });
-    expect(telegram.sentTexts()).toEqual(["✅ Saved: Showing affection today.", "You're all set, John. Your next reminder is today at 7:00 pm.", PAGE]);
+    // [2026-11-13] Logged today, every 2 days (the default): next due on Friday (rules 3.7, 3.17).
+    expect(telegram.sentTexts()).toEqual(["✅ Saved: Showing affection today.", "You're all set, John. Your next reminder is on Friday at 7:00 am.", PAGE]);
     const page = telegram.calls.find((c) => c.kind === "send" && c.text === PAGE);
     expect(page).toMatchObject({ buttons: [[{ text: "Open my page ↗", url: "https://family-habit-builder.vercel.app/my-page.html" }]] });
   });
@@ -87,18 +91,49 @@ describe("F. Start right now and All set", () => {
     telegram.calls = [];
     await tap("agree", 800);
     expect(store.startNow).toEqual([]);
-    expect(telegram.sentTexts()).toEqual(["You're all set, John. Your next reminder is today at 7:00 pm.", PAGE]);
+    // [2026-11-13] A deliberate behaviour is nudged on Friday (rule 3.10): Friday's first school-day slot.
+    expect(telegram.sentTexts()).toEqual(["You're all set, John. Your next reminder is on Friday at 7:00 am.", PAGE]);
   });
 
-  it("28. the reminder time is the real 7:00 pm one: 'today' before 7 pm, 'tomorrow' from 7 pm (D1, until pull request 3)", async () => {
-    now = sgtInstant("2026-11-11", 19 * 60); // 7:00 pm: tonight's reminder has gone
+  // [2026-11-13] N1, rewritten from test 28 ("the real 7:00 pm one", D1 removed, CLAUDE.md rule 12).
+  it("N1. the time is the planner's next slot: at 7:00 pm on a school day, tonight's 9:00 pm; at 9:30 pm, tomorrow 7:00 am", async () => {
+    now = sgtInstant("2026-11-11", 19 * 60); // 7:00 pm: that slot has started, so the next is 9:00 pm
     await goTo("finished", deps(), ME);
     telegram.calls = [];
     await tap("start:notnow", 900);
     expect(telegram.sentTexts().slice(0, 2)).toEqual([
-      "No problem. Your first reminder is tomorrow at 7:00 pm.",
-      "You're all set, John. Your next reminder is tomorrow at 7:00 pm.",
+      "No problem. Your first reminder is today at 9:00 pm.",
+      "You're all set, John. Your next reminder is today at 9:00 pm.",
     ]);
+  });
+
+  it("N1. after 9:00 pm on a Wednesday, the next reminder is tomorrow at 7:00 am", async () => {
+    now = sgtInstant("2026-11-11", 21 * 60 + 30);
+    await goTo("finished", deps(), ME);
+    telegram.calls = [];
+    await tap("start:notnow", 900);
+    expect(telegram.sentTexts()[0]).toBe("No problem. Your first reminder is tomorrow at 7:00 am.");
+  });
+
+  // [2026-11-13] N2
+  it("N2. with no next reminder (here: paused since signing up), both lines say so honestly, never a made-up time", async () => {
+    await goTo("finished", deps(), ME);
+    store.parents[0]!.paused = true;
+    telegram.calls = [];
+    await tap("start:notnow", 900);
+    expect(telegram.sentTexts().slice(0, 2)).toEqual([
+      "No problem. We'll remind you when one of your habits is next due.",
+      "You're all set, John. We'll remind you when one of your habits is next due.",
+    ]);
+  });
+
+  // [2026-11-13] Rule 1.3: a failed read is shown as a failure (draft wording, for the owner).
+  it("if the next reminder can't be worked out (the database can't answer), 'All set' says so instead of guessing", async () => {
+    await goTo("agreement", deps(), ME, { quick: [], deliberate: DELIBERATE[0]!.id });
+    store.failReadsOf.add("planningDataFor");
+    telegram.calls = [];
+    await tap("agree", 800);
+    expect(telegram.sentTexts()[0]).toBe("You're all set, John. Sorry, we couldn't check when your next reminder is.");
   });
 
   it("if recording the start-now message fails, its buttons are replaced by an honest note and sign-up still ends with 'All set'", async () => {

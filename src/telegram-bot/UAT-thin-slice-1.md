@@ -33,6 +33,10 @@ The automated tests (166, run on every pull request, including the honest "didn'
 
 ## Part 2: test cases
 
+[2026-11-14 00:07 SGT] **Results, 14 Nov just after midnight (owner):** U12 **pass** (Friday's untapped nudge, tapped after midnight: the "Reminder has expired" pop-up). U13 **pass** (paused, cron job run on the new day: no nudge after 2 minutes, today's `messages_sent` count 0; then unpaused, `paused` back to false). An earlier U13 attempt before midnight proved nothing (that day's nudge had already gone) and changed nothing. Still to run: U14, U15, U16.
+
+[2026-11-13 23:39 SGT] **Results, 13 Nov (run by Claude Code from the cloud session):** U0 **pass** (`/docs/SPEC.md` and `/src/settings.ts` both 404 NOT_FOUND); U1 **pass** (`/api/health` 200 `{"ok":true,"service":"family-habit-builder"}`); U2 **pass** (`/api/telegram-bot` 401 `{"ok":false}`).
+
 [2026-11-12 20:54 SGT] **Results, 12 Nov (owner):** U11 **pass** (the nudge turned into the comforting note, as designed then). The owner found a disappearing nudge not intuitive, so rule 5.10 changes it: U10 and U11 describe the old behaviour; **U15 and U16 check the new one** after the update is deployed.
 
 [2026-11-11 21:55 SGT] **Results, 11 Nov (owner):** U2 to U10 **pass** (U4's reply was slow to show in Telegram Web; U5 needed the webhook address fixed first, see `docs/ERROR-LOG.md`). Still to run: U11, U12 and U13 (need tomorrow's nudge), U14.
