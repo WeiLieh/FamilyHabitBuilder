@@ -29,6 +29,8 @@
   (These are the drafts in `src/telegram-bot/words.ts`; a test checks the two stay the same.)
 - [ ] **S4.** Close and reopen the chat with the bot: the **Menu** button next to the typing box shows the five commands.
 
+[2026-11-14 15:32 SGT] **Results, 14 Nov (owner):** S1 **done** (migration 010 applied; check `1 | 1 | 1 | true | false`, fingerprint recorded). S2 **done** (#47 merged; Vercel Production "Ready"). Also on 14 Nov: the planner's go-live G1 to G5 and U29 **pass** (alarm runs at 3:00, 3:10, 3:20 pm, each answered 200; see [UAT-planner.md](UAT-planner.md)). Still to do: S3, S4, U40 to U55.
+
 ## Test cases
 Use your test account (it has picks, times and a child's name). An account that signed up before B1 has no keyboard yet: send `/help` to get it (U40).
 

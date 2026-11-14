@@ -13,6 +13,8 @@
 - [ ] **G4.** SQL Editor > a fresh tab > paste `src/datastore/supabase/content/2026-11-13_alarm_every_10_minutes.sql`, replace `<YOUR-CRON-SECRET>` with the `CRON_SECRET` from Vercel's settings (typed in Supabase only), Run.
 - [ ] **G5.** Check: `select jobname, schedule, active from cron.job;` shows `fhb-alarm`, `*/10 * * * *`, `true`.
 
+[2026-11-14 15:32 SGT] **Results, 14 Nov (owner):** #45 merged; G2 to G5 **done** (Vercel "Ready"; pg_cron and pg_net on; the alarm job `fhb-alarm`, every 10 minutes, active). The cron secret was replaced with a new one after the first one was shown in a screenshot (never reached the job). U29 **pass** (runs at 07:00, 07:10, 07:20 UTC, each 200). U15 and U16 of the thin slice were not run: replaced by U31 and U35 here (owner, 14 Nov). Still to run: U30 to U39 as reminders arrive.
+
 ## Test cases
 Use the test account you signed up with in U17 to U27 (it has picks, times and a child's name). Your old thin-slice account has no picks or times, so it now gets **no** nudges: that is correct.
 
