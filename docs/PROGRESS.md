@@ -8,6 +8,8 @@
 - [2026-11-14 14:20 SGT] Owner's decision **B1-D10**: the sign-up draft keeps only its latest screen's number, replaced per screen (inside rule 8.4 edit 8; no new narrow edit).
 - [2026-11-14 14:20 SGT] **Migration 010** written test-first (T91 to T98; database checks 171 to 182 PASS lines). **Not applied yet.**
 - [2026-11-14 14:20 SGT] **B1 built test-first:** keyboard, /log, Undo for 10 minutes, the Menu per person, /help, the "Welcome back" fix (`log-any-time.ts`, `menu.ts`; tests/telegram-bot-log-any-time.test.ts). Rules 5.1, 5.7, 5.8, 5.10, 8.4, 8.13 updated. Four tests rewritten, none removed. App tests 249 to 275.
+- [2026-11-14 16:08 SGT] **Go-live (owner, 14 Nov):** #45 merged; G2 to G5 and U29 pass (the alarm runs every 10 minutes, answered 200; the cron secret was replaced after it showed in a screenshot). #46 closed (its notes came with #47); #47 (B1) merged; migration 010 applied (fingerprint 0d06a087a859); BotFather Menu set. B1 UAT: S1 to S4, U42, U43, U47 to U51, U54, U55 pass.
+- [2026-11-14 16:08 SGT] **Test accounts tidied (owner, 14 Nov):** the owner's thin-slice record (parent 1, no habits) and Test Parent (parent 2, the second account's holder no longer testing) deleted with `delete_my_data`; the owner signed up again (parent 3) with a fresh code. Only parent 3 is left. The test account is no longer on the owner's phone.
 - [2026-11-14 14:20 SGT] Both review agents (H3): no High. Owner chose all four fixes (K8 "Already saved.", tests K9 and K10, the migration comment, a known issue). Owner checklist: `src/telegram-bot/UAT-b1.md` (S1 to S4, U40 to U55).
 ### In progress
 - [2026-11-14 14:20 SGT] None. Branch `claude/kind-gates-5u8dbm` pushed; B1's pull request waits until #45 is merged (it is stacked on #45).
