@@ -4,6 +4,25 @@
 
 ## Notebook
 
+### [2026-11-14 21:40 SGT] Two kinds of Telegram buttons: under a message, or in place of the keyboard
+- **Concept:** inline buttons versus a reply keyboard (Telegram's two ways to offer buttons).
+- **In plain English:** inline buttons sit under one message and send the bot a hidden code when tapped (✅ Done, Undo). A reply keyboard replaces the phone's keyboard with big buttons that stay there; a tap simply sends the button's words as if typed ("✅ Showing affection"), and the bot matches them exactly.
+- **Analogy:** inline buttons are tick-boxes on one form; the reply keyboard is a row of tally counters by the door, always there.
+- **Why and when to use it:** inline buttons for an answer to one message; a reply keyboard for something done often, any time (logging). Not a reply keyboard for yes/no questions: the old answer can't be taken back off the screen.
+- **Best practices:** keep the labels short and unique; match them exactly, never guess; send the keyboard again when the choices change (here: "You're all set" and /help).
+- **Where it showed up in this project:** B1: the keyboard logs a behaviour; Undo, /log's choices and ✅ Resume are inline buttons.
+- **Explain it to others:** "Reminders have buttons under them; logging any time uses a keyboard that's always there, one button per habit."
+
+### [2026-11-14 21:40 SGT] Changing a secret that was shown ("rotating" a secret)
+- **Concept:** rotating a secret: replacing a password or key with a new one, so the old one stops working.
+- **In plain English:** the alarm's secret showed in a screenshot. Instead of hoping nobody saw it, we made a new one, put it in Vercel and Supabase, and redeployed. The old one is now useless.
+- **Analogy:** changing the lock after a key was copied, rather than asking who might have the copy.
+- **Why and when to use it:** whenever a secret may have been seen (a screenshot, a chat, a log, Git). Not needed for codes that are already used up (an old invite code).
+- **Best practices:** letters and numbers only, about 40 long; change it in every place that holds it; redeploy so the app reads the new one; check it works (here: U29, every run answered 200).
+- **Where it showed up in this project:** session 17, step G4 of the planner's go-live.
+- **Explain it to others:** "A secret leaked into a screenshot, so we rotated it within minutes; the old one opens nothing now."
+- **Governance angle:** a security reviewer asks how fast a leaked secret is replaced and whether it is ever written to Git or chat; here: minutes, and never.
+
 ### [2026-11-14 10:37 SGT] A pull request built on top of another (a "stacked" pull request)
 - **Concept:** a stacked pull request: a branch that starts from another branch still waiting for review, instead of from `main`.
 - **In plain English:** pull request #45 holds the newest notes and specs but isn't merged yet (it waits for U15 and U16). Today's notes build on those, so today's branch starts from #45's branch. Its pull request is pointed at #45's branch, so it shows only today's changes; once #45 is merged, it is pointed at `main`.
@@ -13,6 +32,7 @@
 - **Where it showed up in this project:** session 16's notes (UAT results, migrations 008 and 009) sit on top of #45.
 - **Explain it to others:** "Our last change is still in review, so today's work is stacked on it. Reviewers see only today's changes, and we merge them in order."
 - **Governance angle:** a reviewer may ask whether anything unreviewed slips into `main`: no, each pull request is still reviewed and merged on its own, in order.
+- [2026-11-14 21:40 SGT] **Learned in session 17:** GitHub did **not** point #46 at `main` by itself after #45 was merged, and later work on the same branch flowed into it. Merging it would have sent everything into the old branch, not `main`. So: before merging a stacked pull request, check its base says `main`; here #46 was closed and #47 carried its notes.
 
 ### [2026-11-14 00:17 SGT] Take a ticket before you act ("claim, then send")
 - **Concept:** Claiming work in one step (a database "claim": mark and return in a single statement, with the rows locked).

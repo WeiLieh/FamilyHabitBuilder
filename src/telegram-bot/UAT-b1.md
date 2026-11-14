@@ -33,6 +33,8 @@
 
 [2026-11-14 15:59 SGT] **Results, 14 Nov afternoon (owner):** S3 and S4 **done** (the Menu shows the five commands). The owner's thin-slice account (parent 1, no habits) was deleted with `delete_my_data` (test data only) and signed up again with a fresh code, so it has habits; on the old account `/help` showed no keyboard and `/log` said "You haven't chosen any habits yet…", as designed (note for the readability work: the help text still says "keyboard below"). **Pass:** U54 (the earlier copy lost its buttons), U55 (the keyboard: Showing affection, Talking with children), U42 ("again today", because Start right now had logged Showing affection), U43 (Undo within 10 minutes), U47 and U48 (/log, no Undo), U49 (all three links open the right page), U50, U51. **Still to run:** U40 and U41 on a day with nothing logged yet, U44 (late Undo), U45 (tonight's 7:00 pm reminder), U46, U52 and U53 (optional, need a paused account).
 
+[2026-11-14 21:40 SGT] **Results, 14 Nov evening (owner):** U44 **pass** (logged 5:05 pm, Undo tapped 5:19 pm: pop-up "Undo expired.", the button gone). U45 not yet: ✅ Done was tapped on the 7:00 pm reminder (that is planner U31); next time tap the keyboard. Still to run: U40, U41 (a morning with nothing logged yet), U45, U46; optional U52, U53.
+
 ## Test cases
 Use your test account (it has picks, times and a child's name). An account that signed up before B1 has no keyboard yet: send `/help` to get it (U40).
 

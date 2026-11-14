@@ -2,9 +2,11 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-14 13:48 SGT]** (session 16: onboarding UAT **U17 to U27 passed**; **migrations 008 and 009 applied**; **B1 decisions and tests agreed**; #45 still waits for U15 and U16).
+**Last updated: [2026-11-14 21:40 SGT]** (session 17: **B1 built and live** (keyboard, /log, 10-minute Undo, the Menu, Welcome back fix; #47); **the planner is live** (#45, alarm every 10 minutes); migration 010 applied; most UAT passed).
 
-> [2026-11-14 13:48 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** from the **agreed test list** (keyboard, /log, Undo for 10 minutes, the Menu, the "Welcome back" fix, migration 010). **Sunday:** merge #45 and go live.
+> [2026-11-14 21:40 SGT] **⏰ Next:** **UAT:** U40 and U41 tomorrow morning, U45 at the next reminder (keyboard, not ✅ Done), U35 and U46 another day (section 5). **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**, including the B1 drafts (section 4b). **Next Claude Code build (your choice):** the Claude personality and warm reply (rules 3.11, 7.5; needs the nudge personality from you first), or the Web app once its design handoff arrives.
+>
+> SUPERSEDED [2026-11-14 21:40 SGT] [2026-11-14 13:48 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** from the **agreed test list** (keyboard, /log, Undo for 10 minutes, the Menu, the "Welcome back" fix, migration 010). **Sunday:** merge #45 and go live.
 >
 > SUPERSEDED [2026-11-14 13:48 SGT] [2026-11-14 10:38 SGT] **⏰ Today and next:** **In Claude Chat:** (1) design the **Web app** (My Page, Settings); (2) make the **bot's messages easier to read**. **Evenings:** U15 today 7:00 pm, U16 Sunday, U14 any time. **Next Claude Code session:** build **B1** (log any time: keyboard, /log, Undo) and the **"Welcome back" fix**, tests first. **Sunday:** merge #45 and go live.
 >
@@ -24,7 +26,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-14 10:38 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 009 applied** → (3) Telegram bot ⬅ **onboarding live and UAT passed (#40); the planner built (#44 merged, #45 waiting for U15 and U16)** → next: B1 keyboard and Undo, the Web app and message readability (Claude Chat), Claude's words
+[2026-11-14 21:40 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 010 applied** → (3) Telegram bot ✅ **onboarding, the planner (#45) and B1 log any time (#47) all live** → next: the Web app and message readability (Claude Chat), then Claude's words (the personality and warm reply)
+
+SUPERSEDED [2026-11-14 21:40 SGT] [2026-11-14 10:38 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 009 applied** → (3) Telegram bot ⬅ **onboarding live and UAT passed (#40); the planner built (#44 merged, #45 waiting for U15 and U16)** → next: B1 keyboard and Undo, the Web app and message readability (Claude Chat), Claude's words
 
 SUPERSEDED [2026-11-14 10:38 SGT] [2026-11-14 00:17 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 007** (008 and 009 written) → (3) Telegram bot ⬅ **onboarding live (#40); the planner built (#44 merged, #45 waiting for your UAT)** → next: B1 keyboard and Undo, the Web app, Claude's words
 
@@ -69,20 +73,20 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-11-14 10:38 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-14-session-16.md](archive/CATCH-UP-sections-4-5-to-2026-11-14-session-16.md), word for word.
+[2026-11-14 21:40 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-14-session-17.md](archive/CATCH-UP-sections-4-5-to-2026-11-14-session-17.md), word for word.
 
-**4a. Latest decisions (session 16, 14 Nov)**
-- [2026-11-14 13:48 SGT] **B1 agreed:** Undo for 10 minutes, a late tap removes the button with "Undo expired." (no sweep); /log has no Undo and shows only chosen behaviours; migration 010 so old buttons can be removed; the Menu shows /pause or /resume, whichever applies; "Resume your reminders?"; the /help draft. Tests agreed (Telegram bot spec, "Build: B1").
-- [2026-11-14 10:38 SGT] Onboarding UAT U17 to U27 passed; U28 skipped. **Fix:** when a screen is sent again ("Welcome back", Continue), remove the old copy's buttons. **Keep:** the "pick up to 2" pop-up box. Migrations 008 and 009 applied. Today: Web app and message readability in Claude Chat; B1 in Claude Code.
+**4a. Latest decisions (session 17, 14 Nov)**
+- [2026-11-14 21:40 SGT] **B1 built and live:** the keyboard, /log, Undo for 10 minutes, the Menu, /help, the "Welcome back" fix (pull request #47, merged; migration 010 applied). **B1-D10:** the sign-up draft keeps only its latest screen's number, replaced per screen. Review fixes: all four chosen (K8 "Already saved.", tests K9 and K10, the migration comment, a known issue).
+- [2026-11-14 21:40 SGT] **The planner is live:** #45 merged, the alarm runs every 10 minutes (Supabase Cron, new cron secret). U15 and U16 replaced by U31 and U35. #46 closed (its notes came with #47).
+- [2026-11-14 21:40 SGT] **Test accounts:** your old thin-slice record and Test Parent deleted; you signed up again (child "Riley"). Only your record is left. The bot's name stays "FamilyBuddy (Test)" (Q9 open).
 
-**4b. For Claude Chat today (bring each back as a handoff file, habit H10)**
+**4b. For Claude Chat (bring each back as a handoff file, habit H10)**
 - [2026-11-14 10:38 SGT] (1) **Web app:** what My Page shows (logs, the week, photos later) and what Settings changes (times, behaviours, frequency, children's names, pause, Wrap Up time, delete my data); the look (rule 6: "UI decisions" in `docs/CONTEXT.md` is still empty); the two Web app questions in [src/web-app/SPEC.md](../src/web-app/SPEC.md); how a parent signs in.
-- [2026-11-14 10:38 SGT] (2) **Readable bot messages:** the words are right but dense. Decide the house style: line breaks, **bold** for the behaviour, emoji, short lines, where buttons go. Today's screenshots (screens 1 to 11) are a good starting point. The words live in `src/telegram-bot/words.ts`.
-- [2026-11-14 12:12 SGT] (3) **Reminder:** when you refine the messages, also go over the **/help** text Claude drafts in the B1 build (B1-D2).
+- [2026-11-14 10:38 SGT] (2) **Readable bot messages:** the words are right but dense. Decide the house style: line breaks, **bold** for the behaviour, emoji, short lines, where buttons go. The words live in `src/telegram-bot/words.ts`.
+- [2026-11-14 21:40 SGT] (3) **Also for the readability work:** the B1 drafts marked "draft" in `words.ts` (the /log question, the link replies, "already paused/on", "back on", "stay paused", the Menu's five descriptions), the /help text (B1-D9), and "Sorry, we couldn't check when your next reminder is." Two notes from today's UAT: for a parent with no habits, /help still says "keyboard below"; "Undo expired." and "You can pick up to 2." are boxes with OK (a fading banner is a one-word change).
 
-**4c. Questions for you (only if you have a moment; none block the build)**
-- [2026-11-14 10:38 SGT] (1) Draft words still open: "Sorry, we couldn't check when your next reminder is." (screen 11, rule 1.3), and the earlier drafts in `src/telegram-bot/words.ts` marked "draft" (could be settled with item 4b (2)).
-- [2026-11-14 10:38 SGT] (2) Still open from onboarding: **Q5** rename the nine behaviours; **Q9** the bot's name and description; **Q12** when the birth year is collected.
+**4c. Questions for you (only if you have a moment; none block the next build)**
+- [2026-11-14 10:38 SGT] Still open from onboarding: **Q5** rename the nine behaviours; **Q9** the bot's name and description; **Q12** when the birth year is collected.
 
 **4d. Still to design (daily loop)**
 - [2026-11-14 10:38 SGT] How long the bot waits for a photo after a log; what the parent sees if Claude fails to write a reply; withdrawing photo consent (group C); a daily cap on Claude matching calls ([src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)).
@@ -94,9 +98,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 5. Waiting on you (not blocking the next steps)
 
-- [2026-11-14 10:38 SGT] **UAT, today and Sunday:** **U15** today 7:00 pm (✅ Done on your own account's nudge); **U16** Sunday or later (😴 Not today); **U14** any time ([checklist](../src/telegram-bot/UAT-thin-slice-1.md)). Then merge pull request #45 and go live: G1 to G5 and U29 to U39 in [src/telegram-bot/UAT-planner.md](../src/telegram-bot/UAT-planner.md).
-- [2026-11-14 10:38 SGT] **Test account:** log out of the second Telegram account on your phone when you're done (its owner agreed to the test); Claude can write a removal script for the Test Parent record later, shown to you first.
+- [2026-11-14 21:40 SGT] **UAT still to run** (full list: the four checklists in `src/telegram-bot/`): tomorrow morning **U40** and **U41** (/help, then the first keyboard log of the day, before logging anything); at the next reminder **U45** (tap the habit on the keyboard, not ✅ Done) and **U33** (a different idea); another day **U35** and **U46** (😴 Not today, then a keyboard log); any time **U14** (reply speed); optional **U52**, **U53** (pause yourself with one SQL line). Not possible now: U34 (needs 2+ children), U36, U37 (need a second Telegram account).
 - [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice (7 days, and the one sign-up reminder); the 90-day record line (K1); photo consent wording and withdrawing photo consent; reflections that mention the child.
-- [2026-11-14 10:38 SGT] **Nudge personality** ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) before Sunday's Claude personality build: tone, and Claude's warm reply after ✅ Done (rule 7.5).
+- [2026-11-14 10:38 SGT] **Nudge personality** ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) before the Claude personality build: tone, and Claude's warm reply after ✅ Done (rule 7.5).
 - [2026-11-14 10:38 SGT] Badge graphics and the look of every screen (Web app, setup).
 - [2026-11-14 10:38 SGT] **Before launch:** upload MOE school holiday and Singapore public holiday dates (until then every Monday to Friday is a school day).
