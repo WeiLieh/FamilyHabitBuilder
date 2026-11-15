@@ -2,6 +2,14 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-15 17:00 SGT] HANDOFF: session 19 paused, owner away until the evening (read this first)
+- [2026-11-15 17:00 SGT] **State:** `main` has #51 (migration 011: sign-in tables, per-parent access, reads, deletes; **not yet applied**). **#52 is open** on `claude/kind-gates-5u8dbm` (the Web app sign-in: `/mypage` link, one-button page, `__Host-` cookie, 10-minute per-parent pass, Sign out), CI green, both review agents run and their fixes pushed. `npm run check` passes (**304 tests**), database tests T1 to T118 pass. Claude Code watches #52.
+- [2026-11-15 17:00 SGT] **Owner decisions this session:** daily-loop defaults (photo wait 10 minutes; receipt only when Claude fails; consent withdrawal on Settings; 20 matching calls a day); pass option A; no child on log rows for now; every week since joining in the older-weeks list; UAT B1 and planner closed; T&C parked; Q5, Q9 keep names; "merge" #51.
+- [2026-11-15 17:00 SGT] **Owner this evening:** the go-live steps G1 to G4 and phone tests U56 to U62 in `src/web-app/UAT-sign-in.md`, then merge #52.
+- [2026-11-15 17:00 SGT] **Open questions (CATCH-UP 4c):** approve rule 8.4 edit 14; which of known issues (a) to (d) to add.
+- [2026-11-15 17:00 SGT] **Next Claude Code build:** My page's real pages (Week so far first) once the owner's look and remaining Week so far details come from Claude Chat; then the end-of-session docs pull request (H9) and the three handoff files (H7) when the session ends.
+- [2026-11-15 17:00 SGT] **Mistake logged:** commit 015abc6 was pushed with a failing drift check (`docs/ERROR-LOG.md`); fixed in 587af40.
+
 ## [2026-11-15 11:41 SGT] HANDOFF: session 18 ended (read this first)
 - [2026-11-15 11:41 SGT] **State:** `main` has #48 (session 17 notes) and **#50 (house style C and reactions, live 15 Nov)**. **#49 (the Web app decisions, rules 9.2 to 9.8, the approved Datastore reads and deletes) is open**, up to date with `main`, and carries this session's notes: the owner merges it (H9). `npm run check` passes (**288 tests**, drift clean). Nothing of the Web app is built.
 - [2026-11-15 11:41 SGT] **Decided this session:** the Web app's Week so far tab in full (rules 9.2 to 9.8, with wireframes in `docs/handoffs/2026-11-14-web-app-wireframes-session-18/`); per-parent access (rule 9.8, Row Level Security, key decision in `docs/CONTEXT.md`); the Datastore's three minimal reads and rule 8.4 edits 6 and 11 to 13; house style C for every bot message (rule 5.15) and a random reaction on keyboard taps (rule 5.14), previewed on the owner's phone and built; "wireframe by default" (CLAUDE.md rule 6); a scaling plan in the backlog. The preview bot, its sender, tests, GitHub job and secret were removed (owner).

@@ -4,6 +4,35 @@
 
 ## Notebook
 
+### [2026-11-15 17:00 SGT] Keeping only a fingerprint of a secret (hashing)
+- **Concept:** hashing, here with SHA-256 (Secure Hash Algorithm, 256 bits): turning a secret into a "fingerprint" that can't be turned back.
+- **In plain English:** the database never keeps the sign-in link or the cookie, only a scrambled fingerprint of each. When the browser hands in the secret, the database scrambles it the same way and compares fingerprints.
+- **Analogy:** a bank keeps a photo of your signature, not your pen: it can check a signature matches, but the photo can't sign anything.
+- **Why and when to use it:** for anything that works like a password or key. Not for data you need to read back (a name, a photo).
+- **Best practices:** make the database do the scrambling, so a stolen fingerprint is useless as a key (review finding, 15 Nov); use long random secrets; never log the secret.
+- **Where it showed up in this project:** migration 011's sign-in tables; `src/datastore/sign-in-secrets.ts`; tests T101, T117.
+- **Explain it to others:** "We don't store sign-in links, only their fingerprints. Even someone with a full copy of our database couldn't sign in as a parent."
+- **Governance angle:** a security reviewer asks "if the database leaked, what could an attacker do?" Here: nothing with the sign-in tables.
+
+### [2026-11-15 17:00 SGT] A signed pass for each request (JSON Web Token, JWT)
+- **Concept:** JSON Web Token (JWT): a small note ("this request is for parent 7 until 8:10 pm") plus a signature only our server can make.
+- **In plain English:** after sign-in, our server writes a 10-minute pass for one parent and signs it with a secret. Supabase checks the signature, and the database's Row Level Security uses the parent's number on the pass to show only that family's rows.
+- **Analogy:** a hotel key card programmed at the front desk for one room and a short time.
+- **Why and when to use it:** when one server serves many people and the database must enforce "only your own rows". Not needed when only a trusted server talks to the database (the Telegram bot).
+- **Best practices:** keep passes short-lived; keep the signing secret only in the hosting settings (Vercel), never in code; never send the pass to the browser.
+- **Where it showed up in this project:** `src/web-app/pass.ts`; option A in `docs/CONTEXT.md`; tests P1, P2, T105 to T107.
+- **Explain it to others:** "Each page request carries a 10-minute key for one family, and the database itself refuses anything outside that family."
+- **Governance angle:** a Change Advisory Board (CAB) would ask who can see the signing secret: it is as powerful as the master key.
+
+### [2026-11-15 17:00 SGT] Forged forms from another website (cross-site request forgery, CSRF)
+- **Concept:** Cross-Site Request Forgery (CSRF): another website secretly making your browser send a form to our site.
+- **In plain English:** a bad page could quietly "press" our sign-in button with its own link, signing a parent into a stranger's account. Browsers now say where a form came from, so our server refuses forms from other sites.
+- **Analogy:** a letter posted through your door that looks like it came from you; the post office checks the return address.
+- **Why and when to use it:** on every button that changes something (sign in, sign out, delete). Not needed for pages that only show things.
+- **Best practices:** check the browser's "where from" headers (Sec-Fetch-Site, Origin); set cookies to SameSite; test it (W11).
+- **Where it showed up in this project:** the privacy review of #52 found it; fixed in `src/web-app/handler.ts`.
+- **Explain it to others:** "Only our own pages can press our buttons; a form from anywhere else is refused."
+
 ### [2026-11-15 11:41 SGT] Data minimisation: give each page only what it shows
 - **Concept:** data minimisation, a principle of Singapore's Personal Data Protection Act (PDPA).
 - **In plain English:** each question the Web app may ask the database returns only what that page shows, never "everything just in case". There is also a list of things no page ever gets.

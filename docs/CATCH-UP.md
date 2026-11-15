@@ -2,9 +2,11 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-15 11:41 SGT]** (session 18 ended: the Web app decisions recorded (rules 9.2 to 9.8, the Datastore reads and deletes; #49 open); **house style C and reactions live** (#50); UAT U14, U40, U41 pass).
+**Last updated: [2026-11-15 17:00 SGT]** (session 19, paused: the Web app foundations built; #51 merged, **#52 open** for this evening's go-live).
 
-> [2026-11-15 11:41 SGT] **⏰ Next:** **merge #49** (the Web app decisions and this session's notes). **Next Claude Code session:** the **Web app foundations** (sign-in, per-parent access, the reads and deletes), tests first in plain English. **In Claude Chat:** Settings, tab 2 "Habits so far", the empty states, the look. **UAT:** the reminder's new layout at your next reminder; U45, U33, U35, U46 (section 5). **Before any real family:** fill in the Terms & Conditions page.
+> [2026-11-15 17:00 SGT] **⏰ Next:** **this evening, go live with sign-in** (section 5: migration 011, two Vercel settings, the Supabase checks, merge #52, phone tests U56 to U62). **Next Claude Code build:** My page's real pages once your look and the Week so far details arrive from Claude Chat. **Answer when you can:** edit 14 and the known issues (section 4c).
+>
+> SUPERSEDED [2026-11-15 17:00 SGT] [2026-11-15 11:41 SGT] **⏰ Next:** **merge #49** (the Web app decisions and this session's notes). **Next Claude Code session:** the **Web app foundations** (sign-in, per-parent access, the reads and deletes), tests first in plain English. **In Claude Chat:** Settings, tab 2 "Habits so far", the empty states, the look. **UAT:** the reminder's new layout at your next reminder; U45, U33, U35, U46 (section 5). **Before any real family:** fill in the Terms & Conditions page.
 >
 > SUPERSEDED [2026-11-15 11:41 SGT] [2026-11-15 00:04 SGT] **⏰ Next:** finish section 4a (three small answers and the database question), then Claude Code writes tonight's decisions into the rules and reruns the review agents on #49. **UAT:** U40 and U41 this morning, U45 at the next reminder (section 5).
 >
@@ -32,7 +34,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-15 11:41 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 010 applied** → (3) Telegram bot ✅ **onboarding, the planner, B1 log any time and house style C with reactions (#50) all live** → (4) Web app ⬅ **Week so far designed and recorded (#49); next: the foundations (sign-in, per-parent access, reads and deletes)**; Settings, tab 2 and the look in Claude Chat → then Claude's words (the personality and warm reply)
+[2026-11-15 17:00 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **migrations up to 010 applied, 011 written (#51 merged)** → (3) Telegram bot ✅ live → (4) Web app ⬅ **sign-in built (#52, going live this evening); next: the pages, with your look** → then Claude's words (the personality and warm reply)
+
+SUPERSEDED [2026-11-15 17:00 SGT] [2026-11-15 11:41 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 010 applied** → (3) Telegram bot ✅ **onboarding, the planner, B1 log any time and house style C with reactions (#50) all live** → (4) Web app ⬅ **Week so far designed and recorded (#49); next: the foundations (sign-in, per-parent access, reads and deletes)**; Settings, tab 2 and the look in Claude Chat → then Claude's words (the personality and warm reply)
 
 SUPERSEDED [2026-11-15 11:41 SGT] [2026-11-14 22:24 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **tables live, migrations up to 010 applied** → (3) Telegram bot ✅ **onboarding, the planner (#45) and B1 log any time (#47) all live** → (4) Web app ⬅ **Week so far tab designed and recorded (#49)**; tabs 2 to 4 and the readable messages still in Claude Chat → then Claude's words (the personality and warm reply)
 
@@ -85,34 +89,35 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-11-15 11:41 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-15-session-18-end.md](archive/CATCH-UP-sections-4-5-to-2026-11-15-session-18-end.md), word for word.
+[2026-11-15 17:00 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-15-session-19.md](archive/CATCH-UP-sections-4-5-to-2026-11-15-session-19.md), word for word.
 
-**4a. Latest decisions (session 18, 14 and 15 Nov)**
-- [2026-11-15 11:41 SGT] **Web app, Week so far:** rules 9.2 to 9.8 in [src/web-app/SPEC.md](../src/web-app/SPEC.md): four tabs; sign-in by a one-time, 5-minute link with one button press (30-day protected sign-in, ended by Sign out and delete my data); layout B2 (the strip, then every log newest first, every photo big); the connection card as the fixed question and 4 weekly bars ("–" without a rating); one dustbin, one layer per tap, "Are you sure?"; older weeks with a tile for every log and the moment first; **per-parent access (Row Level Security)**. Wireframes: `docs/handoffs/2026-11-14-web-app-wireframes-session-18/`.
-- [2026-11-15 11:41 SGT] **Datastore:** the three minimal reads and rule 8.4 edits 6 and 11 to 13 approved ([src/datastore/SPEC.md](../src/datastore/SPEC.md)).
-- [2026-11-15 11:41 SGT] **Telegram bot:** house style C (rule 5.15) and a random reaction on keyboard taps (rule 5.14), live since #50.
+**4a. Latest decisions (session 19, 15 Nov)**
+- [2026-11-15 17:00 SGT] **Web app foundations built** in two pull requests: #51 (merged: migration 011, sign-in tables, per-parent access, the three reads, the four deletes) and #52 (open: `/mypage` link, one-button page, protected cookie, the 10-minute per-parent pass, Sign out). The pass is **option A**, a signed pass checked by Row Level Security ([docs/CONTEXT.md](CONTEXT.md)).
+- [2026-11-15 17:00 SGT] While building: a log row shows **no child** for now (backlog item); the older-weeks list includes **every week since joining**.
+- [2026-11-15 17:00 SGT] Daily loop: the bot waits **10 minutes** for a photo; if Claude fails, **the receipt only** (no fixed reply, rule 1.3 unchanged); withdrawing photo consent goes on **Settings**; at most **20 matching calls** per parent a day ([src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)).
+- [2026-11-15 17:00 SGT] UAT for B1 and the planner **closed** by the owner; Q5 and Q9: keep the names.
 
 **4b. For Claude Chat (bring each back as a handoff file, habit H10)**
-- [2026-11-15 11:41 SGT] (1) **My page, the rest:** tab 4 Settings, tab 2 "Habits so far" (steady weeks, Wrap Up counts, the monthly view, trends), tab 3 Rewards later; the empty states (a quiet week, no photo, a first-ever week, no older weeks); the ✓ habit tile; the look (rule 6), including three details to confirm (small tiles in the older-weeks list; zero parts left out of the count line; the Sunday-evening moment at the top).
-- [2026-11-15 11:41 SGT] (2) **Words still to draft:** "✅ Saved to your album." ("album" is dropped, rule 7.7 note); the "View wrap up" label (it always opens Week so far); the B1 drafts marked "draft" in `words.ts`.
+- [2026-11-15 17:00 SGT] (1) **My page, the rest:** tab 4 Settings (now also **withdrawing photo consent**), tab 2 "Habits so far", tab 3 Rewards later; the empty states (a quiet week, no photo, a first-ever week, **an empty older week**, no older weeks); the ✓ habit tile; the look (rule 6).
+- [2026-11-15 17:00 SGT] (2) **Words still to draft:** "View wrap up"; the B1 drafts in `src/telegram-bot/words.ts`; the sign-in pages' drafts in `src/web-app/words.ts` ("Tap the button to open your page.", "You're signed out." and the rest).
 
-**4c. Questions for you (only if you have a moment; none block the next build)**
-- [2026-11-14 10:38 SGT] Still open from onboarding: **Q5** rename the nine behaviours; **Q9** the bot's name and description; **Q12** when the birth year is collected.
+**4c. Questions for you (none block the next build)**
+- [2026-11-15 17:00 SGT] **Rule 8.4, edit 14:** approve? (The database marks a link used, ends a sign-in at Sign out, and tidies that parent's old links.)
+- [2026-11-15 17:00 SGT] **Known issues** to add, your choice: (a) the pass must stay on our server; (b) old sign-ins are tidied only when that parent signs in again; (c) the pass works only while the signing secret stays secret and Supabase's own sign-up stays off; (d) the sign-up's last message still links to the old placeholder My page.
+- [2026-11-14 10:38 SGT] Still open from onboarding: **Q12** when the birth year is collected.
 - [2026-11-15 11:41 SGT] List order: this week newest first, an older week oldest first (you: leave it for now).
 
-**4d. Still to design (daily loop)**
-- [2026-11-14 10:38 SGT] How long the bot waits for a photo after a log; what the parent sees if Claude fails to write a reply; withdrawing photo consent (group C); a daily cap on Claude matching calls ([src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)).
+**4d. Still to design**
+- [2026-11-15 17:00 SGT] How the bot records **which child** a log was with (backlog), so My page can show it.
 
 **4e. Parked (you asked me not to raise these first)**
-- [2026-11-14 10:38 SGT] "Pause" versus "stop"; whether stopping is as easy as starting (governance); the first alpha experiment (Claude Chat).
+- [2026-11-14 10:38 SGT] "Pause" versus "stop"; whether stopping is as easy as starting (governance); the first alpha experiment (Claude Chat); [2026-11-15 17:00 SGT] the Terms & Conditions page (backlog).
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
 
-- [2026-11-15 11:41 SGT] **Merge #49** (the Web app decisions and this session's notes).
-- [2026-11-15 11:41 SGT] **Before any real family:** fill in the **Terms & Conditions** page (`public/terms.html`; known issue).
-- [2026-11-15 11:41 SGT] **UAT still to run:** the reminder's new style C layout at your next reminder; **U45** (tap the habit on the keyboard instead of ✅ Done) and **U33** (a different idea); another day **U35** and **U46** (😴 Not today, then a keyboard log); optional **U52**, **U53**. Not possible now: U34, U36, U37.
+- [2026-11-15 17:00 SGT] **This evening: go live with sign-in** ([src/web-app/UAT-sign-in.md](../src/web-app/UAT-sign-in.md)): G1 apply migration 011; G2 `SUPABASE_ANON_KEY` in Vercel; G3 check the legacy JWT secret, then `SUPABASE_JWT_SECRET` in Vercel; G3b Supabase's own sign-up off, no Storage bucket for "authenticated"; G4 merge **#52**; then phone tests **U56 to U62**.
 - [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice (7 days, and the one sign-up reminder); the 90-day record line (K1); photo consent wording and withdrawing photo consent; reflections that mention the child.
 - [2026-11-14 10:38 SGT] **Nudge personality** ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) before the Claude personality build: tone, and Claude's warm reply after ✅ Done (rule 7.5).
 - [2026-11-14 10:38 SGT] Badge graphics and the look of every screen (Web app, setup).

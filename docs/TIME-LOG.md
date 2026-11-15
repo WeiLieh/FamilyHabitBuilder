@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-15 17:00 SGT] Session 19 (2026-11-15 midday and afternoon)
+- [2026-11-15 17:00 SGT] About 5 h elapsed (about 11:56 to 17:00 SGT), active about 2 h 30 min (the rest was waiting for the owner's answers). Start-of-session routine; owner decisions on the catch-up questions; the Web app foundations in two pull requests: #51 (migration 011, 20 new database tests, both reviews, merged) and #52 (sign-in code, 15 new app tests, both reviews, open).
+- **Notes for timeboxing:** the approved test list let each pull request take about 45 to 60 minutes including both reviews; each review found one or two real weaknesses worth fixing (about 15 minutes each). Breaking the code on purpose to check the tests cost about 2 minutes per fault and found one fault the first attempt hadn't applied.
+
 ## [2026-11-14 22:24 SGT] Session 18 (2026-11-14 late evening)
 - [2026-11-14 22:24 SGT] About 20 min elapsed (about 22:13 to 22:35 SGT), all active. Start-of-session routine; #48 merged; the Web app Week so far handoff recorded (rules 9.2 to 9.7, cross-reference notes, a Datastore draft, open items logged), both review agents run.
 - [2026-11-15 00:04 SGT] Extended: about 1 h 50 min in total (about 22:13 to 00:05 SGT), all active. After the recording: the review findings and section 4a decided one by one with the owner, with six wireframes (connection card, deleting, the top of Week so far, B1 and B2, the moment in older weeks, View wrap up). Paused for the night before writing the decisions into the rules.
