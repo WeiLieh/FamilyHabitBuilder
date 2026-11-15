@@ -6,6 +6,15 @@
 
 ## Notebook
 
+### [2026-11-15 22:36 SGT] A page that works with no script (and a confirm page instead of a pop-up)
+- **Concept:** building with plain HTML elements (links, forms, buttons, `<meter>`), so the page works without any script, and asking "Are you sure?" on its own page.
+- **In plain English:** every action on My page is a link or a form. A dustbin is a link to an "Are you sure?" page; only its Delete button changes anything. The browser does the work, so there is less code to go wrong, and the look can be added later without touching the logic.
+- **Analogy:** a paper form with a "tick to confirm" box, instead of a clerk who has to remember to ask.
+- **Why and when to use it:** for simple pages and anything that deletes. Not for pages that must update live without reloading (those need a script).
+- **Best practices:** a link never changes anything (only a form's button does); every typed text is made safe before it reaches the page; test the words and the order, not the styling.
+- **Where it showed up in this project:** Week so far (#55); wireframe A chosen by the owner.
+- **Explain it to others:** "My page is plain HTML: links show, buttons change. Deleting always goes through an 'Are you sure?' page, so a stray tap never deletes anything."
+
 ### [2026-11-15 17:00 SGT] Keeping only a fingerprint of a secret (hashing)
 - **Concept:** hashing, here with SHA-256 (Secure Hash Algorithm, 256 bits): turning a secret into a "fingerprint" that can't be turned back.
 - **In plain English:** the database never keeps the sign-in link or the cookie, only a scrambled fingerprint of each. When the browser hands in the secret, the database scrambles it the same way and compares fingerprints.
