@@ -84,7 +84,8 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 **4a. The Week so far tab: what's left** ([2026-11-15 09:03 SGT]; earlier version in [docs/archive/CATCH-UP-section-4a-to-2026-11-15-session-18-morning.md](archive/CATCH-UP-section-4a-to-2026-11-15-session-18-morning.md))
 - [2026-11-15 09:03 SGT] **All decisions are now in the rules** (9.3 to 9.7 in [src/web-app/SPEC.md](../src/web-app/SPEC.md); change note 1.26). No sizes recorded as UI decisions (your choice, 15 Nov).
-- [2026-11-15 09:03 SGT] **Before the Week so far tab can be built:** (1) how the Web app reaches the database (server with the master key, or limited per-parent access); (2) approve the Datastore draft (three reads, rule 8.4 edits 11 to 13).
+- [2026-11-15 09:31 SGT] **Before the Week so far tab can be built: both answered (15 Nov).** Per-parent access (rule 9.8); the Datastore reads and deletes approved ([src/datastore/SPEC.md](../src/datastore/SPEC.md)). Next for the Web app: the build plan and its tests in plain English, when you ask for it.
+- SUPERSEDED [2026-11-15 09:31 SGT] [2026-11-15 09:03 SGT] **Before the Week so far tab can be built:** (1) how the Web app reaches the database (server with the master key, or limited per-parent access); (2) approve the Datastore draft (three reads, rule 8.4 edits 11 to 13).
 - [2026-11-15 09:20 SGT] **For the UI design work:** three details I filled in (small tiles in the older-weeks list; zero parts left out of the count line; the Sunday-evening moment at the top). "Wireframe by default" is now a standing rule in `CLAUDE.md` (rule 6).
 - SUPERSEDED [2026-11-15 09:20 SGT] [2026-11-15 09:03 SGT] **Still open, not blocking:** the ✓ habit tile's look; list order (you: leave it for now); write "wireframe by default" into `CLAUDE.md`?
 
