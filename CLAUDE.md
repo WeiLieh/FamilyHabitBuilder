@@ -79,6 +79,7 @@ A task is only complete when all of these are true:
 - Look and feel comes only from the entries under "UI decisions" in `docs/CONTEXT.md`, never from your own design choices.
 - That section starts empty. I will supply the look myself when I start designing the UI. If UI work is needed and the section is empty, stop and ask me.
 - No styling library unless a UI decision says so.
+- [2026-11-15 09:20 SGT] **Wireframe by default:** whenever a choice is about where things go or how a screen or message is laid out, show the options as a wireframe (layout only, plain greys, no look) without being asked, and send it with `SendUserFile` (render).
 
 #### 7. Check before every commit
 - Run the project's check command (type check, tests and build) before every commit. The first session picks the exact command and records it under "How to run and test" in `docs/CONTEXT.md`.
