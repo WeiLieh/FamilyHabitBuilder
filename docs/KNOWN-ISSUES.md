@@ -14,6 +14,7 @@
 - **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
 - **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).
 - **Workaround:** [2026-11-15 09:03 SGT] No real family uses the Web app until rules 9.3 and 9.6 are built and tested; the security reviewer checks them before go-live.
+- **Update:** [2026-11-15 21:52 SGT] **Sign-in built, tested and live** (#51, #52, #53; UAT U56 to U62 pass, 15 Nov evening). Still open: deleting on My page (rule 9.6: dustbins, "Are you sure?", short-lived photo links, deleting files) comes with the pages; the security reviewer checks it before a real family uses the Web app.
 - **Update:** [2026-11-15 12:13 SGT] Owner chose (15 Nov) **option A, a signed per-parent pass** checked by Row Level Security (key decision in `docs/CONTEXT.md`). Being built test-first: Datastore (migration 011) then the Web app sign-in.
 - **Update:** [2026-11-15 09:17 SGT] Also open before go-live: how the Web app reaches the database (master key or per-parent access), and checking the "do not store" and short-lived-link rules on Vercel. Telegram's own copy of a photo stays in the chat (see "Telegram keeps the chat history outside Singapore").
 

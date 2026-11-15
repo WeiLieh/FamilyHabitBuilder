@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-15 21:53 SGT] Our own signing key for the per-parent pass
+- **Item:** [2026-11-15 21:53 SGT] Add our own secret to Supabase as an extra accepted signing key (JWT Keys), and sign the pass with it, instead of relying on the legacy JWT secret.
+- **Why it matters:** [2026-11-15 21:53 SGT] Supabase says the legacy secret is "still used… only to verify". If anyone revokes it, My page sign-in stops working at once (seen at go-live, 15 Nov).
+- **Priority:** [2026-11-15 21:53 SGT] Medium (before beta)
+- **Status:** [2026-11-15 21:53 SGT] Not started
+
 ## [2026-11-15 12:25 SGT] Record which child a habit log was with
 - **Item:** [2026-11-15 12:25 SGT] Store the child on each habit log (for example from the reminder's "With Riley:" or a question after a keyboard tap), so My page can show "the habit, the child, the day" (rule 9.4).
 - **Why it matters:** [2026-11-15 12:25 SGT] The database doesn't record the child today, so log rows on My page show the habit and the day only (owner, 15 Nov).
