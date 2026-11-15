@@ -2,6 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-15 11:41 SGT] HANDOFF: session 18 ended (read this first)
+- [2026-11-15 11:41 SGT] **State:** `main` has #48 (session 17 notes) and **#50 (house style C and reactions, live 15 Nov)**. **#49 (the Web app decisions, rules 9.2 to 9.8, the approved Datastore reads and deletes) is open**, up to date with `main`, and carries this session's notes: the owner merges it (H9). `npm run check` passes (**288 tests**, drift clean). Nothing of the Web app is built.
+- [2026-11-15 11:41 SGT] **Decided this session:** the Web app's Week so far tab in full (rules 9.2 to 9.8, with wireframes in `docs/handoffs/2026-11-14-web-app-wireframes-session-18/`); per-parent access (rule 9.8, Row Level Security, key decision in `docs/CONTEXT.md`); the Datastore's three minimal reads and rule 8.4 edits 6 and 11 to 13; house style C for every bot message (rule 5.15) and a random reaction on keyboard taps (rule 5.14), previewed on the owner's phone and built; "wireframe by default" (CLAUDE.md rule 6); a scaling plan in the backlog. The preview bot, its sender, tests, GitHub job and secret were removed (owner).
+- [2026-11-15 11:41 SGT] **UAT:** U14, U40, U41 pass; style C checked live (/help, a keyboard tap with its reaction). Still to run: the reminder's new layout at the next reminder; U45, U33, U35, U46; optional U52, U53.
+- [2026-11-15 11:41 SGT] **Next Claude Code session (owner's order, 15 Nov):** the **Web app foundations**: sign-in (rule 9.3), per-parent access (rule 9.8), the three reads and the deletes (Datastore, rule 8.4 edits 11 to 13), tests first in plain English for approval. Meanwhile in **Claude Chat:** Settings (tab 4), tab 2 "Habits so far", the empty states, the ✓ habit tile and the look. Pages are built last, with the owner's look.
+- [2026-11-15 11:41 SGT] **Owner:** fill in the Terms & Conditions page before any real family (known issue); merge #49.
+
 ## [2026-11-15 09:03 SGT] Session 18, morning: decisions written into the rules
 ### Done
 - [2026-11-15 09:03 SGT] Start-of-session routine (drift check passed, 24 checks). UAT this morning: **U14, U40, U41 pass** (owner; held, to be recorded on `main` when the owner says "record").
