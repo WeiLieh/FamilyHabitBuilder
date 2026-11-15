@@ -9,7 +9,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { PREVIEW_REACTIONS, TERMS_URL, readPreviewItems, toTelegramCalls, type TelegramCall } from "../src/telegram-bot/preview-sender.js";
+import { PREVIEW_KEYBOARD, PREVIEW_REACTIONS, TERMS_URL, reactionFor, readPreviewItems, toTelegramCalls, type TelegramCall } from "../src/telegram-bot/preview-sender.js";
 
 const html = readFileSync("docs/handoffs/2026-11-15-readability-style-c-preview.html", "utf8");
 const items = readPreviewItems(html);
@@ -76,5 +76,18 @@ describe("preview sender", () => {
     const real = toTelegramCalls(items, 42).filter((c) => c.react);
     expect(real.length).toBeGreaterThan(0);
     for (const call of real) expect(PREVIEW_REACTIONS).toContain(call.react);
+  });
+
+  it("V10: listening mode reacts to a keyboard tap from the owner's chat, with the chosen emoji", () => {
+    const tap = { update_id: 7, message: { message_id: 99, chat: { id: 42 }, text: PREVIEW_KEYBOARD[0]! } };
+    expect(reactionFor(tap, 42, () => "🔥")).toEqual({
+      method: "setMessageReaction",
+      params: { chat_id: 42, message_id: 99, reaction: [{ type: "emoji", emoji: "🔥" }] },
+    });
+  });
+
+  it("V11: listening mode never reacts to typed text or to another chat", () => {
+    expect(reactionFor({ update_id: 8, message: { message_id: 100, chat: { id: 42 }, text: "Hugged Mia" } }, 42)).toBeNull();
+    expect(reactionFor({ update_id: 9, message: { message_id: 101, chat: { id: 5 }, text: PREVIEW_KEYBOARD[0]! } }, 42)).toBeNull();
   });
 });

@@ -121,6 +121,64 @@ export function toTelegramCalls(
   return calls;
 }
 
+// ---- Listening mode: react to the owner's real keyboard taps -----------------
+// [2026-11-15] So the owner can see the reaction animation (proposed rule 5.14)
+// on a real tap: the job sends the keyboard, then listens for a few minutes.
+
+// The keyboard the preview shows (the same labels as the live bot's keyboard).
+export const PREVIEW_KEYBOARD = ["✅ Showing affection", "✅ Talking with children"];
+
+// One incoming update from Telegram (only the parts we look at).
+export type IncomingUpdate = { update_id: number; message?: { message_id: number; chat: { id: number }; text?: string } };
+
+// Decide whether a message gets a reaction: only a keyboard tap (its text is
+// exactly a keyboard label) from the owner's chat. Typed text gets nothing,
+// as the owner decided (15 Nov). Returns the reaction request, or null.
+export function reactionFor(
+  update: IncomingUpdate,
+  chatId: number,
+  pickReaction: () => string = () => PREVIEW_REACTIONS[Math.floor(Math.random() * PREVIEW_REACTIONS.length)]!,
+): TelegramCall | null {
+  const message = update.message;
+  if (!message || message.chat.id !== chatId || !PREVIEW_KEYBOARD.includes(message.text ?? "")) return null;
+  return {
+    method: "setMessageReaction",
+    params: { chat_id: chatId, message_id: message.message_id, reaction: [{ type: "emoji", emoji: pickReaction() }] },
+  };
+}
+
+// How long the job listens, in seconds (a preview tool setting, not an app value).
+const LISTEN_SECONDS = 300;
+
+async function listen(token: string, chatId: number, startAfter: number) {
+  await callTelegram(token, "sendMessage", {
+    chat_id: chatId,
+    text: `<b>Try it:</b> tap a habit on the keyboard below. For the next ${LISTEN_SECONDS / 60} minutes, each tap gets a reaction.`,
+    parse_mode: "HTML",
+    reply_markup: { keyboard: PREVIEW_KEYBOARD.map((k) => [{ text: k }]), resize_keyboard: true },
+  });
+  let offset = startAfter;
+  const end = Date.now() + LISTEN_SECONDS * 1000;
+  let reacted = 0;
+  while (Date.now() < end) {
+    // Long polling: Telegram holds the request open until a message arrives (up to 25 s).
+    const updates = (await callTelegram(token, "getUpdates", { offset, timeout: 25 })) as IncomingUpdate[];
+    for (const update of updates) {
+      offset = update.update_id + 1;
+      const call = reactionFor(update, chatId);
+      if (!call) continue;
+      try {
+        await callTelegram(token, call.method, call.params);
+        reacted += 1;
+      } catch (error) {
+        console.error("A reaction failed (logged only; the parent sees nothing)", error);
+      }
+    }
+  }
+  await callTelegram(token, "sendMessage", { chat_id: chatId, text: `Listening finished (${reacted} reaction(s)).` });
+  console.log(`Listened for ${LISTEN_SECONDS} s; reacted ${reacted} time(s).`);
+}
+
 // ---- Running it (GitHub Actions) ---------------------------------------------
 
 // Ask Telegram to do one thing; a refusal is thrown as an error, never ignored.
@@ -136,17 +194,18 @@ async function callTelegram(token: string, method: string, params: Record<string
 }
 
 // Find the owner's chat: the person who last sent /start to the preview bot.
-async function findChatId(token: string): Promise<number> {
+async function findChatId(token: string): Promise<{ chatId: number; nextUpdate: number }> {
   // [2026-11-15] Say which bot the token belongs to (its public username, not
   // the token) and how many waiting messages Telegram has for it, so a wrong
   // token or a missing /start is easy to spot in the job's log.
   const me = (await callTelegram(token, "getMe", {})) as { username?: string };
-  const updates = (await callTelegram(token, "getUpdates", {})) as { message?: { chat: { id: number; type: string } } }[];
+  const updates = (await callTelegram(token, "getUpdates", {})) as (IncomingUpdate & { message?: { chat: { type?: string } } })[];
   console.log(`Connected as @${me.username ?? "?"}; Telegram has ${updates.length} waiting message(s) for it.`);
   const chats = updates.map((u) => u.message?.chat).filter((c) => c?.type === "private");
   const last = chats.at(-1);
   if (!last) throw new Error("No chat found: open the preview bot in Telegram and send /start first.");
-  return last.id;
+  // The listening mode starts after these, so old messages never get a reaction.
+  return { chatId: last.id, nextUpdate: (updates.at(-1)?.update_id ?? 0) + 1 };
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -154,7 +213,13 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 async function main() {
   const token = process.env.PREVIEW_BOT_TOKEN;
   if (!token) throw new Error("PREVIEW_BOT_TOKEN is missing (add it as a GitHub secret).");
-  const chatId = process.env.PREVIEW_CHAT_ID ? Number(process.env.PREVIEW_CHAT_ID) : await findChatId(token);
+  const found = await findChatId(token);
+  const chatId = process.env.PREVIEW_CHAT_ID ? Number(process.env.PREVIEW_CHAT_ID) : found.chatId;
+  // PREVIEW_MODE "listen": skip the full preview and only react to keyboard taps.
+  if (process.env.PREVIEW_MODE === "listen") {
+    await listen(token, chatId, found.nextUpdate);
+    return;
+  }
   const html = readFileSync(new URL("../../docs/handoffs/2026-11-15-readability-style-c-preview.html", import.meta.url), "utf8");
   const calls = toTelegramCalls(readPreviewItems(html), chatId);
   // Put the commands behind the preview bot's real Menu button, as the live bot has.

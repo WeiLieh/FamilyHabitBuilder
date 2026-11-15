@@ -34,6 +34,11 @@ jobs:
       #    it is never written in the code. PREVIEW_CHAT_ID is optional: without
       #    it, the sender uses the chat that last sent /start to the preview bot.
       - run: node src/telegram-bot/preview-sender.ts
+        # Listening takes 5 minutes; stop the job if it ever runs much longer.
+        timeout-minutes: 15
         env:
           PREVIEW_BOT_TOKEN: ${{ secrets.PREVIEW_BOT_TOKEN }}
           PREVIEW_CHAT_ID: ${{ secrets.PREVIEW_CHAT_ID }}
+          # [2026-11-15] "send" = the full preview; "listen" = only react to the
+          # owner's keyboard taps for 5 minutes (to see the reaction animation).
+          PREVIEW_MODE: listen
