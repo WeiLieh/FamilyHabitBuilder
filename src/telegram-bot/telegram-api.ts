@@ -10,6 +10,10 @@
 // [2026-11-14] B1: send a message with the keyboard of behaviour buttons under
 // the chat (a "reply keyboard", rule 5.1), and change one person's Menu (the
 // list of commands next to the typing box, B1-D8).
+// [2026-11-15] Style C: messages and edits are sent in Telegram's formatting
+// mode (HTML), so <b>bold</b> shows as bold; the words make anything typed safe
+// first (src/telegram-bot/words.ts, esc). And a reaction on one of the parent's
+// messages (rule 5.14).
 //
 // Why it is an interface: the tests swap in a pretend Telegram that only
 // writes down what would have been sent (tests/helpers/telegram-bot-fakes.ts).
@@ -41,6 +45,8 @@ export interface TelegramApi {
   // [2026-11-14] Give this one chat its own Menu; null takes it back to
   // everyone's default Menu (B1-D8).
   setMenu(chatId: number, commands: MenuCommand[] | null): Promise<void>;
+  // [2026-11-15] Add one emoji reaction to a message in this chat (rule 5.14).
+  react(chatId: number, messageId: number, emoji: string): Promise<void>;
 }
 
 // The real Telegram. The bot token is a secret: it only ever comes from Vercel's
@@ -74,14 +80,14 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
   };
   return {
     async sendMessage(chatId, text, buttons = []) {
-      return messageNumber(await call("sendMessage", { chat_id: chatId, text, ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) }));
+      return messageNumber(await call("sendMessage", { chat_id: chatId, text, parse_mode: "HTML", ...(buttons.length > 0 ? { reply_markup: keyboard(buttons) } : {}) }));
     },
     // [2026-11-14] A "reply keyboard": buttons that sit in place of the phone's
     // keyboard. A tap sends the label as an ordinary message. is_persistent
     // keeps it showing; resize_keyboard makes it only as tall as it needs.
     async sendWithKeyboard(chatId, text, labels) {
       const reply_markup = { keyboard: labels.map((label) => [{ text: label }]), is_persistent: true, resize_keyboard: true };
-      return messageNumber(await call("sendMessage", { chat_id: chatId, text, reply_markup }));
+      return messageNumber(await call("sendMessage", { chat_id: chatId, text, parse_mode: "HTML", reply_markup }));
     },
     // [2026-11-14] A Menu for one chat only ("scope" chat); deleting it shows the default again.
     async setMenu(chatId, commands) {
@@ -91,12 +97,16 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
     },
     // Editing without reply_markup removes the buttons; with it, they are replaced.
     async editMessage(chatId, messageId, text, buttons) {
-      await call("editMessageText", { chat_id: chatId, message_id: messageId, text, ...(buttons ? { reply_markup: keyboard(buttons) } : {}) });
+      await call("editMessageText", { chat_id: chatId, message_id: messageId, text, parse_mode: "HTML", ...(buttons ? { reply_markup: keyboard(buttons) } : {}) });
     },
     // [2026-11-12] editMessageReplyMarkup changes only the buttons; an empty
     // list of buttons leaves the words exactly as they were (rule 5.10).
     async removeButtons(chatId, messageId) {
       await call("editMessageReplyMarkup", { chat_id: chatId, message_id: messageId, reply_markup: { inline_keyboard: [] } });
+    },
+    // [2026-11-15] setMessageReaction: one emoji under the parent's message (rule 5.14).
+    async react(chatId, messageId, emoji) {
+      await call("setMessageReaction", { chat_id: chatId, message_id: messageId, reaction: [{ type: "emoji", emoji }] });
     },
     async answerTap(tapId, popup) {
       await call("answerCallbackQuery", { callback_query_id: tapId, ...(popup ? { text: popup, show_alert: true } : {}) });

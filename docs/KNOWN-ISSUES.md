@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-15 11:29 SGT] The Terms & Conditions page is empty
+- **Issue:** [2026-11-15 11:29 SGT] The agreement (sign-up screen 9) now links to a Terms & Conditions page (rule 5.15), but the page says only its title (public/terms.html).
+- **Impact:** [2026-11-15 11:29 SGT] A real family would be agreeing to terms that aren't written yet (a PDPA reviewer would stop this).
+- **Workaround:** [2026-11-15 11:29 SGT] The owner fills in the page before any real family signs up (owner, 15 Nov); until then only test accounts sign up.
+
 ### [2026-11-15 09:03 SGT] The Web app's sign-in and deletes are rules only, nothing built
 - **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
 - **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).

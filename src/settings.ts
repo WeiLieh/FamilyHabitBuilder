@@ -162,4 +162,13 @@ export const DEFAULT_FREQUENCIES = { quick: "every_2_days", deliberate: "once_a_
 export const WEB_PAGES = {
   myPage: "https://family-habit-builder.vercel.app/my-page.html",
   settings: "https://family-habit-builder.vercel.app/settings.html",
+  // [2026-11-15] The Terms & Conditions page the agreement links to (public/terms.html);
+  // a plain page until the owner fills it in, before any real family signs up.
+  terms: "https://family-habit-builder.vercel.app/terms.html",
 } as const;
+
+// [2026-11-15] Rule 5.14 (owner, 15 Nov): a keyboard tap gets one reaction,
+// picked at random from these. Telegram allows only emoji from its own list; it
+// spells the red heart without the colour marker, so it is "❤" here.
+// EXPERIMENTS.md value 44.
+export const REACTION_EMOJI = ["❤", "🥰", "🤗", "👏", "💯", "🏆", "🎉", "🔥", "🤩"] as const;
