@@ -18,6 +18,9 @@
 //   P2  each signed-in page asks the database with that parent's pass only
 // The database is a pretend one (a "fake") with the same menu as the real
 // one (src/datastore/web-app-store.ts), so no real data is touched.
+// [2026-11-15] The fake moved to tests/helpers/web-app-fake-db.ts (shared with
+// the Week so far tests). P2 was rewritten when Sign out moved to the Settings
+// tab (rule 9.2); the other tests are unchanged.
 // =============================================================================
 
 import { createHmac } from "node:crypto";
@@ -25,7 +28,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PASS_SECONDS, SIGN_IN_DAYS } from "../src/settings.js";
 import { sgtInstant } from "../src/sgt.js";
-import { createWebAppHandler, type WebAppDb, type WebRequest, type WebResponse, type WebWeek } from "../src/web-app/handler.js";
+import { createWebAppHandler, type WebRequest, type WebResponse } from "../src/web-app/handler.js";
+import { FakeWebDb } from "./helpers/web-app-fake-db.js";
 
 const JWT_SECRET = "test-signing-secret-not-real-0123456789";
 const LINK_SECRET = "Lk3_9xVq2mZ8pR1tY6wB4nH7cJ0sD5fG8aE2uK9iO1l"; // 43 characters, as the bot makes them
@@ -33,48 +37,12 @@ const COOKIE = "__Host-fhb_sign_in";
 const now = sgtInstant("2026-11-12", 20 * 60); // Thursday 12 Nov, 8:00 pm Singapore time
 const EXPIRED = "This link has expired. Tap My page in Telegram for a new one.";
 
-// A pretend database that records what it was asked.
-class FakeWebDb implements WebAppDb {
-  calls: { what: string; args: unknown[] }[] = [];
-  links = new Map<string, number>(); // link secret -> parent
-  signIns = new Map<string, { parentId: number; ended: boolean }>(); // cookie secret -> sign-in
-  firstName = "Cara";
-  fail: string | null = null; // the name of a call to fail, with errorText
-  errorText = "database unavailable";
-
-  private maybeFail(what: string, args: unknown[]): void {
-    this.calls.push({ what, args });
-    if (this.fail === what) throw new Error(this.errorText);
-  }
-  async redeemSignInLink(linkSecret: string, signInSecret: string): Promise<Date | "expired"> {
-    this.maybeFail("redeem", [linkSecret, signInSecret]);
-    const parentId = this.links.get(linkSecret);
-    if (parentId === undefined) return "expired";
-    this.links.delete(linkSecret); // works once
-    this.signIns.set(signInSecret, { parentId, ended: false });
-    return new Date(now.getTime() + SIGN_IN_DAYS * 86_400_000);
-  }
-  async signInParent(signInSecret: string): Promise<number | null> {
-    this.maybeFail("signInParent", [signInSecret]);
-    const s = this.signIns.get(signInSecret);
-    return s && !s.ended ? s.parentId : null;
-  }
-  async endSignIn(signInSecret: string): Promise<void> {
-    this.maybeFail("endSignIn", [signInSecret]);
-    const s = this.signIns.get(signInSecret);
-    if (s) s.ended = true;
-  }
-  async week(pass: string, monday: string): Promise<WebWeek> {
-    this.maybeFail("week", [pass, monday]);
-    return { parentFirstName: this.firstName, children: ["Riley"], logs: [], reflections: [], moment: null, olderWeeks: 5 };
-  }
-}
-
 let db: FakeWebDb;
 let handle: (req: WebRequest) => Promise<WebResponse>;
 let logged: string[];
 beforeEach(() => {
   db = new FakeWebDb();
+  db.now = now;
   db.links.set(LINK_SECRET, 7);
   handle = createWebAppHandler({ db, jwtSecret: JWT_SECRET, now: () => now });
   logged = [];
@@ -197,7 +165,11 @@ describe("Signed-in pages (rules 9.3, 9.8)", () => {
     expect(r.status).toBe(200);
     expect(r.body).toContain("Hi &lt;b&gt;Cara&lt;/b&gt;");
     expect(r.body).not.toContain("<b>Cara</b>");
-    expect(r.body).toContain('action="/api/web-app?page=sign-out"'); // the Sign out button
+    // [2026-11-15] Rewritten (Week so far, rule 9.2): Sign out moved to the Settings tab; My page links to it.
+    expect(r.body).toContain('href="/api/web-app?page=settings"');
+    // The week was read with this parent's pass only (rule 9.8).
+    const [pass] = db.calls.find((c) => c.what === "week")!.args as string[];
+    expect(readPass(pass!).payload.parent_id).toBe("7");
   });
 
   it("W8 Sign out ends the sign-in in the database and clears the cookie; the old cookie no longer works", async () => {

@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- docs/handoffs/2026-11-15-week-so-far-build/confirm-delete-options.html
+     Wireframe (layout only, plain greys, no look; CLAUDE.md rule 6): two ways
+     to ask "Are you sure?" before a delete on Week so far (rule 9.6). -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirm delete: two options</title>
+<style>
+  :root { --ink:#333; --line:#999; --soft:#ddd; --bg:#fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#ddd; --line:#777; --soft:#444; --bg:#222; } }
+  :root[data-theme="dark"] { --ink:#ddd; --line:#777; --soft:#444; --bg:#222; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  .row { display:flex; flex-wrap:wrap; gap:16px; }
+  .phone { width:280px; max-width:100%; border:2px solid var(--line); border-radius:16px; padding:12px; box-sizing:border-box; }
+  .box { border:1px solid var(--line); padding:8px; margin:8px 0; }
+  .btn { display:inline-block; border:1px solid var(--line); padding:4px 10px; margin-right:6px; }
+  .dim { opacity:.4; }
+  .pop { border:2px solid var(--ink); padding:10px; margin-top:-120px; position:relative; background:var(--bg); }
+  h2 { font-size:16px; } h3 { font-size:14px; margin:0 0 6px; }
+</style></head><body>
+<h2>"Are you sure?" before a delete: two options (rule 9.6)</h2>
+<div class="row">
+  <div>
+    <h3>A. Its own page (recommended)</h3>
+    <div class="phone">
+      <div class="box">Delete this line?<br>It will be gone for good. Your log stays.</div>
+      <span class="btn">Cancel</span><span class="btn">Delete line</span>
+      <p>Cancel goes back to Week so far. Works with no script, like the sign-in page.</p>
+    </div>
+  </div>
+  <div>
+    <h3>B. The phone's own pop-up</h3>
+    <div class="phone">
+      <div class="dim"><div class="box">Week so far…</div><div class="box">Talking with children · Tue 10 Nov<br>"We laughed a lot" 🗑</div><div class="box">…</div></div>
+      <div class="pop">family-habit-builder.vercel.app says:<br>Delete this line? It will be gone for good. Your log stays.<br><span class="btn">Cancel</span><span class="btn">OK</span></div>
+      <p>Stays on the page, but the pop-up's look and buttons ("OK") are the phone's, not ours, and it needs a script.</p>
+    </div>
+  </div>
+</div>
+</body></html>

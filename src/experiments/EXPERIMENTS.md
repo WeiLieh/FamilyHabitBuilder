@@ -75,6 +75,7 @@
 | 48 | Tuneable | [2026-11-15 12:24 SGT] Tile text: the most characters of a reflection or moment line a small tile shows, cut at a word (read 2). | Characters. Today: 40 | settings.ts |
 | 49 | Tuneable | [2026-11-15 12:24 SGT] Connection card weeks: how many calendar weeks of bars the card shows (rule 9.5). | Weeks. Today: 4 | settings.ts |
 | 50 | Guardrail | [2026-11-15 16:38 SGT] Pass length: how long the per-parent pass our server signs for each page works (rule 9.8). | Seconds. Today: 600 (10 minutes) | settings.ts |
+| 51 | Guardrail | [2026-11-15 22:20 SGT] Older weeks limit: the most older weeks one page load lists (rule 9.7; privacy review). | Weeks. Today: 52 (a year) | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

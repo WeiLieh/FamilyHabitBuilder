@@ -8,6 +8,9 @@
 //     functions a signed-out browser may call, migration 011);
 //   - with one parent's pass: read one week (read 1). Row Level Security in
 //     the database then shows only that parent's rows.
+//   - [2026-11-15] Week so far: also the older weeks (read 2), the connection
+//     history (read 3) and the three line deletes (rule 8.4 edits 11 to 13),
+//     each with that parent's pass.
 // The answer from the database is checked for the expected shape before it
 // is trusted (approved library zod), so a surprise is a failure, not a
 // half-filled page (rule 1.3).
@@ -19,6 +22,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { WEEK_ONE_VARIANTS } from "../settings.js";
 
 // What one week looks like to our server (read 1). Photo paths stay on our
 // server: it turns them into short-lived links before a page shows a photo.
@@ -42,6 +46,42 @@ export type WebWeek = {
   olderWeeks: number;
 };
 
+// Read 2, older weeks: one page of weeks, newest first, and what the next tap loads.
+const tileShape = z.object({
+  kind: z.enum(["moment", "log", "reflection"]),
+  preview_path: z.string().optional(),
+  habit: z.string().optional(),
+  text: z.string().optional(),
+});
+const olderShape = z.object({
+  weeks: z.array(
+    z.object({
+      monday: z.string(),
+      days_logged: z.number(),
+      habit_logs: z.number(),
+      reflections: z.number(),
+      moment: z.boolean(),
+      tiles: z.array(tileShape),
+    }),
+  ),
+  weeks_remaining: z.number(),
+  next_oldest_monday: z.string().nullable(),
+});
+export type OlderTile = { kind: "moment" | "log" | "reflection"; previewPath?: string; habit?: string; text?: string };
+export type OlderWeek = { monday: string; daysLogged: number; habitLogs: number; reflections: number; moment: boolean; tiles: OlderTile[] };
+export type OlderWeeksPage = { weeks: OlderWeek[]; weeksRemaining: number; nextOldestMonday: string | null };
+// Read 3: a week's Monday and its 1 to 5 answer, or null for no answer.
+const connectionShape = z.array(z.object({ monday: z.string(), rating: z.number().nullable() }));
+export type ConnectionWeek = z.infer<typeof connectionShape>[number];
+// The three things a dustbin on Week so far can delete (rule 9.6): a log's
+// line (edit 11), a reflection (edit 12), a moment's line (edit 13).
+export type DeleteKind = "line" | "reflection" | "moment-line";
+const DELETE_FUNCTIONS: Record<DeleteKind, { fn: string; idName: string }> = {
+  line: { fn: "web_wipe_log_line", idName: "p_log" },
+  reflection: { fn: "web_remove_reflection", idName: "p_reflection" },
+  "moment-line": { fn: "web_remove_moment_line", idName: "p_moment_line" },
+};
+
 export interface WebAppDb {
   // The button press: use the link (once) and start a sign-in. Gives the
   // sign-in's end, or "expired" for a used, expired or unknown link.
@@ -52,6 +92,12 @@ export interface WebAppDb {
   endSignIn(signInSecret: string): Promise<void>;
   // Read 1, one week, with one parent's pass. monday is "YYYY-MM-DD".
   week(pass: string, monday: string): Promise<WebWeek>;
+  // Read 2: the next page of older weeks before a Monday.
+  olderWeeks(pass: string, before: string): Promise<OlderWeeksPage>;
+  // Read 3: the connection answers around a Monday (rule 9.5).
+  connectionHistory(pass: string, monday: string): Promise<ConnectionWeek[]>;
+  // One dustbin tap (rule 9.6). Throws if it isn't this parent's or is already gone.
+  deleteEntry(pass: string, kind: DeleteKind, id: number): Promise<void>;
 }
 
 // The database's own words for "this link can't be used" and "not signed in"
@@ -98,6 +144,37 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
         moment: w.moment,
         olderWeeks: w.older_weeks,
       };
+    },
+    async olderWeeks(pass, before) {
+      const r = await withPass(pass).rpc("web_older_weeks", { p_before: before });
+      if (r.error) throw new Error(`Reading older weeks failed: ${r.error.message}`);
+      const o = olderShape.parse(r.data);
+      return {
+        weeks: o.weeks.map((w) => ({
+          monday: w.monday,
+          daysLogged: w.days_logged,
+          habitLogs: w.habit_logs,
+          reflections: w.reflections,
+          moment: w.moment,
+          tiles: w.tiles.map((t) => ({ kind: t.kind, previewPath: t.preview_path, habit: t.habit, text: t.text })),
+        })),
+        weeksRemaining: o.weeks_remaining,
+        nextOldestMonday: o.next_oldest_monday,
+      };
+    },
+    async connectionHistory(pass, monday) {
+      const r = await withPass(pass).rpc("web_connection_history", { p_monday: monday });
+      if (r.error) throw new Error(`Reading the connection history failed: ${r.error.message}`);
+      return connectionShape.parse(r.data);
+    },
+    async deleteEntry(pass, kind, id) {
+      const db = withPass(pass);
+      // Each event is stamped with the settings version in force (rule 11.2).
+      const v = await db.rpc("current_settings_version");
+      if (v.error) throw new Error(`Reading the settings version failed: ${v.error.message}`);
+      const { fn, idName } = DELETE_FUNCTIONS[kind];
+      const r = await db.rpc(fn, { [idName]: id, p_version: z.number().parse(v.data), p_variants: [...WEEK_ONE_VARIANTS] });
+      if (r.error) throw new Error(`Deleting failed: ${r.error.message}`);
     },
   };
 }
