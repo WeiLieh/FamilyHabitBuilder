@@ -6,8 +6,11 @@
 -- "Approved: what the Web app pages need"; owner-approved tests of 15 Nov):
 --   1. Sign-in: a one-time sign-in link that expires after 5 minutes, and a
 --      sign-in that lasts 30 days (rule 9.3). The database keeps only a
---      fingerprint of each (a one-way scramble made by the app), never the
---      link or the cookie itself, so a copy of this table opens nothing.
+--      fingerprint of each (a one-way scramble), never the link or the
+--      cookie itself. The browser's side hands in the secret and the database
+--      makes the fingerprint itself, so a copy of this table opens nothing
+--      (review, 15 Nov). The sign-in length comes from the settings version
+--      the bot stamped on the link, never from the caller.
 --   2. Per-parent access (rule 9.8): the Web app never uses the master key.
 --      For each request it sends a short "pass" for one parent; the
 --      database's own rules (Row Level Security) then show that pass only
@@ -83,6 +86,7 @@ create table public.web_sign_in_links (
   id bigint generated always as identity primary key,
   parent_id bigint not null references public.parents (id) on delete cascade,
   link_fingerprint text not null unique check (link_fingerprint ~ '^[0-9a-f]{64}$'),
+  settings_version bigint not null references public.settings_versions (version),
   expires_at timestamptz not null,
   used_at timestamptz,
   created_at timestamptz not null default now()
@@ -91,6 +95,7 @@ comment on table public.web_sign_in_links is 'One "open My page" link the bot se
 comment on column public.web_sign_in_links.id is 'A number the database makes up.';
 comment on column public.web_sign_in_links.parent_id is 'Which parent the link signs in.';
 comment on column public.web_sign_in_links.link_fingerprint is 'A SHA-256 fingerprint of the link''s secret part, made by the app; never the link itself.';
+comment on column public.web_sign_in_links.settings_version is 'The settings version the bot used; the sign-in''s length is read from it, never from the caller.';
 comment on column public.web_sign_in_links.expires_at is 'When it stops working (5 minutes after it was made; the number is in src/settings.ts).';
 comment on column public.web_sign_in_links.used_at is 'When it was used; a used link never works again. Empty until then.';
 comment on column public.web_sign_in_links.created_at is 'When the row was added.';
@@ -112,6 +117,19 @@ comment on column public.web_sign_ins.ended_at is 'When Sign out ended it; empty
 comment on column public.web_sign_ins.created_at is 'When the row was added.';
 
 -- ---- 4. Sign-in functions ------------------------------------------------------
+-- The fingerprint of a secret the browser's side hands in: a SHA-256 of it, in
+-- hex. A secret must be long and random-looking (at least 32 URL-safe
+-- characters, as the app makes them), so a short guess is refused outright.
+create function public.secret_fingerprint(p_secret text) returns text
+language plpgsql immutable set search_path = public, pg_temp as $$
+begin
+  if p_secret is null or p_secret !~ '^[A-Za-z0-9_-]{32,128}$' then
+    raise exception 'Not a sign-in secret.';
+  end if;
+  return encode(sha256(convert_to(p_secret, 'UTF8')), 'hex');
+end $$;
+comment on function public.secret_fingerprint(text) is 'The SHA-256 fingerprint of a sign-in secret; refuses anything that is not a long random secret (rule 9.3).';
+
 -- The bot makes a link for /mypage (our server's role only). Old used or
 -- expired links of the same parent are tidied away at the same time.
 create function public.create_sign_in_link(p_parent bigint, p_link_fingerprint text, p_version bigint)
@@ -123,50 +141,56 @@ begin
   end if;
   if not exists (select 1 from parents where id = p_parent) then raise exception 'No parent %', p_parent; end if;
   delete from web_sign_in_links where parent_id = p_parent and (used_at is not null or expires_at <= now());
-  insert into web_sign_in_links (parent_id, link_fingerprint, expires_at) values (p_parent, p_link_fingerprint, until);
+  insert into web_sign_in_links (parent_id, link_fingerprint, settings_version, expires_at) values (p_parent, p_link_fingerprint, p_version, until);
   return until;
 end $$;
 
 -- The one button press after opening the link: uses the link up and starts a
--- 30-day sign-in. A used, expired or unknown link gets the same answer, so it
--- tells a guesser nothing (rules 9.3, 1.3).
-create function public.redeem_sign_in_link(p_link_fingerprint text, p_sign_in_fingerprint text, p_version bigint)
+-- 30-day sign-in. The caller hands in the link's secret and a new random
+-- secret for the cookie; only their fingerprints are kept. A used, expired or
+-- unknown link gets the same answer, so it tells a guesser nothing (rules 9.3, 1.3).
+create function public.redeem_sign_in_link(p_link_secret text, p_sign_in_secret text)
 returns timestamptz language plpgsql security definer set search_path = public, pg_temp as $$
-declare link record; until timestamptz;
+declare link record; until timestamptz; cookie text := secret_fingerprint(p_sign_in_secret);
 begin
-  if p_sign_in_fingerprint is null or p_sign_in_fingerprint !~ '^[0-9a-f]{64}$' then
-    raise exception 'Only a fingerprint of the sign-in is stored (rule 9.3).';
-  end if;
-  select id, parent_id into link from web_sign_in_links
-   where link_fingerprint = p_link_fingerprint and used_at is null and expires_at > now()
+  select id, parent_id, settings_version into link from web_sign_in_links
+   where link_fingerprint = secret_fingerprint(p_link_secret) and used_at is null and expires_at > now()
    for update;
   if not found then raise exception 'This link has expired.'; end if;
   update web_sign_in_links set used_at = now() where id = link.id;
   delete from web_sign_ins where parent_id = link.parent_id and (ended_at is not null or expires_at <= now());
-  until := now() + make_interval(days => setting_number(p_version, 'sign_in_days')::int);
-  insert into web_sign_ins (parent_id, sign_in_fingerprint, expires_at) values (link.parent_id, p_sign_in_fingerprint, until);
+  until := now() + make_interval(days => setting_number(link.settings_version, 'sign_in_days')::int);
+  insert into web_sign_ins (parent_id, sign_in_fingerprint, expires_at) values (link.parent_id, cookie, until);
   return until;
 end $$;
 
 -- Who a signed-in browser belongs to, for our server to sign that parent's pass.
-create function public.sign_in_parent(p_sign_in_fingerprint text)
+create function public.sign_in_parent(p_sign_in_secret text)
 returns bigint language plpgsql stable security definer set search_path = public, pg_temp as $$
 declare who bigint;
 begin
   select parent_id into who from web_sign_ins
-   where sign_in_fingerprint = p_sign_in_fingerprint and ended_at is null and expires_at > now();
+   where sign_in_fingerprint = secret_fingerprint(p_sign_in_secret) and ended_at is null and expires_at > now();
   if who is null then raise exception 'Not signed in.'; end if;
   return who;
 end $$;
 
 -- Sign out: ends that sign-in straight away. Signing out twice is fine.
-create function public.end_sign_in(p_sign_in_fingerprint text)
+create function public.end_sign_in(p_sign_in_secret text)
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 begin
-  update web_sign_ins set ended_at = now() where sign_in_fingerprint = p_sign_in_fingerprint and ended_at is null;
+  update web_sign_ins set ended_at = now() where sign_in_fingerprint = secret_fingerprint(p_sign_in_secret) and ended_at is null;
 end $$;
 
 -- ---- 5. The three reads (run as the parent's pass: Row Level Security applies) --
+
+-- The settings version in force: the newest one the app recorded. The reads
+-- take their numbers from it, so a caller can't choose bigger pages (review, 15 Nov).
+create function public.current_settings_version() returns bigint
+language sql stable security definer set search_path = public, pg_temp as $$
+  select max(version) from settings_versions
+$$;
+comment on function public.current_settings_version() is 'The newest settings version: the numbers in force (rule 1.4).';
 
 -- Read 1, one week (Week so far and an older week's own page). Lists are oldest
 -- first; the page puts this week newest first (rule 9.4). Photo paths are for
@@ -208,12 +232,12 @@ end $$;
 -- newest first, every calendar week since the parent joined (owner, 15 Nov),
 -- each with its counts and its tiles (the moment first, then logs and
 -- reflections in date order). No names, lines, big photos or reference numbers.
-create function public.web_older_weeks(p_before date, p_version bigint)
+create function public.web_older_weeks(p_before date)
 returns jsonb language plpgsql stable security invoker set search_path = public, pg_temp as $$
 declare
   me bigint := pass_parent_id();
-  per_page int := setting_number(p_version, 'older_weeks_per_page')::int;
-  chars int := setting_number(p_version, 'tile_text_chars')::int;
+  per_page int := setting_number(current_settings_version(), 'older_weeks_per_page')::int;
+  chars int := setting_number(current_settings_version(), 'tile_text_chars')::int;
   joined date; total int; take int; remaining int; weeks jsonb := '[]'::jsonb; m date; i int;
 begin
   if me is null then raise exception 'Not signed in (rule 9.8).'; end if;
@@ -266,11 +290,11 @@ end $$;
 -- Read 3, connection history: the N weeks before p_monday, oldest first, each
 -- with its rating or null ("–" on the card), plus p_monday's week once
 -- answered. Weeks before the parent joined have no slot (rule 9.5).
-create function public.web_connection_history(p_monday date, p_version bigint)
+create function public.web_connection_history(p_monday date)
 returns jsonb language plpgsql stable security invoker set search_path = public, pg_temp as $$
 declare
   me bigint := pass_parent_id();
-  n int := setting_number(p_version, 'connection_weeks')::int;
+  n int := setting_number(current_settings_version(), 'connection_weeks')::int;
   joined date;
 begin
   if me is null then raise exception 'Not signed in (rule 9.8).'; end if;
@@ -352,6 +376,7 @@ alter function public.web_remove_reflection(bigint, bigint, jsonb) owner to web_
 alter function public.web_remove_moment_line(bigint, bigint, jsonb) owner to web_page_writer;
 alter function public.web_delete_photo(bigint, bigint, jsonb) owner to web_page_writer;
 revoke create on schema public from web_page_writer;
+revoke web_page_writer from current_user;
 
 -- ---- 7. Locks: Row Level Security policies -----------------------------------
 alter table public.web_sign_in_links enable row level security;
@@ -384,9 +409,10 @@ create policy web_writer_moments_delete on public.moment_lines for delete to web
 -- New tables and functions start locked (Supabase grants broad access by default).
 revoke all on public.web_sign_in_links, public.web_sign_ins from public, anon, authenticated, service_role;
 revoke all on function public.pass_parent_id(), public.week_monday(date), public.cut_text(text, integer),
-  public.create_sign_in_link(bigint, text, bigint), public.redeem_sign_in_link(text, text, bigint),
+  public.secret_fingerprint(text), public.current_settings_version(),
+  public.create_sign_in_link(bigint, text, bigint), public.redeem_sign_in_link(text, text),
   public.sign_in_parent(text), public.end_sign_in(text),
-  public.web_week(date), public.web_older_weeks(date, bigint), public.web_connection_history(date, bigint),
+  public.web_week(date), public.web_older_weeks(date), public.web_connection_history(date),
   public.web_wipe_log_line(bigint, bigint, jsonb), public.web_remove_reflection(bigint, bigint, jsonb),
   public.web_remove_moment_line(bigint, bigint, jsonb), public.web_delete_photo(bigint, bigint, jsonb)
   from public, anon, authenticated, service_role;
@@ -396,7 +422,7 @@ revoke all on all sequences in schema public from public, anon, authenticated;
 grant execute on function public.create_sign_in_link(bigint, text, bigint) to service_role;
 -- A signed-out browser (the public key) can only use a link, check its own
 -- sign-in and sign out, each by fingerprint.
-grant execute on function public.redeem_sign_in_link(text, text, bigint), public.sign_in_parent(text), public.end_sign_in(text) to anon;
+grant execute on function public.redeem_sign_in_link(text, text), public.sign_in_parent(text), public.end_sign_in(text) to anon;
 -- A parent's pass: only the columns the pages need (never Telegram IDs, birth
 -- years, check results, how a log was made, nudge ideas or times, events).
 grant select (id, first_name, signed_up_on) on public.parents to authenticated;
@@ -408,8 +434,8 @@ grant select (id, parent_id, for_day, text, created_at) on public.reflections to
 grant select (id, parent_id, week_starting, text) on public.moment_lines to authenticated;
 grant select (parent_id, week_starting, score) on public.connection_answers to authenticated;
 grant execute on function public.pass_parent_id(), public.week_monday(date), public.cut_text(text, integer),
-  public.setting_number(bigint, text),
-  public.web_week(date), public.web_older_weeks(date, bigint), public.web_connection_history(date, bigint),
+  public.setting_number(bigint, text), public.current_settings_version(),
+  public.web_week(date), public.web_older_weeks(date), public.web_connection_history(date),
   public.web_wipe_log_line(bigint, bigint, jsonb), public.web_remove_reflection(bigint, bigint, jsonb),
   public.web_remove_moment_line(bigint, bigint, jsonb), public.web_delete_photo(bigint, bigint, jsonb)
   to authenticated;

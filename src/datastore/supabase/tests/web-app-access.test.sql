@@ -110,9 +110,12 @@ values (pg_temp.dev(), (select id from public.habit_logs where telegram_update_i
 insert into public.reflections (parent_id, for_day, source, text, telegram_update_id) values (pg_temp.dev(), '2026-11-10', 'typed', 'Dev private reflection', 7021);
 insert into public.moment_lines (parent_id, week_starting, text, telegram_update_id) values (pg_temp.dev(), '2026-11-09', 'Dev private moment', 7022);
 
--- Fingerprints (the app sends a SHA-256 fingerprint of each random link and
--- sign-in, never the link itself). Here: 64 hex characters made from a word.
-create function pg_temp.fp(word text) returns text language sql as $$ select encode(sha256(convert_to(word, 'UTF8')), 'hex') $$;
+-- Secrets and fingerprints. The app makes a long random secret for each link
+-- and each sign-in; the bot stores only the link's SHA-256 fingerprint, and
+-- the browser's side hands in the secret, which the database fingerprints
+-- itself. Here a secret is made from a word, padded to look random enough.
+create function pg_temp.secret(word text) returns text language sql as $$ select word || '_' || repeat('A', 32) $$;
+create function pg_temp.fp(word text) returns text language sql as $$ select encode(sha256(convert_to(pg_temp.secret(word), 'UTF8')), 'hex') $$;
 
 -- =============================================================================
 -- Sign-in (rule 9.3)
@@ -153,17 +156,17 @@ set role anon;
 do $$
 declare until timestamptz;
 begin
-  until := public.redeem_sign_in_link(pg_temp.fp('link-1'), pg_temp.fp('sign-in-1'), pg_temp.v());
+  until := public.redeem_sign_in_link(pg_temp.secret('link-1'), pg_temp.secret('sign-in-1'));
   assert until between now() + interval '29 days 23 hours' and now() + interval '30 days 1 hour', 'a sign-in should last 30 days';
   raise notice 'PASS: T99 the first use of a link signs in (T102: for 30 days)';
 end $$;
 select pg_temp.expect_refused('T99 the second use of the same link',
-  $q$select public.redeem_sign_in_link(pg_temp.fp('link-1'), pg_temp.fp('sign-in-2'), pg_temp.v())$q$, 'expired');
+  $q$select public.redeem_sign_in_link(pg_temp.secret('link-1'), pg_temp.secret('sign-in-2'))$q$, 'expired');
 select pg_temp.expect_refused('T99 a link that was never made',
-  $q$select public.redeem_sign_in_link(pg_temp.fp('no-such-link'), pg_temp.fp('sign-in-3'), pg_temp.v())$q$, 'expired');
+  $q$select public.redeem_sign_in_link(pg_temp.secret('no-such-link'), pg_temp.secret('sign-in-3'))$q$, 'expired');
 do $$
 begin
-  assert public.sign_in_parent(pg_temp.fp('sign-in-1')) = pg_temp.cara(), 'the sign-in should belong to Cara';
+  assert public.sign_in_parent(pg_temp.secret('sign-in-1')) = pg_temp.cara(), 'the sign-in should belong to Cara';
   raise notice 'PASS: T99 the sign-in names the parent the link was made for';
 end $$;
 reset role;
@@ -175,30 +178,36 @@ reset role;
 update public.web_sign_in_links set expires_at = now() - interval '1 second' where link_fingerprint = pg_temp.fp('link-old');
 set role anon;
 select pg_temp.expect_refused('T100 an unused link older than 5 minutes',
-  $q$select public.redeem_sign_in_link(pg_temp.fp('link-old'), pg_temp.fp('sign-in-old'), pg_temp.v())$q$, 'expired');
+  $q$select public.redeem_sign_in_link(pg_temp.secret('link-old'), pg_temp.secret('sign-in-old'))$q$, 'expired');
 reset role;
 
 -- T102 (D4): a sign-in older than 30 days is refused.
 update public.web_sign_ins set expires_at = now() - interval '1 second' where sign_in_fingerprint = pg_temp.fp('sign-in-1');
 set role anon;
 select pg_temp.expect_refused('T102 a sign-in past its 30 days',
-  $q$select public.sign_in_parent(pg_temp.fp('sign-in-1'))$q$, 'signed in');
+  $q$select public.sign_in_parent(pg_temp.secret('sign-in-1'))$q$, 'signed in');
 reset role;
 
 -- T103 (D5): Sign out ends the sign-in straight away.
 set role service_role;
 select public.create_sign_in_link(pg_temp.cara(), pg_temp.fp('link-2'), pg_temp.v());
 reset role;
-set role anon;
-select public.redeem_sign_in_link(pg_temp.fp('link-2'), pg_temp.fp('sign-in-5'), pg_temp.v());
 do $$
 begin
-  assert public.sign_in_parent(pg_temp.fp('sign-in-5')) = pg_temp.cara(), 'signed in before signing out';
-  perform public.end_sign_in(pg_temp.fp('sign-in-5'));
+  assert (select array_agg(link_fingerprint) from public.web_sign_in_links where parent_id = pg_temp.cara()) = array[pg_temp.fp('link-2')],
+    'making a new link should tidy away Cara''s used and expired links';
+  raise notice 'PASS: T103 a new link tidies away the parent''s used and expired links (rule 8.4, edit 14)';
+end $$;
+set role anon;
+select public.redeem_sign_in_link(pg_temp.secret('link-2'), pg_temp.secret('sign-in-5'));
+do $$
+begin
+  assert public.sign_in_parent(pg_temp.secret('sign-in-5')) = pg_temp.cara(), 'signed in before signing out';
+  perform public.end_sign_in(pg_temp.secret('sign-in-5'));
   raise notice 'PASS: T103 sign out runs';
 end $$;
 select pg_temp.expect_refused('T103 using a sign-in after Sign out',
-  $q$select public.sign_in_parent(pg_temp.fp('sign-in-5'))$q$, 'signed in');
+  $q$select public.sign_in_parent(pg_temp.secret('sign-in-5'))$q$, 'signed in');
 reset role;
 
 -- =============================================================================
@@ -297,7 +306,7 @@ select pg_temp.expect_refused('T107 a week read for a day that is not a Monday',
 
 -- T108 (D10): read 2, older weeks, 4 at a time.
 do $$
-declare o jsonb := public.web_older_weeks('2026-11-09', pg_temp.v());
+declare o jsonb := public.web_older_weeks('2026-11-09');
 begin
   assert jsonb_array_length(o -> 'weeks') = 4, '4 weeks per tap: ' || o::text;
   assert (o -> 'weeks' -> 0 ->> 'monday') = '2026-11-02' and (o -> 'weeks' -> 3 ->> 'monday') = '2026-10-12', 'newest first, 2 Nov to 12 Oct';
@@ -315,14 +324,14 @@ begin
   raise notice 'PASS: T108 read 2 returns 4 weeks with their counts and tiles, and what the next tap loads';
 end $$;
 do $$
-declare o jsonb := public.web_older_weeks('2026-10-12', pg_temp.v());
+declare o jsonb := public.web_older_weeks('2026-10-12');
 begin
   assert jsonb_array_length(o -> 'weeks') = 1 and (o ->> 'weeks_remaining')::int = 0 and (o -> 'next_oldest_monday') = 'null'::jsonb, 'the last page: ' || o::text;
   raise notice 'PASS: T108 the last page says nothing remains';
 end $$;
 -- This week's moment comes first in its week's tiles once it is an older week, with its small preview.
 do $$
-declare o jsonb := public.web_older_weeks('2026-11-16', pg_temp.v());
+declare o jsonb := public.web_older_weeks('2026-11-16');
 begin
   assert (o -> 'weeks' -> 0 ->> 'monday') = '2026-11-09', 'the week of 9 Nov';
   assert (o -> 'weeks' -> 0 -> 'tiles' -> 0 ->> 'kind') = 'moment' and (o -> 'weeks' -> 0 -> 'tiles' -> 0 ->> 'preview_path') = 'cara/moment-1109-small.jpg', 'the moment first';
@@ -333,7 +342,7 @@ end $$;
 
 -- T109 (D11): read 3, connection history.
 do $$
-declare c jsonb := public.web_connection_history('2026-11-09', pg_temp.v());
+declare c jsonb := public.web_connection_history('2026-11-09');
 begin
   assert c = '[{"monday": "2026-10-12", "rating": 3}, {"monday": "2026-10-19", "rating": null}, {"monday": "2026-10-26", "rating": 4}, {"monday": "2026-11-02", "rating": 5}]'::jsonb,
     'the 4 weeks before 9 Nov, a week without a rating as null: ' || c::text;
@@ -343,7 +352,7 @@ select pg_temp.as_owner();
 insert into public.connection_answers (parent_id, week_starting, score) values (pg_temp.cara(), '2026-11-09', 4);
 select pg_temp.pass_for(pg_temp.cara());
 do $$
-declare c jsonb := public.web_connection_history('2026-11-09', pg_temp.v());
+declare c jsonb := public.web_connection_history('2026-11-09');
 begin
   assert jsonb_array_length(c) = 5 and c -> 4 = '{"monday": "2026-11-09", "rating": 4}'::jsonb, 'this week joins once answered: ' || c::text;
   raise notice 'PASS: T109 this week joins once answered';
@@ -351,7 +360,7 @@ end $$;
 select pg_temp.as_owner();
 select pg_temp.pass_for(pg_temp.dev());
 do $$
-declare c jsonb := public.web_connection_history('2026-11-09', pg_temp.v());
+declare c jsonb := public.web_connection_history('2026-11-09');
 begin
   assert c = '[{"monday": "2026-11-02", "rating": null}]'::jsonb, 'weeks before Dev joined have no slot: ' || c::text;
   raise notice 'PASS: T109 weeks before the parent joined are left out';
@@ -472,21 +481,78 @@ select public.create_sign_in_link(pg_temp.dev(), pg_temp.fp('dev-link-1'), pg_te
 select public.create_sign_in_link(pg_temp.dev(), pg_temp.fp('dev-link-2'), pg_temp.v());
 reset role;
 set role anon;
-select public.redeem_sign_in_link(pg_temp.fp('dev-link-1'), pg_temp.fp('dev-sign-in'), pg_temp.v());
+select public.redeem_sign_in_link(pg_temp.secret('dev-link-1'), pg_temp.secret('dev-sign-in'));
 reset role;
 set role service_role;
 select public.delete_my_data(pg_temp.dev());
 reset role;
 set role anon;
-select pg_temp.expect_refused('T104 using a sign-in after delete my data', $q$select public.sign_in_parent(pg_temp.fp('dev-sign-in'))$q$, 'signed in');
+select pg_temp.expect_refused('T104 using a sign-in after delete my data', $q$select public.sign_in_parent(pg_temp.secret('dev-sign-in'))$q$, 'signed in');
 select pg_temp.expect_refused('T104 using a link after delete my data',
-  $q$select public.redeem_sign_in_link(pg_temp.fp('dev-link-2'), pg_temp.fp('dev-sign-in-2'), pg_temp.v())$q$, 'expired');
+  $q$select public.redeem_sign_in_link(pg_temp.secret('dev-link-2'), pg_temp.secret('dev-sign-in-2'))$q$, 'expired');
 reset role;
 do $$
 begin
   assert not exists (select 1 from public.web_sign_in_links l left join public.parents p on p.id = l.parent_id where p.id is null), 'a link outlived its parent';
   assert not exists (select 1 from public.web_sign_ins s left join public.parents p on p.id = s.parent_id where p.id is null), 'a sign-in outlived its parent';
   raise notice 'PASS: T104 delete my data removes the parent''s links and sign-ins';
+end $$;
+
+-- T111 to T113, again: no event holds any deleted words.
+do $$
+begin
+  assert not exists (select 1 from public.events e where row_to_json(e)::text ~ 'Morning hug|Best week so far|story tonight|log-7001'),
+    'an event holds deleted words or a photo path';
+  raise notice 'PASS: T111 to T113 no event holds the deleted line, reflection, moment line or photo path';
+end $$;
+
+-- T115 (rule 8.12): every column of the two new tables is labelled.
+do $$
+begin
+  assert not exists (select 1 from information_schema.columns c
+    where c.table_schema = 'public' and c.table_name in ('web_sign_in_links', 'web_sign_ins')
+      and col_description(('public.' || c.table_name)::regclass, c.ordinal_position) is null), 'a sign-in column has no label';
+  assert obj_description('public.web_sign_in_links'::regclass) is not null and obj_description('public.web_sign_ins'::regclass) is not null, 'a sign-in table has no label';
+  raise notice 'PASS: T115 the two sign-in tables and every column are labelled (rule 8.12)';
+end $$;
+
+-- T117 (review, 15 Nov): a copy of the sign-in tables opens nothing. Handing
+-- in a stored fingerprint as if it were the secret is refused, and so is a
+-- short guess.
+set role service_role;
+select public.create_sign_in_link(pg_temp.cara(), pg_temp.fp('link-copy'), pg_temp.v());
+reset role;
+set role anon;
+select pg_temp.expect_refused('T117 using a stored link fingerprint as the secret',
+  $q$select public.redeem_sign_in_link(pg_temp.fp('link-copy'), pg_temp.secret('sign-in-copy'))$q$, 'expired');
+select pg_temp.expect_refused('T117 a short guess at a secret',
+  $q$select public.redeem_sign_in_link('abc', pg_temp.secret('sign-in-copy'))$q$, 'not a sign-in secret');
+select public.redeem_sign_in_link(pg_temp.secret('link-copy'), pg_temp.secret('sign-in-copy'));
+select pg_temp.expect_refused('T117 using a stored sign-in fingerprint as the cookie',
+  $q$select public.sign_in_parent(pg_temp.fp('sign-in-copy'))$q$, 'signed in');
+reset role;
+
+-- T118 (review, 15 Nov): the sign-in's length comes from the settings version
+-- the bot stamped on the link, never from the caller (who can't pass one),
+-- even when a newer version says something else.
+set role service_role;
+select public.create_sign_in_link(pg_temp.cara(), pg_temp.fp('link-v'), pg_temp.v());
+reset role;
+select public.record_settings_version('A later edition', '{"undo_window_seconds": 600, "connection_answer_window_hours": 24,
+  "sign_in_link_seconds": 300, "sign_in_days": 2, "older_weeks_per_page": 4, "tile_text_chars": 40, "connection_weeks": 4}'::jsonb);
+set role anon;
+do $$
+declare until timestamptz := public.redeem_sign_in_link(pg_temp.secret('link-v'), pg_temp.secret('sign-in-v'));
+begin
+  assert until > now() + interval '29 days', 'the sign-in should follow the link''s own settings version (30 days)';
+  raise notice 'PASS: T118 the sign-in length comes from the link''s settings version';
+end $$;
+reset role;
+do $$
+begin
+  assert not exists (select 1 from pg_proc where proname = 'redeem_sign_in_link' and pronargs <> 2), 'redeem should take only the two secrets';
+  assert not exists (select 1 from pg_proc where proname in ('web_older_weeks', 'web_connection_history') and pronargs <> 1), 'the reads should take no settings version';
+  raise notice 'PASS: T118 no caller can choose a settings version for sign-in or the reads';
 end $$;
 
 \echo ALL WEB APP ACCESS TESTS PASSED
