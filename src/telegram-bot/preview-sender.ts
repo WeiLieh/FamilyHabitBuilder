@@ -137,7 +137,12 @@ async function callTelegram(token: string, method: string, params: Record<string
 
 // Find the owner's chat: the person who last sent /start to the preview bot.
 async function findChatId(token: string): Promise<number> {
+  // [2026-11-15] Say which bot the token belongs to (its public username, not
+  // the token) and how many waiting messages Telegram has for it, so a wrong
+  // token or a missing /start is easy to spot in the job's log.
+  const me = (await callTelegram(token, "getMe", {})) as { username?: string };
   const updates = (await callTelegram(token, "getUpdates", {})) as { message?: { chat: { id: number; type: string } } }[];
+  console.log(`Connected as @${me.username ?? "?"}; Telegram has ${updates.length} waiting message(s) for it.`);
   const chats = updates.map((u) => u.message?.chat).filter((c) => c?.type === "private");
   const last = chats.at(-1);
   if (!last) throw new Error("No chat found: open the preview bot in Telegram and send /start first.");
