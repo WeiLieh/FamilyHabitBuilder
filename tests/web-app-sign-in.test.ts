@@ -13,6 +13,7 @@
 //   W8  Sign out ends the sign-in in the database and clears the cookie
 //   W9  no Web app file uses the master key
 //   W10 a database failure is shown as a failure, never as made-up data
+//   W11 a sign-in or sign-out posted from another website is refused (privacy review)
 //   P1  the pass is signed, names one parent, and expires after 10 minutes
 //   P2  each signed-in page asks the database with that parent's pass only
 // The database is a pretend one (a "fake") with the same menu as the real
@@ -166,7 +167,10 @@ describe("Signed-in pages (rules 9.3, 9.8)", () => {
   it("W6 without a sign-in, or with an unknown or ended one, My page is refused and says so; the database isn't read", async () => {
     const none = await get("week");
     const unknown = await get("week", "Q".repeat(43));
-    for (const r of [none, unknown]) {
+    const cookie = await signIn();
+    db.signIns.get(cookie)!.ended = true;
+    const ended = await get("week", cookie);
+    for (const r of [none, unknown, ended]) {
       expect(r.status).toBe(401);
       expect(r.body).toContain("Tap My page in Telegram");
     }
@@ -220,6 +224,30 @@ describe("Signed-in pages (rules 9.3, 9.8)", () => {
       expect(r.body).not.toContain("signed out");
     }
     expect(signOutFails.headers["set-cookie"]).toBeUndefined(); // the sign-in still stands, so the cookie stays
+  });
+});
+
+describe("Forged forms (privacy review, 15 Nov)", () => {
+  it("W11 a sign-in or sign-out posted from another website is refused, and nothing is used up or ended", async () => {
+    const cookie = await signIn();
+    db.links.set(LINK_SECRET, 7);
+    const before = db.calls.length;
+    const forged = (page: string, body: string, headers: Record<string, string>) =>
+      handle({ method: "POST", url: `/api/web-app?page=${page}`, headers: { host: "family-habit-builder.vercel.app", cookie: `${COOKIE}=${cookie}`, ...headers }, body });
+    const answers = [
+      await forged("sign-in", `secret=${LINK_SECRET}`, { "sec-fetch-site": "cross-site" }),
+      await forged("sign-in", `secret=${LINK_SECRET}`, { origin: "https://evil.example" }),
+      await forged("sign-out", "", { "sec-fetch-site": "same-site" }),
+      await forged("sign-out", "", { origin: "null" }),
+    ];
+    for (const r of answers) {
+      expect(r.status).toBe(403);
+      expect(r.headers["set-cookie"]).toBeUndefined();
+    }
+    expect(db.calls.length).toBe(before); // nothing reached the database
+    // Our own page's form still works.
+    const own = await forged("sign-out", "", { "sec-fetch-site": "same-origin", origin: "https://family-habit-builder.vercel.app" });
+    expect(own.status).toBe(200);
   });
 });
 

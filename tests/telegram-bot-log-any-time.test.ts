@@ -8,6 +8,7 @@
 //   - U1 to U4: Undo under a keyboard log's receipt, for 10 minutes (rule 5.8, B1-D1)
 //   - L1 to L3: /log, the same choice as buttons (rules 5.1, 5.7; no Undo, B1-D5)
 //   - M1 to M5: the Menu: /mypage, /settings, /pause, /resume, /help (rule 5.7, B1-D3, B1-D8)
+//   - [2026-11-15] WA1: /mypage sends a new one-time sign-in link to the Web app (rule 9.3; the owner's test W1)
 //   - W1, W2: "Welcome back" and Continue remove the earlier copy's buttons (10e addition)
 // Each test checks what the parent would see in Telegram and what was saved.
 // =============================================================================
@@ -249,11 +250,11 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
     ]);
   });
 
-  // [2026-11-15] New (rule 9.3, owner-approved test W1): each /mypage makes a new
+  // [2026-11-15] New (rule 9.3, owner-approved test W1, named WA1 here: this file's W1 and W2 are "Welcome back"): each /mypage makes a new
   // link that works once; the secret travels only after the "#" (browsers never
   // send that part to a server, so it can't land in server logs), and the
   // database is given only its fingerprint.
-  it("W1 each /mypage sends a new one-time sign-in link; only its fingerprint is stored", async () => {
+  it("WA1 each /mypage sends a new one-time sign-in link; only its fingerprint is stored", async () => {
     await say("/mypage");
     await say("/mypage");
     const sends = telegram.calls.filter((c) => c.kind === "send");
@@ -270,7 +271,7 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
     expect(JSON.stringify(store.signInLinks)).not.toContain(secrets[0]);
   });
 
-  it("W1 if the link can't be saved, /mypage says it didn't work and sends no link (rule 1.3)", async () => {
+  it("WA1 if the link can't be saved, /mypage says it didn't work and sends no link (rule 1.3)", async () => {
     store.failWrites = true;
     await say("/mypage");
     expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: SORRY, buttons: [] }]);

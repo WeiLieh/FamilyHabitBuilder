@@ -11,7 +11,7 @@
 
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createWebAppStore } from "../src/datastore/web-app-store.js";
-import { createWebAppHandler } from "../src/web-app/handler.js";
+import { createWebAppHandler, WEB_SAFE_HEADERS } from "../src/web-app/handler.js";
 
 const env = process.env;
 const configured = Boolean(env.SUPABASE_URL && env.SUPABASE_ANON_KEY && env.SUPABASE_JWT_SECRET);
@@ -40,19 +40,30 @@ async function readBody(req: IncomingMessage): Promise<string | null> {
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  // [2026-11-15, privacy review] Even these plain answers carry the safe
+  // headers, and say no more than that something didn't work.
   const refuse = (status: number, text: string) => {
     res.statusCode = status;
+    for (const [name, value] of Object.entries(WEB_SAFE_HEADERS)) res.setHeader(name, value);
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("Cache-Control", "no-store, private");
     res.end(text);
   };
-  if (!handle) return refuse(500, "Not configured: a setting is missing in Vercel");
-  const body = await readBody(req);
-  if (body === null) return refuse(413, "Too large");
-  const headers: Record<string, string | undefined> = {};
-  for (const [name, value] of Object.entries(req.headers)) headers[name] = Array.isArray(value) ? value.join(", ") : value;
-  const answer = await handle({ method: req.method ?? "GET", url: req.url ?? "/", headers, body });
-  res.statusCode = answer.status;
-  for (const [name, value] of Object.entries(answer.headers)) res.setHeader(name, value);
-  res.end(answer.body);
+  if (!handle) {
+    console.error("Web app not configured: a setting is missing in Vercel");
+    return refuse(500, "Sorry, that didn't work.");
+  }
+  try {
+    const body = await readBody(req);
+    if (body === null) return refuse(413, "Too large");
+    const headers: Record<string, string | undefined> = {};
+    for (const [name, value] of Object.entries(req.headers)) headers[name] = Array.isArray(value) ? value.join(", ") : value;
+    const answer = await handle({ method: req.method ?? "GET", url: req.url ?? "/", headers, body });
+    res.statusCode = answer.status;
+    for (const [name, value] of Object.entries(answer.headers)) res.setHeader(name, value);
+    res.end(answer.body);
+  } catch {
+    // Something unexpected (a broken request): a failure, with no details in the log that could hold a secret.
+    console.error("Web app request failed unexpectedly");
+    refuse(503, "Sorry, that didn't work.");
+  }
 }

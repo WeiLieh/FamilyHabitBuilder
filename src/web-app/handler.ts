@@ -18,6 +18,9 @@
 //     is built later, with the owner's look (CLAUDE.md rule 6).
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
 // Every answer tells browsers and caches not to keep a copy (rule 9.6).
+// [2026-11-15, privacy review] A form posted from another website (a forged
+// sign-in or sign-out) is refused: the browser's own "where did this come
+// from" headers (Sec-Fetch-Site, Origin) must say this site.
 // A failure is shown as a failure, never filled in (rule 1.3), and failures
 // are logged with anything secret-looking blanked out (rule 9.3).
 //
@@ -62,6 +65,9 @@ const SAFE_HEADERS: Record<string, string> = {
   "content-security-policy": `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_HASH}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
 };
 
+// The same headers, for the few plain answers api/web-app.ts makes itself.
+export const WEB_SAFE_HEADERS: Readonly<Record<string, string>> = SAFE_HEADERS;
+
 // Make text safe to put in a page (a name like "<b>" is shown, not obeyed).
 const escapeHtml = (text: string) =>
   text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -83,6 +89,7 @@ function logFailure(what: string, error: unknown): void {
   const safe = raw
     .replace(/"[^"]*"/g, "[text]")
     .replace(/[A-Za-z0-9_-]{20,}/g, "[secret]")
+    .replace(/\d{5,}/g, "[number]") // Telegram IDs and other long numbers
     .slice(0, 300);
   console.error(`${what}: ${safe}`);
 }
@@ -183,11 +190,30 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     "sign-out": { method: "POST", run: signOut },
   };
 
+  // A POST must come from one of our own pages. Browsers send Sec-Fetch-Site
+  // ("same-origin" from our pages) and Origin; a request with neither (an
+  // older browser) is let through, since the cookie's SameSite=Lax still
+  // stops another site from sending it.
+  function fromOtherSite(req: WebRequest): boolean {
+    const site = req.headers["sec-fetch-site"];
+    if (site && site !== "same-origin" && site !== "none") return true;
+    const origin = req.headers.origin;
+    if (origin && origin !== "null") {
+      try {
+        return new URL(origin).host !== (req.headers.host ?? "");
+      } catch {
+        return true;
+      }
+    }
+    return origin === "null";
+  }
+
   return async function handle(req: WebRequest): Promise<WebResponse> {
     const name = new URL(req.url, "https://localhost").searchParams.get("page") ?? "";
     const route = routes[name];
     if (!route) return answer(404, paragraph(WEB_WORDS.notFound));
     if (req.method !== route.method) return { ...answer(405, paragraph(WEB_WORDS.notFound)), headers: { ...SAFE_HEADERS, allow: route.method } };
+    if (req.method === "POST" && fromOtherSite(req)) return answer(403, paragraph(WEB_WORDS.didntWork));
     return route.run(req);
   };
 }
