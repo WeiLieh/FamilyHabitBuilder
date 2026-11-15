@@ -8,6 +8,7 @@
 - **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
 - **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).
 - **Workaround:** [2026-11-15 09:03 SGT] No real family uses the Web app until rules 9.3 and 9.6 are built and tested; the security reviewer checks them before go-live.
+- **Update:** [2026-11-15 09:17 SGT] Also open before go-live: how the Web app reaches the database (master key or per-parent access), and checking the "do not store" and short-lived-link rules on Vercel. Telegram's own copy of a photo stays in the chat (see "Telegram keeps the chat history outside Singapore").
 
 ### [2026-11-14 22:24 SGT] This week's logs read newest first, an older week's oldest first
 - **Issue:** [2026-11-14 22:24 SGT] Week so far lists this week's log rows newest first (rule 9.4); an older week's page reads day by day, oldest first (rule 9.7). The owner said "leave it for now".
