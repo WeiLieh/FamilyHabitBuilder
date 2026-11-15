@@ -2,6 +2,12 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-15 22:36 SGT] HANDOFF: session 19 ended, after Week so far (read this first)
+- [2026-11-15 22:36 SGT] **State:** `main` has **#55, Week so far in plain HTML** (deployed), on top of sign-in (#51 to #54). `npm run check` passes (**319 tests**); database tests T1 to T118 pass. Nothing waiting in a pull request except this session's notes (H9).
+- [2026-11-15 22:36 SGT] **Built (owner-approved tests WS1 to WS13):** header, the week's moment, days logged with the M to S strip and logs newest first, reflections, the connection card (browser `<meter>` bars, "–" without an answer), older weeks list and button (`OLDER_WEEKS_MAX` = 52 per load, value 51), tab bar (Rewards disabled, Settings holds Sign out); dustbins on a line, a reflection, a moment line, with "Are you sure?" on its own page, **Cancel** and **Delete** (wireframe A, `docs/handoffs/2026-11-15-week-so-far-build/`). Both reviews run; fixes in.
+- [2026-11-15 22:36 SGT] **Next time (owner):** phone tests **U63 to U69** (`src/web-app/UAT-week-so-far.md`), not run yet. **Then (owner's choice):** an older week's own page (rule 9.7), or photos with the Photo check; the look and the drafted words in `src/web-app/words.ts` come from Claude Chat.
+- [2026-11-15 22:36 SGT] **Known gaps, recorded in the specs:** no child on log rows (backlog); a parent who answered the connection question only long ago sees "Your first answer arrives on Sunday." (rule 9.5 note); the real database connection behind the pages is checked by UAT and database tests only.
+
 ## [2026-11-15 21:53 SGT] HANDOFF: session 19 ended (read this first)
 - [2026-11-15 21:53 SGT] **State:** `main` has #51 (migration 011), #52 (Web app sign-in) and #53 (the iPhone fix: Sec-Fetch-Site before a "null" Origin). **Migration 011 applied** (fingerprint recorded); `SUPABASE_ANON_KEY` and `SUPABASE_JWT_SECRET` in Vercel; Supabase's own sign-up off, no Storage buckets. **UAT U56 to U62 pass: My page sign-in is live.** `npm run check` passes (**305 tests**); database tests T1 to T118 pass. This session's notes are in the end-of-session pull request (H9).
 - [2026-11-15 21:53 SGT] **Mistakes logged** (`docs/ERROR-LOG.md`): a commit pushed with a failing drift check (015abc6); the forged-form check refused the owner's iPhone press (fixed in #53, test W12).

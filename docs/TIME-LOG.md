@@ -5,6 +5,7 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 ## [2026-11-15 17:00 SGT] Session 19 (2026-11-15 midday and afternoon)
 - [2026-11-15 17:00 SGT] About 5 h elapsed (about 11:56 to 17:00 SGT), active about 2 h 30 min (the rest was waiting for the owner's answers). Start-of-session routine; owner decisions on the catch-up questions; the Web app foundations in two pull requests: #51 (migration 011, 20 new database tests, both reviews, merged) and #52 (sign-in code, 15 new app tests, both reviews, open).
 - [2026-11-15 21:53 SGT] Continued in the evening: about 40 min (about 21:15 to 21:55 SGT), all active: go-live G1 to G4 with the owner, U58 failed (403 on the iPhone), fix #53 test-first (about 7 minutes from the log to the merge), U56 to U62 pass, notes.
+- [2026-11-15 22:36 SGT] Continued late evening: about 35 min (about 22:00 to 22:36 SGT), all active: the Week so far plan with a wireframe and 12 tests approved in one round, built test-first (WS1 to WS13), both reviews and their fixes, #55 merged and deployed.
 - **Notes for timeboxing:** the approved test list let each pull request take about 45 to 60 minutes including both reviews; each review found one or two real weaknesses worth fixing (about 15 minutes each). Breaking the code on purpose to check the tests cost about 2 minutes per fault and found one fault the first attempt hadn't applied.
 
 ## [2026-11-14 22:24 SGT] Session 18 (2026-11-14 late evening)
