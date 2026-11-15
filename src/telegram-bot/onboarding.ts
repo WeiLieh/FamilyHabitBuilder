@@ -273,7 +273,8 @@ async function finish(t: Tap, draft: Draft, deps: BotDeps): Promise<void> {
   // Send first, record after: a message is recorded only once it was really sent.
   let messageId: number;
   try {
-    messageId = await telegram.sendMessage(t.chatId, first.startNowLine.replaceAll("{child}", child), [
+    // [2026-11-15] Style C: made safe, "Start right now" in bold, the idea after 💡 (WORDS.startNow).
+    messageId = await telegram.sendMessage(t.chatId, WORDS.startNow(first.startNowLine, child), [
       [
         { text: WORDS.startedButton, data: "start:done" },
         { text: WORDS.notNowButton, data: "start:notnow" },

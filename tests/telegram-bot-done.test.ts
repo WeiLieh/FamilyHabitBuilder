@@ -46,7 +46,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     // In this order: the nudge's buttons go first (so it can't be tapped again), then the receipt arrives below it.
     expect(telegram.calls).toEqual([
       { kind: "removeButtons", chatId: ME, messageId: 55 },
-      { kind: "send", chatId: ME, text: "✅ Saved: Showing affection today.", buttons: [] },
+      { kind: "send", chatId: ME, text: "✅ <b>Saved</b>\nShowing affection today.", buttons: [] },
       { kind: "answer", tapId: expect.any(String), popup: null },
     ]);
   });
@@ -75,7 +75,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
       {
         kind: "send",
         chatId: ME,
-        text: "😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow.",
+        text: "😴 <b>Not today.</b> That's completely fine.\n\nNo more reminders today.\nWe'll be back tomorrow.",
         buttons: [],
       },
       { kind: "answer", tapId: expect.any(String), popup: null },
@@ -89,14 +89,14 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     telegram.failRemoveButtons = true;
     await tap(`done:${today}:1140`);
     expect(store.logs).toHaveLength(1); // the log really was saved
-    expect(telegram.sentTexts()).toEqual(["✅ Saved: Showing affection today."]);
+    expect(telegram.sentTexts()).toEqual(["✅ <b>Saved</b>\nShowing affection today."]);
   });
 
   it("😴 Not today: if removing the nudge's buttons fails after saving, the note is still sent and the parent is never told it didn't save", async () => {
     telegram.failRemoveButtons = true;
     await tap(`skip:${today}:1140`);
     expect(store.events).toContainEqual(expect.objectContaining({ parentId, type: "not_today" })); // really recorded
-    expect(telegram.sentTexts()).toEqual(["😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow."]);
+    expect(telegram.sentTexts()).toEqual(["😴 <b>Not today.</b> That's completely fine.\n\nNo more reminders today.\nWe'll be back tomorrow."]);
   });
 
   // [2026-11-12] New (rule 5.10, review finding P3): if the buttons could not be removed,
@@ -129,7 +129,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     await tap(`done:${today}:1140`);
     expect(store.logs).toHaveLength(1);
     expect(telegram.calls).toContainEqual({ kind: "removeButtons", chatId: ME, messageId: 55 });
-    expect(telegram.sentTexts()).not.toContain("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts()).not.toContain("🙇 Sorry, that didn't save. Please try again.");
   });
 
   it("😴 Not today delivered twice by Telegram is recorded once", async () => {
@@ -145,7 +145,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     store.failReadsOf.add("findNudgeMessage");
     await tap(`done:${today}:1140`);
     expect(store.logs).toEqual([]);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't work. Please try again."]);
     expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null }); // spinner stopped
   });
 
@@ -153,7 +153,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     store.failReadsOf.add("logExistsFor");
     await tap(`done:${today}:1140`);
     expect(store.logs).toEqual([]);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't work. Please try again."]);
     expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null });
   });
 
@@ -161,7 +161,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
     store.failReadsOf.add("notTodayOn");
     await tap(`skip:${today}:1140`);
     expect(store.events.filter((e) => e.type === "not_today")).toHaveLength(0);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't work. Please try again."]);
     expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: null });
   });
 
@@ -176,7 +176,7 @@ describe("✅ Done and 😴 Not today (thin slice 1)", () => {
   it("if saving fails, the parent sees an honest 'didn't save' message, never a receipt (rule 1.3)", async () => {
     store.failWrites = true;
     await tap(`done:${today}:1140`);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't save. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't save. Please try again."]);
     // [2026-11-12] Rule 5.10: neither edited nor stripped; the nudge keeps its buttons, so they can retry.
     expect(telegram.calls.some((c) => c.kind === "edit" || c.kind === "removeButtons")).toBe(false);
   });
@@ -189,7 +189,7 @@ describe("B. Buttons name their nudge's slot", () => {
     await store.recordNudgeSent({ parentId, nudgeId: 1, exampleId: 11, day: today, slotMinute: 420 });
     await tap(`done:${today}:420`);
     expect(store.logs).toEqual([expect.objectContaining({ parentId, nudgeId: 1, day: today, via: "done_button" })]);
-    expect(telegram.sentTexts()).toEqual(["✅ Saved: Talking with children today."]);
+    expect(telegram.sentTexts()).toEqual(["✅ <b>Saved</b>\nTalking with children today."]);
   });
 
   // B2

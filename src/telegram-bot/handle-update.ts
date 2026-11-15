@@ -26,6 +26,7 @@
 // =============================================================================
 
 import type { Store } from "../datastore/store.js";
+import { REACTION_EMOJI } from "../settings.js";
 import { toSgt } from "../sgt.js";
 import type { TelegramApi } from "./telegram-api.js";
 import type { Incoming } from "./updates.js";
@@ -35,7 +36,8 @@ import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./o
 import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap } from "./log-any-time.js";
 import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 
-export type BotDeps = { store: Store; telegram: TelegramApi; now: Date };
+// [2026-11-15] random: picks the reaction emoji (rule 5.14); tests pass a fixed one.
+export type BotDeps = { store: Store; telegram: TelegramApi; now: Date; random?: () => number };
 
 export async function handleUpdate(incoming: Incoming, deps: BotDeps): Promise<void> {
   const { telegram } = deps;
@@ -134,6 +136,12 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
     return;
   }
   const result = await logBehaviour(m.chatId, parent, behaviour, "keyboard", m.updateId, deps);
+  // [2026-11-15] Rule 5.14: a saved keyboard tap (always good news) gets one random
+  // reaction. It is decoration, not data: a failure is logged, never shown.
+  if (result === "saved") {
+    const emoji = REACTION_EMOJI[Math.floor((deps.random ?? Math.random)() * REACTION_EMOJI.length)] ?? REACTION_EMOJI[0];
+    await telegram.react(m.chatId, m.messageId, emoji).catch((error) => logFailure("Adding the reaction failed", error));
+  }
   // [2026-11-14] Review fix (owner): already saved (Telegram resent it, or a tap at the same instant): say so, never a second receipt (K8).
   if (result === "duplicate") await telegram.sendMessage(m.chatId, WORDS.alreadySaved).catch((error) => logFailure("Sending 'already saved' failed", error));
 }

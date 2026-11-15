@@ -17,10 +17,22 @@
 // the Menu and /help (src/telegram-bot/SPEC.md, "Build: B1"). The owner's
 // words are marked "owner"; the rest are drafts, refined with the readability
 // work in Claude Chat.
+// [2026-11-15] House style C (owner, 15 Nov; preview in
+// docs/handoffs/2026-11-15-readability-style-c-preview.html): line breaks
+// between ideas, short lines, <b>bold</b> for the habit and section names, at
+// most one emoji per section. Messages are sent in Telegram's formatting mode
+// (HTML), so anything a person typed or the database holds goes through esc()
+// first: "Tom & <Jerry>" shows exactly as typed and can't add formatting or
+// break the message. Pop-ups (pickLimit, expired, undoExpired, alreadySaved,
+// alreadyAnswered) and Menu descriptions are plain text: Telegram shows them as is.
 // =============================================================================
 
 import { daysBetween, formatTime, toSgt, weekdayOf } from "../sgt.js";
-import { DEFAULT_FREQUENCIES, SIGN_UP_DRAFT_KEEP_DAYS } from "../settings.js";
+import { DEFAULT_FREQUENCIES, SIGN_UP_DRAFT_KEEP_DAYS, WEB_PAGES } from "../settings.js";
+
+// [2026-11-15] Make text safe for Telegram's formatting mode: the three
+// characters it treats as special become their written-out forms.
+export const esc = (text: string) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 // "7:00pm" from formatTime becomes "7:00 pm", the owner's agreed style.
 export const spacedTime = (minutes: number) => formatTime(minutes).replace(/(am|pm)$/, " $1");
@@ -28,9 +40,10 @@ export const spacedTime = (minutes: number) => formatTime(minutes).replace(/(am|
 // [2026-11-12] Review fix F1: how each frequency is said, so screen 8 always
 // matches the defaults in src/settings.ts (rule 1.4). A frequency missing here
 // fails the type check, never shows a made-up phrase.
-const FREQUENCY_WORDS: Record<(typeof DEFAULT_FREQUENCIES)[keyof typeof DEFAULT_FREQUENCIES], string> = {
-  every_2_days: "every 2 days",
-  once_a_week: "once a week",
+// [2026-11-15] Now said as headings in the plan (style C), e.g. "Every 2 days".
+const FREQUENCY_TITLES: Record<(typeof DEFAULT_FREQUENCIES)[keyof typeof DEFAULT_FREQUENCIES], string> = {
+  every_2_days: "Every 2 days",
+  once_a_week: "Once a week",
 };
 
 // [2026-11-13] W2: when the next reminder is, said the owner's way: "today at
@@ -51,133 +64,120 @@ export function whenWords(now: Date, next: { date: string; slotStart: number }):
 }
 
 // Names joined the way people say them: "Mia", "Mia and Leo", "Mia, Leo and Ava".
+// [2026-11-15] Each name is made safe (esc), as names are typed by a parent.
 export const joinNames = (names: string[]) =>
-  names.length <= 1 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+  names.length <= 1 ? esc(names[0] ?? "") : `${names.slice(0, -1).map(esc).join(", ")} and ${esc(names.at(-1)!)}`;
 
 export const WORDS = {
-  // ---- Screens 1 to 3: invite, first name, children (Q7, Q10) ----
-  // Screen 2, with the 7-day line at /start (owner, 12 Nov, review finding P1).
-  // [2026-11-13] W4 (owner, PDPA): the notice also says one reminder may come.
+  // ---- Sign-up ----
   welcome: (firstName: string) =>
-    `Thanks for joining, ${firstName}!\n\nWe'll keep your answers for ${SIGN_UP_DRAFT_KEEP_DAYS} days while you set up, and may send you one reminder to finish. Nothing is saved for good until you agree.`,
+    `<b>Thanks for joining, ${esc(firstName)}!</b> 👋\n\nWe'll keep your answers for ${SIGN_UP_DRAFT_KEEP_DAYS} days while you set up, and may send you one reminder to finish.\n\nNothing is saved for good until you agree.`,
   changeNameButton: "Change name",
-  askFirstName: "What should we call you? Type your first name.",
-  thanksName: (firstName: string) => `Thanks, ${firstName}!`,
-  childQuestion: "What's your child's name? Type their first name, a nickname works too.",
+  askFirstName: "<b>What should we call you?</b>\nType your first name.",
+  thanksName: (firstName: string) => `Thanks, ${esc(firstName)}!`,
+  childQuestion: "<b>What's your child's name?</b>\nType their first name. A nickname works too.",
   otherChildQuestion: "What's your other child's name?",
-  anyOtherChildren: (names: string[]) => `${joinNames(names)}. Any other children?`,
+  anyOtherChildren: (names: string[]) => `<b>${joinNames(names)}.</b> Any other children?`,
   addChildButton: "+ Add another child",
-  thatsAllButton: "That's all",
-  // Told once, to parents of 2 or 3 children (Q4, owner's wording).
+  thatsAllButton: "That's all ➡️",
   takingTurns: (names: string[]) =>
-    `${joinNames(names)}. Lovely! To keep things fresh, we'll take turns naming one of them in each reminder. It's just a suggestion: do it with whoever you like.`,
+    `<b>${joinNames(names)}.</b> Lovely!\n\nTo keep things fresh, we'll take turns naming one of them in each reminder.\n\nIt's just a suggestion: do it with whoever you like.`,
   nameTooLong: (max: number) => `Please type a name of up to ${max} characters.`, // draft
-  welcomeBack: "Welcome back! Let's carry on.", // Q10e
-  // [2026-11-13] W5 (owner's edit of Q11b): the one 24-hour sign-up reminder.
-  signUpReminder: "You're almost there! Tap below to continue where you left off.",
-  continueButton: "Continue",
-  // [2026-11-13] W7: Continue tapped after the draft was cut down (7 quiet days).
-  signUpExpired: "This sign-up has expired. Please open your invite link again to start over.",
-  noCode: "Hi! This app is invite-only for now. Please use the invite link you were sent.", // Q10d
-  badCode: "Sorry, that invite code doesn't work. Please ask the person who invited you for your own link.", // Q10c
+  welcomeBack: "👋 <b>Welcome back!</b> Let's carry on.", // Q10e, style C
+  signUpReminder: "⏳ <b>You're almost there!</b>\nTap below to continue where you left off.",
+  continueButton: "Continue ➡️",
+  signUpExpired: "This sign-up has expired.\nPlease open your invite link again to start over.",
+  noCode: "Hi! This app is invite-only for now.\nPlease use the invite link you were sent.", // Q10d
+  badCode: "Sorry, that invite code doesn't work.\nPlease ask the person who invited you for your own link.", // Q10c
   alreadySignedUp: "You're already signed up.", // draft
   signUpFirst: "Please sign up with your invite link first.", // draft
-
-  // ---- Screens 4 and 5: behaviours ----
-  greetOneChild: (child: string, firstName: string) => `Nice to meet you, ${child}'s parent, ${firstName}!`,
-  greetManyChildren: (firstName: string) => `Nice to meet you, ${firstName}!`, // Q4
-  quickIntro: "These are quick behaviours. Pick up to 2 to work on.",
-  ticked: (name: string) => `✓ ${name}`,
-  nextButton: "Next",
-  pickLimit: "You can pick up to 2.",
-  deliberateIntro: "Now pick 1 deliberate behaviour. These take some planning. So we've made it optional.",
-  // Owner's decision D2, 12 Nov: with no quick pick, the deliberate one is needed (rule 2.1).
-  deliberateNeeded: "Now pick 1 deliberate behaviour. Pick 1 to get started.",
-  skipButton: "Skip for now",
-  picked: (names: string[]) => `Picked: ${names.length > 0 ? names.join(", ") : "none"}`, // draft: shown once the screen is done
+  greetOneChild: (child: string, firstName: string) => `Nice to meet you, ${esc(child)}'s parent, ${esc(firstName)}!`,
+  greetManyChildren: (firstName: string) => `Nice to meet you, ${esc(firstName)}!`, // Q4
+  quickIntro: "⚡ <b>Quick behaviours</b>\nPick up to 2 to work on.",
+  // [2026-11-15] A picked option shows ✅, the same mark as Done (owner). Button words are plain text.
+  ticked: (name: string) => `✅ ${name}`,
+  nextButton: "Next ➡️",
+  pickLimit: "You can pick up to 2.", // pop-up
+  deliberateIntro: "📅 <b>Deliberate behaviours</b>\nNow pick 1. These take some planning, so it's optional.",
+  deliberateNeeded: "📅 <b>Deliberate behaviours</b>\nNow pick 1 to get started.",
+  skipButton: "Skip for now ➡️",
+  // [2026-11-15] Picks numbered, one per line (owner).
+  picked: (names: string[]) =>
+    names.length > 0 ? `<b>Picked:</b>\n${names.map((n, i) => `${i + 1}. ${esc(n)}`).join("\n")}` : "<b>Picked:</b> none", // draft
   skipped: "Skipped for now.", // draft
-
-  // ---- Screens 6 to 8: times and plan (Q7: no Change during sign-up) ----
   schoolTimes: (minutes: number[]) =>
-    `For school days, we'll suggest reminders at these 3 times.\n${minutes.map(spacedTime).join(" · ")}\n1 reminder each time. A maximum of 3 in total a day.\nYou can change these anytime in Settings.`,
+    `🏫 <b>School days:</b> ${minutes.length} reminder times\n\n${minutes.map(spacedTime).join(" · ")}\n\nAt most 1 reminder each time, and 3 a day.\nChange these anytime in Settings.`,
   weekendTimes: (minutes: number[]) =>
-    `For weekends and school holidays, we'll remind you at these times.\n${minutes.map(spacedTime).join(" · ")}\n1 reminder each time. A maximum of 3 in total a day.\nYou can change these anytime in Settings.`,
-  okButton: "OK",
-  // Screen 8 (rule 3.14): owner's title, 12 Nov (D3); one line per kind of behaviour.
+    `🌤 <b>Weekends and school holidays:</b> ${minutes.length} reminder times\n\n${minutes.map(spacedTime).join(" · ")}\n\nAt most 1 reminder each time, and 3 a day.\nChange these anytime in Settings.`,
+  okButton: "OK ➡️",
   plan: (quick: string[], deliberate: string | null, wrapUpMinute: number) =>
     [
-      "From what you chose, your reminders are:",
-      ...(quick.length > 0 ? [`${quick.join(", ")}: ${FREQUENCY_WORDS[DEFAULT_FREQUENCIES.quick]}`] : []),
-      ...(deliberate ? [`${deliberate}: ${FREQUENCY_WORDS[DEFAULT_FREQUENCIES.deliberate]}`] : []),
-      `A wrap up for the week will be sent on Sunday at ${spacedTime(wrapUpMinute)}.`,
+      "<b>Your reminders</b>",
+      ...(quick.length > 0 ? [`🔁 <b>${FREQUENCY_TITLES[DEFAULT_FREQUENCIES.quick]}</b>\n${quick.map((q) => `• ${esc(q)}`).join("\n")}`] : []),
+      ...(deliberate ? [`📅 <b>${FREQUENCY_TITLES[DEFAULT_FREQUENCIES.deliberate]}</b>\n• ${esc(deliberate)}`] : []),
+      `📝 <b>Week wrap up:</b> Sunday ${spacedTime(wrapUpMinute)}`,
       "Change these anytime in Settings.",
-    ].join("\n"),
-
-  // ---- Screen 9: the agreement (rule 11.9) ----
-  // Draft: the agreement wording is still open (Q8); a placeholder until the PDPA review.
-  agreement:
-    "Before we start: we record what you log and when, so we can see what helps families. Your data is never sold or shared. You need to agree to join.",
+    ].join("\n\n"),
+  // [2026-11-15] With a link to the Terms & Conditions page (a plain page until the owner fills it in).
+  agreement: `🔒 <b>Before we start</b>\n\nWe record what you log and when, so we can see what helps families.\n\nYour data is never sold or shared.\n\nYou need to agree to join.\n<a href="${WEB_PAGES.terms}">Read the Terms &amp; Conditions</a>`,
   agreeButton: "✅ I agree", // rule 11.9
   agreed: "✅ You agreed.",
-
-  // ---- Screens 10 and 11: Start right now, All set (Q3) ----
-  startedButton: "✅ I've started!",
+  startedButton: "💪 I've started!", // owner, 15 Nov
   notNowButton: "Not now",
-  // "when" is e.g. "today at 7:00 pm", from whenWords (W2, rule 3.17).
+  // [2026-11-15] Screen 10: the behaviour's fixed line from the database ("Start
+  // right now, and … with {child}. <idea>"), made safe, with "Start right now" in
+  // bold and the idea on its own line after 💡.
+  startNow: (line: string, child: string) => {
+    const text = esc(line).replaceAll("{child}", esc(child)).replace(/^Start right now,?/, "<b>Start right now</b>");
+    const split = text.indexOf(". ");
+    return split < 0 ? text : `${text.slice(0, split + 1)}\n\n💡 ${text.slice(split + 2)}`;
+  },
   notNow: (when: string) => `No problem. Your first reminder is ${when}.`,
-  allSet: (firstName: string, when: string) => `You're all set, ${firstName}. Your next reminder is ${when}.`,
-  // [2026-11-13] W3: no next reminder (paused, or nothing due in 14 days): never a made-up time.
+  allSet: (firstName: string, when: string) => `🎉 <b>You're all set, ${esc(firstName)}.</b>\n\nYour next reminder is ${when}.`,
   notNowNoReminder: "No problem. We'll remind you when one of your habits is next due.",
-  allSetNoReminder: (firstName: string) => `You're all set, ${firstName}. We'll remind you when one of your habits is next due.`,
-  // [2026-11-13] Draft (rule 1.3): the next reminder couldn't be worked out (a failed read).
-  allSetUnknown: (firstName: string) => `You're all set, ${firstName}. Sorry, we couldn't check when your next reminder is.`,
-  notNowUnknown: "No problem. Sorry, we couldn't check when your first reminder is.", // draft, rule 1.3
+  allSetNoReminder: (firstName: string) => `🎉 <b>You're all set, ${esc(firstName)}.</b>\n\nWe'll remind you when one of your habits is next due.`,
+  allSetUnknown: (firstName: string) => `🎉 <b>You're all set, ${esc(firstName)}.</b>\n\n🙇 Sorry, we couldn't check when your next reminder is.`,
+  notNowUnknown: "No problem.\n🙇 Sorry, we couldn't check when your first reminder is.", // draft, rule 1.3
   myPage: "Your page is here whenever you want to look back. It's empty for now.",
   openMyPageButton: "Open my page ↗",
-  startNowNotSaved: "Sorry, this couldn't be saved, so its buttons won't work.", // draft, rule 1.3
-  startNowNotShown: "Sorry, Start right now couldn't be shown. You're signed up.", // [2026-11-12] draft, review fix F3
-
-  // ---- The daily loop ----
+  startNowNotSaved: "🙇 Sorry, this couldn't be saved, so its buttons won't work.", // draft, rule 1.3
+  startNowNotShown: "🙇 Sorry, Start right now couldn't be shown.\nYou're signed up.", // [2026-11-12] draft, review fix F3
   unrecognised: "Unrecognised text.", // owner, 11 Nov
-  // [2026-11-13] W1 (owner, option c): one child, taking turns (rule 3.16), then
-  // an idea (rule 3.13). Claude writes the words in a later slice (rule 3.11).
-  nudge: (name: string, child: string | null, example: string) => `With ${child ?? "your child"}: ${name}\n\nIdea: ${example}`,
+  // ---- Reminders ----
+  // [2026-11-15] The habit first, in bold, then the child; the idea after 💡 (owner, style C).
+  nudge: (name: string, child: string | null, example: string) => `<b>${esc(name)}</b> · with ${child ? esc(child) : "your child"}\n\n💡 ${esc(example)}`,
   doneButton: "✅ Done",
   notTodayButton: "😴 Not today",
-  receipt: (name: string) => `✅ Saved: ${name} today.`, // rule 7.5, fixed
-  notToday: "😴 Not today. That's completely fine. No more reminders from us today. We'll be back tomorrow.", // B1 part 2
-  expired: "Reminder has expired. Tap a behaviour on the keyboard to log today.", // owner, 9 Nov
-  alreadySaved: "Already saved.", // draft
-  alreadyAnswered: "Already answered.", // [2026-11-12] draft, rule 5.10
-  didNotSave: "Sorry, that didn't save. Please try again.", // draft, rule 1.3
-  signUpFailed: "Sorry, that didn't work. Please try again.", // draft, rule 1.3
-  nudgeNotSaved: "Sorry, this reminder couldn't be saved, so its buttons won't work.", // [2026-11-13] W6, rule 1.3
-
-  // ---- [2026-11-14] B1: log any time ----
-  // The keyboard's button for a behaviour (rule 5.1); a tap sends exactly this text.
-  keyboardLabel: (name: string) => `✅ ${name}`,
-  // K4: the same behaviour again today (agreed with the B1 tests, 14 Nov).
-  receiptAgain: (name: string) => `✅ Saved: ${name}, again today. It counts once for your week.`,
+  receipt: (name: string) => `✅ <b>Saved</b>\n${esc(name)} today.`, // rule 7.5, fixed; "Saved" on its own line (owner)
+  notToday: "😴 <b>Not today.</b> That's completely fine.\n\nNo more reminders today.\nWe'll be back tomorrow.", // B1 part 2, style C
+  expired: "Reminder has expired. Tap a behaviour on the keyboard to log today.", // owner, 9 Nov; pop-up
+  alreadySaved: "Already saved.", // draft; pop-up, or a message for a resent keyboard tap
+  alreadyAnswered: "Already answered.", // [2026-11-12] draft, rule 5.10; pop-up
+  didNotSave: "🙇 Sorry, that didn't save. Please try again.", // draft, rule 1.3
+  signUpFailed: "🙇 Sorry, that didn't work. Please try again.", // draft, rule 1.3
+  nudgeNotSaved: "🙇 Sorry, this reminder couldn't be saved, so its buttons won't work.", // [2026-11-13] W6, rule 1.3
+  // ---- Logging any time ----
+  keyboardLabel: (name: string) => `✅ ${name}`, // a keyboard button: plain text
+  receiptAgain: (name: string) => `✅ <b>Saved</b>\n${esc(name)}, again today.\nIt counts once for your week.`,
   undoButton: "Undo",
   undone: "Undone. It won't count.", // rule 5.8
-  undoExpired: "Undo expired.", // owner, B1-D1
-  logPrompt: "Which one did you do today?", // draft
-  noBehaviours: "You haven't chosen any habits yet. You can choose them in Settings.", // draft
+  undoExpired: "Undo expired.", // owner, B1-D1; pop-up
+  logPrompt: "<b>Which one did you do today?</b>", // draft
+  noBehaviours: "You haven't chosen any habits yet.\nYou can choose them in Settings.", // draft
+  // ---- Menu and help ----
   myPageLink: "Here's your page.", // draft
   settingsLink: "Change your times and habits in Settings.", // draft
   openSettingsButton: "Open Settings ↗", // draft
   pauseLink: "To pause your reminders, open Settings.", // draft (B1-D3: pausing happens in Settings)
   alreadyPaused: "Your reminders are already paused.", // draft, B1-D8
   alreadyOn: "Your reminders are already on.", // draft, B1-D8
-  resumeQuestion: "Resume your reminders?", // owner, B1 tests
+  resumeQuestion: "<b>Resume your reminders?</b>", // owner, B1 tests
   resumeButton: "✅ Resume",
   cancelButton: "Cancel",
-  resumed: "✅ Your reminders are back on.", // draft
+  resumed: "✅ <b>Your reminders are back on.</b>", // draft
   resumeCancelled: "OK, your reminders stay paused.", // draft
-  // B1-D9 (owner: OK for now; refine in the readability work).
   help:
-    "How this works:\n• Tap a behaviour on the keyboard below to log it for today.\n• Reminders come at your chosen times. Tap ✅ Done or 😴 Not today.\n• Menu: /log to log · /mypage your page · /settings your times and habits · /pause and /resume your reminders.",
-  // The Menu's lines (B1-D8), drafts.
+    "<b>How this works</b>\n\n✍️ <b>Log:</b> tap a habit on the keyboard below.\n\n⏰ <b>Reminders</b> come at your chosen times.\nTap ✅ Done or 😴 Not today.\n\n☰ <b>Menu</b>\n/log · log a habit\n/mypage · your page\n/settings · your times and habits\n/pause · /resume · your reminders",
   menu: {
     log: "Log a behaviour for today",
     mypage: "Your page",

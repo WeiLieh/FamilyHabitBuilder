@@ -37,11 +37,14 @@ const say = (text: string, who = ME) => handleUpdate(parseUpdate(textUpdate(who,
 const tap = (data: string, messageId = 55, who = ME) => handleUpdate(parseUpdate(tapUpdate(who, data, messageId)), deps());
 
 // The words the parent sees (drafts are marked in src/telegram-bot/words.ts).
-const RECEIPT = "✅ Saved: Showing affection today.";
-const AGAIN = "✅ Saved: Showing affection, again today. It counts once for your week.";
-const SORRY_SAVE = "Sorry, that didn't save. Please try again.";
-const SORRY = "Sorry, that didn't work. Please try again.";
+const RECEIPT = "✅ <b>Saved</b>\nShowing affection today.";
+const AGAIN = "✅ <b>Saved</b>\nShowing affection, again today.\nIt counts once for your week.";
+const SORRY_SAVE = "🙇 Sorry, that didn't save. Please try again.";
+const SORRY = "🙇 Sorry, that didn't work. Please try again.";
 const undoButton = (logId: number) => [[{ text: "Undo", data: `undo:${logId}` }]];
+// [2026-11-15] Rule 5.14: a saved keyboard tap also gets one reaction on the parent's message (checked in detail by R1 to R4 in tests/telegram-bot-style-c.test.ts).
+const REACTION = { kind: "react", chatId: ME, messageId: expect.any(Number), emoji: expect.any(String) };
+const lastSend = () => telegram.calls.filter((c) => c.kind === "send").at(-1);
 
 // A Showing affection nudge sent tonight at 7:00 pm, Telegram's message 777.
 const sendNudge = () => store.recordNudgeSent({ parentId, nudgeId: 2, exampleId: 21, day: today, slotMinute: 1140, telegramMessageId: 777 });
@@ -65,14 +68,14 @@ describe("The keyboard (rule 5.1)", () => {
     const d = { store: fresh, telegram: t, now: evening };
     await goTo("finished", d, 7777, { quick: [1, 2], deliberate: 5 });
     await handleUpdate(parseUpdate(tapUpdate(7777, "start:notnow")), d);
-    const allSet = t.calls.find((c) => c.kind === "send" && c.text.startsWith("You're all set"));
+    const allSet = t.calls.find((c) => c.kind === "send" && c.text.startsWith("🎉 <b>You're all set"));
     expect(allSet).toMatchObject({ keyboard: ["✅ Talking with children", "✅ Showing affection", "✅ Spending quality time"] });
   });
 
   it("K2 a keyboard tap with no nudge waiting saves today's log (via keyboard) and replies with the receipt and Undo", async () => {
     await say("✅ Showing affection");
     expect(store.logs).toEqual([expect.objectContaining({ parentId, nudgeId: 2, day: today, messageId: null, via: "keyboard" })]);
-    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }]);
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }, REACTION]);
   });
 
   it("K3 a keyboard tap while today's nudge for that behaviour is waiting answers it: linked, its buttons go, the receipt is a new message with Undo", async () => {
@@ -82,6 +85,7 @@ describe("The keyboard (rule 5.1)", () => {
     expect(telegram.calls).toEqual([
       { kind: "removeButtons", chatId: ME, messageId: 777 },
       { kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) },
+      REACTION,
     ]);
     // The nudge is answered, so its own ✅ Done button saves nothing more (rule 5.10).
     await tap(`done:${today}:1140`);
@@ -93,7 +97,7 @@ describe("The keyboard (rule 5.1)", () => {
     await say("✅ Showing affection");
     await say("✅ Showing affection");
     expect(store.logs).toHaveLength(2);
-    expect(telegram.calls.at(-1)).toEqual({ kind: "send", chatId: ME, text: AGAIN, buttons: undoButton(store.logs[1]!.id) });
+    expect(lastSend()).toEqual({ kind: "send", chatId: ME, text: AGAIN, buttons: undoButton(store.logs[1]!.id) });
   });
 
   it("K5 logging still works after 😴 Not today (the nudge is already answered, so the log is on the parent's own initiative)", async () => {
@@ -102,7 +106,7 @@ describe("The keyboard (rule 5.1)", () => {
     telegram.calls = [];
     await say("✅ Showing affection");
     expect(store.logs).toEqual([expect.objectContaining({ nudgeId: 2, messageId: null, via: "keyboard" })]);
-    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }]);
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }, REACTION]);
   });
 
   it("K6 a failed save says so and never shows a receipt (rule 1.3)", async () => {
@@ -132,7 +136,7 @@ describe("Keyboard, after the B1 review (owner, 14 Nov)", () => {
     await store.recordNudgeSent({ parentId, nudgeId: 2, exampleId: 21, day: today, slotMinute: 1140 });
     await say("✅ Showing affection");
     expect(store.logs).toEqual([expect.objectContaining({ messageId: store.sentNudges[0]!.id })]);
-    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }]);
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: RECEIPT, buttons: undoButton(store.logs[0]!.id) }, REACTION]);
   });
 
   it("K10 once saved, a Telegram failure removing the nudge's buttons never says 'didn't save' (rule 1.3)", async () => {
@@ -202,7 +206,7 @@ describe("/log (rules 5.1, 5.7)", () => {
       {
         kind: "send",
         chatId: ME,
-        text: "Which one did you do today?",
+        text: "<b>Which one did you do today?</b>",
         buttons: [[{ text: "Showing affection", data: "log:2" }], [{ text: "Spending quality time", data: "log:5" }]],
       },
     ]);
@@ -252,7 +256,7 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
       {
         kind: "send",
         chatId: ME,
-        text: "Resume your reminders?",
+        text: "<b>Resume your reminders?</b>",
         buttons: [[{ text: "✅ Resume", data: "resume:yes" }, { text: "Cancel", data: "resume:no" }]],
       },
     ]);
@@ -262,7 +266,7 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
     expect(store.events).toContainEqual(expect.objectContaining({ parentId, type: "settings_changed" }));
     expect(telegram.calls).toEqual([
       { kind: "removeButtons", chatId: ME, messageId: 902 },
-      { kind: "send", chatId: ME, text: "✅ Your reminders are back on.", buttons: [] },
+      { kind: "send", chatId: ME, text: "✅ <b>Your reminders are back on.</b>", buttons: [] },
       { kind: "menu", chatId: ME, commands: null }, // back to everyone's default Menu
       { kind: "answer", tapId: expect.any(String), popup: null },
     ]);
@@ -296,7 +300,7 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
         kind: "send",
         chatId: ME,
         text:
-          "How this works:\n• Tap a behaviour on the keyboard below to log it for today.\n• Reminders come at your chosen times. Tap ✅ Done or 😴 Not today.\n• Menu: /log to log · /mypage your page · /settings your times and habits · /pause and /resume your reminders.",
+          "<b>How this works</b>\n\n✍️ <b>Log:</b> tap a habit on the keyboard below.\n\n⏰ <b>Reminders</b> come at your chosen times.\nTap ✅ Done or 😴 Not today.\n\n☰ <b>Menu</b>\n/log · log a habit\n/mypage · your page\n/settings · your times and habits\n/pause · /resume · your reminders",
         buttons: [],
         keyboard: ["✅ Showing affection", "✅ Spending quality time"],
       },
@@ -309,8 +313,8 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
     await say(" mypage ");
     await say("/log hug");
     expect(telegram.sentTexts()).toEqual([
-      "Which one did you do today?",
-      expect.stringMatching(/^How this works:/),
+      "<b>Which one did you do today?</b>",
+      expect.stringMatching(/^<b>How this works<\/b>/),
       "Here's your page.",
       "Unrecognised text.",
     ]);
@@ -350,8 +354,8 @@ describe("Welcome back removes the earlier copy's buttons (10e addition)", () =>
     await handleUpdate(parseUpdate(textUpdate(NEW, "John", "/start WELCOME-1")), d);
     expect(t.calls).toEqual([
       { kind: "removeButtons", chatId: NEW, messageId: earlier },
-      { kind: "send", chatId: NEW, text: "Welcome back! Let's carry on.", buttons: [] },
-      { kind: "send", chatId: NEW, text: "Mia. Any other children?", buttons: expect.any(Array) },
+      { kind: "send", chatId: NEW, text: "👋 <b>Welcome back!</b> Let's carry on.", buttons: [] },
+      { kind: "send", chatId: NEW, text: "<b>Mia.</b> Any other children?", buttons: expect.any(Array) },
     ]);
     // The new copy is now the one to clear next time.
     expect(s.drafts.get(NEW)!.screenMessageId).toBe(t.lastSentId);
@@ -365,7 +369,7 @@ describe("Welcome back removes the earlier copy's buttons (10e addition)", () =>
     await handleUpdate(parseUpdate(tapUpdate(NEW, "signup:continue", 950)), d);
     expect(t.calls.filter((c) => c.kind !== "answer").slice(0, 2)).toEqual([
       { kind: "removeButtons", chatId: NEW, messageId: earlier },
-      { kind: "send", chatId: NEW, text: "Welcome back! Let's carry on.", buttons: [] },
+      { kind: "send", chatId: NEW, text: "👋 <b>Welcome back!</b> Let's carry on.", buttons: [] },
     ]);
   });
 });
