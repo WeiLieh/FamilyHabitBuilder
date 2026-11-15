@@ -27,6 +27,9 @@
 // Telegram message numbers of migration 010 (recordNudgeSent's
 // telegramMessageId, a draft's screenMessageId and recordSignUpScreen).
 
+// [2026-11-15] The Web app sign-in (rule 9.3): /mypage stores a new link's
+// fingerprint (createSignInLink, migration 011).
+
 import type { Target } from "../nudge-engine/choices.js";
 import type { LogEntry, SentMessage } from "../nudge-engine/planner.js";
 import type { Holidays, Schedules } from "../nudge-engine/schedule.js";
@@ -147,4 +150,7 @@ export interface Store {
   undoLog(parentId: number, logId: number): Promise<"undone" | "expired" | "not_allowed">;
   // /resume: turn this parent's reminders back on (rule 8.4 edit 1, with an event).
   resumeReminders(parentId: number): Promise<void>;
+  // [2026-11-15] /mypage: keep a new sign-in link's fingerprint (never the link
+  // itself) for this parent; it works once, for 5 minutes (rule 9.3, migration 011).
+  createSignInLink(parentId: number, fingerprint: string): Promise<void>;
 }

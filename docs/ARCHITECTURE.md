@@ -10,7 +10,7 @@ flowchart LR
     photo["Photo check<br/>Designed, not built"]:::part
     rewards["Variable rewards<br/>Designed, partly built"]:::part
     datastore["Datastore<br/>Tables live"]:::part
-    webapp["Web app<br/>Design in progress"]:::part
+    webapp["Web app<br/>Sign-in built, pages to come"]:::part
     telemetry["Telemetry<br/>Designed, not built"]:::part
     experiments["Experiments<br/>Designed, not built"]:::part
 
@@ -41,6 +41,8 @@ flowchart LR
 **Colours:** [2026-11-11 17:48 SGT] green = built (a status starting with "Built"); yellow = in design or partly built; grey = "Not started" (rule D4).
 
 SUPERSEDED [2026-11-11 17:48 SGT] **Colours:** green = built and tested; yellow = partly built or in design; grey = not started.
+
+[2026-11-15 16:42 SGT] Web app status: "Sign-in built, pages to come" (pull request 2 of the foundations: sign-in, the per-parent pass, Sign out; Week so far and the other pages come with the owner's look).
 
 [2026-11-15 11:41 SGT] Telegram bot status: "Planner, B1 and style C live" (#50, 15 Nov).
 

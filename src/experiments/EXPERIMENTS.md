@@ -12,6 +12,7 @@
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-15 16:38 SGT] Value 50 added (the per-parent pass, Web app sign-in), so **49 values are in use**.
 - [2026-11-15 12:24 SGT] Values 45 to 49 added (the Web app foundations, migration 011), so **48 values are in use**.
 - [2026-11-15 11:29 SGT] Value 44 added (rule 5.14, the reaction emoji).
 - [2026-11-12 23:07 SGT] Values 40 and 41 added (onboarding screens, pull request 2), so **40 values are in use**.
@@ -73,6 +74,7 @@
 | 47 | Tuneable | [2026-11-15 12:24 SGT] Older weeks per tap: how many older weeks one tap of the button adds (rule 9.7). | Weeks. Today: 4 | settings.ts |
 | 48 | Tuneable | [2026-11-15 12:24 SGT] Tile text: the most characters of a reflection or moment line a small tile shows, cut at a word (read 2). | Characters. Today: 40 | settings.ts |
 | 49 | Tuneable | [2026-11-15 12:24 SGT] Connection card weeks: how many calendar weeks of bars the card shows (rule 9.5). | Weeks. Today: 4 | settings.ts |
+| 50 | Guardrail | [2026-11-15 16:38 SGT] Pass length: how long the per-parent pass our server signs for each page works (rule 9.8). | Seconds. Today: 600 (10 minutes) | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.
