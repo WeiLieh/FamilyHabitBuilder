@@ -37,6 +37,8 @@
 
 [2026-11-15 11:41 SGT] **Results, 15 Nov morning (owner):** U40 **pass** (/help shows the help text and the keyboard, habits in the order picked). U41 **pass** (first keyboard log of the day: "✅ Saved: Showing affection today." with Undo). After #50 (house style C, live 15 Nov): /help and a keyboard tap checked, both fine, and the tap got a reaction; the reminder layout is checked at the next reminder. Still to run: U45, U33, U35, U46; optional U52, U53.
 
+[2026-11-15 12:13 SGT] **Closed by the owner (15 Nov): "most of the test cases passed, so let's close this."** Not run, and closed without a result: U45, U46, U52, U53.
+
 ## Test cases
 Use your test account (it has picks, times and a child's name). An account that signed up before B1 has no keyboard yet: send `/help` to get it (U40).
 
