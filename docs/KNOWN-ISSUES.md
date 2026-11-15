@@ -9,6 +9,17 @@
 - **Impact:** [2026-11-15 11:29 SGT] A real family would be agreeing to terms that aren't written yet (a PDPA reviewer would stop this).
 - **Workaround:** [2026-11-15 11:29 SGT] The owner fills in the page before any real family signs up (owner, 15 Nov); until then only test accounts sign up.
 
+### [2026-11-15 09:03 SGT] The Web app's sign-in and deletes are rules only, nothing built
+- **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
+- **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).
+- **Workaround:** [2026-11-15 09:03 SGT] No real family uses the Web app until rules 9.3 and 9.6 are built and tested; the security reviewer checks them before go-live.
+- **Update:** [2026-11-15 09:17 SGT] Also open before go-live: how the Web app reaches the database (master key or per-parent access), and checking the "do not store" and short-lived-link rules on Vercel. Telegram's own copy of a photo stays in the chat (see "Telegram keeps the chat history outside Singapore").
+
+### [2026-11-14 22:24 SGT] This week's logs read newest first, an older week's oldest first
+- **Issue:** [2026-11-14 22:24 SGT] Week so far lists this week's log rows newest first (rule 9.4); an older week's page reads day by day, oldest first (rule 9.7). The owner said "leave it for now".
+- **Impact:** [2026-11-14 22:24 SGT] Low: a parent may notice the two pages read in opposite directions.
+- **Workaround:** [2026-11-14 22:24 SGT] Build as designed; revisit after UAT.
+
 ### [2026-11-14 14:20 SGT] Failure logs name the parent's internal number
 - **Issue:** [2026-11-14 14:20 SGT] When the alarm run fails for one parent, Vercel's log line names that parent's internal database number (for example "Nudge not sent to parent 12"). It is not a Telegram ID or a name, but it points to one person (privacy review of B1; the lines date from pull request 3c, `src/telegram-bot/scheduler.ts`).
 - **Impact:** [2026-11-14 14:20 SGT] Low: only someone with Vercel access and database access could link it to a person. A PDPA reviewer may still ask.
@@ -229,5 +240,17 @@
 - [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
+
+### [2026-11-14 22:24 SGT] A logged day with a line but no photo has no tile in the older-weeks list
+- **Issue:** [2026-11-14 22:24 SGT] In the older-weeks list (rule 9.7) each thing logged gets a tile: a photo tile or a reflection tile. A log with only a line has no tile in the design, so the tiles could show fewer things than the count line says.
+- **Impact:** [2026-11-14 22:24 SGT] The list could look like it is missing days. Blocks building that part of rule 9.7.
+- **Workaround:** [2026-11-14 22:24 SGT] Owner to decide; a text tile like the reflection tile is the obvious candidate.
+- **Resolved:** [2026-11-15 09:03 SGT] Owner: every habit log gets a tile; a log without a photo shows a ✓ habit tile (rule 9.7; its look still to be designed).
+
+### [2026-11-14 22:24 SGT] The connection card's "about the same" band is not chosen
+- **Issue:** [2026-11-14 22:24 SGT] The Week so far connection card (rule 9.5) picks its title by comparing this week's answer with the average of the 3 weeks before. Nobody has chosen how close counts as "about the same" (proposed: half a point either way). The titles themselves are a default awaiting the owner's wording.
+- **Impact:** [2026-11-14 22:24 SGT] The card can't be built until the owner chooses; the number will live in `src/settings.ts` (rule 1.4).
+- **Workaround:** [2026-11-14 22:24 SGT] None needed yet (nothing built). Owner to decide (`docs/CATCH-UP.md`, section 4).
+- **Resolved:** [2026-11-15 09:03 SGT] Not needed: the owner dropped the changing titles; the card shows the fixed question and bars only (rule 9.5).
 
 - [2026-11-12 23:24 SGT] Every issue resolved up to 12 Nov 2026 (9 entries) was moved word for word to [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-12.md](archive/KNOWN-ISSUES-resolved-to-2026-11-12.md) (owner approved). New resolved issues go here, newest first.

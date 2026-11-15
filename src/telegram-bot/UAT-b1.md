@@ -35,6 +35,8 @@
 
 [2026-11-14 21:40 SGT] **Results, 14 Nov evening (owner):** U44 **pass** (logged 5:05 pm, Undo tapped 5:19 pm: pop-up "Undo expired.", the button gone). U45 not yet: ✅ Done was tapped on the 7:00 pm reminder (that is planner U31); next time tap the keyboard. Still to run: U40, U41 (a morning with nothing logged yet), U45, U46; optional U52, U53.
 
+[2026-11-15 11:41 SGT] **Results, 15 Nov morning (owner):** U40 **pass** (/help shows the help text and the keyboard, habits in the order picked). U41 **pass** (first keyboard log of the day: "✅ Saved: Showing affection today." with Undo). After #50 (house style C, live 15 Nov): /help and a keyboard tap checked, both fine, and the tap got a reaction; the reminder layout is checked at the next reminder. Still to run: U45, U33, U35, U46; optional U52, U53.
+
 ## Test cases
 Use your test account (it has picks, times and a child's name). An account that signed up before B1 has no keyboard yet: send `/help` to get it (U40).
 

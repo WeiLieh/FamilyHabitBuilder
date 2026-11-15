@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>View wrap up link</title>
+<style>
+  /* Wireframe only: plain greys, no look (CLAUDE.md rule 6). */
+  :root { --ink:#222; --muted:#666; --line:#999; --soft:#ddd; --bg:#fff; --pic:#ccc; --note:#f4f4f4; --tg:#eef3f8; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --tg:#22303c; } }
+  :root[data-theme="dark"] { --ink:#eee; --muted:#aaa; --line:#777; --soft:#444; --bg:#1b1b1b; --pic:#555; --note:#262626; --tg:#22303c; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui, sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:22px 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 8px; }
+  .flow { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+  .phone { flex:0 1 250px; border:2px dashed var(--line); border-radius:14px; padding:12px; box-sizing:border-box; min-height:150px; }
+  .label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:8px; }
+  .msg { background:var(--tg); border-radius:10px; padding:8px; font-size:12px; line-height:1.4; }
+  .tbtn { border:1.5px solid var(--line); border-radius:8px; text-align:center; padding:5px; margin-top:5px; font-size:12px; }
+  .tbtn.tap { border:3px solid var(--ink); font-weight:700; }
+  .arrow { font-size:22px; color:var(--muted); }
+  .pg { font-size:14px; font-weight:700; }
+  .meta { font-size:11px; color:var(--muted); margin:2px 0 6px; }
+  .blk { height:16px; background:var(--pic); border-radius:4px; margin-top:6px; }
+  .why { background:var(--note); border-radius:8px; padding:8px; font-size:12px; line-height:1.4; margin-top:8px; }
+  .rec { border:2px solid var(--ink); border-radius:8px; padding:8px; font-size:13px; margin-top:22px; }
+</style></head>
+<body><main>
+<h1>Where "View wrap up" in Telegram takes you</h1>
+<p class="sub">A wireframe of where things go, not the look. The Wrap Up for 9 to 15 Nov is sent on Sunday 15 Nov at 8:00 pm. Its button "View wrap up" opens My page. The question: which page?</p>
+
+<h2>Proposal: the button always opens the week the Wrap Up is about</h2>
+<div class="flow">
+  <div class="phone"><div class="label">Telegram, Sunday 8 pm</div>
+    <div class="msg">Your week, John<br>Habits logged: 5<br>Feelings logged: 1<br>Photos: 2
+      <div class="tbtn">Add a moment from this week</div><div class="tbtn tap">View wrap up</div></div></div>
+  <span class="arrow">→</span>
+  <div class="phone"><div class="label">Tapped on Sunday (before midnight)</div>
+    <div class="pg">Week so far</div><div class="meta">9 to 15 Nov · tab bar shown</div>
+    <div class="blk"></div><div class="blk"></div><div class="blk"></div>
+    <div class="why">It is still this week, so Week so far is that week.</div></div>
+  <span class="arrow">or</span>
+  <div class="phone"><div class="label">Tapped Monday or later</div>
+    <div class="pg">‹ Back · 9 to 15 Nov</div><div class="meta">that week's own page · tab bar hidden</div>
+    <div class="blk"></div><div class="blk"></div><div class="blk"></div>
+    <div class="why">Week so far is now the new week (16 to 22 Nov), so the button opens 9 to 15 Nov's own page instead. Back goes to Week so far.</div></div>
+</div>
+
+<h2>The alternative: always Week so far</h2>
+<div class="flow">
+  <div class="phone"><div class="label">Tapped Monday or later</div>
+    <div class="pg">Week so far</div><div class="meta">16 to 22 Nov · nearly empty on a Monday</div>
+    <div class="blk" style="opacity:.4"></div>
+    <div class="why">Simpler, but the parent asked to see last week's wrap up and lands on a new, nearly empty week.</div></div>
+</div>
+
+<div class="rec"><b>Recommendation:</b> the proposal. The button always shows the week its Wrap Up is about, so it never surprises the parent.</div>
+</main></body></html>

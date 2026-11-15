@@ -4,6 +4,36 @@
 
 ## Notebook
 
+### [2026-11-15 11:41 SGT] Data minimisation: give each page only what it shows
+- **Concept:** data minimisation, a principle of Singapore's Personal Data Protection Act (PDPA).
+- **In plain English:** each question the Web app may ask the database returns only what that page shows, never "everything just in case". There is also a list of things no page ever gets.
+- **Analogy:** a librarian who brings you the one page you asked for, not the whole shelf.
+- **Why and when to use it:** always with personal data, above all children's names and photos. It also makes pages lighter and faster. Not a reason to hide what a parent needs to see.
+- **Best practices:** start from the screen and work backwards to the data; write a "never returned" list; send short snippets in summaries and load full text only when it's opened.
+- **Where it showed up in this project:** the three Web app reads (one week, older weeks as summaries with 40-character snippets, up to 5 ratings), approved item by item on 15 Nov.
+- **Explain it to others:** "Each page gets exactly what it displays and nothing more; we even wrote down what it must never receive."
+- **Governance angle:** a PDPA reviewer asks "why do you need this field?" for every item; the "never returned" list answers before they ask.
+
+### [2026-11-15 11:41 SGT] Row Level Security (RLS): the database checks every row itself
+- **Concept:** Row Level Security (RLS), the database's own rule about which rows a pass may see or change.
+- **In plain English:** after sign-in, the Web app gets a short-lived pass for one parent. The database itself refuses any row that isn't that parent's, even if our code asks for the wrong one.
+- **Analogy:** each flat's key card opens only that flat; even if the receptionist hands over the wrong card, the door still checks.
+- **Why and when to use it:** whenever people's own data is shown in a browser, and a mix-up would be serious (children's photos). For a server-only job like the Telegram bot, a well-guarded master key can be enough.
+- **Best practices:** never put the master key in the Web app; keep passes short-lived; test "parent A can't see parent B" directly; index tables by parent so the check stays fast.
+- **Where it showed up in this project:** rule 9.8 (owner: "let's default to security", 15 Nov).
+- **Explain it to others:** "Two locks instead of one: our code asks only for your rows, and the database refuses anyone else's anyway."
+- **Governance angle:** a security reviewer or Change Advisory Board (CAB) asks "what stops parent A seeing parent B's photos if the code has a bug?" The answer is: the database.
+
+### [2026-11-15 11:41 SGT] Making typed text safe before formatting it (escaping)
+- **Concept:** escaping: turning special characters into their written-out forms, so text is shown, never obeyed.
+- **In plain English:** to show **bold**, the bot sends messages in Telegram's formatting mode, where "<" and "&" have special meanings. Any name a parent typed goes through a small function first, so "Tom & <Jerry>" shows exactly as typed and can't add formatting or break the message.
+- **Analogy:** putting someone's words in quotation marks, so they're read out rather than followed as instructions.
+- **Why and when to use it:** whenever text from a person or a database goes into anything that has its own formatting rules (messages, web pages, database queries).
+- **Best practices:** escape at the moment text is put into the message; keep button labels plain; test with a name full of symbols.
+- **Where it showed up in this project:** house style C (#50): `esc()` in `src/telegram-bot/words.ts`, tests F2 and F2b.
+- **Explain it to others:** "We turned on bold text, and made sure a parent's typed name can never sneak formatting or links into a message."
+- **Governance angle:** a security reviewer checks every path from user input to output; here the privacy reviewer traced each one.
+
 ### [2026-11-14 21:40 SGT] Two kinds of Telegram buttons: under a message, or in place of the keyboard
 - **Concept:** inline buttons versus a reply keyboard (Telegram's two ways to offer buttons).
 - **In plain English:** inline buttons sit under one message and send the bot a hidden code when tapped (✅ Done, Undo). A reply keyboard replaces the phone's keyboard with big buttons that stay there; a tap simply sends the button's words as if typed ("✅ Showing affection"), and the bot matches them exactly.

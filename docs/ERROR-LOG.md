@@ -4,6 +4,12 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+## [2026-11-15 11:41 SGT] The preview bot found no chat to send to
+- **What broke:** [2026-11-15 11:41 SGT] The preview job stopped twice with "No chat found", although the owner had sent /start to the preview bot.
+- **Cause:** [2026-11-15 11:41 SGT] First, the token saved in GitHub belonged to another bot; then, with the right token, Telegram had no waiting message for the bot (the earlier /start never reached it under that token).
+- **Fix:** [2026-11-15 11:41 SGT] The owner copied the token again from BotFather (/mybots, then API Token), updated the GitHub secret, and sent the bot a fresh "hi"; the job then sent everything. The job's log now names the bot a token belongs to (its public username only).
+- **How to prevent it:** [2026-11-15 11:41 SGT] When a bot token is set up, first check which bot it belongs to (getMe) and that a message is waiting, before sending anything.
+
 ## [2026-11-11 21:45 SGT] The bot stopped answering after the webhook was set again
 - **What broke:** [2026-11-11 21:45 SGT] UAT U5: `/start <code>` got no reply on any device, and Vercel's Logs showed no request at all.
 - **Cause:** [2026-11-11 21:45 SGT] setWebhook had been run a second time with a typo in the path (`/ape/telegram-bot`), so Telegram delivered to a page that doesn't exist (getWebhookInfo: "Wrong response from the webhook: 404 Not Found", 2 messages pending). The bot and the database were fine.

@@ -4,6 +4,42 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-15 10:09 SGT] Scaling plan: what must be done before each stage
+- **Item:** [2026-11-15 10:09 SGT] A checklist of what must be true before the app grows past each stage (owner, 15 Nov, from a side chat; summarised here so it is tracked, not remembered). Cost lines are general: the Supabase and Vercel plans were not checked. Stages above 1,000 are outline only, to be planned when the earlier ones are done.
+  - **Stage 1, testing (20 to 30 families):** (a) **privacy first, before any real family:** photo consent, "delete my data", and the Web app's sign-in and delete rules (9.3, 9.6) built and tested (known issues); (b) the **alarm run handles only about 50 parents** (known issue, 13 Nov): fine here, but fix before stage 2 (see "Design for the alarm run at scale" below); (c) confirm **which region Vercel runs in** (known issue "Vercel project settings not yet confirmed"; far from Singapore = every request slower); (d) a **daily cap on Claude calls** per parent (known issue) once typed logging and warm replies exist; (e) the Web app loads **phone-sized photos as you scroll** (rule 9.6's "do not store" means photos are downloaded again on every visit).
+  - **Stage 2, 100 families:** (a) the **alarm-run scale fix**: process parents in batches or across several runs; (b) **reads of "all parents" fetch in pages** (Supabase returns at most 1,000 rows; today such a read stops with an error); (c) **alerts** when something fails, instead of reading logs (known issue: broken nudge rows are reported but nobody is alerted); (d) **database tests run automatically** on every pull request (known issue); (e) a **photo retention period** decided (known issue: photos kept with no time limit); (f) **invites**: limit how many open invites one account can hold (known issue).
+  - **Stage 3, 1,000 families:** (a) **Telegram's sending limit** (about 30 messages a second): queue and pace sends, retry and record failures (rule 1.3); 1,000 parents with the same 7:00 pm slot already take time to send; (b) **paid plans** for Supabase and Vercel (free tiers are for testing), and a **monthly budget alert** for Claude; (c) **backups and a tested restore**; (d) **support**: a way for parents to reach a person, and a short playbook for common problems; (e) **PDPA governance**: a named Data Protection Officer, a data-breach plan (serious breaches must be reported to the regulator and the people affected), a Data Protection Impact Assessment, and an answer on Telegram keeping chat history outside Singapore.
+  - **Stage 4, 10,000 families (outline):** sending spread over time or across several workers; database load reviewed (indexes by parent, Row Level Security cost, connection limits); photo storage and download costs reviewed; an on-call rota for alerts; an external security review.
+  - **Stage 5, 100,000 families (outline):** a dedicated queue service for sends; read copies of the database or caching for heavy reads (only where privacy rules allow); formal incident response; capacity tests before each big launch.
+  - **Stage 6, 1,000,000 families (outline):** an architecture review (a single Supabase project and one Telegram bot may no longer fit); regional and regulatory review; a full-time operations team.
+- **Why it matters:** [2026-11-15 10:09 SGT] Several parts are known to break or get expensive well before 5,000 parents (the alarm run at about 50, Telegram's sending limit, the 1,000-row read limit, Claude and photo costs), and children's photos raise the PDPA bar as numbers grow. Don't build for later stages now; check this list before each step up.
+- **Priority:** [2026-11-15 10:09 SGT] High for stage 1 (before the alpha); the rest when the previous stage is reached.
+- **Status:** [2026-11-15 10:09 SGT] Not started.
+
+## [2026-11-15 09:03 SGT] End the Web app sign-in on every device
+- **Item:** [2026-11-15 09:03 SGT] A way to end every My page sign-in at once (for example from Telegram), for a lost or shared phone.
+- **Why it matters:** [2026-11-15 09:03 SGT] A sign-in lasts 30 days (rule 9.3); today only Sign out on that phone or "delete my data" ends it.
+- **Priority:** [2026-11-15 09:03 SGT] Low (owner, 14 Nov)
+- **Status:** [2026-11-15 09:03 SGT] Not started
+
+## [2026-11-14 22:24 SGT] Design My page tab 2, "Habits so far"
+- **Item:** [2026-11-14 22:24 SGT] Design tab 2 of My page (rule 9.2): steady weeks, Wrap Up counts, the monthly view, trends; perhaps where older weeks' connection answers show.
+- **Why it matters:** [2026-11-14 22:24 SGT] Its job is "show me we're growing", and rule 7.8 moved steady weeks and the monthly view to My page.
+- **Priority:** [2026-11-14 22:24 SGT] High (the owner's second priority tab)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
+## [2026-11-14 22:24 SGT] Design My page tabs 3 (Rewards) and 4 (Settings)
+- **Item:** [2026-11-14 22:24 SGT] Rewards is greyed out for now; Settings is a placeholder holding pause, delete a photo or line, delete my data, sign out, reminder times, children and consents (rules 9.1, 9.2).
+- **Why it matters:** [2026-11-14 22:24 SGT] Settings is where "delete my data" and pause live, which the privacy known issues wait for.
+- **Priority:** [2026-11-14 22:24 SGT] Medium (Settings), Low (Rewards)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
+## [2026-11-14 22:24 SGT] Week so far: the states not designed yet
+- **Item:** [2026-11-14 22:24 SGT] A quiet week, a week with no photo, a first-ever week, a parent with no older weeks (button hidden); monthly grouping of older weeks once there are many; a "With us since [date]" line.
+- **Why it matters:** [2026-11-14 22:24 SGT] Every parent meets at least one of these in the first weeks; without a design the page could look broken.
+- **Priority:** [2026-11-14 22:24 SGT] Medium (before the Web app goes live)
+- **Status:** [2026-11-14 22:24 SGT] Not started (Claude Chat)
+
 ## [2026-11-14 10:37 SGT] "Welcome back" removes the old copy's buttons
 - **Item:** [2026-11-14 10:37 SGT] When the bot sends a sign-up screen again ("Welcome back", or **Continue** on the one sign-up reminder), remove the buttons from the earlier copy of that screen (Telegram bot spec, 10e addition).
 - **Why it matters:** [2026-11-14 10:37 SGT] Found in UAT U21 (14 Nov): two identical OK buttons on screen; the old one does nothing, which is confusing.

@@ -33,6 +33,8 @@ The automated tests (166, run on every pull request, including the honest "didn'
 
 ## Part 2: test cases
 
+[2026-11-15 11:41 SGT] **Results, 15 Nov (owner):** U14 **pass** (the first message after a quiet night was answered in 1 to 2 seconds). All of U0 to U16 are now done or replaced.
+
 [2026-11-14 00:07 SGT] **Results, 14 Nov just after midnight (owner):** U12 **pass** (Friday's untapped nudge, tapped after midnight: the "Reminder has expired" pop-up). U13 **pass** (paused, cron job run on the new day: no nudge after 2 minutes, today's `messages_sent` count 0; then unpaused, `paused` back to false). An earlier U13 attempt before midnight proved nothing (that day's nudge had already gone) and changed nothing. Still to run: U14, U15, U16.
 
 [2026-11-13 23:39 SGT] **Results, 13 Nov (run by Claude Code from the cloud session):** U0 **pass** (`/docs/SPEC.md` and `/src/settings.ts` both 404 NOT_FOUND); U1 **pass** (`/api/health` 200 `{"ok":true,"service":"family-habit-builder"}`); U2 **pass** (`/api/telegram-bot` 401 `{"ok":false}`).
