@@ -91,6 +91,8 @@ export class FakeStore implements Store {
   clock = new Date();
   // Set to true to make every write fail, like a database outage.
   failWrites = false;
+  // [2026-11-15] Web app sign-in links (migration 011): only fingerprints, as in the real database.
+  signInLinks: { parentId: number; fingerprint: string }[] = [];
   // [2026-11-12] Set failReads to pretend the database can't answer any question
   // ("who is this?", "which nudge?", "already logged?", "already said Not today?").
   failReads = false;
@@ -345,6 +347,12 @@ export class FakeStore implements Store {
     this.events.push({ parentId, type: "log_undone", updateId: null });
     return "undone";
   }
+  async createSignInLink(parentId: number, fingerprint: string): Promise<void> {
+    this.failIfAsked();
+    if (!/^[0-9a-f]{64}$/.test(fingerprint)) throw new Error("Only a fingerprint of the link is stored (rule 9.3).");
+    this.signInLinks.push({ parentId, fingerprint });
+  }
+
   async resumeReminders(parentId: number): Promise<void> {
     this.failIfAsked();
     const p = this.parents.find((x) => x.id === parentId);

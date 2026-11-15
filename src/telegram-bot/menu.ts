@@ -8,11 +8,15 @@
 //     /pause (owner, B1-D8; Telegram allows a different Menu per chat);
 //   - recognises a command, with or without the "/" and in any capitals
 //     ("LOG", "/log" and "log" all work; "/log hug" does not, test M4);
-//   - answers /mypage, /settings and /pause with a link to the placeholder
+//   - answers /settings and /pause with a link to the placeholder Settings
 //     page (B1-D3: pausing itself happens in Settings, not built yet), /help
 //     with the help text and the keyboard (how existing parents get it, M3),
 //     and /resume with "Resume your reminders?" and its two buttons (M2).
 // /log itself is in log-any-time.ts.
+// [2026-11-15] /mypage sends a new one-time sign-in link to the Web app (rule
+// 9.3): a random secret goes after the "#" in the link, and only its
+// fingerprint is stored. If it can't be stored, the parent is told it didn't
+// work and gets no link (rule 1.3).
 //
 // Why: the commands live in one place, so the Menu, the replies and the
 // owner's one-time set-up of the default Menu can't drift apart.
@@ -20,6 +24,7 @@
 // its buttons; a Menu change that fails is logged (the reply is still true).
 // =============================================================================
 
+import { fingerprintOf, newSecret } from "../datastore/sign-in-secrets.js";
 import { WEB_PAGES } from "../settings.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
@@ -53,12 +58,21 @@ export async function runMenuCommand(
   command: Exclude<Command, "log" | "help">,
   chatId: number,
   parent: Parent,
-  { telegram }: BotDeps,
+  { store, telegram }: BotDeps,
 ): Promise<void> {
   switch (command) {
-    case "mypage":
-      await telegram.sendMessage(chatId, WORDS.myPageLink, link(WORDS.openMyPageButton, WEB_PAGES.myPage));
+    case "mypage": {
+      const secret = newSecret();
+      try {
+        await store.createSignInLink(parent.id, fingerprintOf(secret));
+      } catch (error) {
+        logFailure("Making a sign-in link failed", error);
+        await telegram.sendMessage(chatId, WORDS.signUpFailed);
+        return;
+      }
+      await telegram.sendMessage(chatId, WORDS.myPageLink, link(WORDS.openMyPageButton, `${WEB_PAGES.signIn}#${secret}`));
       return;
+    }
     case "settings":
       await telegram.sendMessage(chatId, WORDS.settingsLink, link(WORDS.openSettingsButton, WEB_PAGES.settings));
       return;

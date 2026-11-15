@@ -8,6 +8,7 @@
 //   - U1 to U4: Undo under a keyboard log's receipt, for 10 minutes (rule 5.8, B1-D1)
 //   - L1 to L3: /log, the same choice as buttons (rules 5.1, 5.7; no Undo, B1-D5)
 //   - M1 to M5: the Menu: /mypage, /settings, /pause, /resume, /help (rule 5.7, B1-D3, B1-D8)
+//   - [2026-11-15] WA1: /mypage sends a new one-time sign-in link to the Web app (rule 9.3; the owner's test W1)
 //   - W1, W2: "Welcome back" and Continue remove the earlier copy's buttons (10e addition)
 // Each test checks what the parent would see in Telegram and what was saved.
 // =============================================================================
@@ -17,6 +18,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { handleUpdate, type BotDeps } from "../src/telegram-bot/handle-update.js";
 import { menuCommands } from "../src/telegram-bot/menu.js";
 import { parseUpdate } from "../src/telegram-bot/updates.js";
+import { createHash } from "node:crypto";
 import { sgtInstant } from "../src/sgt.js";
 import { WEB_PAGES } from "../src/settings.js";
 import { FakeStore } from "./helpers/datastore-fake-store.js";
@@ -238,15 +240,41 @@ describe("/log (rules 5.1, 5.7)", () => {
 });
 
 describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
-  it("M1 /mypage, /settings and /pause reply with a link button to the placeholder page", async () => {
-    await say("/mypage");
+  // [2026-11-15] Rewritten (Web app sign-in, rule 9.3): /mypage now sends a one-time sign-in link (W1 below), so it left this test.
+  it("M1 /settings and /pause reply with a link button to the placeholder Settings page", async () => {
     await say("/settings");
     await say("/pause");
     expect(telegram.calls).toEqual([
-      { kind: "send", chatId: ME, text: "Here's your page.", buttons: [[{ text: "Open my page ↗", url: WEB_PAGES.myPage }]] },
       { kind: "send", chatId: ME, text: "Change your times and habits in Settings.", buttons: [[{ text: "Open Settings ↗", url: WEB_PAGES.settings }]] },
       { kind: "send", chatId: ME, text: "To pause your reminders, open Settings.", buttons: [[{ text: "Open Settings ↗", url: WEB_PAGES.settings }]] },
     ]);
+  });
+
+  // [2026-11-15] New (rule 9.3, owner-approved test W1, named WA1 here: this file's W1 and W2 are "Welcome back"): each /mypage makes a new
+  // link that works once; the secret travels only after the "#" (browsers never
+  // send that part to a server, so it can't land in server logs), and the
+  // database is given only its fingerprint.
+  it("WA1 each /mypage sends a new one-time sign-in link; only its fingerprint is stored", async () => {
+    await say("/mypage");
+    await say("/mypage");
+    const sends = telegram.calls.filter((c) => c.kind === "send");
+    expect(sends).toHaveLength(2);
+    const urls = sends.map((c) => /"url":"([^"]+)"/.exec(JSON.stringify(c))?.[1] ?? "");
+    const secrets = urls.map((u) => u.split("#")[1] ?? "");
+    for (const [i, url] of urls.entries()) {
+      expect(sends[i]).toMatchObject({ text: "Here's your page.", buttons: [[{ text: "Open my page ↗" }]] });
+      expect(url.startsWith(`${WEB_PAGES.signIn}#`)).toBe(true);
+      expect(secrets[i]).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    }
+    expect(secrets[0]).not.toBe(secrets[1]);
+    expect(store.signInLinks).toEqual(secrets.map((secret) => ({ parentId, fingerprint: createHash("sha256").update(secret).digest("hex") })));
+    expect(JSON.stringify(store.signInLinks)).not.toContain(secrets[0]);
+  });
+
+  it("WA1 if the link can't be saved, /mypage says it didn't work and sends no link (rule 1.3)", async () => {
+    store.failWrites = true;
+    await say("/mypage");
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: ME, text: SORRY, buttons: [] }]);
   });
 
   it("M2 /resume while paused asks 'Resume your reminders?'; ✅ Resume turns them back on and switches the Menu back to /pause", async () => {

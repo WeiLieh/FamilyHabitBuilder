@@ -440,5 +440,13 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         "Resuming reminders",
       );
     },
+
+    // [2026-11-15] The database adds the 5-minute expiry from the settings version (migration 011).
+    async createSignInLink(parentId, fingerprint) {
+      check(
+        await db.rpc("create_sign_in_link", { p_parent: parentId, p_link_fingerprint: fingerprint, p_version: await settingsVersion() }),
+        "Making a sign-in link",
+      );
+    },
   };
 }

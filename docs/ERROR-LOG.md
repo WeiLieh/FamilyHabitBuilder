@@ -4,6 +4,13 @@
 
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
+
+## [2026-11-15 16:45 SGT] A commit was pushed while the drift check was failing
+- **What broke:** [2026-11-15 16:45 SGT] Commit 015abc6 (Web app sign-in) was committed and pushed with one drift failure: the new UAT file wasn't linked from any spec, so it was "not reachable".
+- **Cause:** [2026-11-15 16:45 SGT] The command ran the check, then searched its output for results, and joined the steps with "and then". The search succeeded (it found the failure lines), so the commit went ahead: the check's own result was never looked at (CLAUDE.md rule 7).
+- **Fix:** [2026-11-15 16:45 SGT] Linked the file from `src/web-app/SPEC.md` (commit 587af40); the check passed. From then on the check's own exit code decides whether to commit.
+- **How to prevent it:** [2026-11-15 16:45 SGT] Run `npm run check` on its own and commit only when its exit code is 0; never decide from a filtered copy of its output.
+
 ## [2026-11-15 11:41 SGT] The preview bot found no chat to send to
 - **What broke:** [2026-11-15 11:41 SGT] The preview job stopped twice with "No chat found", although the owner had sent /start to the preview bot.
 - **Cause:** [2026-11-15 11:41 SGT] First, the token saved in GitHub belonged to another bot; then, with the right token, Telegram had no waiting message for the bot (the earlier /start never reached it under that token).

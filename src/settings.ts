@@ -137,6 +137,10 @@ export const OLDER_WEEKS_PER_PAGE = 4;
 export const TILE_TEXT_CHARS = 40;
 // [2026-11-15] The connection card shows bars for this many calendar weeks (rule 9.5).
 export const CONNECTION_WEEKS = 4;
+// [2026-11-15] The per-parent pass (rule 9.8, option A): our server signs a new
+// one for each page, and it stops working after this many seconds (10 minutes).
+// A safety limit (Guardrail): an experiment may only make it shorter.
+export const PASS_SECONDS = 10 * 60;
 
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
@@ -181,6 +185,10 @@ export const DEFAULT_FREQUENCIES = { quick: "every_2_days", deliberate: "once_a_
 // [2026-11-14] B1-D3: /settings and /pause link to public/settings.html.
 export const WEB_PAGES = {
   myPage: "https://family-habit-builder.vercel.app/my-page.html",
+  // [2026-11-15] The page a /mypage link opens (rule 9.3). The link's secret is
+  // added after a "#", which browsers never send to a server, so it can't land
+  // in server logs; the page's one button sends it.
+  signIn: "https://family-habit-builder.vercel.app/api/web-app?page=open",
   settings: "https://family-habit-builder.vercel.app/settings.html",
   // [2026-11-15] The Terms & Conditions page the agreement links to (public/terms.html);
   // a plain page until the owner fills it in, before any real family signs up.
