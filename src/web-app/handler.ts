@@ -12,10 +12,15 @@
 //     and starts a sign-in; the browser gets a protected cookie holding a new
 //     random secret (sent only over secure connections, never readable by
 //     scripts on the page). A used or expired link says so (rule 9.3).
-//   - ?page=week (GET): My page. The cookie is checked, our server signs a
-//     10-minute pass for that one parent (pass.ts), and the database is read
-//     with it (rule 9.8). For now the page only greets the parent: Week so far
-//     is built later, with the owner's look (CLAUDE.md rule 6).
+//   - ?page=week (GET): My page's Week so far. The cookie is checked, our
+//     server signs a 10-minute pass for that one parent (pass.ts), and the
+//     database is read with it (rule 9.8). [2026-11-15] The page is built in
+//     plain HTML (week-page.ts); the look comes later from the owner (rule 6).
+//     &older=N adds N older weeks below it (rule 9.7).
+//   - ?page=confirm (GET) and ?page=delete (POST): a dustbin's "Are you sure?"
+//     page and the delete itself (rule 9.6, wireframe A).
+//   - ?page=habits and ?page=settings (GET): placeholder tabs; Settings holds
+//     Sign out (rule 9.2).
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
 // Every answer tells browsers and caches not to keep a copy (rule 9.6).
 // [2026-11-15, privacy review] A form posted from another website (a forged
@@ -32,11 +37,14 @@ import { createHash } from "node:crypto";
 import { newSecret } from "../datastore/sign-in-secrets.js";
 import type { WebAppDb } from "../datastore/web-app-store.js";
 import { mondayOf, toSgt } from "../sgt.js";
+import type { DeleteKind, OlderWeek } from "../datastore/web-app-store.js";
+import { escapeHtml } from "./html.js";
 import { signPass } from "./pass.js";
+import { confirmPage, habitsPage, settingsPage, weekPage } from "./week-page.js";
 import { WEB_WORDS } from "./words.js";
 
 // The database menu this handler orders from (src/datastore/web-app-store.ts).
-export type { WebAppDb, WebWeek } from "../datastore/web-app-store.js";
+export type { ConnectionWeek, DeleteKind, OlderWeeksPage, WebAppDb, WebWeek } from "../datastore/web-app-store.js";
 export type WebRequest = { method: string; url: string; headers: Record<string, string | undefined>; body: string };
 export type WebResponse = { status: number; headers: Record<string, string>; body: string };
 
@@ -68,9 +76,6 @@ const SAFE_HEADERS: Record<string, string> = {
 // The same headers, for the few plain answers api/web-app.ts makes itself.
 export const WEB_SAFE_HEADERS: Readonly<Record<string, string>> = SAFE_HEADERS;
 
-// Make text safe to put in a page (a name like "<b>" is shown, not obeyed).
-const escapeHtml = (text: string) =>
-  text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const page = (inner: string) =>
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
@@ -141,8 +146,10 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     };
   }
 
-  // ?page=week: check the sign-in, sign a pass for that parent, read with it.
-  async function week(req: WebRequest): Promise<WebResponse> {
+  // Check the sign-in cookie and sign a 10-minute pass for that one parent
+  // (rule 9.8). Gives the pass, or the answer to send instead (not signed in,
+  // or the check failed).
+  async function passFor(req: WebRequest): Promise<{ pass: string; at: Date } | WebResponse> {
     const cookieSecret = cookieOf(req);
     if (!cookieSecret || !SECRET.test(cookieSecret)) return notSignedIn();
     let parentId: number | null;
@@ -154,19 +161,74 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     }
     if (parentId === null) return notSignedIn();
     const at = now();
+    return { pass: signPass(parentId, jwtSecret, at), at };
+  }
+  const isAnswer = (x: unknown): x is WebResponse => typeof x === "object" && x !== null && "status" in x;
+
+  // ?page=week (&older=N): Week so far, with N older weeks listed below it
+  // (rules 9.4, 9.5, 9.7). Every read must work, or the page says it didn't (rule 1.3).
+  async function week(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    const monday = mondayOf(toSgt(signed.at).date);
+    const asked = Number(new URL(req.url, "https://localhost").searchParams.get("older") ?? "0");
+    const wanted = Number.isInteger(asked) && asked > 0 ? Math.min(asked, 520) : 0; // at most ten years of weeks
     try {
-      const w = await db.week(signPass(parentId, jwtSecret, at), mondayOf(toSgt(at).date));
-      return answer(
-        200,
-        `<h1>${escapeHtml(WEB_WORDS.hello(w.parentFirstName))}</h1>` +
-          paragraph(WEB_WORDS.comingSoon) +
-          `<form method="post" action="${BASE}?page=sign-out"><button type="submit">${escapeHtml(WEB_WORDS.signOutButton)}</button></form>`,
-      );
+      const [w, connection] = await Promise.all([db.week(signed.pass, monday), db.connectionHistory(signed.pass, monday)]);
+      const older: OlderWeek[] = [];
+      let remaining = w.olderWeeks;
+      let before = monday;
+      while (older.length < wanted && remaining > 0) {
+        const pageOfWeeks = await db.olderWeeks(signed.pass, before);
+        if (pageOfWeeks.weeks.length === 0) break;
+        older.push(...pageOfWeeks.weeks);
+        remaining = pageOfWeeks.weeksRemaining;
+        before = pageOfWeeks.weeks.at(-1)!.monday;
+      }
+      return answer(200, weekPage({ week: w, monday, connection, older, olderRemaining: remaining }));
     } catch (error) {
       logFailure("Reading My page failed", error);
       return didntWork();
     }
   }
+
+  // Which entry a dustbin points at: one of the three kinds and a whole number.
+  function entryOf(params: URLSearchParams): { kind: DeleteKind; id: number } | null {
+    const kind = params.get("kind");
+    const id = Number(params.get("id"));
+    if ((kind !== "line" && kind !== "reflection" && kind !== "moment-line") || !Number.isSafeInteger(id) || id <= 0) return null;
+    return { kind, id };
+  }
+
+  // ?page=confirm: "Are you sure?" on its own page (rule 9.6, wireframe A). It deletes nothing.
+  async function confirm(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    const entry = entryOf(new URL(req.url, "https://localhost").searchParams);
+    if (!entry) return answer(400, paragraph(WEB_WORDS.badRequest));
+    return answer(200, confirmPage(entry.kind, entry.id));
+  }
+
+  // ?page=delete (POST): one layer, with that parent's pass; then back to Week so far.
+  async function remove(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    const entry = entryOf(new URLSearchParams(req.body));
+    if (!entry) return answer(400, paragraph(WEB_WORDS.badRequest));
+    try {
+      await db.deleteEntry(signed.pass, entry.kind, entry.id);
+    } catch (error) {
+      logFailure("Deleting on My page failed", error);
+      return didntWork();
+    }
+    return { status: 303, headers: { ...SAFE_HEADERS, location: `${BASE}?page=week` }, body: "" };
+  }
+
+  // The two placeholder tabs (rule 9.2): signed in only, nothing read.
+  const placeholder = (build: () => string) => async (req: WebRequest) => {
+    const signed = await passFor(req);
+    return isAnswer(signed) ? signed : answer(200, build());
+  };
 
   // ?page=sign-out: end the sign-in, then clear the cookie. If ending it
   // fails, the cookie is kept and the page says so (it is still signed in).
@@ -187,6 +249,10 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     open: { method: "GET", run: openPage },
     "sign-in": { method: "POST", run: signIn },
     week: { method: "GET", run: week },
+    confirm: { method: "GET", run: confirm },
+    delete: { method: "POST", run: remove },
+    habits: { method: "GET", run: placeholder(habitsPage) },
+    settings: { method: "GET", run: placeholder(settingsPage) },
     "sign-out": { method: "POST", run: signOut },
   };
 

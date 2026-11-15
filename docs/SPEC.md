@@ -106,7 +106,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, not built | yes |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Designed, partly built | yes |
 | Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables live | yes |
-| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in built, pages to come | yes |
+| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in and Week so far built | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Designed, not built | yes |
 | Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Designed, not built | yes |
 
@@ -128,7 +128,8 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-15 21:35 SGT] Minimum test count: 305 (UAT U58 fix: W12, a phone's own press let in).
+- [2026-11-15 22:17 SGT] Minimum test count: 317 (Week so far, WS1 to WS12).
+- SUPERSEDED [2026-11-15 22:17 SGT] [2026-11-15 21:35 SGT] Minimum test count: 305 (UAT U58 fix: W12, a phone's own press let in).
 - SUPERSEDED [2026-11-15 21:35 SGT] [2026-11-15 16:45 SGT] Minimum test count: 304 (pull request 2 review fix: W11, forged forms refused).
 - SUPERSEDED [2026-11-15 16:45 SGT] [2026-11-15 16:42 SGT] Minimum test count: 303 (Web app foundations, pull request 2: sign-in).
 - SUPERSEDED [2026-11-15 16:42 SGT] [2026-11-15 12:25 SGT] Minimum test count: 289 (Web app foundations, pull request 1: the five Web app numbers).
@@ -145,6 +146,7 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
 
 ## Change notes
+- [2026-11-15 22:17 SGT] **Week so far built in plain HTML (owner, 15 Nov: "vanilla HTML elements, I'll style it later"):** rules **9.2**, **9.4**, **9.5**, **9.6**, **9.7** now say what tests them. "Are you sure?" is its own page with **Cancel** and **Delete** (wireframe A, owner). Left for later (owner): photos (with the Photo check) and an older week's own page. Words are drafts in `src/web-app/words.ts`. No test removed; P2 in `tests/web-app-sign-in.test.ts` rewritten (Sign out moved to the Settings tab, rule 9.2; it now checks the Settings link); the unused "Your page is being built" wording removed (rule 12). App tests: 12 new (WS1 to WS12); 305 before, 317 after. Module status: Web app "Sign-in and Week so far built".
 - [2026-11-15 21:59 SGT] **Owner decisions, end of session 19:** rule **8.4 edit 14** (sign-in housekeeping) **approved**; known issues (a) to (d) from the reviews of #51 and #52 added to `docs/KNOWN-ISSUES.md`; the October learning-log entries archived. No code changed; test count unchanged at 305.
 - [2026-11-15 21:35 SGT] **UAT U58 fix (owner's iPhone, 15 Nov evening):** the forged-form check refused the owner's own button press (403): with our no-referrer setting an iPhone sends Origin "null" from our own page. The browser's Sec-Fetch-Site label now decides when present; forged forms are still refused (W11). New test W12; 304 before, 305 after.
 - [2026-11-15 16:45 SGT] **Pull request 2 review fixes (both agents, no High):** a sign-in or sign-out posted from another website is refused (privacy review, Medium; new test W11); the plain answers of `api/web-app.ts` carry the safe headers and give no details; long numbers blanked in Web app logs; W6 also covers an ended sign-in; the /mypage tests are named WA1 (this file's W1 is "Welcome back"); rules 9.3, 9.6 and 9.8 now say what tests them. 303 before, 304 after.
