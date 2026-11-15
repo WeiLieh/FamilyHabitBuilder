@@ -4,6 +4,30 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-15 12:25 SGT] Record which child a habit log was with
+- **Item:** [2026-11-15 12:25 SGT] Store the child on each habit log (for example from the reminder's "With Riley:" or a question after a keyboard tap), so My page can show "the habit, the child, the day" (rule 9.4).
+- **Why it matters:** [2026-11-15 12:25 SGT] The database doesn't record the child today, so log rows on My page show the habit and the day only (owner, 15 Nov).
+- **Priority:** [2026-11-15 12:25 SGT] Medium
+- **Status:** [2026-11-15 12:25 SGT] Not started
+
+## [2026-11-15 12:13 SGT] Write the Terms & Conditions page
+- **Item:** [2026-11-15 12:13 SGT] Fill in `public/terms.html`, the page the sign-up agreement links to (rule 5.15).
+- **Why it matters:** [2026-11-15 12:13 SGT] A real family must not agree to terms that aren't written (known issue of 15 Nov).
+- **Priority:** [2026-11-15 12:13 SGT] High before any real family; parked for now (owner, 15 Nov: not to be raised again until the owner brings it up)
+- **Status:** [2026-11-15 12:13 SGT] Not started
+
+## [2026-11-15 12:13 SGT] Sign-in through Telegram's own login (rule 9.3 fallback)
+- **Item:** [2026-11-15 12:13 SGT] The fallback sign-in of rule 9.3: Telegram's own login on the Web app, for when the one-tap link doesn't work.
+- **Why it matters:** [2026-11-15 12:13 SGT] Rule 9.3 promises it; it needs the Web app's address set in BotFather (Telegram's tool for managing bots), so it is a separate small step.
+- **Priority:** [2026-11-15 12:13 SGT] Medium (owner, 15 Nov: deferred until after the Web app foundations)
+- **Status:** [2026-11-15 12:13 SGT] Not started
+
+## [2026-11-15 12:13 SGT] A whole-app daily limit on Claude calls
+- **Item:** [2026-11-15 12:13 SGT] One daily limit on Claude calls for the whole app, on top of the 20 matching calls per parent (owner decision of 15 Nov).
+- **Why it matters:** [2026-11-15 12:13 SGT] Cost: many parents each under their own limit could still add up to a large bill.
+- **Priority:** [2026-11-15 12:13 SGT] Low (before beta)
+- **Status:** [2026-11-15 12:13 SGT] Not started
+
 ## [2026-11-15 10:09 SGT] Scaling plan: what must be done before each stage
 - **Item:** [2026-11-15 10:09 SGT] A checklist of what must be true before the app grows past each stage (owner, 15 Nov, from a side chat; summarised here so it is tracked, not remembered). Cost lines are general: the Supabase and Vercel plans were not checked. Stages above 1,000 are outline only, to be planned when the earlier ones are done.
   - **Stage 1, testing (20 to 30 families):** (a) **privacy first, before any real family:** photo consent, "delete my data", and the Web app's sign-in and delete rules (9.3, 9.6) built and tested (known issues); (b) the **alarm run handles only about 50 parents** (known issue, 13 Nov): fine here, but fix before stage 2 (see "Design for the alarm run at scale" below); (c) confirm **which region Vercel runs in** (known issue "Vercel project settings not yet confirmed"; far from Singapore = every request slower); (d) a **daily cap on Claude calls** per parent (known issue) once typed logging and warm replies exist; (e) the Web app loads **phone-sized photos as you scroll** (rule 9.6's "do not store" means photos are downloaded again on every visit).

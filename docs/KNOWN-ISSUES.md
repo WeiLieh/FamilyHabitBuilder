@@ -5,6 +5,7 @@
 ## Open
 
 ### [2026-11-15 11:29 SGT] The Terms & Conditions page is empty
+- **Update:** [2026-11-15 12:13 SGT] Owner (15 Nov): **parked**, also in the backlog; not to be raised again until the owner brings it up. Still true: no real family signs up until it is filled in.
 - **Issue:** [2026-11-15 11:29 SGT] The agreement (sign-up screen 9) now links to a Terms & Conditions page (rule 5.15), but the page says only its title (public/terms.html).
 - **Impact:** [2026-11-15 11:29 SGT] A real family would be agreeing to terms that aren't written yet (a PDPA reviewer would stop this).
 - **Workaround:** [2026-11-15 11:29 SGT] The owner fills in the page before any real family signs up (owner, 15 Nov); until then only test accounts sign up.
@@ -13,6 +14,7 @@
 - **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
 - **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).
 - **Workaround:** [2026-11-15 09:03 SGT] No real family uses the Web app until rules 9.3 and 9.6 are built and tested; the security reviewer checks them before go-live.
+- **Update:** [2026-11-15 12:13 SGT] Owner chose (15 Nov) **option A, a signed per-parent pass** checked by Row Level Security (key decision in `docs/CONTEXT.md`). Being built test-first: Datastore (migration 011) then the Web app sign-in.
 - **Update:** [2026-11-15 09:17 SGT] Also open before go-live: how the Web app reaches the database (master key or per-parent access), and checking the "do not store" and short-lived-link rules on Vercel. Telegram's own copy of a photo stays in the chat (see "Telegram keeps the chat history outside Singapore").
 
 ### [2026-11-14 22:24 SGT] This week's logs read newest first, an older week's oldest first
@@ -98,6 +100,7 @@
 - **Workaround:** [2026-11-09 21:49 SGT] The agreed mitigations, each with a test at build time: other prompts win; keyboard labels, commands and button taps are never saved as moments; the window closes after one photo and one line, or at the next Wrap Up. Review the window length after the trial.
 
 ### [2026-11-09 21:49 SGT] No cap on Claude matching calls per parent
+- **Update:** [2026-11-15 12:13 SGT] Owner decided (15 Nov): **20 matching calls per parent per day** (a Guardrail for `src/settings.ts`); after that the bot asks for a keyboard tap. Stays open until built and tested.
 - **Issue:** [2026-11-09 21:49 SGT] Every typed message that is a log attempt calls Claude (B1 part 3 handoff, open question). There is no daily cap per parent.
 - **Impact:** [2026-11-09 21:49 SGT] None yet (not built). Cost and abuse risk once live.
 - **Workaround:** [2026-11-09 21:49 SGT] Design a cap with a starting number in `src/settings.ts` (rule 1.4) before building typed messages.
@@ -114,6 +117,7 @@
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): mention it in the PDPA (Personal Data Protection Act) note for parents and the owner's PDPA reviewer (the note is not written yet).
 
 ### [2026-11-08 22:34 SGT] Withdrawing photo consent has no flow yet
+- [2026-11-15 12:13 SGT] Owner (15 Nov): it goes on **Settings** (tab 4 of My page); raise it when the Settings designs arrive from Claude Chat.
 - [2026-11-09 17:44 SGT] Owner (9 Nov): agreed, design it with group C.
 - **Issue:** [2026-11-08 22:34 SGT] Photo consent is now asked at the first photo (rule 5.5), so it can be withdrawn on its own, without leaving the app. There is no design for withdrawing it (stop asking for photos; keep or delete the photos already sent). Singapore's Personal Data Protection Act (PDPA) section 16 (withdrawing consent) applies (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
 - **Impact:** [2026-11-08 22:34 SGT] None yet (no photos). Needed before real families send photos.

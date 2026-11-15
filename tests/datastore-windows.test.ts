@@ -15,16 +15,24 @@
 // 24 hours after someone stops part-way through sign-up.
 // [2026-11-14] B1-D1 (owner, 14 Nov): Undo lasts 10 minutes (600 seconds), was
 // 30 seconds; the two tests that check the number were rewritten to 600.
+// [2026-11-15] Five more, read by the Web app's sign-in and reads (migration
+// 011, rules 9.3, 9.5, 9.7): the sign-in link works 5 minutes, a sign-in lasts
+// 30 days, 4 older weeks per tap, 40 characters on a tile, 4 weeks of bars.
 // =============================================================================
 
 import { describe, expect, it } from "vitest";
 import {
   CONNECTION_ANSWER_WINDOW_HOURS,
+  CONNECTION_WEEKS,
   MOMENT_WINDOW_HOURS,
+  OLDER_WEEKS_PER_PAGE,
   SETTINGS_KEYS_THE_DATABASE_READS,
+  SIGN_IN_DAYS,
+  SIGN_IN_LINK_SECONDS,
   SIGN_UP_DRAFT_KEEP_DAYS,
   SIGN_UP_REMINDER_AFTER_HOURS,
   SIGN_UP_STOPPED_KEEP_DAYS,
+  TILE_TEXT_CHARS,
   UNDO_WINDOW_SECONDS,
 } from "../src/settings.js";
 
@@ -47,15 +55,30 @@ describe("Time windows (rules 5.6, 5.8, 7.7)", () => {
     expect(SIGN_UP_REMINDER_AFTER_HOURS).toBe(24);
   });
 
+  // [2026-11-15] New (rules 9.3, 9.5, 9.7; owner, 14 and 15 Nov).
+  it("gives the sign-in link 5 minutes and a sign-in 30 days; 4 older weeks per tap, 40 characters per tile, 4 weeks of bars", () => {
+    expect(SIGN_IN_LINK_SECONDS).toBe(300);
+    expect(SIGN_IN_DAYS).toBe(30);
+    expect(OLDER_WEEKS_PER_PAGE).toBe(4);
+    expect(TILE_TEXT_CHARS).toBe(40);
+    expect(CONNECTION_WEEKS).toBe(4);
+  });
+
   // [2026-11-13] Rewritten (migration 009 reads one more window): was "names the four windows".
   // [2026-11-14] Undo's value rewritten to 600 (B1-D1).
-  it("names the five windows the database checks, with the values it will find in each settings version", () => {
+  // [2026-11-15] Rewritten (migration 011 reads five more numbers): was "names the five windows".
+  it("names the ten numbers the database reads, with the values it will find in each settings version", () => {
     expect(SETTINGS_KEYS_THE_DATABASE_READS).toEqual({
       undo_window_seconds: 600,
       connection_answer_window_hours: 24,
       sign_up_draft_keep_days: 7,
       sign_up_stopped_keep_days: 90,
       sign_up_reminder_after_hours: 24,
+      sign_in_link_seconds: 300,
+      sign_in_days: 30,
+      older_weeks_per_page: 4,
+      tile_text_chars: 40,
+      connection_weeks: 4,
     });
   });
 });

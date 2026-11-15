@@ -17,6 +17,8 @@
 
 [2026-11-14 21:40 SGT] **Results, 14 Nov evening (owner):** U30 **pass** ("With Riley: Talking with children", 7:00 pm, a new idea); U31 **pass** (✅ Done: the nudge kept its words, the receipt below); U32 **pass** (no 9:00 pm reminder); U38 and U39 **pass** (seen in the owner's re-sign-up: the /start notice, "Your next reminder is today at 7:00 pm"). Still to run: U33, U35. Not possible now: U34 (one child), U36, U37 (need a second Telegram account; covered by app tests R1 to R3, W2).
 
+[2026-11-15 12:13 SGT] **Closed by the owner (15 Nov): "most of the test cases passed, so let's close this."** Not run, and closed without a result: U33, U35 (and U34, U36, U37, not possible with one account).
+
 ## Test cases
 Use the test account you signed up with in U17 to U27 (it has picks, times and a child's name). Your old thin-slice account has no picks or times, so it now gets **no** nudges: that is correct.
 
