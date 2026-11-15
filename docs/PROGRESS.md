@@ -2,6 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-15 21:53 SGT] HANDOFF: session 19 ended (read this first)
+- [2026-11-15 21:53 SGT] **State:** `main` has #51 (migration 011), #52 (Web app sign-in) and #53 (the iPhone fix: Sec-Fetch-Site before a "null" Origin). **Migration 011 applied** (fingerprint recorded); `SUPABASE_ANON_KEY` and `SUPABASE_JWT_SECRET` in Vercel; Supabase's own sign-up off, no Storage buckets. **UAT U56 to U62 pass: My page sign-in is live.** `npm run check` passes (**305 tests**); database tests T1 to T118 pass. This session's notes are in the end-of-session pull request (H9).
+- [2026-11-15 21:53 SGT] **Mistakes logged** (`docs/ERROR-LOG.md`): a commit pushed with a failing drift check (015abc6); the forged-form check refused the owner's iPhone press (fixed in #53, test W12).
+- [2026-11-15 21:59 SGT] **Owner, end of session:** rule 8.4 edit 14 **approved**; known issues (a) to (d) **added**; the October learning-log entries **archived**.
+- SUPERSEDED [2026-11-15 21:59 SGT] [2026-11-15 21:53 SGT] **Open for the owner (CATCH-UP 4c):** approve rule 8.4 edit 14; known issues (a) to (d); LEARNING-LOG is 328 lines (archive the oldest entries?).
+- [2026-11-15 21:53 SGT] **Next Claude Code build:** the Week so far page, once the owner's look and remaining details arrive from Claude Chat (reads, deletes and sign-in are ready).
+
 ## [2026-11-15 17:00 SGT] HANDOFF: session 19 paused, owner away until the evening (read this first)
 - [2026-11-15 17:00 SGT] **State:** `main` has #51 (migration 011: sign-in tables, per-parent access, reads, deletes; **not yet applied**). **#52 is open** on `claude/kind-gates-5u8dbm` (the Web app sign-in: `/mypage` link, one-button page, `__Host-` cookie, 10-minute per-parent pass, Sign out), CI green, both review agents run and their fixes pushed. `npm run check` passes (**304 tests**), database tests T1 to T118 pass. Claude Code watches #52.
 - [2026-11-15 17:00 SGT] **Owner decisions this session:** daily-loop defaults (photo wait 10 minutes; receipt only when Claude fails; consent withdrawal on Settings; 20 matching calls a day); pass option A; no child on log rows for now; every week since joining in the older-weeks list; UAT B1 and planner closed; T&C parked; Q5, Q9 keep names; "merge" #51.

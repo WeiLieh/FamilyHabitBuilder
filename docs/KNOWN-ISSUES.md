@@ -4,6 +4,26 @@
 
 ## Open
 
+### [2026-11-15 21:59 SGT] (a) The per-parent pass must stay on our server
+- **Issue:** [2026-11-15 21:59 SGT] The 10-minute pass can call the four delete functions directly (migration 011). Our server deletes a photo's files first, then its record (rule 8.5 order); a pass used from elsewhere could delete the record first and leave the files behind. It can also write experiment labels into events unchecked (privacy review of #51).
+- **Impact:** [2026-11-15 21:59 SGT] None today: the pass is made and used only on our server and never sent to the browser (tests P1, P2, W9). If that ever changed, photos could be orphaned where "delete my data" can't find them (PDPA risk), and telemetry could be polluted.
+- **Workaround:** [2026-11-15 21:59 SGT] Never send the pass to the browser; a security review checks this whenever the Web app changes.
+
+### [2026-11-15 21:59 SGT] (b) Old sign-in rows are tidied only when that parent signs in again
+- **Issue:** [2026-11-15 21:59 SGT] Used or expired links and ended or expired sign-ins are deleted only when the same parent makes a new link or signs in again (rule 8.4, edit 14). A parent who stops using My page leaves a few rows behind (privacy review of #51).
+- **Impact:** [2026-11-15 21:59 SGT] Low: the rows hold only fingerprints that open nothing; they go with "delete my data".
+- **Workaround:** [2026-11-15 21:59 SGT] None needed now; a periodic clean-up could be added with the alarm run later.
+
+### [2026-11-15 21:59 SGT] (c) Sign-in depends on two Supabase settings staying as they are
+- **Issue:** [2026-11-15 21:59 SGT] The pass is signed with Supabase's legacy JWT secret, which Supabase says is "still used… only to verify". Rows stay safe only while that secret stays secret and Supabase's own sign-up stays off (privacy review of #52; checked at go-live, UAT G3 and G3b).
+- **Impact:** [2026-11-15 21:59 SGT] If the legacy secret is revoked, My page sign-in stops at once. If Supabase's own sign-up were switched on, an outsider could get a pass (it opens no family's rows, but it is one lock fewer). Whoever holds the secret could make a pass for any parent.
+- **Workaround:** [2026-11-15 21:59 SGT] Don't revoke the legacy secret; keep Supabase sign-up and anonymous sign-ins off; the secret lives only in Vercel. Backlog: our own signing key.
+
+### [2026-11-15 21:59 SGT] (d) The sign-up's last message still links to the old placeholder page
+- **Issue:** [2026-11-15 21:59 SGT] At the end of sign-up the bot says "Your page is here…" with a button to the old, empty `my-page.html`, not the new sign-in (spec checker of #52).
+- **Impact:** [2026-11-15 21:59 SGT] Low: a new parent sees an empty page; `/mypage` works correctly.
+- **Workaround:** [2026-11-15 21:59 SGT] Use `/mypage`. Fix when the sign-up's words are next changed (a 5-minute link there would expire before most parents tap it, so the wording needs the owner's choice).
+
 ### [2026-11-15 11:29 SGT] The Terms & Conditions page is empty
 - **Update:** [2026-11-15 12:13 SGT] Owner (15 Nov): **parked**, also in the backlog; not to be raised again until the owner brings it up. Still true: no real family signs up until it is filled in.
 - **Issue:** [2026-11-15 11:29 SGT] The agreement (sign-up screen 9) now links to a Terms & Conditions page (rule 5.15), but the page says only its title (public/terms.html).
@@ -14,6 +34,7 @@
 - **Issue:** [2026-11-15 09:03 SGT] Rules 9.3 and 9.6 now say how the sign-in link and deleting must work (a one-time link that expires in 5 minutes and stays out of logs; Sign out and delete my data end the sign-in; no copies or previews left after a delete). None of it is built or tested yet.
 - **Impact:** [2026-11-15 09:03 SGT] A Web app built without these would show children's names and photos to anyone holding a forwarded link (privacy review, 14 Nov).
 - **Workaround:** [2026-11-15 09:03 SGT] No real family uses the Web app until rules 9.3 and 9.6 are built and tested; the security reviewer checks them before go-live.
+- **Update:** [2026-11-15 21:52 SGT] **Sign-in built, tested and live** (#51, #52, #53; UAT U56 to U62 pass, 15 Nov evening). Still open: deleting on My page (rule 9.6: dustbins, "Are you sure?", short-lived photo links, deleting files) comes with the pages; the security reviewer checks it before a real family uses the Web app.
 - **Update:** [2026-11-15 12:13 SGT] Owner chose (15 Nov) **option A, a signed per-parent pass** checked by Row Level Security (key decision in `docs/CONTEXT.md`). Being built test-first: Datastore (migration 011) then the Web app sign-in.
 - **Update:** [2026-11-15 09:17 SGT] Also open before go-live: how the Web app reaches the database (master key or per-parent access), and checking the "do not store" and short-lived-link rules on Vercel. Telegram's own copy of a photo stays in the chat (see "Telegram keeps the chat history outside Singapore").
 
