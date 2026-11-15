@@ -128,7 +128,8 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 - [2026-10-31 09:40 SGT] None yet.
 
 ### Minimum test count
-- [2026-11-15 22:17 SGT] Minimum test count: 317 (Week so far, WS1 to WS12).
+- [2026-11-15 22:20 SGT] Minimum test count: 319 (Week so far review fixes: WS13, the one-year cap).
+- SUPERSEDED [2026-11-15 22:20 SGT] [2026-11-15 22:17 SGT] Minimum test count: 317 (Week so far, WS1 to WS12).
 - SUPERSEDED [2026-11-15 22:17 SGT] [2026-11-15 21:35 SGT] Minimum test count: 305 (UAT U58 fix: W12, a phone's own press let in).
 - SUPERSEDED [2026-11-15 21:35 SGT] [2026-11-15 16:45 SGT] Minimum test count: 304 (pull request 2 review fix: W11, forged forms refused).
 - SUPERSEDED [2026-11-15 16:45 SGT] [2026-11-15 16:42 SGT] Minimum test count: 303 (Web app foundations, pull request 2: sign-in).
@@ -146,6 +147,7 @@ Names that must not be used as module names (diagram, Module table, `CLAUDE.md`,
 The number of tests must never drop below this (rule P1). Raise it in the same pull request that adds tests.
 
 ## Change notes
+- [2026-11-15 22:20 SGT] **Week so far review fixes (both agents, no High):** one page load lists at most a year of older weeks (`OLDER_WEEKS_MAX` = 52, value 51, Guardrail; privacy review, Medium); dates also go through the "make it safe" step; WS2 now includes a reflection on a day with no log; P2 checks the pass again; new WS13 (names and habit names shown as text) and a second WS7 (the cap). Not changed: a double-tapped delete says "didn't work" (honest, rule 1.3); delete events carry the week-one variants, as the bot's do. 317 before, 319 after.
 - [2026-11-15 22:17 SGT] **Week so far built in plain HTML (owner, 15 Nov: "vanilla HTML elements, I'll style it later"):** rules **9.2**, **9.4**, **9.5**, **9.6**, **9.7** now say what tests them. "Are you sure?" is its own page with **Cancel** and **Delete** (wireframe A, owner). Left for later (owner): photos (with the Photo check) and an older week's own page. Words are drafts in `src/web-app/words.ts`. No test removed; P2 in `tests/web-app-sign-in.test.ts` rewritten (Sign out moved to the Settings tab, rule 9.2; it now checks the Settings link); the unused "Your page is being built" wording removed (rule 12). App tests: 12 new (WS1 to WS12); 305 before, 317 after. Module status: Web app "Sign-in and Week so far built".
 - [2026-11-15 21:59 SGT] **Owner decisions, end of session 19:** rule **8.4 edit 14** (sign-in housekeeping) **approved**; known issues (a) to (d) from the reviews of #51 and #52 added to `docs/KNOWN-ISSUES.md`; the October learning-log entries archived. No code changed; test count unchanged at 305.
 - [2026-11-15 21:35 SGT] **UAT U58 fix (owner's iPhone, 15 Nov evening):** the forged-form check refused the owner's own button press (403): with our no-referrer setting an iPhone sends Origin "null" from our own page. The browser's Sec-Fetch-Site label now decides when present; forged forms are still refused (W11). New test W12; 304 before, 305 after.

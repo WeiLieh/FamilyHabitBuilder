@@ -59,7 +59,7 @@ function connectionCard(weeks: ConnectionWeek[], monday: string): string {
   const title = `<h2>${W.connectionQuestion}</h2>`;
   if (!weeks.some((w) => w.rating !== null)) return title + `<p>${W.firstAnswer}</p>`;
   const bars = weeks.map((w) => {
-    const label = w.monday === monday ? W.thisWeek : dayMonth(w.monday);
+    const label = w.monday === monday ? W.thisWeek : esc(dayMonth(w.monday));
     const value = w.rating === null ? W.noRating : `${w.rating} <meter min="0" max="5" value="${w.rating}"></meter>`;
     return `<li>${value} ${label}</li>`;
   });
@@ -109,7 +109,7 @@ export function weekPage(d: WeekPageData): string {
   const { week, monday } = d;
   const out: string[] = [];
   out.push(`<h1>${esc(W.hello(week.parentFirstName))}</h1>`);
-  out.push(`<p>${esc(W.weekWith(weekRange(monday), nameList(week.children)))}</p>`);
+  out.push(`<p>${esc(W.weekWith(weekRange(monday), nameList(week.children)))}</p>`); // dates and names both made safe
 
   // The week's moment, at the top, only when one is saved (Sunday evening).
   if (week.moment) {
@@ -125,7 +125,7 @@ export function weekPage(d: WeekPageData): string {
   const rows = [...week.logs].reverse().map((l) => {
     const line = l.line === null ? "" : `<br>${esc(l.line)}${dustbin("line", l.log_id)}`;
     const photo = l.photo ? `<br>${W.photoLater}` : "";
-    return `<li>${esc(l.habit)} · ${dayName(l.day)}${photo}${line}</li>`;
+    return `<li>${esc(l.habit)} · ${esc(dayName(l.day))}${photo}${line}</li>`;
   });
   out.push(`<section><h2>${W.daysLogged(logged.size)}</h2><ol>${strip.join("")}</ol><ul>${rows.join("")}</ul></section>`);
 
@@ -137,7 +137,7 @@ export function weekPage(d: WeekPageData): string {
 
   // Older weeks: the list loaded so far, then the button for the next ones.
   const cards = d.older.map(
-    (w) => `<li><h3>${weekRange(w.monday)}</h3><p>${countLine(w)}</p><ul>${w.tiles.map((t) => `<li>${tileText(t)}</li>`).join("")}</ul></li>`,
+    (w) => `<li><h3>${esc(weekRange(w.monday))}</h3><p>${countLine(w)}</p><ul>${w.tiles.map((t) => `<li>${tileText(t)}</li>`).join("")}</ul></li>`,
   );
   const oldestLoaded = d.older.at(-1)?.monday ?? monday;
   const list = cards.length > 0 ? `<h2>${W.olderWeeksTitle}</h2><ul>${cards.join("")}</ul>` : "";

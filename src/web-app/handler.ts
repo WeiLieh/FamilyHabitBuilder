@@ -36,6 +36,7 @@
 import { createHash } from "node:crypto";
 import { newSecret } from "../datastore/sign-in-secrets.js";
 import type { WebAppDb } from "../datastore/web-app-store.js";
+import { OLDER_WEEKS_MAX } from "../settings.js";
 import { mondayOf, toSgt } from "../sgt.js";
 import type { DeleteKind, OlderWeek } from "../datastore/web-app-store.js";
 import { escapeHtml } from "./html.js";
@@ -172,7 +173,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     if (isAnswer(signed)) return signed;
     const monday = mondayOf(toSgt(signed.at).date);
     const asked = Number(new URL(req.url, "https://localhost").searchParams.get("older") ?? "0");
-    const wanted = Number.isInteger(asked) && asked > 0 ? Math.min(asked, 520) : 0; // at most ten years of weeks
+    const wanted = Number.isInteger(asked) && asked > 0 ? Math.min(asked, OLDER_WEEKS_MAX) : 0; // at most a year per load (privacy review)
     try {
       const [w, connection] = await Promise.all([db.week(signed.pass, monday), db.connectionHistory(signed.pass, monday)]);
       const older: OlderWeek[] = [];

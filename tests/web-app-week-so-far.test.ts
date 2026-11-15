@@ -69,6 +69,8 @@ describe("Week so far (rule 9.4)", () => {
   });
 
   it("WS2 days logged counts only days with a habit log, with a tick on each in the M to S strip", async () => {
+    // A reflection on Monday, a day with no habit log: it must not count (review, 15 Nov).
+    db.weekData.reflections.unshift({ reflection_id: 10, day: "2026-11-09", text: "Quiet Monday" });
     const r = await get("page=week");
     expect(text(r)).toContain("3 days logged this week");
     // Mon none, Tue, Wed, Thu ticked, Fri to Sun none.
@@ -121,6 +123,18 @@ describe("Week so far (rule 9.4)", () => {
   });
 });
 
+describe("Text is never page code (review, 15 Nov)", () => {
+  it("WS13 names, children's names and habit names are shown as text, never obeyed as page code", async () => {
+    db.firstName = "<b>Cara</b>";
+    db.weekData.children = ["<script>Riley</script>"];
+    db.weekData.logs[0]!.habit = "Talk & <listen>";
+    const r = await get("page=week");
+    expect(r.body).not.toMatch(/<b>Cara|<script>|<listen>/);
+    expect(text(r)).toContain("Hi &lt;b&gt;Cara&lt;/b&gt;");
+    expect(r.body).toContain("Talk &amp; &lt;listen&gt;");
+  });
+});
+
 describe("Older weeks (rule 9.7)", () => {
   const page = (mondays: string[], remaining: number, next: string | null) => ({
     weeks: mondays.map((monday, i) => ({
@@ -157,6 +171,21 @@ describe("Older weeks (rule 9.7)", () => {
     expect(text(all)).toContain("5 to 11 Oct");
     expect(text(all)).not.toContain("Show ");
     expect(db.calls.filter((c) => c.what === "olderWeeks").map((c) => c.args[1])).toEqual(["2026-11-09", "2026-10-12"]);
+  });
+
+  it("WS7 an edited address can't make one page ask for more than a year of older weeks (privacy review)", async () => {
+    db.weekData.olderWeeks = 1000;
+    let monday = "2026-11-09";
+    db.olderPages = Array.from({ length: 300 }, () => {
+      const mondays = [1, 2, 3, 4].map((k) => {
+        const d = new Date(Date.parse(`${monday}T00:00:00Z`) - k * 7 * 86_400_000).toISOString().slice(0, 10);
+        return d;
+      });
+      monday = mondays[3]!;
+      return page(mondays, 1000, mondays[3]!);
+    });
+    await get("page=week&older=100000");
+    expect(db.calls.filter((c) => c.what === "olderWeeks")).toHaveLength(13); // 52 weeks, 4 per question
   });
 });
 

@@ -132,6 +132,10 @@ export const SIGN_IN_LINK_SECONDS = 5 * 60;
 export const SIGN_IN_DAYS = 30;
 // [2026-11-15] Older weeks (rule 9.7): one tap of the button adds this many weeks.
 export const OLDER_WEEKS_PER_PAGE = 4;
+// [2026-11-15, privacy review] The most older weeks one page load may list (a
+// year): each 4 weeks is one database question, so an edited address can't
+// make one page ask hundreds. A safety limit (Guardrail).
+export const OLDER_WEEKS_MAX = 52;
 // [2026-11-15] A tile in the older-weeks list shows this many characters of a
 // reflection or moment line at most, cut at a word, with "…" (Datastore, read 2).
 export const TILE_TEXT_CHARS = 40;

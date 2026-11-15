@@ -19,7 +19,8 @@
 // The database is a pretend one (a "fake") with the same menu as the real
 // one (src/datastore/web-app-store.ts), so no real data is touched.
 // [2026-11-15] The fake moved to tests/helpers/web-app-fake-db.ts (shared with
-// the Week so far tests); these tests are unchanged.
+// the Week so far tests). P2 was rewritten when Sign out moved to the Settings
+// tab (rule 9.2); the other tests are unchanged.
 // =============================================================================
 
 import { createHmac } from "node:crypto";
@@ -166,6 +167,9 @@ describe("Signed-in pages (rules 9.3, 9.8)", () => {
     expect(r.body).not.toContain("<b>Cara</b>");
     // [2026-11-15] Rewritten (Week so far, rule 9.2): Sign out moved to the Settings tab; My page links to it.
     expect(r.body).toContain('href="/api/web-app?page=settings"');
+    // The week was read with this parent's pass only (rule 9.8).
+    const [pass] = db.calls.find((c) => c.what === "week")!.args as string[];
+    expect(readPass(pass!).payload.parent_id).toBe("7");
   });
 
   it("W8 Sign out ends the sign-in in the database and clears the cookie; the old cookie no longer works", async () => {
