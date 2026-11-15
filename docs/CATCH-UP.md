@@ -2,7 +2,7 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-15 00:04 SGT]** (session 18, paused for the night: the Web app handoff recorded (#49); tonight's decisions on sign-in, the connection card, tiles, deleting, the moment and the Week so far layout agreed but **not yet written into the rules**, see section 4a).
+**Last updated: [2026-11-15 09:03 SGT]** (session 18: the Web app's Week so far decisions written into rules 9.3 to 9.7 (#49); next: Settings and the readable bot messages).
 
 > [2026-11-15 00:04 SGT] **⏰ Next:** finish section 4a (three small answers and the database question), then Claude Code writes tonight's decisions into the rules and reruns the review agents on #49. **UAT:** U40 and U41 this morning, U45 at the next reminder (section 5).
 >
@@ -82,10 +82,10 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 [2026-11-14 22:24 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-14-session-18.md](archive/CATCH-UP-sections-4-5-to-2026-11-14-session-18.md), word for word.
 
-**4a. The Week so far tab: what's left** ([2026-11-15 00:04 SGT]; earlier version in [docs/archive/CATCH-UP-section-4a-to-2026-11-15-session-18-night.md](archive/CATCH-UP-section-4a-to-2026-11-15-session-18-night.md))
-- [2026-11-15 00:04 SGT] **Decided tonight, not yet written into the rules:** the full list (P1 to P4, C1 to C6) is in the HANDOFF entry of [docs/PROGRESS.md](PROGRESS.md); wireframes in `docs/handoffs/2026-11-14-web-app-wireframes-session-18/`.
-- [2026-11-15 00:04 SGT] **Still to answer:** (f) sizes from the layouts: record none now (recommended) or the 40 px dustbin tap area; does the older-weeks list keep small tiles?; write "wireframe by default" into `CLAUDE.md`?
-- [2026-11-15 00:04 SGT] **Datastore draft ([src/datastore/SPEC.md](../src/datastore/SPEC.md)):** approve the three reads; first, the parked question: how the Web app reaches the database (server with the master key, or limited per-parent access). Deleting is now decided (P4, C3).
+**4a. The Week so far tab: what's left** ([2026-11-15 09:03 SGT]; earlier version in [docs/archive/CATCH-UP-section-4a-to-2026-11-15-session-18-morning.md](archive/CATCH-UP-section-4a-to-2026-11-15-session-18-morning.md))
+- [2026-11-15 09:03 SGT] **All decisions are now in the rules** (9.3 to 9.7 in [src/web-app/SPEC.md](../src/web-app/SPEC.md); change note 1.26). No sizes recorded as UI decisions (your choice, 15 Nov).
+- [2026-11-15 09:03 SGT] **Before the Week so far tab can be built:** (1) how the Web app reaches the database (server with the master key, or limited per-parent access); (2) approve the Datastore draft (three reads, rule 8.4 edits 11 to 13).
+- [2026-11-15 09:03 SGT] **Still open, not blocking:** the ✓ habit tile's look; list order (you: leave it for now); write "wireframe by default" into `CLAUDE.md`?
 
 **4b. For Claude Chat (bring each back as a handoff file, habit H10)**
 - [2026-11-14 22:24 SGT] (1) **My page, the rest:** tab 2 "Habits so far" (steady weeks, Wrap Up counts, the monthly view, trends), tab 4 Settings, tab 3 Rewards later; the empty states (a quiet week, no photo, a first-ever week, no older weeks); monthly grouping; "With us since"; the look (rule 6). Backlog entries added.

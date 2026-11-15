@@ -2,6 +2,15 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-15 09:03 SGT] Session 18, morning: decisions written into the rules
+### Done
+- [2026-11-15 09:03 SGT] Start-of-session routine (drift check passed, 24 checks). UAT this morning: **U14, U40, U41 pass** (owner; held, to be recorded on `main` when the owner says "record").
+- [2026-11-15 09:03 SGT] Owner: "confirm everything into rules"; **no sizes recorded** as UI decisions (4a f, option A). Last night's P1 to P4 and C1 to C6 written into rules **9.3 to 9.7** (old text SUPERSEDED), the Datastore draft (rule 8.4 edits 11 to 13 proposed), notes for 5.6 and 7.7, two known issues resolved and one added, one backlog item, change note 1.26. Assumed and flagged to the owner: the older-weeks list keeps **small tiles**; a count part with zero is left out.
+### Next steps
+- [2026-11-15 09:03 SGT] Owner's plan for today: **Settings** (tab 4) and **the readable bot messages**.
+### Blockers
+- [2026-11-15 09:03 SGT] Building Week so far waits on the database-access question and the Datastore draft's approval.
+
 ## [2026-11-15 00:04 SGT] HANDOFF: session 18 paused for the night (read this first)
 - [2026-11-15 00:04 SGT] **State:** branch `handoff/2026-11-14-web-app-week-so-far` (pull request #49, open, not to be merged yet) holds the recorded Web app handoff (rules 9.2 to 9.7) **plus** tonight's decisions below, which are **not yet in the rules**. `npm run check` passes (275 tests, drift clean). Nothing built.
 - [2026-11-15 00:04 SGT] **Owner decisions (14 Nov evening, one by one), AGREED BUT NOT YET WRITTEN INTO THE RULES.** Next session: write them into rules 9.3 to 9.7, the Datastore draft, rule 8.4's proposal, the known issues and the backlog (old text kept as SUPERSEDED). Wireframes (layout only, plain greys, rule 6) saved in `docs/handoffs/2026-11-14-web-app-wireframes-session-18/`.

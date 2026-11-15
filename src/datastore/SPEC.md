@@ -145,17 +145,22 @@
 
 **Reads (one function each, for one parent only)**
 - [2026-11-14 22:24 SGT] **One week:** for one parent and one Monday: the habit logs (habit, child, day, line), the photos and the log each belongs to, the reflections (text, `for_day`, matched habit or none), the moment's photo and line, and the connection answer. Undone logs are left out (rule 5.8).
-- [2026-11-14 22:24 SGT] **Older weeks, a page at a time:** the next N weeks before a given Monday (N = 4 to start, a number for `src/settings.ts`), with small pictures and the counts (days with a habit log, reflections, photos), and how many weeks remain, so the button's label matches what it loads (rule 9.7).
-- [2026-11-14 22:24 SGT] **Connection history:** the answers of the 3 weeks before a Monday, and their plain mean (rule 9.5).
+- [2026-11-15 09:03 SGT] **Older weeks, a page at a time:** the next N weeks before a given Monday (N = 4 to start, a number for `src/settings.ts`), with small pictures and the counts (days with a habit log, habit logs, reflections, moments; photos are not counted), and how many weeks remain, so the button's label matches what it loads (rule 9.7).
+- SUPERSEDED [2026-11-15 09:03 SGT] [2026-11-14 22:24 SGT] **Older weeks, a page at a time:** the next N weeks before a given Monday (N = 4 to start, a number for `src/settings.ts`), with small pictures and the counts (days with a habit log, reflections, photos), and how many weeks remain, so the button's label matches what it loads (rule 9.7).
+- SUPERSEDED [2026-11-15 09:03 SGT] (see the owner decisions below) [2026-11-14 22:24 SGT] **Connection history:** the answers of the 3 weeks before a Monday, and their plain mean (rule 9.5).
+
+- [2026-11-15 09:03 SGT] **Owner decisions (14 Nov evening):** a deleted **reflection** or **moment line** is **removed** (the row goes), never blanked; a log's line is wiped (`habit_logs.description` blanked, the log stays); deleting a photo also deletes its **small preview** (no copy anywhere); one dustbin removes one layer per tap (rule 9.6), so "delete one moment" is the photo delete then the line delete, not a separate function. The **connection history** read changes: the **last 4 calendar weeks** with their answers, marking a week with no answer and a **paused** week (rule 9.5), no average. **Proposed change to rule 8.4** (awaiting the build, old text kept then): edits **(11) wipe one log's line**, **(12) remove one reflection**, **(13) remove one moment line**, each for that parent only, writing an event. The question below on removing or blanking is answered; the database-access question is still open.
 
 **Narrow deletes (rule 8.4 would grow from ten edits; each acts only on that parent's rows, writes an event, and leaves the habit log in place, rule 9.6)**
 - [2026-11-14 22:24 SGT] **Delete one photo** (a log's or a moment's): edit 6 already allows it; no copy is left anywhere (rule 8.5 order: the file goes first).
-- [2026-11-14 22:24 SGT] **Delete one line:** a log's line (blank `habit_logs.description`, as Undo does in edit 5), a reflection, or a moment's line. **New narrow edit(s).**
-- [2026-11-14 22:24 SGT] **Delete one moment** (its photo and its line together). **New narrow edit**, or the two deletes above in one all-or-nothing step (rule 8.7).
+- [2026-11-15 09:03 SGT] **Delete one line:** now proposed rule 8.4 edits 11 to 13 (above): wipe a log's line, remove a reflection, remove a moment line.
+- SUPERSEDED [2026-11-15 09:03 SGT] [2026-11-14 22:24 SGT] **Delete one line:** a log's line (blank `habit_logs.description`, as Undo does in edit 5), a reflection, or a moment's line. **New narrow edit(s).**
+- [2026-11-15 09:03 SGT] **Delete one moment:** not a separate function: the moment's dustbin removes its photo (edit 6), then its line (edit 13), one layer per tap (rule 9.6).
+- SUPERSEDED [2026-11-15 09:03 SGT] [2026-11-14 22:24 SGT] **Delete one moment** (its photo and its line together). **New narrow edit**, or the two deletes above in one all-or-nothing step (rule 8.7).
 
 **Questions for the owner before any migration**
-- [2026-11-14 22:24 SGT] Rule 8.4 says only "delete my data" removes a parent's rows. For a reflection or a moment's line: **remove the row**, or keep the row and **blank its text** (like Undo)? Blanking keeps the counts honest but leaves an empty entry; removing leaves nothing. A reflection with its text blanked would no longer be a reflection, so removing looks more natural; your call.
-- [2026-11-14 22:24 SGT] Is "delete one moment" its own button, or is it the photo's dustbin and the line's dustbin separately? (Rule 9.4 shows one dustbin beside the moment.)
+- SUPERSEDED [2026-11-15 09:03 SGT] (answered: removed) [2026-11-14 22:24 SGT] Rule 8.4 says only "delete my data" removes a parent's rows. For a reflection or a moment's line: **remove the row**, or keep the row and **blank its text** (like Undo)? Blanking keeps the counts honest but leaves an empty entry; removing leaves nothing. A reflection with its text blanked would no longer be a reflection, so removing looks more natural; your call.
+- SUPERSEDED [2026-11-15 09:03 SGT] (answered: one layer per tap) [2026-11-14 22:24 SGT] Is "delete one moment" its own button, or is it the photo's dustbin and the line's dustbin separately? (Rule 9.4 shows one dustbin beside the moment.)
 - [2026-11-14 22:24 SGT] How the Web app reaches these functions (parked question in [src/web-app/SPEC.md](../web-app/SPEC.md): the server with the master key, or limited per-parent access) must be decided first; it changes how each function checks "this parent only".
 
 ## Rules at a glance

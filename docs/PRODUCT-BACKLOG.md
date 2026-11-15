@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-15 09:03 SGT] End the Web app sign-in on every device
+- **Item:** [2026-11-15 09:03 SGT] A way to end every My page sign-in at once (for example from Telegram), for a lost or shared phone.
+- **Why it matters:** [2026-11-15 09:03 SGT] A sign-in lasts 30 days (rule 9.3); today only Sign out on that phone or "delete my data" ends it.
+- **Priority:** [2026-11-15 09:03 SGT] Low (owner, 14 Nov)
+- **Status:** [2026-11-15 09:03 SGT] Not started
+
 ## [2026-11-14 22:24 SGT] Design My page tab 2, "Habits so far"
 - **Item:** [2026-11-14 22:24 SGT] Design tab 2 of My page (rule 9.2): steady weeks, Wrap Up counts, the monthly view, trends; perhaps where older weeks' connection answers show.
 - **Why it matters:** [2026-11-14 22:24 SGT] Its job is "show me we're growing", and rule 7.8 moved steady weeks and the monthly view to My page.
