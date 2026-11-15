@@ -107,8 +107,6 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - [2026-11-15 17:00 SGT] (2) **Words still to draft:** "View wrap up"; the B1 drafts in `src/telegram-bot/words.ts`; the sign-in pages' drafts in `src/web-app/words.ts` ("Tap the button to open your page.", "You're signed out." and the rest).
 
 **4c. Questions for you (none block the next build)**
-- [2026-11-15 17:00 SGT] **Rule 8.4, edit 14:** approve? (The database marks a link used, ends a sign-in at Sign out, and tidies that parent's old links.)
-- [2026-11-15 17:00 SGT] **Known issues** to add, your choice: (a) the pass must stay on our server; (b) old sign-ins are tidied only when that parent signs in again; (c) the pass works only while the signing secret stays secret and Supabase's own sign-up stays off; (d) the sign-up's last message still links to the old placeholder My page.
 - [2026-11-14 10:38 SGT] Still open from onboarding: **Q12** when the birth year is collected.
 - [2026-11-15 11:41 SGT] List order: this week newest first, an older week oldest first (you: leave it for now).
 
