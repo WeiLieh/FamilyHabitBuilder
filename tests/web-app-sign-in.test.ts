@@ -251,6 +251,22 @@ describe("Forged forms (privacy review, 15 Nov)", () => {
   });
 });
 
+// [2026-11-15] New after the owner's UAT (U58 refused with 403): a real
+// iPhone press from our own page says Sec-Fetch-Site "same-origin" but
+// Origin "null" (because our pages ask for no referrer). It must be let in.
+describe("Our own page's button on a phone (UAT U58, 15 Nov)", () => {
+  it("W12 a press labelled same-origin is let in even when its Origin is 'null', and signs in", async () => {
+    const r = await handle({
+      method: "POST",
+      url: "/api/web-app?page=sign-in",
+      headers: { host: "family-habit-builder.vercel.app", "sec-fetch-site": "same-origin", origin: "null", "content-type": "application/x-www-form-urlencoded" },
+      body: `secret=${LINK_SECRET}`,
+    });
+    expect(r.status).toBe(303);
+    expect(r.headers["set-cookie"]).toMatch(/^__Host-fhb_sign_in=/);
+  });
+});
+
 describe("Every page (rules 9.6, 9.8)", () => {
   it("W7 every answer tells browsers and caches not to keep a copy", async () => {
     const cookie = await signIn();

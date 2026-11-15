@@ -5,6 +5,13 @@
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 
+
+## [2026-11-15 21:35 SGT] The owner's own sign-in press was refused as a forged form (UAT U58)
+- **What broke:** [2026-11-15 21:35 SGT] On the owner's iPhone, pressing **Open my page** showed "Sorry, that didn't work." Vercel's log showed the press answered with 403.
+- **Cause:** [2026-11-15 21:35 SGT] The forged-form check (added after the privacy review of #52) treated an Origin of "null" as another website. Our pages ask browsers to send no referrer, and with that setting an iPhone labels a form from our own page with Origin "null", while its Sec-Fetch-Site label correctly says "same-origin". The tests set these labels by hand and never tried that pair.
+- **Fix:** [2026-11-15 21:35 SGT] Sec-Fetch-Site decides when the browser sends it; Origin is compared only without it. New test W12 (the iPhone's exact labels); W11 (forged forms refused) still passes.
+- **How to prevent it:** [2026-11-15 21:35 SGT] When a check depends on what browsers send, test it once on a real phone before calling it done, and copy the real headers into a test.
+
 ## [2026-11-15 16:45 SGT] A commit was pushed while the drift check was failing
 - **What broke:** [2026-11-15 16:45 SGT] Commit 015abc6 (Web app sign-in) was committed and pushed with one drift failure: the new UAT file wasn't linked from any spec, so it was "not reachable".
 - **Cause:** [2026-11-15 16:45 SGT] The command ran the check, then searched its output for results, and joined the steps with "and then". The search succeeded (it found the failure lines), so the commit went ahead: the check's own result was never looked at (CLAUDE.md rule 7).
