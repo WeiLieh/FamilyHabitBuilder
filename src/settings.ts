@@ -124,6 +124,20 @@ export const NEXT_REMINDER_LOOK_AHEAD_DAYS = 14;
 // [2026-11-13] The hours the one sign-up reminder may be sent (owner's D7): the
 // slot hours, 7:00 am (420) to 9:30 pm (1290), in minutes after midnight, Singapore time.
 export const SIGN_UP_REMINDER_HOURS = { from: 7 * 60, until: 21 * 60 + 30 } as const;
+// ---- The Web app (rules 9.3, 9.5, 9.7; owner, 14 and 15 Nov; added 15 Nov) ----
+// [2026-11-15] Sign-in (rule 9.3): the link from /mypage works once, for this
+// many seconds (5 minutes); then a sign-in lasts this many days. Both are safety
+// limits (Guardrails): an experiment may only make them shorter.
+export const SIGN_IN_LINK_SECONDS = 5 * 60;
+export const SIGN_IN_DAYS = 30;
+// [2026-11-15] Older weeks (rule 9.7): one tap of the button adds this many weeks.
+export const OLDER_WEEKS_PER_PAGE = 4;
+// [2026-11-15] A tile in the older-weeks list shows this many characters of a
+// reflection or moment line at most, cut at a word, with "…" (Datastore, read 2).
+export const TILE_TEXT_CHARS = 40;
+// [2026-11-15] The connection card shows bars for this many calendar weeks (rule 9.5).
+export const CONNECTION_WEEKS = 4;
+
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.
@@ -135,6 +149,12 @@ export const SETTINGS_KEYS_THE_DATABASE_READS = {
   sign_up_stopped_keep_days: SIGN_UP_STOPPED_KEEP_DAYS,
   // [2026-11-13] Read by claim_sign_up_reminders (migration 009).
   sign_up_reminder_after_hours: SIGN_UP_REMINDER_AFTER_HOURS,
+  // [2026-11-15] Read by the Web app's sign-in and reads (migration 011).
+  sign_in_link_seconds: SIGN_IN_LINK_SECONDS,
+  sign_in_days: SIGN_IN_DAYS,
+  older_weeks_per_page: OLDER_WEEKS_PER_PAGE,
+  tile_text_chars: TILE_TEXT_CHARS,
+  connection_weeks: CONNECTION_WEEKS,
 } as const;
 
 // ---- Thin slice 1 (owner, 11 Nov) -------------------------------------------

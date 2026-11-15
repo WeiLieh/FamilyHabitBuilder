@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-15 12:25 SGT] Record which child a habit log was with
+- **Item:** [2026-11-15 12:25 SGT] Store the child on each habit log (for example from the reminder's "With Riley:" or a question after a keyboard tap), so My page can show "the habit, the child, the day" (rule 9.4).
+- **Why it matters:** [2026-11-15 12:25 SGT] The database doesn't record the child today, so log rows on My page show the habit and the day only (owner, 15 Nov).
+- **Priority:** [2026-11-15 12:25 SGT] Medium
+- **Status:** [2026-11-15 12:25 SGT] Not started
+
 ## [2026-11-15 12:13 SGT] Write the Terms & Conditions page
 - **Item:** [2026-11-15 12:13 SGT] Fill in `public/terms.html`, the page the sign-up agreement links to (rule 5.15).
 - **Why it matters:** [2026-11-15 12:13 SGT] A real family must not agree to terms that aren't written (known issue of 15 Nov).

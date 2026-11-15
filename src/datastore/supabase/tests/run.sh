@@ -15,10 +15,12 @@ psql -q -d postgres -c "create database $DB;"
 # Remove the throwaway database and its test roles however the run ends.
 cleanup() {
   psql -q -d postgres -c "drop database if exists $DB;" >/dev/null
-  psql -q -d postgres -c "drop role if exists anon; drop role if exists authenticated; drop role if exists service_role;" >/dev/null
+  psql -q -d postgres -c "drop role if exists web_page_writer; drop role if exists anon; drop role if exists authenticated; drop role if exists service_role;" >/dev/null
 }
 trap cleanup EXIT
 
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/nudge-repository.test.sql
 # [2026-11-01] The 14 Datastore tables (migration 003), on top of the nudge tables.
 psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/datastore-tables.test.sql
+# [2026-11-15] The Web app's way in (migration 011): sign-in, per-parent access, the reads and deletes.
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f src/datastore/supabase/tests/web-app-access.test.sql
