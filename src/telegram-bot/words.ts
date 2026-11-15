@@ -127,10 +127,13 @@ export const WORDS = {
   // [2026-11-15] Screen 10: the behaviour's fixed line from the database ("Start
   // right now, and … with {child}. <idea>"), made safe, with "Start right now" in
   // bold and the idea on its own line after 💡.
+  // The line is split at its first sentence BEFORE the child's name goes in, so a
+  // name like "J. R." can't move the split (privacy review, 15 Nov; test F2b).
   startNow: (line: string, child: string) => {
-    const text = esc(line).replaceAll("{child}", esc(child)).replace(/^Start right now,?/, "<b>Start right now</b>");
+    const text = esc(line).replace(/^Start right now,?/, "<b>Start right now</b>");
     const split = text.indexOf(". ");
-    return split < 0 ? text : `${text.slice(0, split + 1)}\n\n💡 ${text.slice(split + 2)}`;
+    const parts = split < 0 ? [text] : [`${text.slice(0, split + 1)}`, `💡 ${text.slice(split + 2)}`];
+    return parts.map((part) => part.replaceAll("{child}", esc(child))).join("\n\n");
   },
   notNow: (when: string) => `No problem. Your first reminder is ${when}.`,
   allSet: (firstName: string, when: string) => `🎉 <b>You're all set, ${esc(firstName)}.</b>\n\nYour next reminder is ${when}.`,

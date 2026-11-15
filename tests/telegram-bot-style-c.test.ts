@@ -65,6 +65,13 @@ describe("Bold, done safely", () => {
     expect(WORDS.nudge("Showing affection", "Mia <3", "Hug & smile")).toBe("<b>Showing affection</b> · with Mia &lt;3\n\n💡 Hug &amp; smile");
   });
 
+  it("F2b a child's name with a full stop never splits the start-right-now line in the wrong place (privacy review, 15 Nov)", () => {
+    const line = "Start right now, and get on the scoreboard straight away by showing {child} some affection. Give {child} a hug!";
+    expect(WORDS.startNow(line, "J. R.")).toBe(
+      "<b>Start right now</b> and get on the scoreboard straight away by showing J. R. some affection.\n\n💡 Give J. R. a hug!",
+    );
+  });
+
   it("F3 the habit's name is bold in the reminder, the receipts and the plan", () => {
     expect(WORDS.nudge("Talking with children", "Mia", "Ask what made them laugh today.")).toBe(
       "<b>Talking with children</b> · with Mia\n\n💡 Ask what made them laugh today.",
