@@ -11,7 +11,7 @@ SUPERSEDED [2026-11-14 22:24 SGT] [2026-10-31 10:12 SGT] Show a parent their his
 ## Code in this folder
 - [2026-11-15 16:42 SGT] `handler.ts`: every page of `/api/web-app` (open the link, sign in, My page, sign out), with the safe headers on every answer and failures logged with secrets blanked (rules 9.3, 9.6, 9.8, 1.3). Tests: tests/web-app-sign-in.test.ts.
 - [2026-11-15 16:42 SGT] `pass.ts`: signs the 10-minute per-parent pass (a JWT) with the signing secret (rule 9.8, option A). Tests: tests/web-app-sign-in.test.ts (P1).
-- [2026-11-15 16:42 SGT] `UAT-sign-in.md`: the owner's go-live steps (migration 011, the two Vercel settings) and phone tests U56 to U62.
+- [2026-11-15 16:42 SGT] [UAT-sign-in.md](UAT-sign-in.md): the owner's go-live steps (migration 011, the two Vercel settings) and phone tests U56 to U62.
 - [2026-11-15 16:42 SGT] `words.ts`: the pages' words, drafts marked (the expired-link sentence is fixed by rule 9.3).
 - [2026-11-15 16:42 SGT] The web address is `api/web-app.ts`; the database menu it uses is `src/datastore/web-app-store.ts` (public key only); the secrets are made by `src/datastore/sign-in-secrets.ts`.
 - SUPERSEDED [2026-11-15 16:42 SGT] [2026-10-31 10:12 SGT] None yet (development order, step 7).
