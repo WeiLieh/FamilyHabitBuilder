@@ -190,22 +190,24 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     "sign-out": { method: "POST", run: signOut },
   };
 
-  // A POST must come from one of our own pages. Browsers send Sec-Fetch-Site
-  // ("same-origin" from our pages) and Origin; a request with neither (an
-  // older browser) is let through, since the cookie's SameSite=Lax still
-  // stops another site from sending it.
+  // A POST must come from one of our own pages. The browser's own label,
+  // Sec-Fetch-Site, decides when it is there ("same-origin" from our pages).
+  // [2026-11-15, UAT U58] Only without it is Origin compared: an iPhone sends
+  // Origin "null" from our own page (our pages ask for no referrer), so a
+  // "null" Origin alone must not refuse a press that says same-origin.
+  // A request with neither label (an older browser) is let through, since the
+  // cookie's SameSite=Lax still stops another site from sending it.
   function fromOtherSite(req: WebRequest): boolean {
     const site = req.headers["sec-fetch-site"];
-    if (site && site !== "same-origin" && site !== "none") return true;
+    if (site) return site !== "same-origin" && site !== "none";
     const origin = req.headers.origin;
-    if (origin && origin !== "null") {
-      try {
-        return new URL(origin).host !== (req.headers.host ?? "");
-      } catch {
-        return true;
-      }
+    if (!origin) return false;
+    if (origin === "null") return true;
+    try {
+      return new URL(origin).host !== (req.headers.host ?? "");
+    } catch {
+      return true;
     }
-    return origin === "null";
   }
 
   return async function handle(req: WebRequest): Promise<WebResponse> {

@@ -21,3 +21,5 @@
 | U62 | Supabase > Table Editor > `web_sign_in_links` | Only long codes of 64 letters and digits (fingerprints), never the link | Supabase | [ ] |
 
 Not possible here: checking another parent's rows can't be seen (covered by database tests T105 to T107).
+
+[2026-11-15 21:35 SGT] **Results, 15 Nov evening (owner):** G1 **done** (the check said 7); G2, G3 **done** (both keys in Vercel, Production, Secret; Supabase says the legacy JWT secret is "still used… only to verify JWTs", which is what the pass needs; it must not be revoked); G3b **done** (Supabase's own sign-up and anonymous sign-ins off; no Storage buckets); G4 **done** (#52 merged). U56 and U57 **pass**. U58 **failed**: "Sorry, that didn't work." (a 403: the forged-form check refused the iPhone's own press; `docs/ERROR-LOG.md`). Fix in the next pull request, then U58 to U62 again.
