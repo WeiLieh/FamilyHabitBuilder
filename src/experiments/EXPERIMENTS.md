@@ -12,6 +12,7 @@
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-15 11:29 SGT] Value 44 added (rule 5.14, the reaction emoji).
 - [2026-11-12 23:07 SGT] Values 40 and 41 added (onboarding screens, pull request 2), so **40 values are in use**.
 - [2026-11-12 22:17 SGT] Values 37 to 39 added (onboarding, migration 007), so **38 values are in use**.
 - [2026-11-11 18:14 SGT] Values 35 and 36 added (thin slice 1), so **35 values are in use**.
@@ -65,6 +66,7 @@
 | 41 | Tuneable | [2026-11-12 23:07 SGT] Default frequencies at sign-up (rule 2.5). | Today: quick every 2 days, deliberate once a week | settings.ts |
 | 42 | Tuneable | [2026-11-13 22:31 SGT] Sign-up reminder: how long after someone's last answer they get the one "You're almost there!" reminder (rule 8.13, Q11b). | Hours. Today: 24 | settings.ts |
 | 43 | Fixed | [2026-11-13 22:45 SGT] Next-reminder look-ahead: how far ahead "your next reminder is …" searches for a slot the planner would use (rule 3.17). | Days. Today: 14 | settings.ts |
+| 44 | Tuneable | [2026-11-15 11:29 SGT] Reactions: the emoji a keyboard tap may get, one picked at random (rule 5.14, owner 15 Nov). | Today: ❤ 🥰 🤗 👏 💯 🏆 🎉 🔥 🤩 | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

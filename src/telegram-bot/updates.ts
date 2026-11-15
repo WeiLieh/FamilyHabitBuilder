@@ -18,7 +18,8 @@ import { z } from "zod";
 export type Incoming =
   | { kind: "start"; updateId: number; chatId: number; telegramId: number; firstName: string; code: string | null }
   // [2026-11-12] "text" is what they typed (a name during sign-up); null for a sticker, photo and so on.
-  | { kind: "message"; updateId: number; chatId: number; telegramId: number; text: string | null }
+  // [2026-11-15] messageId: Telegram's number for the parent's message, so the bot can react to it (rule 5.14).
+  | { kind: "message"; updateId: number; chatId: number; messageId: number; telegramId: number; text: string | null }
   | { kind: "tap"; updateId: number; tapId: string; chatId: number; messageId: number; telegramId: number; data: string }
   | { kind: "ignore" };
 
@@ -77,7 +78,7 @@ export function parseUpdate(body: unknown): Incoming {
         code: start[1] ?? null,
       };
     }
-    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, telegramId: m.from.id, text: m.text ?? null };
+    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, messageId: m.message_id, telegramId: m.from.id, text: m.text ?? null };
   }
   return { kind: "ignore" };
 }

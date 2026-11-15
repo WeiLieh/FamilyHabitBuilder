@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-15 11:29 SGT] The Terms & Conditions page is empty
+- **Issue:** [2026-11-15 11:29 SGT] The agreement (sign-up screen 9) now links to a Terms & Conditions page (rule 5.15), but the page says only its title (public/terms.html).
+- **Impact:** [2026-11-15 11:29 SGT] A real family would be agreeing to terms that aren't written yet (a PDPA reviewer would stop this).
+- **Workaround:** [2026-11-15 11:29 SGT] The owner fills in the page before any real family signs up (owner, 15 Nov); until then only test accounts sign up.
+
 ### [2026-11-14 14:20 SGT] Failure logs name the parent's internal number
 - **Issue:** [2026-11-14 14:20 SGT] When the alarm run fails for one parent, Vercel's log line names that parent's internal database number (for example "Nudge not sent to parent 12"). It is not a Telegram ID or a name, but it points to one person (privacy review of B1; the lines date from pull request 3c, `src/telegram-bot/scheduler.ts`).
 - **Impact:** [2026-11-14 14:20 SGT] Low: only someone with Vercel access and database access could link it to a person. A PDPA reviewer may still ask.

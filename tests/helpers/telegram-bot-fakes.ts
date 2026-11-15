@@ -21,7 +21,8 @@ export type TelegramCall =
   // [2026-11-12] "buttons" is there only when the edit replaced them (e.g. a tick on screen 4).
   | { kind: "edit"; chatId: number; messageId: number; text: string; buttons?: Buttons }
   | { kind: "removeButtons"; chatId: number; messageId: number } // [2026-11-12] the text stays, only the buttons go
-  | { kind: "answer"; tapId: string; popup: string | null };
+  | { kind: "answer"; tapId: string; popup: string | null }
+  | { kind: "react"; chatId: number; messageId: number; emoji: string }; // [2026-11-15] rule 5.14
 
 export class FakeTelegram implements TelegramApi {
   calls: TelegramCall[] = [];
@@ -33,6 +34,8 @@ export class FakeTelegram implements TelegramApi {
   failNextSend = false;
   // [2026-11-12] When true, editing a message's words fails.
   failEdits = false;
+  // [2026-11-15] When true, adding a reaction fails (rule 5.14, R3).
+  failReactions = false;
 
   private nextMessageId = 500;
   // [2026-11-14] Telegram's number for the last message sent, so a test can name it.
@@ -74,6 +77,10 @@ export class FakeTelegram implements TelegramApi {
   }
   async answerTap(tapId: string, popup?: string): Promise<void> {
     this.calls.push({ kind: "answer", tapId, popup: popup ?? null });
+  }
+  async react(chatId: number, messageId: number, emoji: string): Promise<void> {
+    if (this.failReactions) throw new Error("Telegram refused the reaction");
+    this.calls.push({ kind: "react", chatId, messageId, emoji });
   }
   sentTexts(): string[] {
     return this.calls.flatMap((c) => (c.kind === "send" ? [c.text] : []));

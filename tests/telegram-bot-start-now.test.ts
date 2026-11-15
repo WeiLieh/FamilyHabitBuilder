@@ -26,7 +26,8 @@ let now = sgtInstant("2026-11-11", 10 * 60); // Wednesday 10:00 am, Singapore ti
 
 const deps = () => ({ store, telegram, now });
 const tap = (data: string, messageId = 55) => handleUpdate(parseUpdate(tapUpdate(ME, data, messageId)), deps());
-const START_LINE = "Start right now, and get on the scoreboard straight away by showing Mia some affection. Give Mia a hug!";
+// [2026-11-15] Style C: "Start right now" in bold, the idea on its own line after 💡.
+const START_LINE = "<b>Start right now</b> and get on the scoreboard straight away by showing Mia some affection.\n\n💡 Give Mia a hug!";
 const PAGE = "Your page is here whenever you want to look back. It's empty for now.";
 
 beforeEach(() => {
@@ -43,7 +44,7 @@ describe("F. Start right now and All set", () => {
     expect(telegram.calls.at(-1)).toMatchObject({
       kind: "send",
       text: START_LINE,
-      buttons: [[{ text: "✅ I've started!", data: "start:done" }, { text: "Not now", data: "start:notnow" }]],
+      buttons: [[{ text: "💪 I've started!", data: "start:done" }, { text: "Not now", data: "start:notnow" }]],
     });
     expect(store.startNow).toEqual([{ id: expect.any(Number), parentId, nudgeId: QUICK[1]!.id, day: "2026-11-11" }]);
   });
@@ -55,7 +56,7 @@ describe("F. Start right now and All set", () => {
     expect(store.logs).toEqual([expect.objectContaining({ nudgeId: QUICK[1]!.id, day: "2026-11-11", messageId: store.startNow[0]!.id, via: "start_now" })]);
     expect(telegram.calls[0]).toEqual({ kind: "removeButtons", chatId: ME, messageId: 900 });
     // [2026-11-13] Logged today, every 2 days (the default): next due on Friday (rules 3.7, 3.17).
-    expect(telegram.sentTexts()).toEqual(["✅ Saved: Showing affection today.", "You're all set, John. Your next reminder is on Friday at 7:00 am.", PAGE]);
+    expect(telegram.sentTexts()).toEqual(["✅ <b>Saved</b>\nShowing affection today.", "🎉 <b>You're all set, John.</b>\n\nYour next reminder is on Friday at 7:00 am.", PAGE]);
     const page = telegram.calls.find((c) => c.kind === "send" && c.text === PAGE);
     expect(page).toMatchObject({ buttons: [[{ text: "Open my page ↗", url: "https://family-habit-builder.vercel.app/my-page.html" }]] });
   });
@@ -78,7 +79,7 @@ describe("F. Start right now and All set", () => {
     expect(telegram.calls[0]).toEqual({ kind: "removeButtons", chatId: ME, messageId: 900 });
     expect(telegram.sentTexts()).toEqual([
       "No problem. Your first reminder is today at 7:00 pm.",
-      "You're all set, John. Your next reminder is today at 7:00 pm.",
+      "🎉 <b>You're all set, John.</b>\n\nYour next reminder is today at 7:00 pm.",
       PAGE,
     ]);
     await tap("start:done", 900); // the other button, if it was still showing
@@ -92,7 +93,7 @@ describe("F. Start right now and All set", () => {
     await tap("agree", 800);
     expect(store.startNow).toEqual([]);
     // [2026-11-13] A deliberate behaviour is nudged on Friday (rule 3.10): Friday's first school-day slot.
-    expect(telegram.sentTexts()).toEqual(["You're all set, John. Your next reminder is on Friday at 7:00 am.", PAGE]);
+    expect(telegram.sentTexts()).toEqual(["🎉 <b>You're all set, John.</b>\n\nYour next reminder is on Friday at 7:00 am.", PAGE]);
   });
 
   // [2026-11-13] N1, rewritten from test 28 ("the real 7:00 pm one", D1 removed, CLAUDE.md rule 12).
@@ -103,7 +104,7 @@ describe("F. Start right now and All set", () => {
     await tap("start:notnow", 900);
     expect(telegram.sentTexts().slice(0, 2)).toEqual([
       "No problem. Your first reminder is today at 9:00 pm.",
-      "You're all set, John. Your next reminder is today at 9:00 pm.",
+      "🎉 <b>You're all set, John.</b>\n\nYour next reminder is today at 9:00 pm.",
     ]);
   });
 
@@ -123,7 +124,7 @@ describe("F. Start right now and All set", () => {
     await tap("start:notnow", 900);
     expect(telegram.sentTexts().slice(0, 2)).toEqual([
       "No problem. We'll remind you when one of your habits is next due.",
-      "You're all set, John. We'll remind you when one of your habits is next due.",
+      "🎉 <b>You're all set, John.</b>\n\nWe'll remind you when one of your habits is next due.",
     ]);
   });
 
@@ -133,7 +134,7 @@ describe("F. Start right now and All set", () => {
     store.failReadsOf.add("planningDataFor");
     telegram.calls = [];
     await tap("agree", 800);
-    expect(telegram.sentTexts()[0]).toBe("You're all set, John. Sorry, we couldn't check when your next reminder is.");
+    expect(telegram.sentTexts()[0]).toBe("🎉 <b>You're all set, John.</b>\n\n🙇 Sorry, we couldn't check when your next reminder is.");
   });
 
   it("if recording the start-now message fails, its buttons are replaced by an honest note and sign-up still ends with 'All set'", async () => {
@@ -142,8 +143,8 @@ describe("F. Start right now and All set", () => {
     telegram.calls = [];
     await tap("agree", 800);
     expect(store.parents).toHaveLength(1); // the sign-up itself was saved
-    expect(telegram.calls).toContainEqual(expect.objectContaining({ kind: "edit", text: "Sorry, this couldn't be saved, so its buttons won't work." }));
-    expect(telegram.sentTexts().slice(-2)).toEqual(["You're all set, John. Your next reminder is today at 7:00 pm.", PAGE]);
+    expect(telegram.calls).toContainEqual(expect.objectContaining({ kind: "edit", text: "🙇 Sorry, this couldn't be saved, so its buttons won't work." }));
+    expect(telegram.sentTexts().slice(-2)).toEqual(["🎉 <b>You're all set, John.</b>\n\nYour next reminder is today at 7:00 pm.", PAGE]);
   });
 
   // [2026-11-12] Review fixes F2 to F4 (owner agreed, 12 Nov).
@@ -153,7 +154,7 @@ describe("F. Start right now and All set", () => {
     telegram.calls = [];
     await tap("agree", 800);
     expect(store.parents).toHaveLength(1);
-    expect(telegram.sentTexts()).not.toContain("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts()).not.toContain("🙇 Sorry, that didn't save. Please try again.");
     expect(telegram.sentTexts()[0]).toBe(START_LINE); // sign-up carries on
   });
 
@@ -164,8 +165,8 @@ describe("F. Start right now and All set", () => {
     await tap("agree", 800);
     expect(store.parents).toHaveLength(1);
     expect(telegram.sentTexts()).toEqual([
-      "Sorry, Start right now couldn't be shown. You're signed up.",
-      "You're all set, John. Your next reminder is today at 7:00 pm.",
+      "🙇 Sorry, Start right now couldn't be shown.\nYou're signed up.",
+      "🎉 <b>You're all set, John.</b>\n\nYour next reminder is today at 7:00 pm.",
       PAGE,
     ]);
   });
@@ -175,7 +176,7 @@ describe("F. Start right now and All set", () => {
     delete store.drafts.get(ME)!.answers.first_name; // a damaged draft
     telegram.calls = [];
     await tap("kids:done", 501);
-    expect(telegram.sentTexts()).toEqual(["These are quick behaviours. Pick up to 2 to work on."]);
+    expect(telegram.sentTexts()).toEqual(["⚡ <b>Quick behaviours</b>\nPick up to 2 to work on."]);
   });
 
   it("if saving 'I've started!' fails, the person sees 'didn't save' and the buttons stay", async () => {
@@ -184,7 +185,7 @@ describe("F. Start right now and All set", () => {
     telegram.calls = [];
     await tap("start:done", 900);
     expect(store.logs).toEqual([]);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't save. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't save. Please try again."]);
     expect(telegram.calls.some((c) => c.kind === "removeButtons")).toBe(false);
   });
 });

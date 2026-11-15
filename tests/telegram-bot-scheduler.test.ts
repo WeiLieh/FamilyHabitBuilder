@@ -63,7 +63,7 @@ describe("S. Nudges from the planner", () => {
       {
         kind: "send",
         chatId: 1001,
-        text: `With Mia: Showing affection\n\nIdea: ${HUG}`,
+        text: `<b>Showing affection</b> · with Mia\n\n💡 ${HUG}`,
         buttons: [
           { text: "✅ Done", data: `done:${today}:1140` },
           { text: "😴 Not today", data: `skip:${today}:1140` },
@@ -109,8 +109,8 @@ describe("S. Nudges from the planner", () => {
     await run(at(today, 19, 5));
     await run(at(today, 21, 5));
     expect(telegram.calls.map((c) => (c.kind === "send" ? [c.chatId, c.text.split("\n")[0]] : null))).toEqual([
-      [1008, "With Mia: Talking with children"],
-      [1009, "With Mia: Giving attention"],
+      [1008, "<b>Talking with children</b> · with Mia"],
+      [1009, "<b>Giving attention</b> · with Mia"],
     ]);
   });
 
@@ -142,7 +142,7 @@ describe("S. Nudges from the planner", () => {
       kind: "edit",
       chatId: 1013,
       messageId: 500,
-      text: "Sorry, this reminder couldn't be saved, so its buttons won't work.",
+      text: "🙇 Sorry, this reminder couldn't be saved, so its buttons won't work.",
     });
   });
 
@@ -169,14 +169,14 @@ describe("S. Nudges from the planner", () => {
     store.startNow.push({ id: 950, parentId: id, nudgeId: 2, day: "2026-11-10" });
     await run(at(today, 19, 5));
     await run(at(today, 21, 5));
-    expect(telegram.sentTexts().map((t) => t.split("\n")[0])).toEqual(["With Leo: Showing affection", "With Ava: Talking with children"]);
+    expect(telegram.sentTexts().map((t) => t.split("\n")[0])).toEqual(["<b>Showing affection</b> · with Leo", "<b>Talking with children</b> · with Ava"]);
   });
 
   // S13 [2026-11-13, spec review]
   it("S13. with no child recorded, the nudge reads 'With your child: …' (W1)", async () => {
     addPlannedParent(1021, { children: [] });
     await run();
-    expect(telegram.sentTexts()[0]).toBe(`With your child: Showing affection\n\nIdea: ${HUG}`);
+    expect(telegram.sentTexts()[0]).toBe(`<b>Showing affection</b> · with your child\n\n💡 ${HUG}`);
   });
 
   // S12
@@ -208,14 +208,14 @@ describe("S2. The sign-up clean-up runs every time", () => {
 });
 
 describe("R. The one 24-hour sign-up reminder (Q11b)", () => {
-  const REMINDER = "You're almost there! Tap below to continue where you left off.";
+  const REMINDER = "⏳ <b>You're almost there!</b>\nTap below to continue where you left off.";
 
   // R1
   it("R1. between 7:00 am and 9:30 pm, someone due gets the reminder with Continue, once", async () => {
     store.dueForReminder.add(2001);
     await run();
     await run(at(today, 19, 15));
-    expect(telegram.calls).toEqual([{ kind: "send", chatId: 2001, text: REMINDER, buttons: [[{ text: "Continue", data: "signup:continue" }]] }]);
+    expect(telegram.calls).toEqual([{ kind: "send", chatId: 2001, text: REMINDER, buttons: [[{ text: "Continue ➡️", data: "signup:continue" }]] }]);
   });
 
   // R2

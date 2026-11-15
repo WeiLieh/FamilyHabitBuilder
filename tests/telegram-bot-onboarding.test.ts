@@ -35,8 +35,8 @@ const buttonTexts = (call: ReturnType<typeof lastSend>) =>
 
 // [2026-11-13] N3 (W4, owner): the notice now says one reminder may come (rewritten, rule 8.13, PDPA).
 const WELCOME =
-  "Thanks for joining, John!\n\nWe'll keep your answers for 7 days while you set up, and may send you one reminder to finish. Nothing is saved for good until you agree.";
-const CHILD_QUESTION = "What's your child's name? Type their first name, a nickname works too.";
+  "<b>Thanks for joining, John!</b> 👋\n\nWe'll keep your answers for 7 days while you set up, and may send you one reminder to finish.\n\nNothing is saved for good until you agree.";
+const CHILD_QUESTION = "<b>What's your child's name?</b>\nType their first name. A nickname works too.";
 
 beforeEach(() => {
   store = new FakeStore();
@@ -58,7 +58,7 @@ describe("A. Starting with /start", () => {
   it("2. no code at all: told it is invite-only, nothing saved", async () => {
     await type("/start");
     expect(store.drafts.size).toBe(0);
-    expect(telegram.sentTexts()).toEqual(["Hi! This app is invite-only for now. Please use the invite link you were sent."]);
+    expect(telegram.sentTexts()).toEqual(["Hi! This app is invite-only for now.\nPlease use the invite link you were sent."]);
   });
 
   it("3. an unknown, used or held code: a polite refusal, nothing saved", async () => {
@@ -68,7 +68,7 @@ describe("A. Starting with /start", () => {
     for (const code of ["NOPE", "USED-1", "HELD-1"]) await type(`/start ${code}`);
     expect(store.drafts.size).toBe(0);
     expect(telegram.sentTexts()).toEqual(
-      Array(3).fill("Sorry, that invite code doesn't work. Please ask the person who invited you for your own link."),
+      Array(3).fill("Sorry, that invite code doesn't work.\nPlease ask the person who invited you for your own link."),
     );
   });
 
@@ -77,7 +77,7 @@ describe("A. Starting with /start", () => {
     await goTo("children", { store, telegram, now }, ME); // has typed one child's name
     telegram.calls = [];
     await type("/start WELCOME-2");
-    expect(telegram.sentTexts()).toEqual(["Welcome back! Let's carry on.", "Mia. Any other children?"]);
+    expect(telegram.sentTexts()).toEqual(["👋 <b>Welcome back!</b> Let's carry on.", "<b>Mia.</b> Any other children?"]);
     expect(store.holds.get("WELCOME-1")).toBe(ME);
     expect(store.holds.has("WELCOME-2")).toBe(false);
   });
@@ -97,7 +97,7 @@ describe("A. Starting with /start", () => {
     store.failWrites = true;
     await type("/start WELCOME-1");
     expect(store.drafts.size).toBe(0);
-    expect(telegram.sentTexts()).toEqual(["Sorry, that didn't work. Please try again.", "Sorry, that didn't work. Please try again."]);
+    expect(telegram.sentTexts()).toEqual(["🙇 Sorry, that didn't work. Please try again.", "🙇 Sorry, that didn't work. Please try again."]);
   });
 
   it("ignores a /start without a first name, rather than saving a made-up name", async () => {
@@ -114,7 +114,7 @@ describe("B. Name and children", () => {
     await type("/start WELCOME-1");
     await tap("name:change", 500);
     expect(telegram.calls).toContainEqual({ kind: "removeButtons", chatId: ME, messageId: 500 });
-    expect(lastSend()).toMatchObject({ text: "What should we call you? Type your first name." });
+    expect(lastSend()).toMatchObject({ text: "<b>What should we call you?</b>\nType your first name." });
     await type("  Wei  ");
     expect(store.drafts.get(ME)?.answers.first_name).toBe("Wei");
     expect(telegram.sentTexts().slice(-2)).toEqual(["Thanks, Wei!", CHILD_QUESTION]);
@@ -135,8 +135,8 @@ describe("B. Name and children", () => {
     await type("Mia");
     expect(store.drafts.get(ME)).toMatchObject({ step: "children", answers: { children: ["Mia"] } });
     expect(lastSend()).toMatchObject({
-      text: "Mia. Any other children?",
-      buttons: [[{ text: "+ Add another child", data: "kids:add" }, { text: "That's all", data: "kids:done" }]],
+      text: "<b>Mia.</b> Any other children?",
+      buttons: [[{ text: "+ Add another child", data: "kids:add" }, { text: "That's all ➡️", data: "kids:done" }]],
     });
   });
 
@@ -146,7 +146,7 @@ describe("B. Name and children", () => {
     await tap("kids:add", 502);
     expect(lastSend()).toMatchObject({ text: "What's your other child's name?" });
     await type("Leo");
-    expect(lastSend()).toMatchObject({ text: "Mia and Leo. Any other children?" });
+    expect(lastSend()).toMatchObject({ text: "<b>Mia and Leo.</b> Any other children?" });
   });
 
   it("11. after the third child, only 'That's all' is offered", async () => {
@@ -156,7 +156,7 @@ describe("B. Name and children", () => {
       await tap("kids:add");
     }
     await type("Ava");
-    expect(lastSend()).toMatchObject({ text: "Mia, Leo and Ava. Any other children?", buttons: [[{ text: "That's all", data: "kids:done" }]] });
+    expect(lastSend()).toMatchObject({ text: "<b>Mia, Leo and Ava.</b> Any other children?", buttons: [[{ text: "That's all ➡️", data: "kids:done" }]] });
     await tap("kids:add"); // an old button: nothing changes
     expect(store.drafts.get(ME)?.answers.children).toEqual(["Mia", "Leo", "Ava"]);
   });
@@ -168,7 +168,7 @@ describe("B. Name and children", () => {
     await type("Leo");
     await tap("kids:done");
     expect(telegram.sentTexts()).toContain(
-      "Mia and Leo. Lovely! To keep things fresh, we'll take turns naming one of them in each reminder. It's just a suggestion: do it with whoever you like.",
+      "<b>Mia and Leo.</b> Lovely!\n\nTo keep things fresh, we'll take turns naming one of them in each reminder.\n\nIt's just a suggestion: do it with whoever you like.",
     );
     const other = 5151;
     store.invites.set("WELCOME-3", null);
@@ -189,8 +189,8 @@ describe("C. Choosing behaviours", () => {
   it("13. screen 4 greets by the child for 1 child, by name alone for 2 or more, with the 4 quick behaviours and Next", async () => {
     await goTo("quick", { store, telegram, now }, ME);
     expect(telegram.sentTexts()).toContain("Nice to meet you, Mia's parent, John!");
-    expect(lastSend()).toMatchObject({ text: "These are quick behaviours. Pick up to 2 to work on." });
-    expect(buttonTexts(lastSend())).toEqual([...QUICK.map((b) => b.name), "Next"]);
+    expect(lastSend()).toMatchObject({ text: "⚡ <b>Quick behaviours</b>\nPick up to 2 to work on." });
+    expect(buttonTexts(lastSend())).toEqual([...QUICK.map((b) => b.name), "Next ➡️"]);
 
     const other = 5151;
     store.invites.set("WELCOME-3", null);
@@ -207,7 +207,7 @@ describe("C. Choosing behaviours", () => {
     await tap(`q:${QUICK[1]!.id}`, 600);
     const edit = telegram.calls.at(-2);
     expect(edit).toMatchObject({ kind: "edit", messageId: 600 });
-    expect(edit?.kind === "edit" && edit.buttons?.flat().map((b) => b.text)).toContain(`✓ ${QUICK[1]!.name}`);
+    expect(edit?.kind === "edit" && edit.buttons?.flat().map((b) => b.text)).toContain(`✅ ${QUICK[1]!.name}`);
     await tap(`q:${QUICK[0]!.id}`, 600);
     await tap(`q:${QUICK[2]!.id}`, 600);
     expect(telegram.calls.at(-1)).toMatchObject({ kind: "answer", popup: "You can pick up to 2." });
@@ -219,8 +219,8 @@ describe("C. Choosing behaviours", () => {
     await goTo("quick", { store, telegram, now }, ME);
     await tap(`q:${QUICK[1]!.id}`, 600);
     await tap("q:next", 600);
-    expect(lastSend()).toMatchObject({ text: "Now pick 1 deliberate behaviour. These take some planning. So we've made it optional." });
-    expect(buttonTexts(lastSend())).toEqual([...DELIBERATE.map((b) => b.name), "Skip for now"]);
+    expect(lastSend()).toMatchObject({ text: "📅 <b>Deliberate behaviours</b>\nNow pick 1. These take some planning, so it's optional." });
+    expect(buttonTexts(lastSend())).toEqual([...DELIBERATE.map((b) => b.name), "Skip for now ➡️"]);
     await tap(`d:${DELIBERATE[0]!.id}`, 601);
     expect(store.drafts.get(ME)?.answers.picks).toEqual([
       { nudge_id: QUICK[1]!.id, frequency: "every_2_days" },
@@ -232,7 +232,7 @@ describe("C. Choosing behaviours", () => {
   it("16. with no quick behaviour ticked, screen 5 has no Skip button (rule 2.1: at least one behaviour)", async () => {
     await goTo("quick", { store, telegram, now }, ME);
     await tap("q:next", 600);
-    expect(lastSend()).toMatchObject({ text: "Now pick 1 deliberate behaviour. Pick 1 to get started." });
+    expect(lastSend()).toMatchObject({ text: "📅 <b>Deliberate behaviours</b>\nNow pick 1 to get started." });
     expect(buttonTexts(lastSend())).toEqual(DELIBERATE.map((b) => b.name));
     await tap("d:skip", 601); // an old or forged button: nothing moves on
     expect(store.drafts.get(ME)?.step).toBe("deliberate");
@@ -243,13 +243,13 @@ describe("D. Times and plan", () => {
   it("17. screens 6 and 7 show the default times, the Settings line, and one OK each", async () => {
     await goTo("school_times", { store, telegram, now }, ME);
     expect(lastSend()).toMatchObject({
-      text: "For school days, we'll suggest reminders at these 3 times.\n7:00 am · 7:00 pm · 9:00 pm\n1 reminder each time. A maximum of 3 in total a day.\nYou can change these anytime in Settings.",
-      buttons: [[{ text: "OK", data: "times:school" }]],
+      text: "🏫 <b>School days:</b> 3 reminder times\n\n7:00 am · 7:00 pm · 9:00 pm\n\nAt most 1 reminder each time, and 3 a day.\nChange these anytime in Settings.",
+      buttons: [[{ text: "OK ➡️", data: "times:school" }]],
     });
     await tap("times:school", 700);
     expect(lastSend()).toMatchObject({
-      text: "For weekends and school holidays, we'll remind you at these times.\n9:00 am · 12:30 pm · 7:00 pm\n1 reminder each time. A maximum of 3 in total a day.\nYou can change these anytime in Settings.",
-      buttons: [[{ text: "OK", data: "times:weekend" }]],
+      text: "🌤 <b>Weekends and school holidays:</b> 3 reminder times\n\n9:00 am · 12:30 pm · 7:00 pm\n\nAt most 1 reminder each time, and 3 a day.\nChange these anytime in Settings.",
+      buttons: [[{ text: "OK ➡️", data: "times:weekend" }]],
     });
     await tap("times:weekend", 701);
     expect(store.drafts.get(ME)?.answers.slots).toEqual({ school: [420, 1140, 1260], non_school: [540, 750, 1140] });
@@ -259,12 +259,12 @@ describe("D. Times and plan", () => {
     await goTo("plan", { store, telegram, now }, ME, { quick: [QUICK[1]!.id, QUICK[0]!.id], deliberate: DELIBERATE[0]!.id });
     expect(lastSend()).toMatchObject({
       text:
-        "From what you chose, your reminders are:\n" +
-        `${QUICK[1]!.name}, ${QUICK[0]!.name}: every 2 days\n` +
-        `${DELIBERATE[0]!.name}: once a week\n` +
-        "A wrap up for the week will be sent on Sunday at 8:00 pm.\n" +
+        "<b>Your reminders</b>\n\n" +
+        `🔁 <b>Every 2 days</b>\n• ${QUICK[1]!.name}\n• ${QUICK[0]!.name}\n\n` +
+        `📅 <b>Once a week</b>\n• ${DELIBERATE[0]!.name}\n\n` +
+        "📝 <b>Week wrap up:</b> Sunday 8:00 pm\n\n" +
         "Change these anytime in Settings.",
-      buttons: [[{ text: "OK", data: "plan:ok" }]],
+      buttons: [[{ text: "OK ➡️", data: "plan:ok" }]],
     });
   });
 
@@ -314,7 +314,7 @@ describe("E. Agreeing", () => {
     await tap("agree", 800);
     expect(store.parents).toEqual([]);
     expect(store.drafts.get(ME)?.step).toBe("agreement");
-    expect(telegram.sentTexts().at(-1)).toBe("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts().at(-1)).toBe("🙇 Sorry, that didn't save. Please try again.");
     expect(telegram.calls.some((c) => (c.kind === "edit" || c.kind === "removeButtons") && c.messageId === 800)).toBe(false);
   });
 
@@ -323,7 +323,7 @@ describe("E. Agreeing", () => {
     store.failWrites = true;
     await type("Mia");
     expect(store.drafts.get(ME)?.answers.children).toBeUndefined();
-    expect(telegram.sentTexts().at(-1)).toBe("Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts().at(-1)).toBe("🙇 Sorry, that didn't save. Please try again.");
   });
 });
 
@@ -335,13 +335,13 @@ describe("R. Continue on the sign-up reminder", () => {
     await type("Mia");
     telegram.calls = [];
     await tap("signup:continue", 777);
-    expect(telegram.sentTexts()).toEqual(["Welcome back! Let's carry on.", "Mia. Any other children?"]);
+    expect(telegram.sentTexts()).toEqual(["👋 <b>Welcome back!</b> Let's carry on.", "<b>Mia.</b> Any other children?"]);
   });
 
   // R5
   it("R5. after the sign-up was cut down (7 quiet days): told it has expired, to open the invite link again", async () => {
     await tap("signup:continue", 777);
-    expect(telegram.sentTexts()).toEqual(["This sign-up has expired. Please open your invite link again to start over."]);
+    expect(telegram.sentTexts()).toEqual(["This sign-up has expired.\nPlease open your invite link again to start over."]);
   });
 
   // R6
