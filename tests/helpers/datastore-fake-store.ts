@@ -431,6 +431,7 @@ export class FakeStore implements Store {
     const log = this.logs.find((l) => l.id === logId);
     if (!log || log.parentId !== parentId || log.undoneAt) return "not_allowed";
     if (this.lines.has(logId)) return "has_line";
+    for (const l of this.logs) if (l.parentId === parentId) this.lineAsked.delete(l.id); // only the latest tap waits (migration 013)
     this.lineAsked.set(logId, this.clock);
     return "asked";
   }

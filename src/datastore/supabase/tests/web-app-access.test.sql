@@ -671,6 +671,20 @@ begin
   assert exists (select 1 from public.events e join public.event_types t on t.id = e.event_type_id where t.name = 'log_line_added'), 'an event is written';
   raise notice 'PASS: T121 a line is added once to the log that asked, a resent message once';
 end $$;
+-- T121 (review, 24 Nov): only the latest tap waits; an earlier tapped log stops waiting.
+reset role;
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, telegram_update_id) values
+  (pg_temp.cara(), pg_temp.n1(), public.sgt_today(), 'keyboard', 7202), (pg_temp.cara(), pg_temp.n2(), public.sgt_today(), 'keyboard', 7203);
+set role service_role;
+do $$
+begin
+  perform public.ask_for_line(pg_temp.cara(), pg_temp.log(7202));
+  perform public.ask_for_line(pg_temp.cara(), pg_temp.log(7203));
+  assert public.add_log_line(pg_temp.cara(), 'For the second', 8010, pg_temp.v(), '["baseline"]') = 'saved', 'the line goes to the latest tap';
+  assert (select description from public.habit_logs where id = pg_temp.log(7203)) = 'For the second', 'on the second log';
+  assert public.add_log_line(pg_temp.cara(), 'Unrelated', 8011, pg_temp.v(), '["baseline"]') = 'none', 'the first log no longer waits';
+  raise notice 'PASS: T121 only the latest tap waits';
+end $$;
 reset role;
 
 -- T122: only within the wait, at most 280 characters, never empty.

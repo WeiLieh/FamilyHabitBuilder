@@ -9,7 +9,8 @@
 --      felt" (line_asked_at), and which Telegram message the line came in
 --      (line_update_id, so a message Telegram delivers twice is saved once).
 --   2. ask_for_line: the tap. Only the parent's own log, not undone, with no
---      line yet. It notes the time; it saves no words.
+--      line yet. It notes the time; it saves no words. Only the latest tap
+--      waits: an earlier log the parent tapped stops waiting (review, 24 Nov).
 --   3. add_log_line: the typed line. It goes to the parent's most recently
 --      asked log, only within the wait (line_wait_seconds, 10 minutes, read
 --      from the settings version), only if that log has no line and isn't
@@ -38,6 +39,9 @@ begin
   if g.parent_id is distinct from p_parent then raise exception 'That log does not belong to this parent.'; end if;
   if g.undone_at is not null then raise exception 'That log was undone, so it can''t take a line.'; end if;
   if g.description is not null then return 'has_line'; end if;
+  -- Only the latest tap waits (review): any earlier log stops waiting, so a
+  -- later, unrelated message can never land on it.
+  update habit_logs set line_asked_at = null where parent_id = p_parent and id <> p_log and line_asked_at is not null;
   update habit_logs set line_asked_at = now() where id = p_log;
   return 'asked';
 end $$;

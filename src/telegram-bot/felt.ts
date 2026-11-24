@@ -56,6 +56,8 @@ export async function feltTap(t: Tap, parent: Parent, logId: number, { store, te
 // line a log is waiting for? Returns true if it was handled here (saved, too
 // long, already saved, or a failure said so); false if no log is waiting.
 export async function typedLine(chatId: number, parent: Parent, text: string, updateId: number, { store, telegram }: BotDeps): Promise<boolean> {
+  // [2026-11-24, review] Anything that looks like a command ("/delete", "/log@Bot") is never a line.
+  if (text.trimStart().startsWith("/")) return false;
   const length = [...text].length; // characters as a person counts them (an emoji is one)
   try {
     if (length > LINE_MAX_CHARS) {

@@ -21,7 +21,8 @@ export type Incoming =
   // [2026-11-12] "text" is what they typed (a name during sign-up); null for a sticker, photo and so on.
   // [2026-11-15] messageId: Telegram's number for the parent's message, so the bot can react to it (rule 5.14).
   // [2026-11-24] photo: Telegram's file number for the biggest size of a photo the person sent, or null.
-  | { kind: "message"; updateId: number; chatId: number; messageId: number; telegramId: number; text: string | null; photo: string | null }
+  // [2026-11-24, review] forwarded: the person passed on someone else's message (never saved as their own line).
+  | { kind: "message"; updateId: number; chatId: number; messageId: number; telegramId: number; text: string | null; photo: string | null; forwarded: boolean }
   | { kind: "tap"; updateId: number; tapId: string; chatId: number; messageId: number; telegramId: number; data: string }
   | { kind: "ignore" };
 
@@ -38,6 +39,9 @@ const UpdateShape = z.object({
       text: z.string().optional(),
       // [2026-11-24] A photo comes as several sizes; each has a file number and its width and height.
       photo: z.array(z.object({ file_id: z.string(), width: z.number(), height: z.number() })).optional(),
+      // [2026-11-24, review] Present when the message was forwarded from someone else.
+      forward_origin: z.unknown().optional(),
+      forward_date: z.number().optional(),
     })
     .optional(),
   callback_query: z
@@ -94,7 +98,7 @@ export function parseUpdate(body: unknown): Incoming {
       (best, p) => (best === null || p.width * p.height > best.width * best.height ? p : best),
       null,
     );
-    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, messageId: m.message_id, telegramId: m.from.id, text: m.text ?? null, photo: biggest?.file_id ?? null };
+    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, messageId: m.message_id, telegramId: m.from.id, text: m.text ?? null, photo: biggest?.file_id ?? null, forwarded: m.forward_origin !== undefined || m.forward_date !== undefined };
   }
   return { kind: "ignore" };
 }

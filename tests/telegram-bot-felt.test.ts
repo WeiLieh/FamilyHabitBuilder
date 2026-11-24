@@ -19,7 +19,7 @@ import { handleUpdate, type BotDeps } from "../src/telegram-bot/handle-update.js
 import { parseUpdate } from "../src/telegram-bot/updates.js";
 import { sgtInstant } from "../src/sgt.js";
 import { FakeStore } from "./helpers/datastore-fake-store.js";
-import { FakeTelegram, tapUpdate, textUpdate } from "./helpers/telegram-bot-fakes.js";
+import { FakeTelegram, forwardedUpdate, tapUpdate, textUpdate } from "./helpers/telegram-bot-fakes.js";
 
 const ME = 4242;
 const today = "2026-11-11";
@@ -116,6 +116,32 @@ describe("The typed line (F3 to F6)", () => {
     expect(lastText()).toContain("How this works");
     await say("Now the line", 4);
     expect(store.lines.get(first)?.text).toBe("Now the line");
+  });
+});
+
+describe("Review cases (24 Nov)", () => {
+  it("F3 (review) only the latest tap waits: after tapping on two logs, one line goes to the second and a later message isn't saved on the first", async () => {
+    await say("✅ Showing affection");
+    await say("✅ Spending quality time", 1);
+    const [a, b] = [store.logs[0]!.id, store.logs[1]!.id];
+    await tap(`felt:${a}`, 2);
+    await tap(`felt:${b}`, 3);
+    await say("Line for the second", 4);
+    await say("An unrelated message", 5);
+    expect(store.lines.get(b)?.text).toBe("Line for the second");
+    expect(store.lines.has(a)).toBe(false);
+    expect(lastText()).toBe(UNRECOGNISED);
+  });
+
+  it("F6 (review) an unknown command or a forwarded message is never saved as a line", async () => {
+    await say("✅ Showing affection");
+    await tap(`felt:${store.logs[0]!.id}`, 1);
+    await say("/delete", 2);
+    await say("/log@FamilyHabitBot", 2);
+    await handleUpdate(parseUpdate(forwardedUpdate(ME, "Someone else's words")), deps(at(3)));
+    expect(store.lines.size).toBe(0);
+    await say("My own line", 4);
+    expect([...store.lines.values()].map((l) => l.text)).toEqual(["My own line"]);
   });
 });
 

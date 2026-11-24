@@ -133,6 +133,8 @@ async function handleMessage(m: Extract<Incoming, { kind: "message" }>, deps: Bo
 
 // [2026-11-14] B1: a Menu command (rule 5.7), a keyboard button (rule 5.1), or
 // "Unrecognised text." (typed messages come later, with Claude).
+// [2026-11-24] Before "Unrecognised text.", the line a log waits for after
+// "Add how you felt" (felt.ts; never a forwarded message or a command).
 async function parentText(m: Extract<Incoming, { kind: "message" }>, text: string, parent: { id: number; paused: boolean }, deps: BotDeps): Promise<void> {
   const { telegram } = deps;
   const command = parseCommand(text);
@@ -154,7 +156,8 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
   if (!behaviour) {
     // [2026-11-24] Not a command or a keyboard button: the line a log waits for, if any (rule 5.3, F3 to F6).
     try {
-      if (await typedLine(m.chatId, parent, text, m.updateId, deps)) return;
+      // [2026-11-24, review] A forwarded message is someone else's words: never a line.
+      if (!m.forwarded && (await typedLine(m.chatId, parent, text, m.updateId, deps))) return;
     } catch (error) {
       logFailure("Handling a typed line failed", error);
     }
