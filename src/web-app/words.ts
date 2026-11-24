@@ -24,7 +24,8 @@ export const WEB_WORDS = {
   daysLogged: (n: number) => `${n} ${n === 1 ? "day" : "days"} logged this week`, // rule 9.4
   reflectionsThisWeek: (n: number) => `${n} ${n === 1 ? "reflection" : "reflections"} this week`, // rule 9.4
   momentTitle: "This week's moment", // draft
-  photoLater: "(a photo: shown once photos are built)", // draft, photos come with the Photo check
+  photoAlt: "Your photo", // [2026-11-24] draft: what a screen reader says for a photo
+  photoNotLoaded: "This photo couldn't be loaded. Please try again.", // [2026-11-24] draft, rule 1.3: a failed link is shown as a failure
   connectionQuestion: "How connected did you feel with your child?", // fixed, rules 5.6, 9.5
   firstAnswer: "Your first answer arrives on Sunday.", // fixed, rule 9.5
   thisWeek: "This week", // fixed, rule 9.5
@@ -41,6 +42,8 @@ export const WEB_WORDS = {
   confirmLine: "Delete this line? It will be gone for good. Your log stays.", // rule 9.6
   confirmReflection: "Delete this reflection? It will be gone for good.", // draft, rule 9.6
   confirmMomentLine: "Delete this moment's line? It will be gone for good.", // draft, rule 9.6
+  confirmPhoto: "Delete this photo? It will be gone for good. Your log stays.", // [2026-11-24] owner-approved test PH12
+  confirmMomentPhoto: "Delete this moment's photo? It will be gone for good.", // [2026-11-24] draft, rule 9.6
   cancel: "Cancel", // owner, 15 Nov (wireframe A)
   delete: "Delete", // owner, 15 Nov (wireframe A)
   badRequest: "That request isn't one this page understands.", // draft

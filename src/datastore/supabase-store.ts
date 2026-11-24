@@ -34,6 +34,11 @@ import type { Behaviour, DraftAnswers, ExampleIdea, PlanParent, StartSignUpResul
 import type { Holidays } from "../nudge-engine/schedule.js";
 import type { Frequency } from "../nudge-engine/choices.js";
 import { addDays, sgtInstant } from "../sgt.js";
+import { randomUUID } from "node:crypto";
+import { PHOTO_CONSENT_WORDING_VERSION } from "../settings.js";
+
+// [2026-11-24] The private photo store (migration 012): one folder per parent.
+const PHOTO_BUCKET = "photos";
 
 // Stop with a clear message if Supabase reports an error.
 function check<T>(r: { data: T; error: { message: string } | null }, what: string): T {
@@ -439,6 +444,60 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         }),
         "Resuming reminders",
       );
+    },
+
+    // ---- [2026-11-24] Photos after a log (migration 012) ----
+    async photoAllowed(nudgeId) {
+      const n = need(await db.from("nudges").select("photo_upload_allowed").eq("id", nudgeId).single(), "Reading whether a behaviour allows photos");
+      return n.photo_upload_allowed === true;
+    },
+    async photoConsent(parentId) {
+      const rows = check(await db.from("consents").select("topic, answer, created_at").eq("parent_id", parentId).eq("topic", "photos"), "Reading the photo consent") ?? [];
+      return currentConsent(rows.map((r) => ({ topic: r.topic, answer: r.answer, createdAt: r.created_at })), "photos");
+    },
+    async recordPhotoConsent(parentId, answer) {
+      check(
+        await db.from("consents").insert({ parent_id: parentId, topic: "photos", answer, wording_version: PHOTO_CONSENT_WORDING_VERSION }),
+        "Recording the photo consent",
+      );
+    },
+    // The latest not-undone log since "since" whose behaviour allows photos, and whether it has a photo.
+    async photoLogSince(parentId, since) {
+      const allowed = (check(await db.from("nudges").select("id").eq("photo_upload_allowed", true), "Reading which behaviours allow photos") ?? []).map((n) => Number(n.id));
+      if (allowed.length === 0) return null;
+      const logs = check(
+        await db.from("habit_logs").select("id").eq("parent_id", parentId).is("undone_at", null).in("nudge_id", allowed)
+          .gte("logged_at", since.toISOString()).order("logged_at", { ascending: false }).order("id", { ascending: false }).limit(1),
+        "Finding the log for a photo",
+      ) ?? [];
+      const log = logs[0];
+      if (!log) return null;
+      const photos = check(await db.from("photos").select("id").eq("log_id", log.id).limit(1), "Checking for a photo on the log") ?? [];
+      return { logId: Number(log.id), hasPhoto: photos.length > 0 };
+    },
+    async savePhotoFile(parentId, bytes) {
+      const path = `${parentId}/${randomUUID()}.jpg`; // a random name: it says nothing about the photo
+      check(await db.storage.from(PHOTO_BUCKET).upload(path, bytes, { contentType: "image/jpeg", upsert: false }), "Saving the photo file");
+      return path;
+    },
+    async removePhotoFile(path) {
+      check(await db.storage.from(PHOTO_BUCKET).remove([path]), "Removing the photo file");
+    },
+    async addLogPhoto(parentId, logId, path) {
+      const r = await db.rpc("add_log_photo", {
+        p_parent: parentId, p_log: logId, p_path: path, p_check: "not_checked", p_version: await settingsVersion(), p_variants: variants,
+      });
+      // 23505: the log already has a photo (one per log, migration 005).
+      if ((r.error as { code?: string } | null)?.code === "23505") return "has_photo";
+      check(r, "Adding the photo to the log");
+      return "saved";
+    },
+    async logForUndo(parentId, logId) {
+      const logs = check(await db.from("habit_logs").select("logged_at").eq("id", logId).eq("parent_id", parentId).limit(1), "Reading the log to undo") ?? [];
+      const log = logs[0];
+      if (!log) return null;
+      const photos = check(await db.from("photos").select("storage_path").eq("log_id", logId).limit(1), "Reading the log's photo") ?? [];
+      return { loggedAt: new Date(String(log.logged_at)), photoPath: photos[0] ? String(photos[0].storage_path) : null };
     },
 
     // [2026-11-15] The database adds the 5-minute expiry from the settings version (migration 011).

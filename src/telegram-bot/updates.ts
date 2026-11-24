@@ -5,7 +5,8 @@
 // parseUpdate checks its shape with zod (an approved library that checks data
 // from outside before we trust it) and turns it into one of four plain kinds:
 //   - start: someone sent /start, perhaps with an invite code
-//   - message: a person sent something else (text, a sticker, a photo)
+//   - message: a person sent something else (text, a sticker, a photo;
+//     [2026-11-24] a photo's biggest size is kept, its caption ignored)
 //   - tap: a person tapped one of our buttons
 //   - ignore: anything that isn't a person's message in a private chat (an
 //     edited message, the bot being blocked or added to a group, broken data)
@@ -19,7 +20,8 @@ export type Incoming =
   | { kind: "start"; updateId: number; chatId: number; telegramId: number; firstName: string; code: string | null }
   // [2026-11-12] "text" is what they typed (a name during sign-up); null for a sticker, photo and so on.
   // [2026-11-15] messageId: Telegram's number for the parent's message, so the bot can react to it (rule 5.14).
-  | { kind: "message"; updateId: number; chatId: number; messageId: number; telegramId: number; text: string | null }
+  // [2026-11-24] photo: Telegram's file number for the biggest size of a photo the person sent, or null.
+  | { kind: "message"; updateId: number; chatId: number; messageId: number; telegramId: number; text: string | null; photo: string | null }
   | { kind: "tap"; updateId: number; tapId: string; chatId: number; messageId: number; telegramId: number; data: string }
   | { kind: "ignore" };
 
@@ -28,7 +30,16 @@ const Person = z.object({ id: z.number(), is_bot: z.boolean().optional(), first_
 const Chat = z.object({ id: z.number(), type: z.string() });
 const UpdateShape = z.object({
   update_id: z.number(),
-  message: z.object({ message_id: z.number(), chat: Chat, from: Person.optional(), text: z.string().optional() }).optional(),
+  message: z
+    .object({
+      message_id: z.number(),
+      chat: Chat,
+      from: Person.optional(),
+      text: z.string().optional(),
+      // [2026-11-24] A photo comes as several sizes; each has a file number and its width and height.
+      photo: z.array(z.object({ file_id: z.string(), width: z.number(), height: z.number() })).optional(),
+    })
+    .optional(),
   callback_query: z
     .object({
       id: z.string(),
@@ -78,7 +89,12 @@ export function parseUpdate(body: unknown): Incoming {
         code: start[1] ?? null,
       };
     }
-    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, messageId: m.message_id, telegramId: m.from.id, text: m.text ?? null };
+    // [2026-11-24] The biggest size of a photo (most pixels); a caption is ignored, never saved.
+    const biggest = (m.photo ?? []).reduce<{ file_id: string; width: number; height: number } | null>(
+      (best, p) => (best === null || p.width * p.height > best.width * best.height ? p : best),
+      null,
+    );
+    return { kind: "message", updateId: u.update_id, chatId: m.chat.id, messageId: m.message_id, telegramId: m.from.id, text: m.text ?? null, photo: biggest?.file_id ?? null };
   }
   return { kind: "ignore" };
 }

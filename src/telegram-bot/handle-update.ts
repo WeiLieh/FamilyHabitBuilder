@@ -18,6 +18,9 @@
 //     button's text ("✅ Showing affection") logs that behaviour; the Menu's
 //     commands (/log, /mypage, /settings, /pause, /resume, /help, also typed
 //     without the "/"); the Undo, /log and Resume buttons.
+//   - [2026-11-24] a photo from a parent (photos.ts): consent at the first
+//     photo, then it joins their log from the last 10 minutes, unchecked; the
+//     receipt of a log that allows photos asks for one (owner, 24 Nov).
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
 // See src/telegram-bot/SPEC.md, "Build: thin slice 1".
 //
@@ -35,6 +38,7 @@ import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal value
 import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./onboarding.js";
 import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap } from "./log-any-time.js";
 import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
+import { PHOTO_CONSENT_NO, PHOTO_CONSENT_OK, photoConsentTap, photoMessage, withPhotoPrompt } from "./photos.js";
 
 // [2026-11-15] random: picks the reaction emoji (rule 5.14); tests pass a fixed one.
 export type BotDeps = { store: Store; telegram: TelegramApi; now: Date; random?: () => number };
@@ -80,6 +84,18 @@ async function handleStart(s: Extract<Incoming, { kind: "start" }>, deps: BotDep
 // (onboarding.ts); otherwise "Unrecognised text." (owner, 11 Nov).
 async function handleMessage(m: Extract<Incoming, { kind: "message" }>, deps: BotDeps): Promise<void> {
   const { store, telegram } = deps;
+  // [2026-11-24] A photo: only a parent's photo is looked at (photos.ts).
+  if (m.photo !== null) {
+    let parent;
+    try {
+      parent = await store.findParent(m.telegramId);
+    } catch (error) {
+      logFailure("Finding who sent a photo failed", error);
+      await telegram.sendMessage(m.chatId, WORDS.didNotSave);
+      return;
+    }
+    if (parent) return photoMessage(m.chatId, parent, m.photo, deps);
+  }
   if (m.text !== null) {
     let draft;
     try {
@@ -198,6 +214,8 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
   const log = /^log:(\d+)$/.exec(t.data);
   if (log) return logTap(t, parent, Number(log[1]), deps);
   if (t.data === "resume:yes" || t.data === "resume:no") return resumeTap(t, parent, deps);
+  // [2026-11-24] OK or "Don't save my photos" on the photo consent question.
+  if (t.data === PHOTO_CONSENT_OK || t.data === PHOTO_CONSENT_NO) return photoConsentTap(t, parent, deps);
 
   // [2026-11-13] Nudge buttons carry the day and slot they were sent for:
   // "done:2026-11-11:1140" or "skip:2026-11-11:1140" (up to 3 nudges a day).
@@ -250,7 +268,8 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
       return;
     }
     // [2026-11-12] The receipt is a new message below the nudge (rules 5.10, 7.5).
-    await replyBelowNudge(t, deps, WORDS.receipt(nudge.nudgeName));
+    // [2026-11-24] With "Send a photo of what you did." if the behaviour allows photos (PH1).
+    await replyBelowNudge(t, deps, await withPhotoPrompt(WORDS.receipt(nudge.nudgeName), nudge.nudgeId, deps));
     return;
   }
 

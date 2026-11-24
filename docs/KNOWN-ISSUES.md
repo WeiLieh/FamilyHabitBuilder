@@ -241,6 +241,7 @@
 - **Workaround:** [2026-10-24 22:14 SGT] Database rules block badly formed rows; the app refuses to use invalid rows; the owner exports a CSV backup before each big change. Only the owner has dashboard access.
 
 ### [2026-10-24 22:09 SGT] Photo check judging against the photo idea may be too strict
+- **Status:** [2026-11-24 22:35 SGT] On hold: the photo check is parked (owner, 24 Nov), so no photo is judged for now. Revisit with the backlog item "The photo check".
 - **Issue:** [2026-10-24 22:09 SGT] The Photo check uses each nudge's photo idea to judge whether a photo fits. A parent may send a valid photo that looks nothing like the idea (for example, a cycling trip for "interesting activities" when the idea shows baking).
 - **Impact:** [2026-10-24 22:09 SGT] Valid photos could be rejected, which feels unfair and discourages logging.
 - **Workaround:** [2026-10-24 22:09 SGT] Owner agreed this rule "for now". When building the Photo check, propose treating the photo idea as a hint and judging against the nudge itself; if a check fails, the parent can still self-report (rule 9).

@@ -23,6 +23,8 @@ const handle = configured
       db: createWebAppStore(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!),
       jwtSecret: env.SUPABASE_JWT_SECRET!,
       now: () => new Date(),
+      // [2026-11-24] Photos load only from our own Supabase project (PH11).
+      photoOrigin: new URL(env.SUPABASE_URL!).origin,
     })
   : null;
 

@@ -16,6 +16,8 @@
 -- the role "authenticated" plus a small signed note (the JWT claims) that says
 -- which parent it is for. The tests set both by hand, as Supabase would.
 --
+-- [2026-11-24] Also migration 012 (T119, T120): log photos without a check
+-- and the private photo store, at the end of this file.
 -- Runs after datastore-tables.test.sql on the same throwaway local database
 -- (src/datastore/supabase/tests/run.sh), never on the real Supabase project.
 -- =============================================================================
@@ -554,5 +556,88 @@ begin
   assert not exists (select 1 from pg_proc where proname in ('web_older_weeks', 'web_connection_history') and pronargs <> 1), 'the reads should take no settings version';
   raise notice 'PASS: T118 no caller can choose a settings version for sign-in or the reads';
 end $$;
+
+-- =============================================================================
+-- [2026-11-24] Migration 012: log photos without a check, and the private photo
+-- store (owner-approved tests of 24 Nov, T119 and T120).
+-- A plain PostgreSQL has no Supabase Storage, so a small stand-in is made here
+-- with the same names Supabase uses (storage.buckets, storage.objects with Row
+-- Level Security on, storage.foldername). It checks our locks, not Supabase's
+-- own storage service.
+-- =============================================================================
+select pg_temp.as_owner();
+create schema storage;
+create table storage.buckets (id text primary key, name text not null, public boolean not null default false,
+  file_size_limit bigint, allowed_mime_types text[]);
+create table storage.objects (id bigint generated always as identity primary key, bucket_id text references storage.buckets (id), name text not null);
+alter table storage.objects enable row level security;
+create function storage.foldername(name text) returns text[] language sql immutable as $$
+  select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
+grant usage on schema storage to authenticated, service_role;
+grant select, delete on storage.objects to authenticated;
+grant all on storage.objects to service_role;
+
+\i src/datastore/supabase/migrations/012_photos_unchecked_and_storage.sql
+
+-- T119: a log's photo can now be saved "not checked" (the photo check is
+-- parked); a moment photo is still only ever "not checked".
+insert into public.consents (parent_id, topic, answer, wording_version) values (pg_temp.cara(), 'photos', 'agreed', 'photos-draft-2026-11-24');
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, telegram_update_id)
+values (pg_temp.cara(), pg_temp.n1(), public.sgt_today(), 'keyboard', 7100);
+set role service_role;
+do $$
+declare p bigint;
+begin
+  p := public.add_log_photo(pg_temp.cara(), (select id from public.habit_logs where telegram_update_id = 7100),
+                            pg_temp.cara()::text || '/log-7100.jpg', 'not_checked', pg_temp.v(), '["baseline"]'::jsonb);
+  assert (select check_result from public.photos where id = p) = 'not_checked', 'a log photo should be saved as not checked';
+  raise notice 'PASS: T119 a log photo can be saved without a check';
+end $$;
+reset role;
+select pg_temp.expect_refused('T119 a moment photo marked as checked',
+  $q$insert into public.photos (parent_id, moment_week, storage_path, check_result) values (pg_temp.cara(), '2026-11-02', 'x/y.jpg', 'passed')$q$,
+  'photos_moment_never_checked');
+do $$
+begin
+  assert (select not public and file_size_limit = 10485760 and allowed_mime_types = array['image/jpeg'] from storage.buckets where id = 'photos'),
+    'the photos bucket should be private, JPEG only, at most 10 MB';
+  raise notice 'PASS: T119 the photos store is private, JPEG only, at most 10 MB';
+end $$;
+
+-- T120: a parent's pass reaches only its own folder in the photo store: it can
+-- see and delete its own files, never another parent's; no pass sees nothing.
+-- Another parent's folder is named by a number no pass here holds (Dev's row may be gone by now).
+insert into storage.buckets (id, name) values ('other', 'other');
+insert into storage.objects (bucket_id, name) values
+  ('photos', pg_temp.cara()::text || '/a.jpg'), ('photos', '999999/b.jpg'), ('other', pg_temp.cara()::text || '/c.jpg');
+select pg_temp.pass_for(pg_temp.cara());
+do $$
+begin
+  assert (select count(*) from storage.objects) = 1, 'Cara''s pass should see exactly her one photo file';
+  assert (select name from storage.objects) like '%/a.jpg', 'Cara''s pass should see only her own file';
+  delete from storage.objects where name like '%/b.jpg';
+  raise notice 'PASS: T120 a pass sees only its own parent''s photo files';
+end $$;
+select pg_temp.as_owner();
+do $$
+begin
+  assert (select count(*) from storage.objects where name like '%/b.jpg') = 1, 'Dev''s file must survive Cara''s delete';
+  raise notice 'PASS: T120 a pass can''t delete another parent''s photo file';
+end $$;
+select pg_temp.pass_for(pg_temp.cara());
+delete from storage.objects where name like '%/a.jpg';
+select pg_temp.as_owner();
+do $$
+begin
+  assert not exists (select 1 from storage.objects where name like '%/a.jpg'), 'Cara should be able to delete her own file';
+  raise notice 'PASS: T120 a pass can delete its own parent''s photo file';
+end $$;
+select pg_temp.pass_for(null);
+do $$
+begin
+  assert (select count(*) from storage.objects) = 0, 'no pass should see no photo files';
+  raise notice 'PASS: T120 no pass sees no photo files';
+end $$;
+select pg_temp.as_owner();
 
 \echo ALL WEB APP ACCESS TESTS PASSED

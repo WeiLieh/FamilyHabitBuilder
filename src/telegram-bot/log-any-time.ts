@@ -16,6 +16,8 @@
 //     removes the button and says "Undo expired." (U2). The database decides,
 //     by its own clock, so the app can't be fooled by a wrong phone time.
 //   - /help: the help text with the keyboard (M3).
+//   - [2026-11-24] A receipt asks for a photo if the behaviour allows photos,
+//     and Undo removes a log's photo file first (photos.ts, PH1, PH9).
 //
 // Analogy: the keyboard is a row of tally buttons by the door; each press is
 // written in the diary, and Undo is a 10-minute "oops" eraser that only
@@ -25,11 +27,13 @@
 // never a receipt; once saved, a Telegram failure is logged, not reported.
 // =============================================================================
 
+import { UNDO_WINDOW_SECONDS } from "../settings.js";
 import { toSgt } from "../sgt.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
+import { withPhotoPrompt } from "./photos.js";
 
 type Parent = { id: number; paused: boolean };
 type Tap = Extract<Incoming, { kind: "tap" }>;
@@ -84,7 +88,8 @@ export async function logBehaviour(
   if (nudgeMessage !== null) await quietly("Saved, but removing the nudge's buttons failed", () => telegram.removeButtons(chatId, nudgeMessage));
   if (logMessage !== undefined) await quietly("Saved, but removing the /log buttons failed", () => telegram.removeButtons(chatId, logMessage));
   // The receipt, as a new message; with Undo only for a keyboard log.
-  const text = before ? WORDS.receiptAgain(behaviour.name) : WORDS.receipt(behaviour.name);
+  // [2026-11-24] With "Send a photo of what you did." if the behaviour allows photos (PH1).
+  const text = await withPhotoPrompt(before ? WORDS.receiptAgain(behaviour.name) : WORDS.receipt(behaviour.name), behaviour.id, deps);
   const buttons = via === "keyboard" ? [[{ text: WORDS.undoButton, data: `undo:${saved.logId}` }]] : [];
   await quietly("Saved, but sending the receipt failed", () => telegram.sendMessage(chatId, text, buttons));
   return "saved";
@@ -126,9 +131,15 @@ export async function logTap(t: Tap, parent: Parent, nudgeId: number, deps: BotD
 }
 
 // A tap on Undo ("undo:<log>") under a keyboard log's receipt (rule 5.8).
-export async function undoTap(t: Tap, parent: Parent, logId: number, { store, telegram }: BotDeps): Promise<void> {
+export async function undoTap(t: Tap, parent: Parent, logId: number, { store, telegram, now }: BotDeps): Promise<void> {
   let result: "undone" | "expired" | "not_allowed";
   try {
+    // [2026-11-24] A log with a photo (PH9): its file is removed from the store
+    // first (rule 8.5), and only while Undo still works, so a late tap never
+    // leaves a photo record without its file. The database still decides.
+    const log = await store.logForUndo(parent.id, logId);
+    const stillOpen = log !== null && now.getTime() <= log.loggedAt.getTime() + UNDO_WINDOW_SECONDS * 1000;
+    if (log?.photoPath && stillOpen) await store.removePhotoFile(log.photoPath);
     result = await store.undoLog(parent.id, logId);
   } catch (error) {
     // Nothing changed: say so, and leave Undo so they can try again (U3, rule 1.3).
