@@ -6,6 +6,7 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-11-24 22:49 SGT] **Migrations 012 and 013 applied on Supabase (owner, 24 Nov evening):** the private `photos` store with its locks, and "Add how you felt". #58 (photos) merged.
 - [2026-11-24 22:41 SGT] **Migration 013 ("Add how you felt") waiting for the owner:** run it after 012, the same way. Until it runs, tapping "Add how you felt" says it didn't work. **Database tests now T1 to T123.**
 - [2026-11-24 22:35 SGT] **Migration 012 (photos) waiting for the owner:** Supabase > SQL Editor > paste `src/datastore/supabase/migrations/012_photos_unchecked_and_storage.sql` > Run, after 011. It makes the private `photos` store and its locks. Until it runs, saving a photo fails honestly ("didn't save"). **Database tests now T1 to T120** (`npm run test:db`; T119, T120 use a small stand-in for Supabase Storage, since a plain PostgreSQL has none).
 - [2026-11-11 20:42 SGT] **Vercel serves only `public/`** (`vercel.json`, `outputDirectory`): a placeholder page, `public/index.html`. Without it the deploy fails (Vercel looks for `public` after the build) or, if the build were skipped, the whole repository would be published as web pages. The bot's web address in `api/` is unaffected. UAT case U0 checks the source files are not reachable.
