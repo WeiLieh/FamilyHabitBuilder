@@ -4,6 +4,16 @@
 
 ## Open
 
+### [2026-11-24 23:10 SGT] A failed "Question expired" edit is not retried
+- **Issue:** [2026-11-24 23:10 SGT] After 24 hours the alarm marks the 1 to 5 question as closed, then edits the message to "Question expired". If that edit fails, it is logged as a failure but not tried again, so the old 1 to 5 buttons stay on screen (privacy review of #60, Low; owner added it, 24 Nov).
+- **Impact:** [2026-11-24 23:10 SGT] Low: a tap on the old buttons is still refused with "This question has closed.", so nothing wrong is saved.
+- **Workaround:** [2026-11-24 23:10 SGT] None needed for now; a retry can be added if Vercel's logs show failed edits.
+
+### [2026-11-24 23:10 SGT] A moment line does not re-check recording consent
+- **Issue:** [2026-11-24 23:10 SGT] Saving a moment's line (and the "Add a moment" tap) does not check the parent's recording consent again (privacy review of #60, Low; owner added it, 24 Nov).
+- **Impact:** [2026-11-24 23:10 SGT] None today: withdrawing consent is not built, so every parent who can tap the button has agreed. It matters once withdrawing consent exists.
+- **Workaround:** [2026-11-24 23:10 SGT] Add the check when withdrawing consent is built (Settings).
+
 ### [2026-11-24 22:16 SGT] The photo consent wording is a draft
 - **Issue:** [2026-11-24 22:16 SGT] The first-photo consent uses Claude Code's draft ("We save your photos so you can see them on My page. Only you can see them, and you can delete any photo there."), accepted by the owner on 24 Nov to ship photos tonight.
 - **Impact:** [2026-11-24 22:16 SGT] It has not been checked by the PDPA reviewer; consent for children's photos must be clear and lawful before any real family.

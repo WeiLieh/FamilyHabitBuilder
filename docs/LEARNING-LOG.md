@@ -6,6 +6,26 @@
 
 ## Notebook
 
+### [2026-11-24 23:10 SGT] A guest list by fingerprint (Content Security Policy)
+- **Concept:** Content Security Policy (CSP): a header the server sends with each page, telling the browser what the page may load or run.
+- **In plain English:** our pages tell the browser "run only this one script and use only this one stylesheet", naming each by its fingerprint (a hash). Anything slipped into the page, even one hidden style, doesn't match a fingerprint, so the browser refuses it.
+- **Analogy:** a door guest list with photos: only the people whose faces match get in, whatever name they give.
+- **Why and when to use it:** for any page showing personal data, so a mistake that lets text into the page can't become running code. Not worth the effort for a throwaway page with no data.
+- **Best practices:** start from "nothing allowed" and add exact items; prefer fingerprints over "allow anything inline"; keep all styling in one place so the fingerprint stays simple.
+- **Where it showed up in this project:** My page's look (#57, option A): one hand-written stylesheet named by its fingerprint; photos may load only from our own Supabase project (#58).
+- **Explain it to others:** "Our pages carry a guest list. The browser loads only the exact script and stylesheet we name by fingerprint, so injected code is refused."
+- **Governance angle:** a reviewer asks "is there any `unsafe-inline`?" Here: no.
+
+### [2026-11-24 23:10 SGT] Short-lived links for private photos
+- **Concept:** a signed link (a "signed URL"): a web address to a private file that carries a secret token and stops working after a set time.
+- **In plain English:** children's photos sit in a private store nobody can browse. When My page shows one, our server asks for a link that works for 5 minutes; after that the link is useless, even if someone copied it.
+- **Analogy:** a cinema ticket for one showing: it gets you in tonight, not next week.
+- **Why and when to use it:** for any private file a person should see but not share widely. Not for public files (logos, pictures everyone sees), where a plain address is fine.
+- **Best practices:** keep the store private; make links short-lived; tell browsers not to keep copies; never log the link.
+- **Where it showed up in this project:** photos on My page (#58): a private Supabase bucket, one folder per parent, 5-minute links (value 53), and locks so a parent's pass reaches only its own folder.
+- **Explain it to others:** "Photos are never public. Each time a parent views one, they get a five-minute ticket to it, and only for their own folder."
+- **Governance angle:** a PDPA reviewer asks where photos are kept, who can reach them and for how long a link works: Singapore, only that parent, 5 minutes.
+
 ### [2026-11-15 22:36 SGT] A page that works with no script (and a confirm page instead of a pop-up)
 - **Concept:** building with plain HTML elements (links, forms, buttons, `<meter>`), so the page works without any script, and asking "Are you sure?" on its own page.
 - **In plain English:** every action on My page is a link or a form. A dustbin is a link to an "Are you sure?" page; only its Delete button changes anything. The browser does the work, so there is less code to go wrong, and the look can be added later without touching the logic.

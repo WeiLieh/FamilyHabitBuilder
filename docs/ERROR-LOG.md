@@ -6,6 +6,12 @@ One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 
 
+## [2026-11-24 23:10 SGT] Styling used sizes the owner had not approved (rule 6)
+- **What broke:** [2026-11-24 23:10 SGT] The first version of My page's stylesheet used eleven sizes from the owner's layout files that weren't in the approved list (L9 to L11), and four of Claude Code's own picks (17px moment line, 10px tile text, a 1.5px ring, a 104px gap). Rule 6 says the look comes only from the owner.
+- **Cause:** [2026-11-24 23:10 SGT] The approved list was written from a quick scan of the main layout file; the details needed while building (circle, tile and button sizes) were filled in without going back to the owner.
+- **Fix:** [2026-11-24 23:10 SGT] The spec-compliance review caught it before the pull request; the owner approved the file's sizes as L13 and chose option B for the four picks (#57).
+- **How to prevent it:** [2026-11-24 23:10 SGT] Before writing styling, list **every** value the stylesheet will use (sizes, corners, spacing, icons) against the UI decisions, and ask for any that are missing, rather than filling them in.
+
 ## [2026-11-15 21:35 SGT] The owner's own sign-in press was refused as a forged form (UAT U58)
 - **What broke:** [2026-11-15 21:35 SGT] On the owner's iPhone, pressing **Open my page** showed "Sorry, that didn't work." Vercel's log showed the press answered with 403.
 - **Cause:** [2026-11-15 21:35 SGT] The forged-form check (added after the privacy review of #52) treated an Origin of "null" as another website. Our pages ask browsers to send no referrer, and with that setting an iPhone labels a form from our own page with Origin "null", while its Sec-Fetch-Site label correctly says "same-origin". The tests set these labels by hand and never tried that pair.

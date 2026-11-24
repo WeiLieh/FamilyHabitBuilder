@@ -100,13 +100,13 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 
 | Module | Slug | Folder | Spec | Status | Migrated |
 |---|---|---|---|---|---|
-| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Planner, B1 and style C live | yes |
+| Telegram bot | telegram-bot | `src/telegram-bot/` | `src/telegram-bot/SPEC.md` | Daily loop, photos and Wrap Up live | yes |
 | Nudge engine | nudge-engine | `src/nudge-engine/` | `src/nudge-engine/SPEC.md` | Decisions built | yes |
 | Nudge repository | nudge-repository | `src/nudge-repository/` | `src/nudge-repository/SPEC.md` | Built and live | yes |
-| Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, not built | yes |
+| Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, parked | yes |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Designed, partly built | yes |
 | Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables live | yes |
-| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in and Week so far built | yes |
+| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in, Week so far, look and photos live | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Designed, not built | yes |
 | Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Designed, not built | yes |
 

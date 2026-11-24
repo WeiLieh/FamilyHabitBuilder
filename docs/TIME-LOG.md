@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-24 23:10 SGT] Session 20 (2026-11-24 evening)
+- [2026-11-24 23:10 SGT] About 1 h 40 min elapsed (about 21:30 to 23:10 SGT), nearly all active. Start-of-session routine; My page's look (UI decisions L1 to L13, ST1 to ST7, #57); then three builds, each with tests approved in plain English, both reviews and their fixes: photos (PH1 to PH12, migration 012, #58), "Add how you felt" (F1 to F9, migration 013, #59) and the Sunday Wrap Up, the 1 to 5 question and Add a moment (W1 to W12, migration 014, #60). Tests 319 → 366; database tests T118 → T126.
+- **Notes for timeboxing:** with designs already recorded and the owner answering in one line ("all approve"), each build took about 25 to 35 minutes including both reviews. Holding each push until the previous pull request was merged kept one module per pull request (H4).
+
 ## [2026-11-15 17:00 SGT] Session 19 (2026-11-15 midday and afternoon)
 - [2026-11-15 17:00 SGT] About 5 h elapsed (about 11:56 to 17:00 SGT), active about 2 h 30 min (the rest was waiting for the owner's answers). Start-of-session routine; owner decisions on the catch-up questions; the Web app foundations in two pull requests: #51 (migration 011, 20 new database tests, both reviews, merged) and #52 (sign-in code, 15 new app tests, both reviews, open).
 - [2026-11-15 21:53 SGT] Continued in the evening: about 40 min (about 21:15 to 21:55 SGT), all active: go-live G1 to G4 with the owner, U58 failed (403 on the iPhone), fix #53 test-first (about 7 minutes from the log to the merge), U56 to U62 pass, notes.

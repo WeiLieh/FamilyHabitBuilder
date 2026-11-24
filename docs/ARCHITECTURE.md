@@ -4,13 +4,13 @@
 
 ```mermaid
 flowchart LR
-    telegram["Telegram bot<br/>Planner, B1 and style C live"]:::part
+    telegram["Telegram bot<br/>Daily loop, photos and Wrap Up live"]:::part
     engine["Nudge engine<br/>Decisions built"]:::part
     repository["Nudge repository<br/>Built and live"]:::done
-    photo["Photo check<br/>Designed, not built"]:::part
+    photo["Photo check<br/>Designed, parked"]:::part
     rewards["Variable rewards<br/>Designed, partly built"]:::part
     datastore["Datastore<br/>Tables live"]:::part
-    webapp["Web app<br/>Sign-in and Week so far built"]:::part
+    webapp["Web app<br/>Sign-in, Week so far, look and photos live"]:::part
     telemetry["Telemetry<br/>Designed, not built"]:::part
     experiments["Experiments<br/>Designed, not built"]:::part
 
@@ -41,6 +41,8 @@ flowchart LR
 **Colours:** [2026-11-11 17:48 SGT] green = built (a status starting with "Built"); yellow = in design or partly built; grey = "Not started" (rule D4).
 
 SUPERSEDED [2026-11-11 17:48 SGT] **Colours:** green = built and tested; yellow = partly built or in design; grey = not started.
+
+[2026-11-24 23:10 SGT] Statuses (session 20, 24 Nov): Telegram bot "Daily loop, photos and Wrap Up live" (#58 to #60); Web app "Sign-in, Week so far, look and photos live" (#57, #58); Photo check "Designed, parked" (owner, 24 Nov).
 
 [2026-11-15 22:17 SGT] Web app status: "Sign-in and Week so far built" (plain HTML; the look, photos, an older week's own page, Habits so far and Settings still to come).
 

@@ -10,6 +10,7 @@
 [2026-11-24 22:37 SGT] Note on the purpose above: photos are saved **without** the Photo check for now (parked by the owner, 24 Nov); the bot keeps them itself (`photos.ts`).
 
 ## Code in this folder
+- [2026-11-24 23:10 SGT] [UAT-session-20.md](UAT-session-20.md): the owner's consolidated phone tests U73 to U83 (photos, "Add how you felt", the Sunday Wrap Up), after U63 to U72.
 - [2026-11-24 22:57 SGT] **The Sunday Wrap Up, the 1 to 5 question and "Add a moment"** (built 24 Nov; owner-approved tests W1 to W12, defaults D6 to D8): `sunday.ts` (sending after the nudges, the question's expiry edit, the 1 to 5 tap, Add a moment, View wrap up, the moment's line); `photos.ts` (the moment's photo when no log waits for one); `scheduler.ts` (jobs 4 and 5); `handle-update.ts` (the buttons; the moment's line after the waiting "how you felt" line). Tests: tests/telegram-bot-sunday.test.ts.
 - [2026-11-24 22:41 SGT] **"Add how you felt"** (built 24 Nov; owner-approved tests F1 to F9): `felt.ts`: the button under every receipt, the prompt, the typed line saved once within 10 minutes (`LINE_WAIT_SECONDS`, value 55), too long (`LINE_MAX_CHARS`, value 56) asks to shorten it; `handle-update.ts` checks commands and keyboard buttons first, then the waiting line, then "Unrecognised text.". Tests: tests/telegram-bot-felt.test.ts.
 - [2026-11-24 22:35 SGT] **Photos after a log** (built 24 Nov; owner decisions of 24 Nov below, owner-approved tests PH1 to PH10 with defaults D1 to D5):
