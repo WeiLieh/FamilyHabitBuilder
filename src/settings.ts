@@ -146,6 +146,25 @@ export const CONNECTION_WEEKS = 4;
 // A safety limit (Guardrail): an experiment may only make it shorter.
 export const PASS_SECONDS = 10 * 60;
 
+// ---- Photos (owner, 15 and 24 Nov; added 24 Nov) ------------------------------
+// [2026-11-24] After a log of a behaviour that allows photos, a photo sent
+// within this many seconds is added to that log (10 minutes; owner, 15 Nov).
+// A later photo joins no log, and the bot says so. EXPERIMENTS.md value 52.
+export const PHOTO_WAIT_SECONDS = 10 * 60;
+// [2026-11-24] My page shows a photo only through a link that stops working
+// after this many seconds (5 minutes), never the file's own address. A safety
+// limit (Guardrail): an experiment may only make it shorter. Value 53.
+export const PHOTO_LINK_SECONDS = 5 * 60;
+// [2026-11-24] The wording version of the first-photo consent (rule 5.5). Still
+// Claude Code's draft, accepted by the owner until the PDPA reviewer's words
+// (docs/KNOWN-ISSUES.md).
+export const PHOTO_CONSENT_WORDING_VERSION = "photos-draft-2026-11-24";
+// [2026-11-24, review] Undo on a log with a photo stops this many seconds
+// before the 10-minute window by our server's clock, so the photo file is
+// never removed for an Undo the database then refuses (clocks can differ a
+// little). A fixed safety margin, not a product choice. EXPERIMENTS.md value 54.
+export const UNDO_PHOTO_MARGIN_SECONDS = 30;
+
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
 // every settings version the app records must include this list.

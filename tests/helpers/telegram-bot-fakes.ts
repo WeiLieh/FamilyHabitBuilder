@@ -10,6 +10,9 @@
 // database is in datastore-fake-store.ts.
 // [2026-11-14] B1: it also writes down the keyboard under a message (as
 // "keyboard", the button labels) and a change to one person's Menu ("menu").
+// [2026-11-24] Photos: downloadPhoto gives pretend bytes and notes each
+// download (so a test can check nothing was taken before consent); photoUpdate
+// builds a photo message as Telegram sends it (several sizes, an optional caption).
 // =============================================================================
 
 import type { Buttons, MenuCommand, TelegramApi } from "../../src/telegram-bot/telegram-api.js";
@@ -82,6 +85,14 @@ export class FakeTelegram implements TelegramApi {
     if (this.failReactions) throw new Error("Telegram refused the reaction");
     this.calls.push({ kind: "react", chatId, messageId, emoji });
   }
+  // [2026-11-24] Photos: each file number downloaded; failDownload pretends Telegram can't give it.
+  downloads: string[] = [];
+  failDownload = false;
+  async downloadPhoto(fileId: string): Promise<Uint8Array> {
+    if (this.failDownload) throw new Error("Telegram getFile failed (502)");
+    this.downloads.push(fileId);
+    return new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3]); // the start of a JPEG
+  }
   sentTexts(): string[] {
     return this.calls.flatMap((c) => (c.kind === "send" ? [c.text] : []));
   }
@@ -93,6 +104,20 @@ export function textUpdate(telegramId: number, firstName: string, text: string, 
   return {
     update_id: updateId,
     message: { message_id: updateId, chat: { id: telegramId, type: "private" }, from: { id: telegramId, is_bot: false, first_name: firstName }, text },
+  };
+}
+// [2026-11-24] A photo message: Telegram sends three sizes of the same photo; the biggest is "<id>-big".
+export function photoUpdate(telegramId: number, fileId: string, caption?: string, updateId = ++updateCounter): unknown {
+  const size = (suffix: string, w: number) => ({ file_id: `${fileId}-${suffix}`, file_unique_id: `${fileId}-u-${suffix}`, width: w, height: Math.round(w * 0.75) });
+  return {
+    update_id: updateId,
+    message: {
+      message_id: updateId,
+      chat: { id: telegramId, type: "private" },
+      from: { id: telegramId, is_bot: false, first_name: "Wei Lieh" },
+      photo: [size("small", 90), size("big", 1280), size("medium", 320)],
+      ...(caption ? { caption } : {}),
+    },
   };
 }
 export function tapUpdate(telegramId: number, data: string, messageId = 55, updateId = ++updateCounter): unknown {

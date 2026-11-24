@@ -15,6 +15,9 @@
 // first (src/telegram-bot/words.ts, esc). And a reaction on one of the parent's
 // messages (rule 5.14).
 //
+// [2026-11-24] Photos: download the photo a parent sent (getFile, then the
+// file itself), so it can be saved in our own private store.
+//
 // Why it is an interface: the tests swap in a pretend Telegram that only
 // writes down what would have been sent (tests/helpers/telegram-bot-fakes.ts).
 // A refused request is thrown as an error, never ignored (rule 1.3).
@@ -47,6 +50,8 @@ export interface TelegramApi {
   setMenu(chatId: number, commands: MenuCommand[] | null): Promise<void>;
   // [2026-11-15] Add one emoji reaction to a message in this chat (rule 5.14).
   react(chatId: number, messageId: number, emoji: string): Promise<void>;
+  // [2026-11-24] The bytes of a photo the parent sent, by Telegram's file number.
+  downloadPhoto(fileId: string): Promise<Uint8Array>;
 }
 
 // The real Telegram. The bot token is a secret: it only ever comes from Vercel's
@@ -107,6 +112,17 @@ export function createTelegramApi(botToken: string, fetchFn: typeof fetch = fetc
     // [2026-11-15] setMessageReaction: one emoji under the parent's message (rule 5.14).
     async react(chatId, messageId, emoji) {
       await call("setMessageReaction", { chat_id: chatId, message_id: messageId, reaction: [{ type: "emoji", emoji }] });
+    },
+    // [2026-11-24] Two steps: getFile says where Telegram keeps the file, then
+    // the file is fetched. The address holds the bot token, so it is never
+    // written into an error or a log.
+    async downloadPhoto(fileId) {
+      const reply = (await call("getFile", { file_id: fileId })) as { result?: { file_path?: unknown } };
+      const path = reply.result?.file_path;
+      if (typeof path !== "string" || path === "") throw new Error("Telegram getFile gave no file path");
+      const res = await fetchFn(`https://api.telegram.org/file/bot${botToken}/${path}`);
+      if (!res.ok) throw new Error(`Downloading the photo from Telegram failed (${res.status})`);
+      return new Uint8Array(await res.arrayBuffer());
     },
     async answerTap(tapId, popup) {
       await call("answerCallbackQuery", { callback_query_id: tapId, ...(popup ? { text: popup, show_alert: true } : {}) });

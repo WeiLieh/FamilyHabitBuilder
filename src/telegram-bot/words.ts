@@ -166,6 +166,17 @@ export const WORDS = {
   undone: "Undone. It won't count.", // rule 5.8
   undoExpired: "Undo expired.", // owner, B1-D1; pop-up
   logPrompt: "<b>Which one did you do today?</b>", // draft
+  // ---- [2026-11-24] Photos after a log (owner, 24 Nov: no check, no "Did you do it?") ----
+  photoPrompt: "📷 Send a photo of what you did.", // B1 part 2 (9 Nov); added under the receipt of a log that allows photos
+  photoConsent:
+    "<b>Before we save your first photo</b>\n\nWe save your photos so you can see them on My page. Only you can see them, and you can delete any photo there.", // draft accepted by the owner 24 Nov; PDPA reviewer to replace
+  photoConsentOk: "OK",
+  photoConsentNo: "Don't save my photos",
+  photoConsentThanks: "Thanks. Please send the photo again.", // D3, owner-approved test PH3
+  photoNotSaved: "No problem. That photo wasn't saved.", // B2 (9 Nov), PH3
+  photoAdded: "✅ Photo added to today's log.", // B1 part 2 (9 Nov), PH4
+  photoNoLog: "I couldn't match this photo to a log from the last 10 minutes.\nLog the habit first, then send the photo.", // draft, D4
+  photoHasOne: "This log already has a photo.\nYou can delete it on My page and send another.", // draft, D5
   noBehaviours: "You haven't chosen any habits yet.\nYou can choose them in Settings.", // draft
   // ---- Menu and help ----
   myPageLink: "Here's your page.", // draft

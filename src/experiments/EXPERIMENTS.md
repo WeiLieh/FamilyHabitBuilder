@@ -12,6 +12,8 @@
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-24 22:29 SGT] Values 52 and 53 added (photos, owner 24 Nov); with value 51 (the older weeks limit, 15 Nov), **52 values are in use**.
+- [2026-11-24 22:37 SGT] Value 54 added (the Undo margin with a photo, review fix), so **53 values are in use**.
 - [2026-11-15 16:38 SGT] Value 50 added (the per-parent pass, Web app sign-in), so **49 values are in use**.
 - [2026-11-15 12:24 SGT] Values 45 to 49 added (the Web app foundations, migration 011), so **48 values are in use**.
 - [2026-11-15 11:29 SGT] Value 44 added (rule 5.14, the reaction emoji).
@@ -76,6 +78,9 @@
 | 49 | Tuneable | [2026-11-15 12:24 SGT] Connection card weeks: how many calendar weeks of bars the card shows (rule 9.5). | Weeks. Today: 4 | settings.ts |
 | 50 | Guardrail | [2026-11-15 16:38 SGT] Pass length: how long the per-parent pass our server signs for each page works (rule 9.8). | Seconds. Today: 600 (10 minutes) | settings.ts |
 | 51 | Guardrail | [2026-11-15 22:20 SGT] Older weeks limit: the most older weeks one page load lists (rule 9.7; privacy review). | Weeks. Today: 52 (a year) | settings.ts |
+| 52 | Tuneable | [2026-11-24 22:29 SGT] Photo wait: after a log of a behaviour that allows photos, how long a photo sent still joins that log (owner, 15 Nov). | Seconds. Today: 600 (10 minutes) | settings.ts |
+| 53 | Guardrail | [2026-11-24 22:29 SGT] Photo link: how long the link My page uses to show a photo works (privacy). | Seconds. Today: 300 (5 minutes) | settings.ts |
+| 54 | Fixed | [2026-11-24 22:37 SGT] Undo margin with a photo: Undo on a log with a photo stops this many seconds early by our server's clock, so a photo file is never removed for an Undo the database refuses (review fix). | Seconds. Always 30 | settings.ts |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

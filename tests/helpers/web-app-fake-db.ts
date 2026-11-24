@@ -65,6 +65,26 @@ export class FakeWebDb implements WebAppDb {
     this.maybeFail("connectionHistory", [pass, monday]);
     return structuredClone(this.connection);
   }
+  // [2026-11-24] Photos (PH11, PH12): the files in the pretend store, the links made, the files removed.
+  photoStore = new Set<string>();
+  removedFiles: string[] = [];
+  async photoLink(pass: string, path: string): Promise<string> {
+    this.maybeFail("photoLink", [pass, path]);
+    return `https://abcd.supabase.co/storage/v1/object/sign/photos/${path}?token=short-lived`;
+  }
+  async photoFiles(pass: string, photoId: number): Promise<string[]> {
+    this.maybeFail("photoFiles", [pass, photoId]);
+    const w = this.weekData;
+    const photo = [...w.logs.map((l) => l.photo), w.moment?.photo ?? null].find((p) => p?.photo_id === photoId);
+    if (!photo) throw new Error("That photo was not found.");
+    return [photo.path, ...(photo.preview_path ? [photo.preview_path] : [])];
+  }
+  async removePhotoFiles(pass: string, paths: string[]): Promise<void> {
+    this.maybeFail("removePhotoFiles", [pass, paths]);
+    for (const p of paths) this.photoStore.delete(p);
+    this.removedFiles.push(...paths);
+  }
+
   // The database's rules (migration 011): only this parent's entries; a log's
   // line is blanked (the log stays), a reflection or moment line is removed.
   async deleteEntry(pass: string, kind: DeleteKind, id: number): Promise<void> {
@@ -78,6 +98,14 @@ export class FakeWebDb implements WebAppDb {
       const i = w.reflections.findIndex((r) => r.reflection_id === id);
       if (i < 0) throw new Error("That reflection was not found.");
       w.reflections.splice(i, 1);
+    } else if (kind === "photo" || kind === "moment-photo") {
+      // [2026-11-24] Edit 6: the photo's record goes (its files were removed first).
+      const log = w.logs.find((l) => l.photo?.photo_id === id);
+      if (log) log.photo = null;
+      else if (w.moment?.photo?.photo_id === id) {
+        w.moment.photo = null;
+        if (!w.moment.line) w.moment = null;
+      } else throw new Error("That photo was not found.");
     } else {
       if (!w.moment?.line || w.moment.line.moment_line_id !== id) throw new Error("That moment line was not found.");
       w.moment.line = null;

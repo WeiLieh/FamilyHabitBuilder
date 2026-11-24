@@ -29,6 +29,10 @@
 
 // [2026-11-15] The Web app sign-in (rule 9.3): /mypage stores a new link's
 // fingerprint (createSignInLink, migration 011).
+// [2026-11-24] Photos after a log (owner, 24 Nov; migration 012): which
+// behaviours allow photos, the first-photo consent, the log a photo joins, the
+// private photo store (save and remove a file) and adding the photo to its log
+// "not checked" (the photo check is parked).
 
 import type { Target } from "../nudge-engine/choices.js";
 import type { LogEntry, SentMessage } from "../nudge-engine/planner.js";
@@ -153,4 +157,23 @@ export interface Store {
   // [2026-11-15] /mypage: keep a new sign-in link's fingerprint (never the link
   // itself) for this parent; it works once, for 5 minutes (rule 9.3, migration 011).
   createSignInLink(parentId: number, fingerprint: string): Promise<void>;
+
+  // ---- [2026-11-24] Photos after a log (owner-approved tests PH1 to PH10) ----
+  // Does this behaviour allow photos (the nudge repository's "photo upload allowed", rule 4.3)?
+  photoAllowed(nudgeId: number): Promise<boolean>;
+  // This parent's latest photo-consent answer, or "missing" if never asked (rule 5.5).
+  photoConsent(parentId: number): Promise<"agreed" | "opted_out" | "missing">;
+  // Record a photo-consent answer (add-only: a new row each time, rule 8.4).
+  recordPhotoConsent(parentId: number, answer: "agreed" | "opted_out"): Promise<void>;
+  // The log a photo sent now would join (D2): this parent's latest log since
+  // "since", of a behaviour that allows photos, not undone; with whether it has a photo already.
+  photoLogSince(parentId: number, since: Date): Promise<{ logId: number; hasPhoto: boolean } | null>;
+  // Put a photo file in the private store, in this parent's folder. Returns its name there.
+  savePhotoFile(parentId: number, bytes: Uint8Array): Promise<string>;
+  // Remove a photo file from the private store (before its record, rule 8.5).
+  removePhotoFile(path: string): Promise<void>;
+  // Add the saved file to its log, "not checked" (migration 012). "has_photo" if the log got one meanwhile.
+  addLogPhoto(parentId: number, logId: number, path: string): Promise<"saved" | "has_photo">;
+  // For Undo (PH9): when this parent's log was saved, and its photo file, if any. Null if not theirs.
+  logForUndo(parentId: number, logId: number): Promise<{ loggedAt: Date; photoPath: string | null } | null>;
 }

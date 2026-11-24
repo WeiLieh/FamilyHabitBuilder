@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-24 22:16 SGT] The photo check (Claude judges a log's photo)
+- **Item:** [2026-11-24 22:16 SGT] Build the Photo check (rules 6.1, 6.2): Claude judges whether a log's photo fits the behaviour; no match or an outage asks "Did you do it?" and labels the log self-reported.
+- **Why it matters:** [2026-11-24 22:16 SGT] It was the designed way to make photo logs trustworthy. Parked by the owner on 24 Nov to ship photos faster; until then any uploaded photo is saved unchecked. Sending children's photos to Claude (outside Singapore) needs the PDPA reviewer first.
+- **Priority:** [2026-11-24 22:16 SGT] Low (after alpha feedback)
+- **Status:** [2026-11-24 22:16 SGT] Not started (parked)
+
 ## [2026-11-15 21:53 SGT] Our own signing key for the per-parent pass
 - **Item:** [2026-11-15 21:53 SGT] Add our own secret to Supabase as an extra accepted signing key (JWT Keys), and sign the pass with it, instead of relying on the legacy JWT secret.
 - **Why it matters:** [2026-11-15 21:53 SGT] Supabase says the legacy secret is "still used… only to verify". If anyone revokes it, My page sign-in stops working at once (seen at go-live, 15 Nov).

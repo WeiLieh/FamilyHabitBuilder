@@ -18,6 +18,11 @@
 // ("clock", the Undo window from src/settings.ts, as the real database reads
 // it from the settings version), /resume, and migration 010's Telegram
 // message numbers (on sent nudges and a draft's latest screen).
+// [2026-11-24] Photos after a log (migration 012): which behaviours allow
+// photos (the five deliberate ones, as first loaded), photo-consent answers,
+// a pretend private photo store (files by name) and photo records, one per
+// log, with the same refusals as add_log_photo. failPhotoFile, failAddPhoto
+// and failRemovePhotoFile pretend one step fails.
 // =============================================================================
 
 import type { Behaviour, Draft, DraftAnswers, ExampleIdea, PlanParent, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
@@ -344,6 +349,7 @@ export class FakeStore implements Store {
     if (!l || l.parentId !== parentId || l.via !== "keyboard" || !!l.undoneAt) return "not_allowed";
     if (this.clock.getTime() > (l.loggedAt ?? this.clock).getTime() + UNDO_WINDOW_SECONDS * 1000) return "expired";
     l.undoneAt = this.clock;
+    this.photos = this.photos.filter((p) => p.logId !== logId); // undo_log deletes the photo record (rule 8.4 edit 7)
     this.events.push({ parentId, type: "log_undone", updateId: null });
     return "undone";
   }
@@ -351,6 +357,66 @@ export class FakeStore implements Store {
     this.failIfAsked();
     if (!/^[0-9a-f]{64}$/.test(fingerprint)) throw new Error("Only a fingerprint of the link is stored (rule 9.3).");
     this.signInLinks.push({ parentId, fingerprint });
+  }
+
+  // ---- [2026-11-24] Photos after a log ----
+  photoAllowedIds = new Set(DELIBERATE.map((b) => b.id)); // the five deliberate behaviours allow photos (rule 4.3)
+  photoConsents: { parentId: number; answer: "agreed" | "opted_out" }[] = [];
+  photoFiles = new Map<string, Uint8Array>(); // the pretend private store: name -> bytes
+  photos: { id: number; parentId: number; logId: number; path: string; check: string }[] = [];
+  failPhotoFile = false;
+  failAddPhoto = false;
+  failRemovePhotoFile = false;
+  private fileCounter = 0;
+  async photoAllowed(nudgeId: number): Promise<boolean> {
+    this.failReadIfAsked("photoAllowed");
+    return this.photoAllowedIds.has(nudgeId);
+  }
+  async photoConsent(parentId: number): Promise<"agreed" | "opted_out" | "missing"> {
+    this.failReadIfAsked("photoConsent");
+    return this.photoConsents.filter((c) => c.parentId === parentId).at(-1)?.answer ?? "missing";
+  }
+  async recordPhotoConsent(parentId: number, answer: "agreed" | "opted_out"): Promise<void> {
+    this.failIfAsked();
+    this.photoConsents.push({ parentId, answer });
+  }
+  async photoLogSince(parentId: number, since: Date): Promise<{ logId: number; hasPhoto: boolean } | null> {
+    this.failReadIfAsked("photoLogSince");
+    // The newest such log without a photo (D2); if all have one, the newest (D5).
+    const logs = this.logs
+      .filter((l) => l.parentId === parentId && !l.undoneAt && this.photoAllowedIds.has(l.nudgeId) && (l.loggedAt ?? this.clock).getTime() >= since.getTime())
+      .sort((a, b) => (b.loggedAt ?? this.clock).getTime() - (a.loggedAt ?? this.clock).getTime() || b.id - a.id);
+    if (logs.length === 0) return null;
+    const free = logs.find((l) => !this.photos.some((p) => p.logId === l.id));
+    return free ? { logId: free.id, hasPhoto: false } : { logId: logs[0]!.id, hasPhoto: true };
+  }
+  async savePhotoFile(parentId: number, bytes: Uint8Array): Promise<string> {
+    if (this.failPhotoFile) throw new Error("storage unavailable");
+    const path = `${parentId}/photo-${++this.fileCounter}-0123456789abcdef0123.jpg`;
+    this.photoFiles.set(path, bytes);
+    return path;
+  }
+  async removePhotoFile(path: string): Promise<void> {
+    if (this.failRemovePhotoFile) throw new Error("storage unavailable");
+    this.photoFiles.delete(path);
+  }
+  async addLogPhoto(parentId: number, logId: number, path: string): Promise<"saved" | "has_photo"> {
+    if (this.failAddPhoto) throw new Error(`database unavailable while saving ${path}`);
+    this.failIfAsked();
+    const log = this.logs.find((l) => l.id === logId);
+    // The same refusals as add_log_photo (migration 005) and its photo-consent check.
+    if (!log || log.parentId !== parentId || log.undoneAt) throw new Error("That log can't take a photo.");
+    if ((await this.photoConsent(parentId)) !== "agreed") throw new Error("No photo consent from this parent.");
+    if (this.photos.some((p) => p.logId === logId)) return "has_photo";
+    this.photos.push({ id: this.nextId++, parentId, logId, path, check: "not_checked" });
+    this.events.push({ parentId, type: "photo_added", updateId: null });
+    return "saved";
+  }
+  async logForUndo(parentId: number, logId: number): Promise<{ loggedAt: Date; photoPath: string | null } | null> {
+    this.failReadIfAsked("logForUndo");
+    const log = this.logs.find((l) => l.id === logId && l.parentId === parentId);
+    if (!log) return null;
+    return { loggedAt: log.loggedAt ?? this.clock, photoPath: this.photos.find((p) => p.logId === logId)?.path ?? null };
   }
 
   async resumeReminders(parentId: number): Promise<void> {

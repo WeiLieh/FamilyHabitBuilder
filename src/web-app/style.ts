@@ -63,6 +63,8 @@ export const STYLESHEET = [
   ".stack{display:flex;flex-direction:column;gap:8px}",
   ".quote{font-style:italic}",
   ".moment-line{font-size:15px}",
+  // [2026-11-24] A photo, shown big (rule 9.4): the full width, the box's 12px corners (L10).
+  ".photo{display:block;width:100%;height:auto;border-radius:12px;margin:8px 0}",
   // The connection card's bars: the answer on top, the bar, the week under it.
   // A bar's height follows the answer (1 to 5); "This week" is deep green (L4, L5).
   ".bars{display:flex;justify-content:space-around;align-items:flex-end;min-height:150px}",

@@ -17,8 +17,11 @@
 //   - "Are you sure?" (rule 9.6, wireframe A): its own page, Cancel and Delete.
 //   - Habits so far and Settings: placeholders (Settings holds Sign out).
 // Everything a parent typed goes through escapeHtml, so it is shown, never obeyed.
-// Not here yet (owner, 15 Nov): photos (with the Photo check) and an older
-// week's own page.
+// [2026-11-24] Photos (owner-approved tests PH11, PH12): a log's or the
+// moment's photo is shown big, through a short-lived link our server made
+// (never the file's name in the store); a link that couldn't be made says so.
+// One dustbin per row, one layer per tap (rule 9.6): the photo first, then the line.
+// Not here yet (owner, 15 Nov): an older week's own page.
 // =============================================================================
 
 import type { ConnectionWeek, DeleteKind, OlderTile, OlderWeek, WebWeek } from "../datastore/web-app-store.js";
@@ -127,7 +130,14 @@ function olderButton(remaining: number, oldestLoaded: string, shown: number): st
   return `<p><a class="pill wide" href="${BASE}?page=week&amp;older=${shown + OLDER_WEEKS_PER_PAGE}">${ICONS.up}<span>${esc(label)}</span></a></p>`;
 }
 
+// [2026-11-24] A photo: its short-lived link, or null if the link couldn't be made.
+const photoView = (photoId: number, links: Map<number, string | null>) => {
+  const link = links.get(photoId) ?? null;
+  return link === null ? `<p class="muted">${W.photoNotLoaded}</p>` : `<img class="photo" src="${esc(link)}" alt="${W.photoAlt}">`;
+};
+
 export type WeekPageData = {
+  photoLinks: Map<number, string | null>; // [2026-11-24] photo number -> its short-lived link (null: it failed)
   week: WebWeek;
   monday: string; // this week's Monday
   connection: ConnectionWeek[];
@@ -145,9 +155,11 @@ export function weekPage(d: WeekPageData): string {
   // The week's moment, at the top, only when one is saved (Sunday evening).
   if (week.moment) {
     const m = week.moment;
-    const photo = m.photo ? `<p class="muted">${W.photoLater}</p>` : "";
-    const line = m.line ? `<div class="row"><p class="grow moment-line">${quoted(m.line.text)}</p>${dustbin("moment-line", m.line.moment_line_id)}</div>` : "";
-    out.push(`<section><h2>${W.momentTitle}</h2><div class="box">${photo}${line}</div></section>`);
+    // One dustbin, one layer per tap: the photo first, then the line (rule 9.6).
+    const bin = m.photo ? dustbin("moment-photo", m.photo.photo_id) : m.line ? dustbin("moment-line", m.line.moment_line_id) : "";
+    const photo = m.photo ? photoView(m.photo.photo_id, d.photoLinks) : "";
+    const line = m.line ? `<p class="moment-line">${quoted(m.line.text)}</p>` : "";
+    out.push(`<section><h2>${W.momentTitle}</h2><div class="box"><div class="row"><div class="grow">${photo}${line}</div>${bin}</div></div></section>`);
   }
 
   // Days logged: the strip, then every log newest first.
@@ -158,9 +170,10 @@ export function weekPage(d: WeekPageData): string {
   );
   // Each row: the habit, the day under it, then the photo and the line; the dustbin on the right.
   const rows = [...week.logs].reverse().map((l) => {
-    const photo = l.photo ? `<p class="muted">${W.photoLater}</p>` : "";
+    const photo = l.photo ? photoView(l.photo.photo_id, d.photoLinks) : "";
     const line = l.line === null ? "" : `<p>${esc(l.line)}</p>`;
-    const bin = l.line === null ? "" : dustbin("line", l.log_id);
+    // One dustbin, one layer per tap: the photo first, then the line (rule 9.6).
+    const bin = l.photo ? dustbin("photo", l.photo.photo_id) : l.line === null ? "" : dustbin("line", l.log_id);
     return `<li class="row"><div class="grow"><span class="habit">${esc(l.habit)}</span><span class="sep"> · </span><span class="when">${esc(dayName(l.day))}</span>${photo}${line}</div>${bin}</li>`;
   });
   out.push(`<section><h2>${W.daysLogged(logged.size)}</h2><div class="box"><ol class="strip">${strip.join("")}</ol><ul>${rows.join("")}</ul></div></section>`);
@@ -190,7 +203,14 @@ export function weekPage(d: WeekPageData): string {
 // "Are you sure?" on its own page (rule 9.6, wireframe A): Cancel (outlined)
 // and Delete (the only warning-red button, test ST7).
 export function confirmPage(kind: DeleteKind, id: number): string {
-  const question = kind === "line" ? W.confirmLine : kind === "reflection" ? W.confirmReflection : W.confirmMomentLine;
+  const QUESTIONS: Record<DeleteKind, string> = {
+    line: W.confirmLine,
+    reflection: W.confirmReflection,
+    "moment-line": W.confirmMomentLine,
+    photo: W.confirmPhoto,
+    "moment-photo": W.confirmMomentPhoto,
+  };
+  const question = QUESTIONS[kind];
   return (
     `<p class="question">${question}</p>` +
     `<form class="actions" method="post" action="${BASE}?page=delete">` +

@@ -25,7 +25,10 @@
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
 // Every answer tells browsers and caches not to keep a copy (rule 9.6).
 // [2026-11-24] The security rule lets through only our one script and our one
-// stylesheet, each named by its fingerprint (owner: option A).
+// stylesheet, each named by its fingerprint (owner: option A), and [2026-11-24]
+// images only from our own Supabase project (photos, through short-lived links).
+// A photo's dustbin removes its files from the store first, then its record
+// (rule 8.5; owner-approved tests PH11, PH12).
 // [2026-11-15, privacy review] A form posted from another website (a forged
 // sign-in or sign-out) is refused: the browser's own "where did this come
 // from" headers (Sec-Fetch-Site, Origin) must say this site.
@@ -85,17 +88,17 @@ export const WEB_SAFE_HEADERS: Readonly<Record<string, string>> = SAFE_HEADERS;
 
 // A whole page around its inside. "styled" adds My page's stylesheet
 // (style.ts): only My page's own pages carry the look for now (owner, 24 Nov).
+// [2026-11-24] Pages may show images only from our own Supabase project: the
+// photos' short-lived links (PH11). Nothing else may load an image.
+const withPhotos = (photoOrigin: string): Record<string, string> => ({
+  ...SAFE_HEADERS,
+  "content-security-policy": `${SAFE_HEADERS["content-security-policy"]}; img-src ${photoOrigin}`,
+});
+
 const page = (inner: string, styled: boolean) =>
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
   `<meta name="robots" content="noindex"><title>${WEB_WORDS.pageTitle}</title>${styled ? `<style>${STYLESHEET}</style>` : ""}</head><body>${inner}</body></html>`;
 const paragraph = (text: string) => `<p>${escapeHtml(text)}</p>`;
-const answer = (status: number, inner: string, extra: Record<string, string> = {}, styled = false): WebResponse => ({
-  status,
-  headers: { ...SAFE_HEADERS, ...extra },
-  body: page(inner, styled),
-});
-// My page's own pages: the same, with the owner's look.
-const styledAnswer = (inner: string) => answer(200, inner, {}, true);
 
 // A failure line for Vercel's logs, with anything that looks like a secret or
 // a quoted value blanked out (rule 9.3: the link stays out of logs).
@@ -118,8 +121,17 @@ function cookieOf(req: WebRequest): string | null {
   return null;
 }
 
-export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now: () => Date }) {
+// [2026-11-24] photoOrigin: our Supabase project's address ("https://…supabase.co"), where photo links point.
+export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now: () => Date; photoOrigin: string }) {
   const { db, jwtSecret, now } = deps;
+  const headers = withPhotos(deps.photoOrigin);
+  const answer = (status: number, inner: string, extra: Record<string, string> = {}, styled = false): WebResponse => ({
+    status,
+    headers: { ...headers, ...extra },
+    body: page(inner, styled),
+  });
+  // My page's own pages: the same, with the owner's look.
+  const styledAnswer = (inner: string) => answer(200, inner, {}, true);
   const didntWork = () => answer(503, paragraph(WEB_WORDS.didntWork));
   const notSignedIn = () => answer(401, paragraph(WEB_WORDS.notSignedIn));
   const expired = () => answer(410, paragraph(WEB_WORDS.expired));
@@ -151,7 +163,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     const maxAge = Math.max(0, Math.round((until.getTime() - now().getTime()) / 1000));
     return {
       status: 303,
-      headers: { ...SAFE_HEADERS, location: `${BASE}?page=week`, "set-cookie": `${COOKIE}=${cookieSecret}; Max-Age=${maxAge}; ${COOKIE_FLAGS}` },
+      headers: { ...headers, location: `${BASE}?page=week`, "set-cookie": `${COOKIE}=${cookieSecret}; Max-Age=${maxAge}; ${COOKIE_FLAGS}` },
       body: "",
     };
   }
@@ -195,7 +207,19 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
         remaining = pageOfWeeks.weeksRemaining;
         before = pageOfWeeks.weeks.at(-1)!.monday;
       }
-      return styledAnswer(weekPage({ week: w, monday, connection, older, olderRemaining: remaining }));
+      // [2026-11-24] A short-lived link for each photo on the page (PH11). A
+      // link that can't be made shows as a failure on that photo (rule 1.3).
+      const photos = [...w.logs.map((l) => l.photo), w.moment?.photo ?? null].filter((p) => p !== null);
+      const photoLinks = new Map<number, string | null>();
+      for (const p of photos) {
+        try {
+          photoLinks.set(p.photo_id, await db.photoLink(signed.pass, p.path));
+        } catch (error) {
+          logFailure("Making a photo link failed", error);
+          photoLinks.set(p.photo_id, null);
+        }
+      }
+      return styledAnswer(weekPage({ week: w, monday, connection, older, olderRemaining: remaining, photoLinks }));
     } catch (error) {
       logFailure("Reading My page failed", error);
       return didntWork();
@@ -206,8 +230,10 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
   function entryOf(params: URLSearchParams): { kind: DeleteKind; id: number } | null {
     const kind = params.get("kind");
     const id = Number(params.get("id"));
-    if ((kind !== "line" && kind !== "reflection" && kind !== "moment-line") || !Number.isSafeInteger(id) || id <= 0) return null;
-    return { kind, id };
+    const kinds: DeleteKind[] = ["line", "reflection", "moment-line", "photo", "moment-photo"];
+    const known = kinds.find((k) => k === kind);
+    if (!known || !Number.isSafeInteger(id) || id <= 0) return null;
+    return { kind: known, id };
   }
 
   // ?page=confirm: "Are you sure?" on its own page (rule 9.6, wireframe A). It deletes nothing.
@@ -226,12 +252,17 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     const entry = entryOf(new URLSearchParams(req.body));
     if (!entry) return answer(400, paragraph(WEB_WORDS.badRequest));
     try {
+      // [2026-11-24] A photo: its files leave the store first, then its record
+      // (rule 8.5, PH12). If the files can't be removed, nothing is deleted.
+      if (entry.kind === "photo" || entry.kind === "moment-photo") {
+        await db.removePhotoFiles(signed.pass, await db.photoFiles(signed.pass, entry.id));
+      }
       await db.deleteEntry(signed.pass, entry.kind, entry.id);
     } catch (error) {
       logFailure("Deleting on My page failed", error);
       return didntWork();
     }
-    return { status: 303, headers: { ...SAFE_HEADERS, location: `${BASE}?page=week` }, body: "" };
+    return { status: 303, headers: { ...headers, location: `${BASE}?page=week` }, body: "" };
   }
 
   // The two placeholder tabs (rule 9.2): signed in only, nothing read.
@@ -290,7 +321,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     const name = new URL(req.url, "https://localhost").searchParams.get("page") ?? "";
     const route = routes[name];
     if (!route) return answer(404, paragraph(WEB_WORDS.notFound));
-    if (req.method !== route.method) return { ...answer(405, paragraph(WEB_WORDS.notFound)), headers: { ...SAFE_HEADERS, allow: route.method } };
+    if (req.method !== route.method) return { ...answer(405, paragraph(WEB_WORDS.notFound)), headers: { ...headers, allow: route.method } };
     if (req.method === "POST" && fromOtherSite(req)) return answer(403, paragraph(WEB_WORDS.didntWork));
     return route.run(req);
   };

@@ -15,6 +15,11 @@
 // is trusted (approved library zod), so a surprise is a failure, not a
 // half-filled page (rule 1.3).
 //
+// [2026-11-24] Photos (owner-approved tests PH11, PH12; migration 012): a
+// short-lived link to one photo file for My page, and for the dustbin the
+// photo's file names and removing those files, all with that parent's pass:
+// the store's locks let a pass reach only its own parent's folder.
+//
 // Why a separate menu: the Web app and the bot hold different keys and may
 // do different things; keeping them apart means the Web app can't reach the
 // bot's master-key connection by mistake (test W9).
@@ -22,7 +27,10 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { WEEK_ONE_VARIANTS } from "../settings.js";
+import { PHOTO_LINK_SECONDS, WEEK_ONE_VARIANTS } from "../settings.js";
+
+// [2026-11-24] The private photo store (migration 012).
+const PHOTO_BUCKET = "photos";
 
 // What one week looks like to our server (read 1). Photo paths stay on our
 // server: it turns them into short-lived links before a page shows a photo.
@@ -73,13 +81,16 @@ export type OlderWeeksPage = { weeks: OlderWeek[]; weeksRemaining: number; nextO
 // Read 3: a week's Monday and its 1 to 5 answer, or null for no answer.
 const connectionShape = z.array(z.object({ monday: z.string(), rating: z.number().nullable() }));
 export type ConnectionWeek = z.infer<typeof connectionShape>[number];
-// The three things a dustbin on Week so far can delete (rule 9.6): a log's
-// line (edit 11), a reflection (edit 12), a moment's line (edit 13).
-export type DeleteKind = "line" | "reflection" | "moment-line";
+// The things a dustbin on Week so far can delete (rule 9.6): a log's
+// line (edit 11), a reflection (edit 12), a moment's line (edit 13), and
+// [2026-11-24] a log's photo or a moment's photo (edit 6; its files go first).
+export type DeleteKind = "line" | "reflection" | "moment-line" | "photo" | "moment-photo";
 const DELETE_FUNCTIONS: Record<DeleteKind, { fn: string; idName: string }> = {
   line: { fn: "web_wipe_log_line", idName: "p_log" },
   reflection: { fn: "web_remove_reflection", idName: "p_reflection" },
   "moment-line": { fn: "web_remove_moment_line", idName: "p_moment_line" },
+  photo: { fn: "web_delete_photo", idName: "p_photo" },
+  "moment-photo": { fn: "web_delete_photo", idName: "p_photo" },
 };
 
 export interface WebAppDb {
@@ -98,6 +109,13 @@ export interface WebAppDb {
   connectionHistory(pass: string, monday: string): Promise<ConnectionWeek[]>;
   // One dustbin tap (rule 9.6). Throws if it isn't this parent's or is already gone.
   deleteEntry(pass: string, kind: DeleteKind, id: number): Promise<void>;
+  // [2026-11-24] A link to one photo file that stops working after PHOTO_LINK_SECONDS (PH11).
+  photoLink(pass: string, path: string): Promise<string>;
+  // [2026-11-24] The file names of one of this parent's photos (the photo and
+  // its small preview, if any). Throws if it isn't theirs or is gone.
+  photoFiles(pass: string, photoId: number): Promise<string[]>;
+  // [2026-11-24] Remove photo files from the store, before the record (rule 8.5, PH12).
+  removePhotoFiles(pass: string, paths: string[]): Promise<void>;
 }
 
 // The database's own words for "this link can't be used" and "not signed in"
@@ -175,6 +193,36 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
       const { fn, idName } = DELETE_FUNCTIONS[kind];
       const r = await db.rpc(fn, { [idName]: id, p_version: z.number().parse(v.data), p_variants: [...WEEK_ONE_VARIANTS] });
       if (r.error) throw new Error(`Deleting failed: ${r.error.message}`);
+    },
+    async photoLink(pass, path) {
+      const r = await withPass(pass).storage.from(PHOTO_BUCKET).createSignedUrl(path, PHOTO_LINK_SECONDS);
+      if (r.error) throw new Error(`Making a photo link failed: ${r.error.message}`);
+      return z.string().url().parse(r.data?.signedUrl);
+    },
+    async photoFiles(pass, photoId) {
+      const r = await withPass(pass).from("photos").select("storage_path, preview_path").eq("id", photoId);
+      if (r.error) throw new Error(`Reading a photo failed: ${r.error.message}`);
+      const row = z.array(z.object({ storage_path: z.string(), preview_path: z.string().nullable() })).parse(r.data)[0];
+      if (!row) throw new Error("That photo was not found.");
+      return [row.storage_path, ...(row.preview_path ? [row.preview_path] : [])];
+    },
+    async removePhotoFiles(pass, paths) {
+      const store = withPass(pass).storage.from(PHOTO_BUCKET);
+      const r = await store.remove(paths);
+      if (r.error) throw new Error(`Removing photo files failed: ${r.error.message}`);
+      // [2026-11-24, privacy review] The store answers "done" even when its
+      // locks quietly removed nothing, so every file not in its answer is
+      // looked up: still there means it wasn't removed, and the record must
+      // stay (rule 1.3, rule 8.5). Already gone (an earlier try removed it,
+      // then the record failed) is fine, so a retry can finish the delete.
+      const removed = new Set((r.data ?? []).map((f) => f.name));
+      for (const path of paths.filter((p) => !removed.has(p))) {
+        const folder = path.slice(0, path.lastIndexOf("/"));
+        const name = path.slice(path.lastIndexOf("/") + 1);
+        const found = await store.list(folder, { search: name });
+        if (found.error) throw new Error(`Checking a photo file failed: ${found.error.message}`);
+        if ((found.data ?? []).some((f) => f.name === name)) throw new Error("A photo file could not be removed.");
+      }
     },
   };
 }
