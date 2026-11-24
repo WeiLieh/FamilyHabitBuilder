@@ -90,7 +90,10 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
     const one = <Q>(q: Q, column = "parent_id"): Q => (onlyParent === null ? q : (q as unknown as { eq: (c: string, v: number) => Q }).eq(column, onlyParent));
     const since = addDays(day, -LOOK_BACK_DAYS);
     const full = onlyParent !== null; // one parent: also their children and full history (privacy review)
-    const parents = whole(check(await one(db.from("parents").select("id, telegram_id, paused"), "id"), "Reading parents"), "Reading parents");
+    // [2026-11-24] Demo parents never get the alarm's messages, and an owner gets none while their demo runs (rules 12.3, 12.7).
+    const allParents = whole(check(await one(db.from("parents").select("id, telegram_id, paused, demo_of"), "id"), "Reading parents"), "Reading parents");
+    const inDemo = await demoOwners(allParents);
+    const parents = allParents.filter((p) => onlyParent !== null ? true : p.demo_of === null && !inDemo.has(Number(p.telegram_id)));
     const consents = whole(check(await one(db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording")), "Reading consents"), "Reading consents");
     const nudges = whole(check(await db.from("nudges").select("id, category"), "Reading the behaviours"), "Reading the behaviours");
     const picks = whole(check(await one(db.from("picks").select("parent_id, nudge_id, frequency").is("stopped_at", null).order("id")), "Reading picks"), "Reading picks");
@@ -159,6 +162,14 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         };
       }),
     };
+  }
+
+  // [2026-11-24] The owners whose demo is running: a demo parent, or a demo sign-up (a negative number).
+  async function demoOwners(parents: { telegram_id: unknown; demo_of: unknown }[]): Promise<Set<number>> {
+    const owners = new Set(parents.filter((p) => p.demo_of !== null).map((p) => -Number(p.telegram_id)));
+    const drafts = check(await db.from("sign_up_drafts").select("telegram_id").lt("telegram_id", 0), "Reading demo sign-ups") ?? [];
+    for (const d of drafts) owners.add(-Number(d.telegram_id));
+    return owners;
   }
 
   return {
@@ -530,12 +541,17 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
     },
 
     // ---- [2026-11-24] Sunday: the Wrap Up, the 1 to 5 question, "Add a moment" (migration 014) ----
-    async sundayData(day) {
+    async sundayData(day, onlyParentId) {
       const monday = mondayOf(day);
       const sunday = addDays(monday, 6);
       // [2026-11-24, privacy review] Only parents who aren't paused (a paused parent gets nothing),
       // and never the words of a "how you felt" line: only which logs have one.
-      const parents = whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute").eq("paused", false), "Reading parents"), "Reading parents");
+      const everyone = onlyParentId === undefined
+        ? whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute, demo_of").eq("paused", false), "Reading parents"), "Reading parents")
+        : whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute, demo_of").eq("id", onlyParentId), "Reading the parent"), "Reading the parent");
+      // [2026-11-24] Demo parents, and owners while their demo runs, are left out (rules 12.3, 12.7).
+      const inDemo = onlyParentId === undefined ? await demoOwners(everyone) : new Set<number>();
+      const parents = onlyParentId === undefined ? everyone.filter((p) => p.demo_of === null && !inDemo.has(Number(p.telegram_id))) : everyone;
       const ids = parents.map((p) => Number(p.id));
       if (ids.length === 0) return [];
       const consents = whole(check(await db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording").in("parent_id", ids), "Reading consents"), "Reading consents");
@@ -630,6 +646,24 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       if ((r.error as { code?: string } | null)?.code === "23505") return "has_line"; // one moment line a week (migration 005)
       const id = check(r, "Saving the moment's line");
       return id === null ? "duplicate" : "saved";
+    },
+
+    // ---- [2026-11-24] The Demo module (migration 015) ----
+    async demoActive(ownerTelegramId) {
+      const parent = check(await db.from("parents").select("id").eq("telegram_id", -ownerTelegramId).limit(1), "Checking for a demo") ?? [];
+      if (parent.length > 0) return true;
+      const draft = check(await db.from("sign_up_drafts").select("id").eq("telegram_id", -ownerTelegramId).is("cut_down_at", null).limit(1), "Checking for a demo sign-up") ?? [];
+      return draft.length > 0;
+    },
+    async startDemoSignUp(ownerTelegramId, firstName) {
+      check(await db.rpc("start_demo_sign_up", { p_owner_telegram_id: ownerTelegramId, p_first_name: firstName }), "Starting a demo");
+    },
+    async demoPhotoPaths(ownerTelegramId) {
+      const rows = check(await db.rpc("demo_photo_paths", { p_owner_telegram_id: ownerTelegramId }), "Listing the demo's photos") as (string | null)[] | null;
+      return (rows ?? []).filter((x): x is string => typeof x === "string");
+    },
+    async deleteDemo(ownerTelegramId) {
+      check(await db.rpc("delete_demo", { p_owner_telegram_id: ownerTelegramId }), "Deleting the demo");
     },
 
     // [2026-11-15] The database adds the 5-minute expiry from the settings version (migration 011).

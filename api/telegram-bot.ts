@@ -28,6 +28,8 @@ const makeDeps = () => ({
   store: createSupabaseStore(env.SUPABASE_URL!, env.SUPABASE_SERVICE_ROLE_KEY!),
   telegram: createTelegramApi(env.TELEGRAM_BOT_TOKEN!),
   now: new Date(),
+  // [2026-11-24] Who may run a demo (rule 12.1): Telegram numbers, comma-separated. Empty: nobody.
+  demoOwners: (env.DEMO_OWNER_TELEGRAM_IDS ?? "").split(",").map((x) => Number(x.trim())).filter((n) => Number.isSafeInteger(n) && n > 0),
 });
 
 const webhook = createWebhookHandler({ webhookSecret: env.TELEGRAM_WEBHOOK_SECRET ?? "", makeDeps });

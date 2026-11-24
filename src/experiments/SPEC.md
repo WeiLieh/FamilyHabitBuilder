@@ -4,6 +4,8 @@
 
 [2026-10-31 19:06 SGT] The **current rules** of the Experiments module: which settings each parent experiences, how that is recorded, and (before alpha) how the owner runs a test that gives different parents different versions. Rule IDs are permanent. The dated history of each decision is in the change notes of the master spec, [docs/SPEC.md](../../docs/SPEC.md). The ideas for what could be tested are listed in [EXPERIMENTS.md](EXPERIMENTS.md) (in this folder).
 
+[2026-11-24 23:40 SGT] Note: values 52 to 56 (photos, the Undo margin, "Add how you felt") were added to [EXPERIMENTS.md](EXPERIMENTS.md) on 24 Nov; the rules here are unchanged.
+
 ## Purpose
 [2026-10-31 19:06 SGT] Make the app an experiment platform without risking the parents' trust or the meaning of the results. Approved by the owner on 31 Oct as its own module (it was part of the Nudge engine, "brain plus experiments"). Built in stages:
 - **Now (week one, about 12 parents, rule 10.3):** one set of values for everyone (variant `baseline`), and **every event records which settings and variants were in force**, from day one. Only the paperwork and the Datastore table design are done now.

@@ -45,13 +45,24 @@ import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 import { PHOTO_CONSENT_NO, PHOTO_CONSENT_OK, photoConsentTap, photoMessage, withPhotoPrompt } from "./photos.js";
 import { feltButton, feltTap, typedLine } from "./felt.js";
 import { connectionTap, momentAskTap, typedMomentLine, viewWrapUpTap } from "./sunday.js";
+import { demoIdentity } from "../demo/demo.js";
+import { DEMO_WORDS } from "../demo/words.js";
+
+// [2026-11-24] "Unrecognised text.", or in a demo the gentle note (rule 12.3, DM11):
+// a demo parent's number is negative.
+const unrecognisedFor = (telegramId: number) => (telegramId < 0 ? DEMO_WORDS.note : WORDS.unrecognised);
 import type { Buttons } from "./telegram-api.js";
 
 // [2026-11-15] random: picks the reaction emoji (rule 5.14); tests pass a fixed one.
-export type BotDeps = { store: Store; telegram: TelegramApi; now: Date; random?: () => number };
+// [2026-11-24] demoOwners: the Telegram numbers allowed to run a demo (rule 12.1), from Vercel's settings.
+export type BotDeps = { store: Store; telegram: TelegramApi; now: Date; random?: () => number; demoOwners?: number[] };
 
-export async function handleUpdate(incoming: Incoming, deps: BotDeps): Promise<void> {
-  const { telegram } = deps;
+export async function handleUpdate(original: Incoming, deps: BotDeps): Promise<void> {
+  // [2026-11-24] The Demo module first (src/demo/demo.ts): the owner's demo commands, and
+  // while a demo runs, the owner's messages and taps belong to the demo parent (rule 12.3).
+  const routed = await demoIdentity(original, deps);
+  if (routed === "handled") return;
+  const incoming = routed;
   switch (incoming.kind) {
     case "ignore":
       return; // not a person's message: stay silent
@@ -131,7 +142,7 @@ async function handleMessage(m: Extract<Incoming, { kind: "message" }>, deps: Bo
       return;
     }
   }
-  await telegram.sendMessage(m.chatId, WORDS.unrecognised);
+  await telegram.sendMessage(m.chatId, unrecognisedFor(m.telegramId));
 }
 
 // [2026-11-14] B1: a Menu command (rule 5.7), a keyboard button (rule 5.1), or
@@ -166,7 +177,7 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
     } catch (error) {
       logFailure("Handling a typed line failed", error);
     }
-    await telegram.sendMessage(m.chatId, WORDS.unrecognised); // K7
+    await telegram.sendMessage(m.chatId, unrecognisedFor(m.telegramId)); // K7
     return;
   }
   const result = await logBehaviour(m.chatId, parent, behaviour, "keyboard", m.updateId, deps);

@@ -13,7 +13,7 @@ flowchart LR
     webapp["Web app<br/>Sign-in, Week so far, look and photos live"]:::part
     telemetry["Telemetry<br/>Designed, not built"]:::part
     experiments["Experiments<br/>Designed, not built"]:::part
-    demo["Demo<br/>Design in progress"]:::part
+    demo["Demo<br/>Built, waiting for migration 015"]:::done
 
     telegram <--> engine
     repository --> engine
@@ -46,6 +46,8 @@ flowchart LR
 **Colours:** [2026-11-11 17:48 SGT] green = built (a status starting with "Built"); yellow = in design or partly built; grey = "Not started" (rule D4).
 
 SUPERSEDED [2026-11-11 17:48 SGT] **Colours:** green = built and tested; yellow = partly built or in design; grey = not started.
+
+[2026-11-24 23:40 SGT] Demo status: "Built, waiting for migration 015" (green: built).
 
 [2026-11-24 23:31 SGT] New box **Demo** ("Design in progress", owner, 24 Nov): it uses the Telegram bot (both ways: the bot routes the owner's messages to the demo, and the demo sends through the bot), the Nudge engine and the Datastore; Telemetry ignores demo parents (rule 12.7).
 
