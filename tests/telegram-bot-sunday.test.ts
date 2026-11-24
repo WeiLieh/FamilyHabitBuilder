@@ -248,5 +248,12 @@ describe("View wrap up and failures (W11, W12)", () => {
     await tap(`conn:${WEEK}:4`, hoursAfter(1));
     expect(lastText()).toBe("🙇 Sorry, that didn't save. Please try again.");
     expect(telegram.calls.some((c) => c.kind === "edit" && c.text.includes("Answered"))).toBe(false);
+    // (review) A moment line that can't be saved says so, never "Saved".
+    store.failAnswers = false;
+    await tap("moment:ask", hoursAfter(1));
+    store.failReadsOf.add("momentState");
+    await say("A lost moment", hoursAfter(2));
+    expect(lastText()).toBe("🙇 Sorry, that didn't save. Please try again.");
+    expect(telegram.sentTexts()).not.toContain(SAVED);
   });
 });

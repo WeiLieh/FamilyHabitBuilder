@@ -777,6 +777,16 @@ begin
   raise notice 'PASS: T125 a question still within 24 hours is not claimed';
 end $$;
 reset role;
+-- (review) An answered question is never claimed, even after its 24 hours.
+insert into public.connection_answers (parent_id, week_starting, score) values (pg_temp.eve(), '2026-11-16', 4);
+update public.messages_sent set sent_at = now() - interval '30 hours' where parent_id = pg_temp.eve() and kind = 'connection_question';
+set role service_role;
+do $$
+begin
+  assert not exists (select 1 from public.claim_expired_questions(pg_temp.v(), '["baseline"]') c where c.parent_id = pg_temp.eve()), 'an answered question is not claimed';
+  raise notice 'PASS: T125 an answered question is never claimed';
+end $$;
+reset role;
 
 -- T126: the new functions are the bot's only; a page's pass can't use them.
 select pg_temp.pass_for(pg_temp.eve());

@@ -4,7 +4,7 @@
 // What it does: the Weekly Wrap Up (rule 3.12, decision D7) is a different kind
 // of message from a nudge message. Once a week, on Sunday, at a time the parent
 // can change (default 8:00pm), it sums up "this week so far" and invites the
-// parent to save one moment for the family album. The scheduler asks
+// parent to save one moment from the week ([2026-11-24] "album" dropped, owner 14 Nov). The scheduler asks
 // planWeeklyWrapUp every few minutes, for each parent: "send it now?" It
 // answers "send" or "don't send" with a reason. It only decides; it doesn't
 // send anything or write the words.

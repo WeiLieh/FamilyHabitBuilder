@@ -524,6 +524,7 @@ export class FakeStore implements Store {
     return week;
   }
   async momentState(parentId: number): Promise<MomentState | null> {
+    this.failReadIfAsked("momentState");
     const week = this.latestWrapUpWeek(parentId);
     if (week === null) return null;
     return {
