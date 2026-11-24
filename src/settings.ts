@@ -164,6 +164,14 @@ export const PHOTO_CONSENT_WORDING_VERSION = "photos-draft-2026-11-24";
 // never removed for an Undo the database then refuses (clocks can differ a
 // little). A fixed safety margin, not a product choice. EXPERIMENTS.md value 54.
 export const UNDO_PHOTO_MARGIN_SECONDS = 30;
+// [2026-11-24] "Add how you felt" (rule 5.3; owner, 24 Nov): after the tap,
+// the next typed line within this many seconds is saved on that log (10
+// minutes; the known issue of 9 Nov asked for a time limit). The database
+// reads it from the settings version (migration 013). EXPERIMENTS.md value 55.
+export const LINE_WAIT_SECONDS = 10 * 60;
+// [2026-11-24] The longest "how you felt" line (rule 5.3); the database's
+// column check says the same. EXPERIMENTS.md value 56.
+export const LINE_MAX_CHARS = 280;
 
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So
@@ -182,6 +190,8 @@ export const SETTINGS_KEYS_THE_DATABASE_READS = {
   older_weeks_per_page: OLDER_WEEKS_PER_PAGE,
   tile_text_chars: TILE_TEXT_CHARS,
   connection_weeks: CONNECTION_WEEKS,
+  // [2026-11-24] Read by add_log_line (migration 013).
+  line_wait_seconds: LINE_WAIT_SECONDS,
 } as const;
 
 // ---- Thin slice 1 (owner, 11 Nov) -------------------------------------------

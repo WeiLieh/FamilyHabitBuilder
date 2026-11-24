@@ -26,7 +26,7 @@
 // =============================================================================
 
 import type { Behaviour, Draft, DraftAnswers, ExampleIdea, PlanParent, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
-import { UNDO_WINDOW_SECONDS } from "../../src/settings.js";
+import { LINE_MAX_CHARS, LINE_WAIT_SECONDS, UNDO_WINDOW_SECONDS } from "../../src/settings.js";
 // [2026-11-13] The planner's types, taken from the store's menu (so this helper
 // stays a Datastore helper, rule S5).
 type Holidays = Awaited<ReturnType<Store["planningData"]>>["holidays"];
@@ -298,12 +298,14 @@ export class FakeStore implements Store {
     this.failReadIfAsked("logExistsFor");
     return this.logs.some((l) => l.messageId === messageId && !l.undoneAt);
   }
-  async saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate"> {
+  // [2026-11-24] Returns the new log's number (for its "Add how you felt" button).
+  async saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<{ logId: number } | "duplicate"> {
     this.failIfAsked();
     if (this.logs.some((l) => l.updateId === a.updateId)) return "duplicate";
-    this.logs.push({ id: this.nextId++, ...a, via: "done_button", loggedAt: this.clock, undoneAt: null });
+    const id = this.nextId++;
+    this.logs.push({ id, ...a, via: "done_button", loggedAt: this.clock, undoneAt: null });
     this.events.push({ parentId: a.parentId, type: "habit_logged", updateId: a.updateId });
-    return "saved";
+    return { logId: id };
   }
   async recordNotToday(parentId: number, updateId: number): Promise<void> {
     this.failIfAsked();
@@ -350,6 +352,7 @@ export class FakeStore implements Store {
     if (this.clock.getTime() > (l.loggedAt ?? this.clock).getTime() + UNDO_WINDOW_SECONDS * 1000) return "expired";
     l.undoneAt = this.clock;
     this.photos = this.photos.filter((p) => p.logId !== logId); // undo_log deletes the photo record (rule 8.4 edit 7)
+    this.lines.delete(logId); // and blanks the line
     this.events.push({ parentId, type: "log_undone", updateId: null });
     return "undone";
   }
@@ -417,6 +420,38 @@ export class FakeStore implements Store {
     const log = this.logs.find((l) => l.id === logId && l.parentId === parentId);
     if (!log) return null;
     return { loggedAt: log.loggedAt ?? this.clock, photoPath: this.photos.find((p) => p.logId === logId)?.path ?? null };
+  }
+
+  // ---- [2026-11-24] "Add how you felt" (migration 013's rules) ----
+  lines = new Map<number, { text: string; updateId: number }>(); // log -> its line
+  lineAsked = new Map<number, Date>(); // log -> when "Add how you felt" was tapped
+  failLines = false;
+  async askForLine(parentId: number, logId: number): Promise<"asked" | "has_line" | "not_allowed"> {
+    if (this.failLines) throw new Error("database unavailable");
+    const log = this.logs.find((l) => l.id === logId);
+    if (!log || log.parentId !== parentId || log.undoneAt) return "not_allowed";
+    if (this.lines.has(logId)) return "has_line";
+    this.lineAsked.set(logId, this.clock);
+    return "asked";
+  }
+  async addLogLine(parentId: number, text: string, updateId: number): Promise<"saved" | "duplicate" | "none"> {
+    if (this.failLines) throw new Error(`database unavailable while saving "${text}"`);
+    if ([...this.lines.values()].some((l) => l.updateId === updateId)) return "duplicate";
+    if ([...text].length > LINE_MAX_CHARS) throw new Error("new row violates check constraint habit_logs_description_check");
+    const waiting = this.logs
+      .filter((l) => l.parentId === parentId && !l.undoneAt && !this.lines.has(l.id) && this.lineAsked.has(l.id))
+      .filter((l) => this.clock.getTime() - this.lineAsked.get(l.id)!.getTime() <= LINE_WAIT_SECONDS * 1000)
+      .sort((a, b) => this.lineAsked.get(b.id)!.getTime() - this.lineAsked.get(a.id)!.getTime())[0];
+    if (!waiting) return "none";
+    this.lines.set(waiting.id, { text, updateId });
+    this.events.push({ parentId, type: "log_line_added", updateId });
+    return "saved";
+  }
+  async lineWaiting(parentId: number): Promise<boolean> {
+    return this.logs.some(
+      (l) => l.parentId === parentId && !l.undoneAt && !this.lines.has(l.id) && this.lineAsked.has(l.id) &&
+        this.clock.getTime() - this.lineAsked.get(l.id)!.getTime() <= LINE_WAIT_SECONDS * 1000,
+    );
   }
 
   async resumeReminders(parentId: number): Promise<void> {

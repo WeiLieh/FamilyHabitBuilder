@@ -132,6 +132,7 @@
 - **Workaround:** [2026-11-09 21:49 SGT] Design a cap with a starting number in `src/settings.ts` (rule 1.4) before building typed messages.
 
 ### [2026-11-09 17:50 SGT] "Ignore this to skip" has no time limit
+- **Status:** [2026-11-24 22:41 SGT] Fixed for "Add how you felt": the bot stops waiting after 10 minutes (value 55), tested by F5 and T122. Lines are not sent to Claude yet. (The moment's 24-hour window, the entry above, is separate and comes with the Wrap Up.)
 - **Issue:** [2026-11-09 17:50 SGT] After a keyboard log the bot waits for a "how did it feel" line with no time limit, so a later, unrelated message could be saved as the log's description and sent to Claude (privacy review of the B1 daily loop design, 9 Nov; owner agreed to log it on 9 Nov).
 - **Impact:** [2026-11-09 17:50 SGT] None yet (not built). Wrong or private text could be stored and sent to Claude.
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): the bot **stops waiting after a set time** (10 minutes suggested; the exact number is a Tuneable value decided in B1 design and kept in `src/settings.ts`), with a test.

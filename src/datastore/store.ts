@@ -129,7 +129,8 @@ export interface Store {
   // Has a log already been saved from this nudge message?
   logExistsFor(messageId: number): Promise<boolean>;
   // Save a log from a Done tap; "duplicate" if this Telegram update was already saved.
-  saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<"saved" | "duplicate">;
+  // [2026-11-24] Returns the new log's number, for its "Add how you felt" button.
+  saveDoneLog(a: { parentId: number; nudgeId: number; day: string; messageId: number; updateId: number }): Promise<{ logId: number } | "duplicate">;
   // The parent tapped "Not today" (rule 3.5).
   recordNotToday(parentId: number, updateId: number): Promise<void>;
   // [2026-11-12] Did this parent already tap "Not today" on this Singapore day?
@@ -176,4 +177,12 @@ export interface Store {
   addLogPhoto(parentId: number, logId: number, path: string): Promise<"saved" | "has_photo">;
   // For Undo (PH9): when this parent's log was saved, and its photo file, if any. Null if not theirs.
   logForUndo(parentId: number, logId: number): Promise<{ loggedAt: Date; photoPath: string | null } | null>;
+
+  // ---- [2026-11-24] "Add how you felt" (rule 5.3; migration 013; tests F1 to F9) ----
+  // The tap: note it on this parent's log. "has_line" if it has one; "not_allowed" if undone or not theirs.
+  askForLine(parentId: number, logId: number): Promise<"asked" | "has_line" | "not_allowed">;
+  // A typed line: saved on the log that asked within the wait; "none" if no log waits; "duplicate" if this message was saved already.
+  addLogLine(parentId: number, text: string, updateId: number): Promise<"saved" | "duplicate" | "none">;
+  // Is a log of this parent waiting for a line right now (for "please shorten it")?
+  lineWaiting(parentId: number): Promise<boolean>;
 }

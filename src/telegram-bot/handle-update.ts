@@ -21,6 +21,8 @@
 //   - [2026-11-24] a photo from a parent (photos.ts): consent at the first
 //     photo, then it joins their log from the last 10 minutes, unchecked; the
 //     receipt of a log that allows photos asks for one (owner, 24 Nov).
+//   - [2026-11-24] "Add how you felt" (felt.ts): the button under every
+//     receipt, and the typed line it waits 10 minutes for (rule 5.3).
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
 // See src/telegram-bot/SPEC.md, "Build: thin slice 1".
 //
@@ -39,6 +41,8 @@ import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./o
 import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap } from "./log-any-time.js";
 import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 import { PHOTO_CONSENT_NO, PHOTO_CONSENT_OK, photoConsentTap, photoMessage, withPhotoPrompt } from "./photos.js";
+import { feltButton, feltTap, typedLine } from "./felt.js";
+import type { Buttons } from "./telegram-api.js";
 
 // [2026-11-15] random: picks the reaction emoji (rule 5.14); tests pass a fixed one.
 export type BotDeps = { store: Store; telegram: TelegramApi; now: Date; random?: () => number };
@@ -148,6 +152,12 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
     return;
   }
   if (!behaviour) {
+    // [2026-11-24] Not a command or a keyboard button: the line a log waits for, if any (rule 5.3, F3 to F6).
+    try {
+      if (await typedLine(m.chatId, parent, text, m.updateId, deps)) return;
+    } catch (error) {
+      logFailure("Handling a typed line failed", error);
+    }
     await telegram.sendMessage(m.chatId, WORDS.unrecognised); // K7
     return;
   }
@@ -216,6 +226,9 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
   if (t.data === "resume:yes" || t.data === "resume:no") return resumeTap(t, parent, deps);
   // [2026-11-24] OK or "Don't save my photos" on the photo consent question.
   if (t.data === PHOTO_CONSENT_OK || t.data === PHOTO_CONSENT_NO) return photoConsentTap(t, parent, deps);
+  // [2026-11-24] "Add how you felt" under a receipt (rule 5.3).
+  const felt = /^felt:(\d+)$/.exec(t.data);
+  if (felt) return feltTap(t, parent, Number(felt[1]), deps);
 
   // [2026-11-13] Nudge buttons carry the day and slot they were sent for:
   // "done:2026-11-11:1140" or "skip:2026-11-11:1140" (up to 3 nudges a day).
@@ -258,18 +271,19 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
       await telegram.answerTap(t.tapId, WORDS.alreadySaved);
       return;
     }
-    let saved: "saved" | "duplicate" | undefined; // what the database said
+    let saved: { logId: number } | "duplicate" | undefined; // what the database said
     const ok = await saveOrSaySorry(t, deps, async () => {
       saved = await store.saveDoneLog({ parentId: parent.id, nudgeId: nudge.nudgeId, day, messageId: nudge.messageId, updateId: t.updateId });
     });
     if (!ok) return;
-    if (saved === "duplicate") {
+    if (saved === undefined || saved === "duplicate") {
       await telegram.answerTap(t.tapId, WORDS.alreadySaved);
       return;
     }
     // [2026-11-12] The receipt is a new message below the nudge (rules 5.10, 7.5).
     // [2026-11-24] With "Send a photo of what you did." if the behaviour allows photos (PH1).
-    await replyBelowNudge(t, deps, await withPhotoPrompt(WORDS.receipt(nudge.nudgeName), nudge.nudgeId, deps));
+    // [2026-11-24] With the "Add how you felt" button (F1).
+    await replyBelowNudge(t, deps, await withPhotoPrompt(WORDS.receipt(nudge.nudgeName), nudge.nudgeId, deps), [[feltButton(saved.logId)]]);
     return;
   }
 
@@ -294,14 +308,14 @@ async function lookUpNudge(parentId: number, day: string, slot: number, { store,
 // as a new message. The answer is already saved, so a Telegram failure here is
 // written to the log but never reported to the parent as "didn't save" (rule 1.3:
 // that would be untrue, and they would tap again).
-async function replyBelowNudge(t: Extract<Incoming, { kind: "tap" }>, { telegram }: BotDeps, text: string): Promise<void> {
+async function replyBelowNudge(t: Extract<Incoming, { kind: "tap" }>, { telegram }: BotDeps, text: string, buttons: Buttons = []): Promise<void> {
   try {
     await telegram.removeButtons(t.chatId, t.messageId);
   } catch (error) {
     logFailure("Saved, but removing the nudge's buttons failed", error);
   }
   try {
-    await telegram.sendMessage(t.chatId, text);
+    await telegram.sendMessage(t.chatId, text, buttons);
   } catch (error) {
     logFailure("Saved, but sending the reply failed", error);
   }

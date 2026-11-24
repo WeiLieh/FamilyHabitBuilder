@@ -40,13 +40,14 @@ beforeEach(async () => {
 
 describe("✅ Done and 😴 Not today (thin slice 1)", () => {
   // [2026-11-12] Rewritten (rule 5.10): was "turns the nudge into the receipt".
+  // [2026-11-24] Rewritten (rule 5.3, F1): the receipt now carries "Add how you felt" for its log.
   it("✅ Done saves a log for today, keeps the nudge without its buttons, and sends the receipt as a new message", async () => {
     await tap(`done:${today}:1140`);
     expect(store.logs).toEqual([expect.objectContaining({ parentId, nudgeId: 2, day: today, messageId: store.sentNudges[0]?.id })]);
     // In this order: the nudge's buttons go first (so it can't be tapped again), then the receipt arrives below it.
     expect(telegram.calls).toEqual([
       { kind: "removeButtons", chatId: ME, messageId: 55 },
-      { kind: "send", chatId: ME, text: "✅ <b>Saved</b>\nShowing affection today.", buttons: [] },
+      { kind: "send", chatId: ME, text: "✅ <b>Saved</b>\nShowing affection today.", buttons: [[{ text: "Add how you felt", data: `felt:${store.logs[0]!.id}` }]] },
       { kind: "answer", tapId: expect.any(String), popup: null },
     ]);
   });

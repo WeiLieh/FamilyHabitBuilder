@@ -67,7 +67,8 @@ describe("Time windows (rules 5.6, 5.8, 7.7)", () => {
   // [2026-11-13] Rewritten (migration 009 reads one more window): was "names the four windows".
   // [2026-11-14] Undo's value rewritten to 600 (B1-D1).
   // [2026-11-15] Rewritten (migration 011 reads five more numbers): was "names the five windows".
-  it("names the ten numbers the database reads, with the values it will find in each settings version", () => {
+  // [2026-11-24] Rewritten ("Add how you felt", rule 5.3): was "the ten numbers"; the database now also reads the 10-minute line wait (migration 013).
+  it("names the eleven numbers the database reads, with the values it will find in each settings version", () => {
     expect(SETTINGS_KEYS_THE_DATABASE_READS).toEqual({
       undo_window_seconds: 600,
       connection_answer_window_hours: 24,
@@ -79,6 +80,7 @@ describe("Time windows (rules 5.6, 5.8, 7.7)", () => {
       older_weeks_per_page: 4,
       tile_text_chars: 40,
       connection_weeks: 4,
+      line_wait_seconds: 600,
     });
   });
 });
