@@ -794,4 +794,126 @@ select pg_temp.expect_refused('T126 a page''s pass tapping Add a moment', $q$sel
 select pg_temp.expect_refused('T126 a page''s pass claiming questions', $q$select * from public.claim_expired_questions(1, '["baseline"]')$q$, 'permission denied');
 select pg_temp.as_owner();
 
+-- =============================================================================
+-- [2026-11-24] Migration 015: the Demo module (owner-approved tests of 24 Nov,
+-- T127 to T130). Cara (Telegram 2001) is the owner running a demo.
+-- =============================================================================
+select pg_temp.as_owner();
+\i src/datastore/supabase/migrations/015_demo.sql
+create function pg_temp.quick() returns bigint language sql security definer as $$ select min(id) from public.nudges where category = 'quick' $$;
+create function pg_temp.demo() returns bigint language sql security definer as $$
+  select id from public.parents where demo_of = (select id from public.parents where telegram_id = 2001) $$;
+create function pg_temp.finish_demo(p_update bigint) returns bigint language plpgsql as $$
+begin
+  perform public.save_sign_up_step(-2001, 'agree', jsonb_build_object('first_name', 'Cara', 'children', jsonb_build_array('Riley'),
+    'picks', jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick(), 'frequency', 'every_day')),
+    'slots', jsonb_build_object('school', jsonb_build_array(420), 'non_school', jsonb_build_array(540))));
+  return public.finish_sign_up(-2001, 'cohort-1', 1200, 'draft-2026-11-11', p_update, pg_temp.v(), '["baseline"]');
+end $$;
+
+-- T127: a demo parent is marked as demo, linked to one real parent, with the
+-- owner's Telegram number made negative; no invite needed; one per owner; a new
+-- demo replaces the old one.
+set role service_role;
+select public.start_demo_sign_up(2001, 'Cara');
+select pg_temp.finish_demo(9501);
+reset role;
+do $$
+begin
+  assert (select telegram_id from public.parents where id = pg_temp.demo()) = -2001, 'the demo parent uses the owner''s number, negative';
+  assert exists (select 1 from public.consents where parent_id = pg_temp.demo() and topic = 'recording'), 'the agreement is recorded for the demo parent';
+  raise notice 'PASS: T127 a demo sign-up needs no invite and is linked to its owner';
+end $$;
+select pg_temp.expect_refused('T127 a second demo parent for one owner',
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute, demo_of) values (-2999, 'X', 'cohort-1', 1200, pg_temp.cara())$q$,
+  'parents_one_demo_each');
+select pg_temp.expect_refused('T127 a real parent with a negative number',
+  $q$insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (-5, 'X', 'cohort-1', 1200)$q$, 'parents_demo_telegram_id');
+select pg_temp.expect_refused('T127 a demo for someone who is not a parent',
+  $q$select public.start_demo_sign_up(424242, 'Nobody')$q$, 'Only a signed-up parent');
+set role service_role;
+select public.start_demo_sign_up(2001, 'Cara');  -- a new demo: the old demo parent goes
+reset role;
+do $$
+begin
+  assert pg_temp.demo() is null, 'starting again removes the earlier demo parent';
+  assert exists (select 1 from public.sign_up_drafts where telegram_id = -2001), 'and starts a fresh sign-up';
+  raise notice 'PASS: T127 a new demo replaces the old one';
+end $$;
+
+-- T128 and T129: with the demo's own data, Telemetry never sees it; deleting
+-- the demo removes every row of it and nothing of the real parent.
+set role service_role;
+select pg_temp.finish_demo(9502);
+reset role;
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, description, telegram_update_id)
+values (pg_temp.demo(), pg_temp.quick(), public.sgt_today(), 'keyboard', 'Demo line', 9503);
+insert into public.consents (parent_id, topic, answer, wording_version) values (pg_temp.demo(), 'photos', 'agreed', 'photos-draft-2026-11-24');
+insert into public.photos (parent_id, log_id, storage_path, check_result)
+values (pg_temp.demo(), (select id from public.habit_logs where telegram_update_id = 9503), '-2001/demo.jpg', 'not_checked');
+insert into public.connection_answers (parent_id, week_starting, score) values (pg_temp.demo(), public.week_monday(public.sgt_today()), 4);
+create temp table cara_before as
+  select (select count(*) from public.habit_logs where parent_id = pg_temp.cara()) as logs,
+         (select count(*) from public.photos where parent_id = pg_temp.cara()) as photos,
+         (select count(*) from public.events where parent_id = pg_temp.cara()) as events;
+do $$
+begin
+  assert not exists (select 1 from public.telemetry_parents where id = pg_temp.demo()), 'no demo parent in telemetry_parents';
+  assert not exists (select 1 from public.telemetry_habit_logs where parent_id = pg_temp.demo()), 'no demo logs in Telemetry';
+  assert not exists (select 1 from public.telemetry_photos where parent_id = pg_temp.demo()), 'no demo photos in Telemetry';
+  assert not exists (select 1 from public.telemetry_events where parent_id = pg_temp.demo()), 'no demo events in Telemetry';
+  assert not exists (select 1 from public.telemetry_connection_answers where parent_id = pg_temp.demo()), 'no demo answers in Telemetry';
+  assert exists (select 1 from public.telemetry_parents where id = pg_temp.cara()), 'real parents are still there';
+  raise notice 'PASS: T129 Telemetry never sees a demo parent';
+end $$;
+set role service_role;
+do $$
+declare d bigint := pg_temp.demo();
+begin
+  assert (select array_agg(x) from public.demo_photo_paths(2001) x where x is not null) = array['-2001/demo.jpg'], 'the demo''s photo files are listed first';
+  perform public.delete_demo(2001);
+  assert pg_temp.demo() is null, 'the demo parent is gone';
+  assert not exists (select 1 from public.habit_logs where parent_id = d), 'its logs are gone';
+  assert not exists (select 1 from public.photos where parent_id = d), 'its photo records are gone';
+  assert not exists (select 1 from public.consents where parent_id = d), 'its consents are gone';
+  assert not exists (select 1 from public.connection_answers where parent_id = d), 'its answers are gone';
+  assert not exists (select 1 from public.events where parent_id = d), 'its events are gone';
+  raise notice 'PASS: T128 deleting the demo removes every row of it';
+end $$;
+reset role;
+do $$
+begin
+  assert (select logs from cara_before) = (select count(*) from public.habit_logs where parent_id = pg_temp.cara()), 'Cara''s logs are untouched';
+  assert (select photos from cara_before) = (select count(*) from public.photos where parent_id = pg_temp.cara()), 'Cara''s photos are untouched';
+  assert (select events from cara_before) = (select count(*) from public.events where parent_id = pg_temp.cara()), 'Cara''s events are untouched';
+  raise notice 'PASS: T128 nothing of the real parent is touched';
+end $$;
+
+-- T128 (review): an abandoned demo sign-up is deleted by the clean-up, never counted as a stopped sign-up.
+set role service_role;
+select public.start_demo_sign_up(2001, 'Cara');
+reset role;
+update public.sign_up_drafts set last_activity_at = now() - interval '8 days' where telegram_id = -2001;
+create temp table stops_before as select count(*) as n from public.sign_up_stops;
+select public.record_settings_version('Clean-up values', '{"undo_window_seconds": 600, "connection_answer_window_hours": 24,
+  "sign_in_link_seconds": 300, "sign_in_days": 30, "older_weeks_per_page": 4, "tile_text_chars": 40, "connection_weeks": 4,
+  "line_wait_seconds": 600, "sign_up_draft_keep_days": 7, "sign_up_stopped_keep_days": 90, "sign_up_reminder_after_hours": 24}'::jsonb);
+select public.clean_up_sign_ups(pg_temp.v());
+do $$
+begin
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = -2001), 'the abandoned demo sign-up is deleted';
+  assert (select count(*) from public.sign_up_stops) = (select n from stops_before), 'and not counted as a stopped sign-up';
+  raise notice 'PASS: T128 an abandoned demo sign-up never reaches the sign-up metrics';
+end $$;
+
+-- T130: only our server can start, list or delete a demo.
+select pg_temp.pass_for(pg_temp.cara());
+select pg_temp.expect_refused('T130 a page''s pass starting a demo', $q$select public.start_demo_sign_up(2001, 'Cara')$q$, 'permission denied');
+select pg_temp.expect_refused('T130 a page''s pass deleting a demo', $q$select public.delete_demo(2001)$q$, 'permission denied');
+select pg_temp.expect_refused('T130 a page''s pass listing demo photos', $q$select public.demo_photo_paths(2001)$q$, 'permission denied');
+select pg_temp.as_owner();
+set role anon;
+select pg_temp.expect_refused('T130 a signed-out browser starting a demo', $q$select public.start_demo_sign_up(2001, 'Cara')$q$, 'permission denied');
+reset role;
+
 \echo ALL WEB APP ACCESS TESTS PASSED

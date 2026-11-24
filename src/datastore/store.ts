@@ -92,7 +92,8 @@ export type SundayParent = {
   photos: number; // photos saved this week, on logs and moments (D6)
 };
 // [2026-11-24] The state of "Add a moment from this week" (rule 7.7).
-export type MomentState = { week: string; askedAt: Date | null; hasPhoto: boolean; hasLine: boolean };
+// [2026-11-24, review] wrapUpSentAt: when that Wrap Up was sent (a tap before it belongs to an earlier one).
+export type MomentState = { week: string; wrapUpSentAt: Date; askedAt: Date | null; hasPhoto: boolean; hasLine: boolean };
 
 // [2026-11-13] One example idea of a behaviour (rule 3.13).
 export type ExampleIdea = { id: number; active: boolean; example: string };
@@ -207,7 +208,9 @@ export interface Store {
   // ---- [2026-11-24] The Sunday Wrap Up, the 1 to 5 question and "Add a moment" (tests W1 to W12; migration 014) ----
   // Every parent who isn't paused, with what Sunday's messages need (counts, never
   // the words); "day" is today in Singapore. Asked only on Sundays (privacy review).
-  sundayData(day: string): Promise<SundayParent[]>;
+  // [2026-11-24] Demo parents, and owners while their demo runs, are left out (rules
+  // 12.3, 12.7); onlyParentId asks for one parent (a demo's Wrap Up), whoever it is.
+  sundayData(day: string, onlyParentId?: number): Promise<SundayParent[]>;
   // A Wrap Up summary or connection question was sent (with Telegram's number for it).
   recordSundayMessage(a: { parentId: number; kind: "wrap_up" | "connection_question"; day: string; telegramMessageId: number }): Promise<void>;
   // A 1 to 5 tap: "saved"; "already" if this week was answered (the first counts); "closed" after 24 hours or with no question.
@@ -221,4 +224,15 @@ export interface Store {
   // Save the moment's photo (never checked) or its line. "has_photo"/"has_line" if one is there already.
   addMomentPhoto(parentId: number, week: string, path: string): Promise<"saved" | "has_photo">;
   saveMomentLine(parentId: number, week: string, text: string, updateId: number): Promise<"saved" | "duplicate" | "has_line">;
+
+  // ---- [2026-11-24] The Demo module (rules 12.1 to 12.7; migration 015; tests DM1 to DM13) ----
+  // A demo parent has no Telegram account of its own: it is known by the owner's number, made negative.
+  // Is a demo running for this owner (a demo parent, or a demo sign-up in progress)?
+  demoActive(ownerTelegramId: number): Promise<boolean>;
+  // Start a fresh demo: remove any earlier one's rows and start the real sign-up with no invite (rule 12.2).
+  startDemoSignUp(ownerTelegramId: number, firstName: string): Promise<void>;
+  // The demo parent's photo files, to remove before its rows (rule 8.5).
+  demoPhotoPaths(ownerTelegramId: number): Promise<string[]>;
+  // Delete the demo parent with all its rows, and any demo sign-up (rule 12.7).
+  deleteDemo(ownerTelegramId: number): Promise<void>;
 }

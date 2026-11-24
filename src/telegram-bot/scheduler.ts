@@ -74,6 +74,7 @@ async function signUpReminders({ store, telegram, now }: BotDeps, result: Schedu
     return;
   }
   for (const person of due) {
+    if (person.telegramId < 0) continue; // [2026-11-24] a demo sign-up has no chat of its own (rule 12.7)
     try {
       await telegram.sendMessage(person.telegramId, WORDS.signUpReminder, [[{ text: WORDS.continueButton, data: "signup:continue" }]]);
       result.remindersSent++;

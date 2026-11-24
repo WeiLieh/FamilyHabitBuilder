@@ -173,6 +173,7 @@
 - **Workaround:** [2026-11-01 16:32 SGT] When building Telemetry, give it its own database role that can read only the `telemetry_` views, with a test.
 
 ### [2026-11-01 16:32 SGT] "Delete my data" doesn't yet remove photos and chat memory
+- **Update:** [2026-11-24 23:43 SGT] When "delete my data" is built, it must also remove the owner's **demo parent's photo files** first (Demo module): the database deletes a demo parent's rows with its owner (migration 015), but not its files (privacy review of the Demo module).
 - **Issue:** [2026-11-01 16:32 SGT] Rule 8.5 order is photos, then chat memory, then rows, then the log. The database function only does the rows and the log; the photo store and chat memory are not built yet (both reviews).
 - **Impact:** [2026-11-01 16:32 SGT] None yet (no photos or chat memory exist). If the rows were deleted first, photos would be left with no owner.
 - **Workaround:** [2026-11-01 16:32 SGT] Build the photo and chat-memory steps with the Photo check and Telegram bot, before any real photos (already in the backlog: "delete my data" built once).

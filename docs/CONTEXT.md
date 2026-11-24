@@ -6,6 +6,7 @@
 - [2026-10-24 17:39 SGT] Build the Family Habit App MVP (Minimum Viable Product) described in `docs/SPEC.md`: a Telegram bot plus a web page that nudge parents of children aged 7 to 12 to build habits that strengthen family bonds. Also a learning project for the product manager.
 
 ## How to run and test
+- [2026-11-24 23:40 SGT] **The Demo module waiting for the owner:** (1) run migration 015 in Supabase's SQL Editor after 014; (2) in Vercel > Settings > Environment Variables, add `DEMO_OWNER_TELEGRAM_IDS` with your own Telegram number (not a secret), then redeploy. Until both are done, `/demo` is just an unknown command. **Database tests now T1 to T130.**
 - [2026-11-24 23:06 SGT] **Migration 014 applied on Supabase (owner, 24 Nov):** the Sunday Wrap Up and "Add a moment". #59 and #60 merged; the first live Wrap Up is Sunday 29 Nov.
 - [2026-11-24 22:57 SGT] **Migration 014 (the Sunday Wrap Up and "Add a moment") waiting for the owner:** run it after 013, the same way, before Sunday 29 Nov. **Database tests now T1 to T126.**
 - [2026-11-24 22:49 SGT] **Migrations 012 and 013 applied on Supabase (owner, 24 Nov evening):** the private `photos` store with its locks, and "Add how you felt". #58 (photos) merged.

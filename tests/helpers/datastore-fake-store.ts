@@ -45,7 +45,8 @@ export const DELIBERATE: Behaviour[] = ["Spending quality time", "Interesting ac
   (name, i) => ({ id: 5 + i, name, category: "deliberate" as const, startNowLine: null }),
 );
 
-type Parent = { id: number; telegramId: number; firstName: string; paused: boolean };
+// [2026-11-24] demoOf: for a demo parent, the owner's parent number (migration 015).
+type Parent = { id: number; telegramId: number; firstName: string; paused: boolean; demoOf?: number };
 type SentNudge = { id: number; parentId: number; nudgeId: number; exampleId: number; day: string; slotMinute: number; telegramMessageId: number | null };
 // [2026-11-14] B1: messageId is empty for a log that answered no nudge; undoneAt is set by Undo.
 type Log = {
@@ -172,9 +173,14 @@ export class FakeStore implements Store {
     for (const name of children) this.children.push({ parentId: id, firstName: name });
     for (const p of picks) this.picks.push({ parentId: id, nudgeId: p.nudge_id, frequency: p.frequency });
     this.slots.push({ parentId: id, school: slots.school, nonSchool: slots.non_school });
-    const code = this.draftCode.get(a.telegramId)!;
-    this.invites.set(code, id);
-    this.holds.delete(code);
+    if (a.telegramId < 0) {
+      // [2026-11-24] A demo sign-up: no invite; linked to its owner (migration 015).
+      this.parents.find((x) => x.id === id)!.demoOf = this.parents.find((x) => x.telegramId === -a.telegramId)!.id;
+    } else {
+      const code = this.draftCode.get(a.telegramId)!;
+      this.invites.set(code, id);
+      this.holds.delete(code);
+    }
     this.drafts.delete(a.telegramId);
     this.draftCode.delete(a.telegramId);
     this.events.push({ parentId: id, type: "signed_up", updateId: a.updateId });
@@ -257,7 +263,8 @@ export class FakeStore implements Store {
     // [2026-11-13] As the real store: no children's names or full history here (planningDataFor has them).
     const answer = {
       holidays: this.holidayLists(),
-      parents: this.parents.map((p) => ({ ...this.planParent(p), children: [], childMessagesBefore: 0, examplesUsed: [] })),
+      // [2026-11-24] Demo parents, and owners while their demo runs, are left out (rules 12.3, 12.7).
+      parents: this.parents.filter((p) => !this.leftOutForDemo(p)).map((p) => ({ ...this.planParent(p), children: [], childMessagesBefore: 0, examplesUsed: [] })),
     };
     const after = this.afterPlanningRead;
     this.afterPlanningRead = null;
@@ -465,11 +472,12 @@ export class FakeStore implements Store {
   momentLines: { parentId: number; week: string; text: string; updateId: number }[] = [];
   failSundayRecord = false;
   failAnswers = false;
-  async sundayData(day: string): Promise<SundayParent[]> {
+  async sundayData(day: string, onlyParentId?: number): Promise<SundayParent[]> {
     this.failReadIfAsked("sundayData");
     const monday = mondayOf(day);
     const inWeek = (d: string) => mondayOf(d) === monday;
-    return this.parents.filter((p) => !p.paused).map((p) => {
+    const chosen = onlyParentId === undefined ? this.parents.filter((p) => !p.paused && !this.leftOutForDemo(p)) : this.parents.filter((p) => p.id === onlyParentId);
+    return chosen.map((p) => {
       const logs = this.logs.filter((l) => l.parentId === p.id && !l.undoneAt && inWeek(l.day));
       return {
         parentId: p.id,
@@ -527,8 +535,10 @@ export class FakeStore implements Store {
     this.failReadIfAsked("momentState");
     const week = this.latestWrapUpWeek(parentId);
     if (week === null) return null;
+    const wrapUps = this.sundaySent.filter((m) => m.parentId === parentId && m.kind === "wrap_up").sort((a, b) => a.day.localeCompare(b.day));
     return {
       week,
+      wrapUpSentAt: wrapUps.at(-1)!.sentAt,
       askedAt: this.momentAsked.get(parentId) ?? null,
       hasPhoto: this.momentPhotos.some((m) => m.parentId === parentId && m.week === week),
       hasLine: this.momentLines.some((m) => m.parentId === parentId && m.week === week),
@@ -547,6 +557,55 @@ export class FakeStore implements Store {
     if (this.momentLines.some((m) => m.parentId === parentId && m.week === week)) return "has_line";
     this.momentLines.push({ parentId, week, text, updateId });
     return "saved";
+  }
+
+  // ---- [2026-11-24] The Demo module (migration 015's rules) ----
+  failDemo = false;
+  // A demo parent, or an owner whose demo is running (a demo parent or a demo sign-up).
+  private leftOutForDemo(p: Parent): boolean {
+    return p.demoOf !== undefined || this.parents.some((d) => d.demoOf === p.id) || this.drafts.has(-p.telegramId); // (the fake has no cut-down drafts)
+  }
+  async demoActive(ownerTelegramId: number): Promise<boolean> {
+    this.failReadIfAsked("demoActive");
+    return this.parents.some((p) => p.telegramId === -ownerTelegramId) || this.drafts.has(-ownerTelegramId);
+  }
+  async startDemoSignUp(ownerTelegramId: number, firstName: string): Promise<void> {
+    if (this.failDemo) throw new Error("database unavailable");
+    if (!this.parents.some((p) => p.telegramId === ownerTelegramId && p.demoOf === undefined)) throw new Error("Only a signed-up parent can start a demo.");
+    this.removeDemoRows(ownerTelegramId);
+    this.drafts.set(-ownerTelegramId, { step: "name", answers: { first_name: firstName }, screenMessageId: null });
+  }
+  async demoPhotoPaths(ownerTelegramId: number): Promise<string[]> {
+    if (this.failDemo) throw new Error("database unavailable");
+    const demo = this.parents.find((p) => p.telegramId === -ownerTelegramId);
+    if (!demo) return [];
+    return [...this.photos.filter((p) => p.parentId === demo.id).map((p) => p.path), ...this.momentPhotos.filter((m) => m.parentId === demo.id).map((m) => m.path)];
+  }
+  async deleteDemo(ownerTelegramId: number): Promise<void> {
+    if (this.failDemo) throw new Error("database unavailable");
+    this.removeDemoRows(ownerTelegramId);
+  }
+  // Every row of the demo parent goes (the database's "on delete cascade").
+  private removeDemoRows(ownerTelegramId: number): void {
+    const demo = this.parents.find((p) => p.telegramId === -ownerTelegramId);
+    this.drafts.delete(-ownerTelegramId);
+    if (!demo) return;
+    const mine = <T extends { parentId: number }>(rows: T[]) => rows.filter((r) => r.parentId !== demo.id);
+    this.parents = this.parents.filter((p) => p.id !== demo.id);
+    this.logs = mine(this.logs);
+    this.photos = mine(this.photos);
+    this.events = mine(this.events);
+    this.consents = mine(this.consents);
+    this.picks = mine(this.picks);
+    this.slots = mine(this.slots);
+    this.children = mine(this.children);
+    this.sentNudges = mine(this.sentNudges);
+    this.sundaySent = mine(this.sundaySent);
+    this.answers = mine(this.answers);
+    this.momentPhotos = mine(this.momentPhotos);
+    this.momentLines = mine(this.momentLines);
+    this.photoConsents = mine(this.photoConsents);
+    this.signInLinks = mine(this.signInLinks);
   }
 
   async resumeReminders(parentId: number): Promise<void> {

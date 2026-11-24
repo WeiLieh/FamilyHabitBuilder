@@ -31,7 +31,7 @@
 import type { MomentState, SundayParent } from "../datastore/store.js";
 import { planConnectionQuestion, planWeeklyWrapUp } from "../nudge-engine/wrap-up.js";
 import { LINE_MAX_CHARS, MOMENT_WINDOW_HOURS, WEEKLY_WRAP_UP_WEEKDAY } from "../settings.js";
-import { addDays, mondayOf, sgtInstant, toSgt, weekdayOf } from "../sgt.js";
+import { mondayOf, toSgt, weekdayOf } from "../sgt.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import { runMenuCommand } from "./menu.js";
@@ -74,7 +74,7 @@ export async function sendSundayMessages(deps: BotDeps, result: Counts): Promise
   }
 }
 
-async function sendSummary(p: SundayParent, day: string, { store, telegram }: BotDeps, result: Counts): Promise<void> {
+export async function sendSummary(p: SundayParent, day: string, { store, telegram }: BotDeps, result: Counts): Promise<void> {
   const days = new Set(p.logs.map((l) => l.date)).size; // Habits logged = days logged this week so far (rule 7.8)
   let messageId: number;
   try {
@@ -97,7 +97,7 @@ async function sendSummary(p: SundayParent, day: string, { store, telegram }: Bo
   }
 }
 
-async function sendQuestion(p: SundayParent, day: string, { store, telegram }: BotDeps, result: Counts): Promise<void> {
+export async function sendQuestion(p: SundayParent, day: string, { store, telegram }: BotDeps, result: Counts): Promise<void> {
   let messageId: number;
   try {
     messageId = await telegram.sendMessage(p.telegramId, questionText(), [questionButtons(mondayOf(day))]);
@@ -185,8 +185,10 @@ export type MomentWindow = { kind: "open" | "expired"; state: MomentState } | nu
 export async function momentWindow(parentId: number, { store, now }: BotDeps): Promise<MomentWindow> {
   const state = await store.momentState(parentId);
   if (!state || state.askedAt === null || (state.hasPhoto && state.hasLine)) return null;
-  // A tap before that week's Sunday belongs to an earlier Wrap Up: not this moment's.
-  if (state.askedAt.getTime() < sgtInstant(addDays(state.week, 6), 0).getTime()) return null;
+  // A tap before the latest Wrap Up was sent belongs to an earlier Wrap Up: not this moment's.
+  // [2026-11-24, review] Compared with the Wrap Up's own time, so it is right for a real Sunday
+  // Wrap Up and for a demo's on any day (rule 12.6); the window closes at the next Wrap Up (rule 7.7).
+  if (state.askedAt.getTime() < state.wrapUpSentAt.getTime()) return null;
   const open = now.getTime() - state.askedAt.getTime() <= MOMENT_WINDOW_HOURS * 3600 * 1000;
   return { kind: open ? "open" : "expired", state };
 }
