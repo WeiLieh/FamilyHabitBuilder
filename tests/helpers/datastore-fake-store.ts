@@ -25,8 +25,9 @@
 // and failRemovePhotoFile pretend one step fails.
 // =============================================================================
 
-import type { Behaviour, Draft, DraftAnswers, ExampleIdea, PlanParent, StartNowMessage, StartSignUpResult, Store } from "../../src/datastore/store.js";
-import { LINE_MAX_CHARS, LINE_WAIT_SECONDS, UNDO_WINDOW_SECONDS } from "../../src/settings.js";
+import type { Behaviour, Draft, DraftAnswers, ExampleIdea, MomentState, PlanParent, StartNowMessage, StartSignUpResult, Store, SundayParent } from "../../src/datastore/store.js";
+import { CONNECTION_ANSWER_WINDOW_HOURS, LINE_MAX_CHARS, LINE_WAIT_SECONDS, UNDO_WINDOW_SECONDS } from "../../src/settings.js";
+import { mondayOf } from "../../src/sgt.js";
 // [2026-11-13] The planner's types, taken from the store's menu (so this helper
 // stays a Datastore helper, rule S5).
 type Holidays = Awaited<ReturnType<Store["planningData"]>>["holidays"];
@@ -453,6 +454,98 @@ export class FakeStore implements Store {
       (l) => l.parentId === parentId && !l.undoneAt && !this.lines.has(l.id) && this.lineAsked.has(l.id) &&
         this.clock.getTime() - this.lineAsked.get(l.id)!.getTime() <= LINE_WAIT_SECONDS * 1000,
     );
+  }
+
+  // ---- [2026-11-24] Sunday (migration 014's rules and migration 005's) ----
+  wrapUpMinute = new Map<number, number>(); // parent -> Wrap Up time (default 8:00 pm)
+  sundaySent: { parentId: number; kind: "wrap_up" | "connection_question"; day: string; telegramMessageId: number; sentAt: Date; closed?: boolean }[] = [];
+  answers: { parentId: number; week: string; score: number; updateId: number }[] = [];
+  momentAsked = new Map<number, Date>();
+  momentPhotos: { parentId: number; week: string; path: string }[] = [];
+  momentLines: { parentId: number; week: string; text: string; updateId: number }[] = [];
+  failSundayRecord = false;
+  failAnswers = false;
+  async sundayData(day: string): Promise<SundayParent[]> {
+    this.failReadIfAsked("sundayData");
+    const monday = mondayOf(day);
+    const inWeek = (d: string) => mondayOf(d) === monday;
+    return this.parents.map((p) => {
+      const logs = this.logs.filter((l) => l.parentId === p.id && !l.undoneAt && inWeek(l.day));
+      return {
+        parentId: p.id,
+        telegramId: p.telegramId,
+        firstName: p.firstName,
+        paused: p.paused,
+        agreed: this.consents.some((c) => c.parentId === p.id && c.topic === "recording" && c.answer === "agreed"),
+        wrapUpMinute: this.wrapUpMinute.get(p.id) ?? 1200,
+        logs: logs.map((l) => ({ nudgeId: l.nudgeId, date: l.day })),
+        messagesSent: this.sundaySent
+          .filter((m) => m.parentId === p.id && inWeek(m.day))
+          .map((m) => ({ kind: m.kind === "wrap_up" ? ("weekly_wrap_up" as const) : ("connection_question" as const), date: m.day })),
+        feelings: logs.filter((l) => this.lines.has(l.id)).length + this.momentLines.filter((m) => m.parentId === p.id && m.week === monday).length,
+        photos: logs.filter((l) => this.photos.some((ph) => ph.logId === l.id)).length + this.momentPhotos.filter((m) => m.parentId === p.id && m.week === monday).length,
+      };
+    });
+  }
+  async recordSundayMessage(a: { parentId: number; kind: "wrap_up" | "connection_question"; day: string; telegramMessageId: number }): Promise<void> {
+    if (this.failSundayRecord) throw new Error("database unavailable");
+    // One of each a week (migrations 003 and 005).
+    if (this.sundaySent.some((m) => m.parentId === a.parentId && m.kind === a.kind && mondayOf(m.day) === mondayOf(a.day))) throw new Error("duplicate key value");
+    this.sundaySent.push({ ...a, sentAt: this.clock });
+  }
+  async saveConnectionAnswer(parentId: number, week: string, score: number, updateId: number): Promise<"saved" | "already" | "closed"> {
+    if (this.failAnswers) throw new Error("database unavailable");
+    const q = this.sundaySent.find((m) => m.parentId === parentId && m.kind === "connection_question" && mondayOf(m.day) === week);
+    if (!q || this.clock.getTime() > q.sentAt.getTime() + CONNECTION_ANSWER_WINDOW_HOURS * 3600 * 1000) return "closed";
+    if (this.answers.some((x) => x.parentId === parentId && x.week === week)) return "already";
+    this.answers.push({ parentId, week, score, updateId });
+    return "saved";
+  }
+  async claimExpiredQuestions(): Promise<{ parentId: number; telegramId: number; telegramMessageId: number | null; week: string }[]> {
+    const out = [];
+    for (const q of this.sundaySent) {
+      const week = mondayOf(q.day);
+      if (q.kind !== "connection_question" || q.closed) continue;
+      if (this.clock.getTime() <= q.sentAt.getTime() + CONNECTION_ANSWER_WINDOW_HOURS * 3600 * 1000) continue;
+      if (this.answers.some((a) => a.parentId === q.parentId && a.week === week)) continue;
+      q.closed = true; // claimed once (the "expired" event, migration 014)
+      out.push({ parentId: q.parentId, telegramId: this.parents.find((p) => p.id === q.parentId)!.telegramId, telegramMessageId: q.telegramMessageId, week });
+    }
+    return out;
+  }
+  private latestWrapUpWeek(parentId: number): string | null {
+    const days = this.sundaySent.filter((m) => m.parentId === parentId && m.kind === "wrap_up").map((m) => m.day).sort();
+    return days.length === 0 ? null : mondayOf(days.at(-1)!);
+  }
+  async askForMoment(parentId: number): Promise<string | null> {
+    const week = this.latestWrapUpWeek(parentId);
+    if (week === null) return null;
+    this.momentAsked.set(parentId, this.clock);
+    return week;
+  }
+  async momentState(parentId: number): Promise<MomentState | null> {
+    const week = this.latestWrapUpWeek(parentId);
+    if (week === null) return null;
+    return {
+      week,
+      askedAt: this.momentAsked.get(parentId) ?? null,
+      hasPhoto: this.momentPhotos.some((m) => m.parentId === parentId && m.week === week),
+      hasLine: this.momentLines.some((m) => m.parentId === parentId && m.week === week),
+    };
+  }
+  async addMomentPhoto(parentId: number, week: string, path: string): Promise<"saved" | "has_photo"> {
+    if (this.latestWrapUpWeek(parentId) !== week) throw new Error("A moment can only be saved for the week of the latest Wrap Up.");
+    if ((await this.photoConsent(parentId)) !== "agreed") throw new Error("No photo consent from this parent.");
+    if (this.momentPhotos.some((m) => m.parentId === parentId && m.week === week)) return "has_photo";
+    this.momentPhotos.push({ parentId, week, path });
+    return "saved";
+  }
+  async saveMomentLine(parentId: number, week: string, text: string, updateId: number): Promise<"saved" | "duplicate" | "has_line"> {
+    if (this.latestWrapUpWeek(parentId) !== week) throw new Error("A moment can only be saved for the week of the latest Wrap Up.");
+    if (this.momentLines.some((m) => m.updateId === updateId)) return "duplicate";
+    if (this.momentLines.some((m) => m.parentId === parentId && m.week === week)) return "has_line";
+    this.momentLines.push({ parentId, week, text, updateId });
+    return "saved";
   }
 
   async resumeReminders(parentId: number): Promise<void> {

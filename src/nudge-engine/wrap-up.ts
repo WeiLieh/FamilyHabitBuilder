@@ -23,6 +23,8 @@
 //   4. Only if the parent logged at least once this week (Monday to Sunday).
 //      Any log counts, including behaviours the parent didn't choose.
 //
+// [2026-11-24] planConnectionQuestion (below) decides the 1 to 5 question the same way, without rule 4.
+//
 // No web calls and no clock reading inside: "now" is passed in, so every
 // situation can be tested exactly.
 // =============================================================================
@@ -68,6 +70,22 @@ export function planWeeklyWrapUp(input: WrapUpInput): WrapUpResult {
   const loggedThisWeek = input.logs.some((log) => mondayOf(log.date) === thisWeek);
   if (!loggedThisWeek) return { send: false, reason: "nothing_logged" };
 
+  return { send: true };
+}
+
+// [2026-11-24] The weekly connection question (rule 5.6; owner-approved test
+// W2): the same timing as the Wrap Up (Sunday, from the parent's time until
+// midnight, not paused, once a week), but sent even with no activity that
+// week. With activity it follows the summary; without, it goes on its own.
+export type QuestionResult = { send: true } | { send: false; reason: Exclude<NoWrapUpReason, "nothing_logged"> };
+
+export function planConnectionQuestion(input: Omit<WrapUpInput, "logs">): QuestionResult {
+  const { date: today, minutes } = toSgt(input.now);
+  if (input.paused) return { send: false, reason: "paused" };
+  if (weekdayOf(today) !== WEEKLY_WRAP_UP_WEEKDAY) return { send: false, reason: "not_sunday" };
+  if (minutes < input.wrapUp.minutes) return { send: false, reason: "too_early" };
+  const thisWeek = mondayOf(today);
+  if (input.messagesSent.some((m) => m.kind === "connection_question" && mondayOf(m.date) === thisWeek)) return { send: false, reason: "already_sent" };
   return { send: true };
 }
 

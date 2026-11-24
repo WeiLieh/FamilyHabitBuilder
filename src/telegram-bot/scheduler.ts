@@ -13,6 +13,9 @@
 //      fresh data, so a behaviour logged a moment ago is never nudged (rule
 //      3.6). The nudge carries an idea this parent hasn't seen (rule 3.13) and
 //      one child's name, taking turns (rule 3.16), in the owner's words (W1).
+//   4. [2026-11-24] Sunday: the Wrap Up summary and the 1 to 5 question
+//      (sunday.ts), after the nudges (rule 3.15); and every run, questions
+//      past their 24 hours are edited to "Question expired".
 // It returns a count: nudges sent, reminders sent, failures.
 //
 // Honest failures (rule 1.3): a send Telegram refuses is a failure, never
@@ -32,6 +35,7 @@ import { toSgt } from "../sgt.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import { WORDS } from "./words.js";
+import { closeExpiredQuestions, sendSundayMessages } from "./sunday.js";
 
 export type SchedulerResult = { nudgesSent: number; remindersSent: number; failed: number };
 
@@ -40,6 +44,9 @@ export async function runScheduler(deps: BotDeps): Promise<SchedulerResult> {
   await cleanUp(deps, result);
   await signUpReminders(deps, result);
   await nudges(deps, result);
+  // [2026-11-24] After the nudges, so a nudge in the same run goes first (rule 3.15).
+  await sendSundayMessages(deps, result);
+  await closeExpiredQuestions(deps, result);
   return result;
 }
 

@@ -36,6 +36,7 @@
 
 import type { Target } from "../nudge-engine/choices.js";
 import type { LogEntry, SentMessage } from "../nudge-engine/planner.js";
+// [2026-11-24] Sunday's Wrap Up uses the same kinds of entries (SundayParent below).
 import type { Holidays, Schedules } from "../nudge-engine/schedule.js";
 
 // The answer to starting a sign-up at /start: started (or carried on), or why it was refused.
@@ -76,6 +77,23 @@ export type PlanParent = {
   childMessagesBefore: number; // earlier messages that named a child (rule 3.16)
   examplesUsed: { nudgeId: number; exampleId: number }[]; // every idea their nudges carried (rule 3.13)
 };
+// [2026-11-24] One parent as Sunday's Wrap Up sees them (rules 3.12, 5.6, 7.8):
+// this week's logs (not undone) and Sunday messages, and the summary's counts.
+export type SundayParent = {
+  parentId: number;
+  telegramId: number;
+  firstName: string;
+  paused: boolean;
+  agreed: boolean;
+  wrapUpMinute: number;
+  logs: LogEntry[]; // this week's logs that weren't undone
+  messagesSent: SentMessage[]; // this week's Wrap Up and connection question
+  feelings: number; // "how you felt" lines, moment lines and reflections this week (D6)
+  photos: number; // photos saved this week, on logs and moments (D6)
+};
+// [2026-11-24] The state of "Add a moment from this week" (rule 7.7).
+export type MomentState = { week: string; askedAt: Date | null; hasPhoto: boolean; hasLine: boolean };
+
 // [2026-11-13] One example idea of a behaviour (rule 3.13).
 export type ExampleIdea = { id: number; active: boolean; example: string };
 
@@ -185,4 +203,21 @@ export interface Store {
   addLogLine(parentId: number, text: string, updateId: number): Promise<"saved" | "duplicate" | "none">;
   // Is a log of this parent waiting for a line right now (for "please shorten it")?
   lineWaiting(parentId: number): Promise<boolean>;
+
+  // ---- [2026-11-24] The Sunday Wrap Up, the 1 to 5 question and "Add a moment" (tests W1 to W12; migration 014) ----
+  // Every parent, with what Sunday's messages need; "day" is today in Singapore.
+  sundayData(day: string): Promise<SundayParent[]>;
+  // A Wrap Up summary or connection question was sent (with Telegram's number for it).
+  recordSundayMessage(a: { parentId: number; kind: "wrap_up" | "connection_question"; day: string; telegramMessageId: number }): Promise<void>;
+  // A 1 to 5 tap: "saved"; "already" if this week was answered (the first counts); "closed" after 24 hours or with no question.
+  saveConnectionAnswer(parentId: number, week: string, score: number, updateId: number): Promise<"saved" | "already" | "closed">;
+  // The questions past their 24 hours, unanswered: claimed once each, to edit to "Question expired".
+  claimExpiredQuestions(): Promise<{ parentId: number; telegramId: number; telegramMessageId: number | null; week: string }[]>;
+  // The tap on "Add a moment": starts the 24-hour window. The week it is for, or null with no Wrap Up yet.
+  askForMoment(parentId: number): Promise<string | null>;
+  // The moment of the parent's latest Wrap Up week: when the button was tapped, and what is saved. Null with no Wrap Up yet.
+  momentState(parentId: number): Promise<MomentState | null>;
+  // Save the moment's photo (never checked) or its line. "has_photo"/"has_line" if one is there already.
+  addMomentPhoto(parentId: number, week: string, path: string): Promise<"saved" | "has_photo">;
+  saveMomentLine(parentId: number, week: string, text: string, updateId: number): Promise<"saved" | "duplicate" | "has_line">;
 }

@@ -15,6 +15,10 @@
 //     kept, and the bot says why.
 //   - Undo of a log with a photo removes the photo file first (rule 8.5), then
 //     undoes the log (PH9; in log-any-time.ts).
+//   - [2026-11-24] The moment's photo (rule 7.7; W8 to W10): with no log
+//     waiting for a photo, a photo sent while "Add a moment" is open becomes
+//     this week's moment photo, never checked; a log waiting for one wins (W9).
+//     After the moment's 24 hours: "Moment has expired…" with the button.
 // Honest failures (rule 1.3): if any step fails, the parent is told it didn't
 // save, never "Photo added". A file saved before a later step failed is removed
 // again, so no stray copy is left in the store.
@@ -30,6 +34,7 @@ import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
+import { momentWindow, sayMomentExpired, type MomentWindow } from "./sunday.js";
 
 type Parent = { id: number };
 type Tap = Extract<Incoming, { kind: "tap" }>;
@@ -70,8 +75,19 @@ export async function photoMessage(chatId: number, parent: Parent, fileId: strin
   } catch (error) {
     return sorry("Finding the log for a photo failed")(error);
   }
-  if (target === null) return void (await quietly("Sending 'no log for this photo' failed", () => telegram.sendMessage(chatId, WORDS.photoNoLog)));
-  if (target.hasPhoto) return void (await quietly("Sending 'already has a photo' failed", () => telegram.sendMessage(chatId, WORDS.photoHasOne)));
+  // [2026-11-24] No log waiting for a photo: the moment, if its window is open (W8 to W10).
+  if (target === null || target.hasPhoto) {
+    let moment: MomentWindow;
+    try {
+      moment = await momentWindow(parent.id, deps);
+    } catch (error) {
+      return sorry("Reading the moment's window failed")(error);
+    }
+    if (moment?.kind === "open" && !moment.state.hasPhoto) return momentPhoto(chatId, parent, fileId, moment.state.week, deps);
+    if (target?.hasPhoto) return void (await quietly("Sending 'already has a photo' failed", () => telegram.sendMessage(chatId, WORDS.photoHasOne)));
+    if (moment?.kind === "expired" && !moment.state.hasPhoto) return void (await sayMomentExpired(chatId, deps));
+    return void (await quietly("Sending 'no log for this photo' failed", () => telegram.sendMessage(chatId, WORDS.photoNoLog)));
+  }
 
   // 3. Take it from Telegram, put it in the private store, add it to the log.
   let path: string;
@@ -95,6 +111,34 @@ export async function photoMessage(chatId: number, parent: Parent, fileId: strin
     return void (await quietly("Sending 'already has a photo' failed", () => telegram.sendMessage(chatId, WORDS.photoHasOne)));
   }
   await quietly("Photo saved, but sending the reply failed", () => telegram.sendMessage(chatId, WORDS.photoAdded));
+}
+
+// [2026-11-24] The moment's photo (W8): stored like a log's, saved for the
+// moment's week, never checked. A stray stored file is removed on failure.
+async function momentPhoto(chatId: number, parent: Parent, fileId: string, week: string, deps: BotDeps): Promise<void> {
+  const { store, telegram } = deps;
+  const sorry = async (what: string, error: unknown) => {
+    logFailure(what, error);
+    await quietly("Sending 'didn't save' failed", () => telegram.sendMessage(chatId, WORDS.didNotSave));
+  };
+  let path: string;
+  try {
+    path = await store.savePhotoFile(parent.id, await telegram.downloadPhoto(fileId));
+  } catch (error) {
+    return sorry("Saving a moment photo failed", error);
+  }
+  let saved: "saved" | "has_photo";
+  try {
+    saved = await store.addMomentPhoto(parent.id, week, path);
+  } catch (error) {
+    await quietly("Removing a moment photo file after a failed save failed", () => store.removePhotoFile(path));
+    return sorry("Adding the moment's photo failed", error);
+  }
+  if (saved === "has_photo") {
+    await quietly("Removing a second moment photo failed", () => store.removePhotoFile(path));
+    return void (await quietly("Sending 'already has a photo' failed", () => telegram.sendMessage(chatId, WORDS.photoHasOne)));
+  }
+  await quietly("Moment saved, but sending the reply failed", () => telegram.sendMessage(chatId, WORDS.momentSaved));
 }
 
 // OK or "Don't save my photos" on the consent question (PH3). Either answer is
