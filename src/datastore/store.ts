@@ -92,7 +92,8 @@ export type SundayParent = {
   photos: number; // photos saved this week, on logs and moments (D6)
 };
 // [2026-11-24] The state of "Add a moment from this week" (rule 7.7).
-export type MomentState = { week: string; askedAt: Date | null; hasPhoto: boolean; hasLine: boolean };
+// [2026-11-24, review] wrapUpSentAt: when that Wrap Up was sent (a tap before it belongs to an earlier one).
+export type MomentState = { week: string; wrapUpSentAt: Date; askedAt: Date | null; hasPhoto: boolean; hasLine: boolean };
 
 // [2026-11-13] One example idea of a behaviour (rule 3.13).
 export type ExampleIdea = { id: number; active: boolean; example: string };

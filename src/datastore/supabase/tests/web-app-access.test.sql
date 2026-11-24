@@ -889,6 +889,23 @@ begin
   raise notice 'PASS: T128 nothing of the real parent is touched';
 end $$;
 
+-- T128 (review): an abandoned demo sign-up is deleted by the clean-up, never counted as a stopped sign-up.
+set role service_role;
+select public.start_demo_sign_up(2001, 'Cara');
+reset role;
+update public.sign_up_drafts set last_activity_at = now() - interval '8 days' where telegram_id = -2001;
+create temp table stops_before as select count(*) as n from public.sign_up_stops;
+select public.record_settings_version('Clean-up values', '{"undo_window_seconds": 600, "connection_answer_window_hours": 24,
+  "sign_in_link_seconds": 300, "sign_in_days": 30, "older_weeks_per_page": 4, "tile_text_chars": 40, "connection_weeks": 4,
+  "line_wait_seconds": 600, "sign_up_draft_keep_days": 7, "sign_up_stopped_keep_days": 90, "sign_up_reminder_after_hours": 24}'::jsonb);
+select public.clean_up_sign_ups(pg_temp.v());
+do $$
+begin
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = -2001), 'the abandoned demo sign-up is deleted';
+  assert (select count(*) from public.sign_up_stops) = (select n from stops_before), 'and not counted as a stopped sign-up';
+  raise notice 'PASS: T128 an abandoned demo sign-up never reaches the sign-up metrics';
+end $$;
+
 -- T130: only our server can start, list or delete a demo.
 select pg_temp.pass_for(pg_temp.cara());
 select pg_temp.expect_refused('T130 a page''s pass starting a demo', $q$select public.start_demo_sign_up(2001, 'Cara')$q$, 'permission denied');

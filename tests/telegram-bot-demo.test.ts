@@ -242,5 +242,11 @@ describe("Ending, the note and failures (DM10, DM11, DM13)", () => {
     await say("/demo stop");
     expect(lastText()).toBe("🙇 Sorry, that didn't work. Please try again.");
     expect(demoParent()).toBeDefined(); // still in demo mode
+    // (privacy review) If "is a demo running?" can't be answered, the owner's message is never saved anywhere.
+    store.failDemo = false;
+    store.failReadsOf.add("demoActive");
+    await say("✅ Showing affection");
+    expect(lastText()).toBe("🙇 Sorry, that didn't work. Please try again.");
+    expect(store.logs).toEqual([]);
   });
 });

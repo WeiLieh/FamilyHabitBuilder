@@ -167,7 +167,8 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
   // [2026-11-24] The owners whose demo is running: a demo parent, or a demo sign-up (a negative number).
   async function demoOwners(parents: { telegram_id: unknown; demo_of: unknown }[]): Promise<Set<number>> {
     const owners = new Set(parents.filter((p) => p.demo_of !== null).map((p) => -Number(p.telegram_id)));
-    const drafts = check(await db.from("sign_up_drafts").select("telegram_id").lt("telegram_id", 0), "Reading demo sign-ups") ?? [];
+    // [2026-11-24, review] A cut-down (abandoned) demo sign-up doesn't count, as in demoActive.
+    const drafts = check(await db.from("sign_up_drafts").select("telegram_id").lt("telegram_id", 0).is("cut_down_at", null), "Reading demo sign-ups") ?? [];
     for (const d of drafts) owners.add(-Number(d.telegram_id));
     return owners;
   }
@@ -625,7 +626,7 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
     },
     async momentState(parentId) {
       const latest = check(
-        await db.from("messages_sent").select("for_day").eq("parent_id", parentId).eq("kind", "wrap_up").order("for_day", { ascending: false }).limit(1),
+        await db.from("messages_sent").select("for_day, sent_at").eq("parent_id", parentId).eq("kind", "wrap_up").order("for_day", { ascending: false }).limit(1),
         "Reading the latest Wrap Up",
       ) ?? [];
       if (!latest[0]) return null;
@@ -633,7 +634,10 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       const p = need(await db.from("parents").select("moment_asked_at").eq("id", parentId).single(), "Reading the moment's window");
       const photo = check(await db.from("photos").select("id").eq("parent_id", parentId).eq("moment_week", week).limit(1), "Reading the moment's photo") ?? [];
       const line = check(await db.from("moment_lines").select("id").eq("parent_id", parentId).eq("week_starting", week).limit(1), "Reading the moment's line") ?? [];
-      return { week, askedAt: p.moment_asked_at ? new Date(String(p.moment_asked_at)) : null, hasPhoto: photo.length > 0, hasLine: line.length > 0 };
+      return {
+        week, wrapUpSentAt: new Date(String(latest[0].sent_at)),
+        askedAt: p.moment_asked_at ? new Date(String(p.moment_asked_at)) : null, hasPhoto: photo.length > 0, hasLine: line.length > 0,
+      };
     },
     async addMomentPhoto(parentId, week, path) {
       const r = await db.rpc("add_moment_photo", { p_parent: parentId, p_week: week, p_path: path, p_version: await settingsVersion(), p_variants: variants });

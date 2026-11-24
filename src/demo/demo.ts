@@ -78,8 +78,12 @@ export async function demoIdentity(incoming: Incoming, deps: BotDeps): Promise<"
   try {
     active = await deps.store.demoActive(owner);
   } catch (error) {
+    // [2026-11-24, privacy review] Not known whether a demo runs: say so, never guess (rule 1.3),
+    // so a demo action can't land in the owner's real account.
     logFailure("Checking for a demo failed", error);
-    return incoming; // the owner's own account carries on as usual
+    if (incoming.kind === "tap") await quietly("Answering the tap failed", () => deps.telegram.answerTap(incoming.tapId));
+    await quietly("Sending 'didn't work' failed", () => deps.telegram.sendMessage(incoming.chatId, WORDS.signUpFailed));
+    return "handled";
   }
   return active ? { ...incoming, telegramId: demoNumber(owner) } : incoming;
 }

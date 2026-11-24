@@ -208,6 +208,17 @@ describe("Add a moment (W8 to W10)", () => {
     expect(store.momentPhotos).toEqual([]);
   });
 
+  it("W10 (review) a tap on last week's 'Add a moment' doesn't open this week's moment after the new Wrap Up", async () => {
+    await tap("moment:ask", hoursAfter(30)); // Monday 24 Nov, last week's button
+    const nextSunday = at("2026-11-29", 20 * 60 + 2);
+    await run(nextSunday); // this week's Wrap Up (no activity: only the question) ... and a summary needs a log:
+    addLog("2026-11-25");
+    await run(new Date(nextSunday.getTime() + 600_000));
+    await say("Not a moment", new Date(nextSunday.getTime() + 3600_000));
+    expect(store.momentLines).toEqual([]);
+    expect(lastText()).toBe("Unrecognised text.");
+  });
+
   it("W10 after 24 hours a photo or line isn't saved: 'Moment has expired…' with the button, which starts a fresh 24 hours", async () => {
     await tap("moment:ask", hoursAfter(1));
     await say("Too late", hoursAfter(26));

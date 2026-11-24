@@ -535,8 +535,10 @@ export class FakeStore implements Store {
     this.failReadIfAsked("momentState");
     const week = this.latestWrapUpWeek(parentId);
     if (week === null) return null;
+    const wrapUps = this.sundaySent.filter((m) => m.parentId === parentId && m.kind === "wrap_up").sort((a, b) => a.day.localeCompare(b.day));
     return {
       week,
+      wrapUpSentAt: wrapUps.at(-1)!.sentAt,
       askedAt: this.momentAsked.get(parentId) ?? null,
       hasPhoto: this.momentPhotos.some((m) => m.parentId === parentId && m.week === week),
       hasLine: this.momentLines.some((m) => m.parentId === parentId && m.week === week),
@@ -561,7 +563,7 @@ export class FakeStore implements Store {
   failDemo = false;
   // A demo parent, or an owner whose demo is running (a demo parent or a demo sign-up).
   private leftOutForDemo(p: Parent): boolean {
-    return p.demoOf !== undefined || this.parents.some((d) => d.demoOf === p.id) || this.drafts.has(-p.telegramId);
+    return p.demoOf !== undefined || this.parents.some((d) => d.demoOf === p.id) || this.drafts.has(-p.telegramId); // (the fake has no cut-down drafts)
   }
   async demoActive(ownerTelegramId: number): Promise<boolean> {
     this.failReadIfAsked("demoActive");

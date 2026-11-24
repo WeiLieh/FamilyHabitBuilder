@@ -19,6 +19,9 @@
 --   5. The Telemetry views leave demo parents out (rule 12.7).
 --   6. claim_expired_questions, the same as migration 014 except a demo
 --      parent's question is edited in the owner's chat.
+--   7. clean_up_sign_ups, the same as migration 010 except an abandoned demo
+--      sign-up (a negative number) is deleted outright, never counted as a
+--      sign-up that stopped (it would reach the onboarding metrics; rule 12.7).
 -- Run once in Supabase's SQL Editor after 014.
 -- =============================================================================
 
@@ -157,6 +160,30 @@ begin
     parent_id := q.parent_id; telegram_id := q.chat; telegram_message_id := q.telegram_message_id; week := q.week;
     return next;
   end loop;
+end $$;
+
+-- ---- 7. An abandoned demo sign-up never reaches the sign-up metrics (review, 24 Nov) ----
+create or replace function public.clean_up_sign_ups(p_version bigint)
+returns void language plpgsql security definer set search_path = public, pg_temp as $$
+declare keep_days numeric := setting_number(p_version, 'sign_up_draft_keep_days');
+        record_days numeric := setting_number(p_version, 'sign_up_stopped_keep_days');
+begin
+  -- A demo sign-up left quiet for the same 7 days is simply deleted (rule 12.7).
+  delete from sign_up_drafts where telegram_id < 0 and last_activity_at < now() - make_interval(days => keep_days::int);
+  -- One statement, rows locked first: a step saved at the same moment waits,
+  -- then finds the draft cut down (review finding, 12 Nov).
+  with quiet as (
+    select id, step, invite_id from sign_up_drafts
+    where cut_down_at is null and last_activity_at < now() - make_interval(days => keep_days::int)
+    for update
+  ), counted as (
+    insert into sign_up_stops (on_day, last_step) select sgt_today(), step from quiet
+  ), released as (
+    update invites set held_by_telegram_id = null, held_at = null where id in (select invite_id from quiet)
+  )
+  update sign_up_drafts set answers = '{}'::jsonb, invite_id = null, screen_message_id = null, cut_down_at = now()
+  where id in (select id from quiet);
+  delete from sign_up_drafts where last_activity_at < now() - make_interval(days => record_days::int);
 end $$;
 
 -- New functions start locked; only our server (the bot) may use them.
