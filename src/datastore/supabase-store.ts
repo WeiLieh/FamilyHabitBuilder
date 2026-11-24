@@ -461,23 +461,28 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         "Recording the photo consent",
       );
     },
-    // The latest not-undone log since "since" whose behaviour allows photos, and whether it has a photo.
+    // [2026-11-24, review] The newest not-undone log since "since", of a
+    // behaviour that allows photos, that has no photo yet (D2). If every such
+    // log has one, the newest is given with hasPhoto true (D5); none: null (D4).
     async photoLogSince(parentId, since) {
       const allowed = (check(await db.from("nudges").select("id").eq("photo_upload_allowed", true), "Reading which behaviours allow photos") ?? []).map((n) => Number(n.id));
       if (allowed.length === 0) return null;
       const logs = check(
         await db.from("habit_logs").select("id").eq("parent_id", parentId).is("undone_at", null).in("nudge_id", allowed)
-          .gte("logged_at", since.toISOString()).order("logged_at", { ascending: false }).order("id", { ascending: false }).limit(1),
+          .gte("logged_at", since.toISOString()).order("logged_at", { ascending: false }).order("id", { ascending: false }).limit(20),
         "Finding the log for a photo",
       ) ?? [];
-      const log = logs[0];
-      if (!log) return null;
-      const photos = check(await db.from("photos").select("id").eq("log_id", log.id).limit(1), "Checking for a photo on the log") ?? [];
-      return { logId: Number(log.id), hasPhoto: photos.length > 0 };
+      if (logs.length === 0) return null;
+      const ids = logs.map((l) => Number(l.id));
+      const withPhoto = new Set((check(await db.from("photos").select("log_id").in("log_id", ids), "Checking for photos on the logs") ?? []).map((p) => Number(p.log_id)));
+      const free = ids.find((id) => !withPhoto.has(id));
+      return free !== undefined ? { logId: free, hasPhoto: false } : { logId: ids[0]!, hasPhoto: true };
     },
     async savePhotoFile(parentId, bytes) {
       const path = `${parentId}/${randomUUID()}.jpg`; // a random name: it says nothing about the photo
-      check(await db.storage.from(PHOTO_BUCKET).upload(path, bytes, { contentType: "image/jpeg", upsert: false }), "Saving the photo file");
+      // [2026-11-24, privacy review] cacheControl "0": a browser must not keep its
+      // own copy once the short link expires (rule 9.6; Supabase's default is an hour).
+      check(await db.storage.from(PHOTO_BUCKET).upload(path, bytes, { contentType: "image/jpeg", upsert: false, cacheControl: "0" }), "Saving the photo file");
       return path;
     },
     async removePhotoFile(path) {

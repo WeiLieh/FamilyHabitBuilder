@@ -159,6 +159,11 @@ export const PHOTO_LINK_SECONDS = 5 * 60;
 // Claude Code's draft, accepted by the owner until the PDPA reviewer's words
 // (docs/KNOWN-ISSUES.md).
 export const PHOTO_CONSENT_WORDING_VERSION = "photos-draft-2026-11-24";
+// [2026-11-24, review] Undo on a log with a photo stops this many seconds
+// before the 10-minute window by our server's clock, so the photo file is
+// never removed for an Undo the database then refuses (clocks can differ a
+// little). A fixed safety margin, not a product choice. EXPERIMENTS.md value 54.
+export const UNDO_PHOTO_MARGIN_SECONDS = 30;
 
 // The database also checks the first two (migration 005): it reads them from
 // the settings version stamped on each event, under exactly these names. So

@@ -27,7 +27,7 @@
 // never a receipt; once saved, a Telegram failure is logged, not reported.
 // =============================================================================
 
-import { UNDO_WINDOW_SECONDS } from "../settings.js";
+import { UNDO_PHOTO_MARGIN_SECONDS, UNDO_WINDOW_SECONDS } from "../settings.js";
 import { toSgt } from "../sgt.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
@@ -137,10 +137,16 @@ export async function undoTap(t: Tap, parent: Parent, logId: number, { store, te
     // [2026-11-24] A log with a photo (PH9): its file is removed from the store
     // first (rule 8.5), and only while Undo still works, so a late tap never
     // leaves a photo record without its file. The database still decides.
+    // [2026-11-24, review] With a photo, Undo closes UNDO_PHOTO_MARGIN_SECONDS
+    // early by our clock, so the database (by its own clock) can't refuse an
+    // Undo after the file is already gone.
     const log = await store.logForUndo(parent.id, logId);
-    const stillOpen = log !== null && now.getTime() <= log.loggedAt.getTime() + UNDO_WINDOW_SECONDS * 1000;
-    if (log?.photoPath && stillOpen) await store.removePhotoFile(log.photoPath);
-    result = await store.undoLog(parent.id, logId);
+    const closesAt = log === null ? 0 : log.loggedAt.getTime() + (UNDO_WINDOW_SECONDS - UNDO_PHOTO_MARGIN_SECONDS) * 1000;
+    if (log?.photoPath && now.getTime() > closesAt) result = "expired";
+    else {
+      if (log?.photoPath) await store.removePhotoFile(log.photoPath);
+      result = await store.undoLog(parent.id, logId);
+    }
   } catch (error) {
     // Nothing changed: say so, and leave Undo so they can try again (U3, rule 1.3).
     logFailure("Undoing a log failed", error);

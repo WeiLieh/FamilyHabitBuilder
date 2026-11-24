@@ -146,6 +146,21 @@ describe("Saving a photo onto its log (PH4 to PH8)", () => {
     expect(telegram.downloads).toEqual(["first-big"]);
   });
 
+  it("PH6 (review, 24 Nov) the photo joins the newest log WITHOUT a photo (D2): an earlier log in the 10 minutes still takes one", async () => {
+    agreeToPhotos();
+    store.picks.push({ parentId, nudgeId: 6, frequency: "once_a_week" }); // Interesting activities (photos allowed)
+    await say("✅ Spending quality time");
+    const older = store.logs[0]!.id;
+    store.clock = minutesLater(1);
+    await say("✅ Interesting activities", minutesLater(1));
+    const newer = store.logs[1]!.id;
+    await sendPhoto("one", minutesLater(2));
+    await sendPhoto("two", minutesLater(3));
+    expect(store.photos.map((p) => p.logId)).toEqual([newer, older]);
+    await sendPhoto("three", minutesLater(4));
+    expect(lastText()).toBe(HAS_ONE); // every log in the 10 minutes has its photo now
+  });
+
   it("PH7 a failed download, store or save says it didn't save, never 'added'; a file stored before a failed save is removed", async () => {
     agreeToPhotos();
     await say("✅ Spending quality time");
@@ -195,6 +210,17 @@ describe("Undo and the logs (PH9, PH10)", () => {
     expect(store.photoFiles.size).toBe(0);
     expect(store.photos).toEqual([]);
     expect(store.logs[0]!.undoneAt).not.toBeNull();
+  });
+
+  it("PH9 (review, 24 Nov) in the last 30 seconds of Undo, a log with a photo says 'Undo expired.' and keeps its photo, so a file is never removed for an Undo the database refuses", async () => {
+    agreeToPhotos();
+    await say("✅ Spending quality time");
+    const logId = store.logs[0]!.id;
+    await sendPhoto("p", minutesLater(1));
+    await tap(`undo:${logId}`, 700, new Date(evening.getTime() + (10 * 60 - 20) * 1000)); // 9 min 40 s
+    expect(telegram.calls.at(-1)).toEqual({ kind: "answer", tapId: expect.any(String), popup: "Undo expired." });
+    expect(store.photoFiles.size).toBe(1);
+    expect(store.logs[0]!.undoneAt).toBeNull();
   });
 
   describe("PH10", () => {

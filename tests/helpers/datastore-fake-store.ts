@@ -382,10 +382,13 @@ export class FakeStore implements Store {
   }
   async photoLogSince(parentId: number, since: Date): Promise<{ logId: number; hasPhoto: boolean } | null> {
     this.failReadIfAsked("photoLogSince");
-    const log = this.logs
+    // The newest such log without a photo (D2); if all have one, the newest (D5).
+    const logs = this.logs
       .filter((l) => l.parentId === parentId && !l.undoneAt && this.photoAllowedIds.has(l.nudgeId) && (l.loggedAt ?? this.clock).getTime() >= since.getTime())
-      .sort((a, b) => (b.loggedAt ?? this.clock).getTime() - (a.loggedAt ?? this.clock).getTime() || b.id - a.id)[0];
-    return log ? { logId: log.id, hasPhoto: this.photos.some((p) => p.logId === log.id) } : null;
+      .sort((a, b) => (b.loggedAt ?? this.clock).getTime() - (a.loggedAt ?? this.clock).getTime() || b.id - a.id);
+    if (logs.length === 0) return null;
+    const free = logs.find((l) => !this.photos.some((p) => p.logId === l.id));
+    return free ? { logId: free.id, hasPhoto: false } : { logId: logs[0]!.id, hasPhoto: true };
   }
   async savePhotoFile(parentId: number, bytes: Uint8Array): Promise<string> {
     if (this.failPhotoFile) throw new Error("storage unavailable");

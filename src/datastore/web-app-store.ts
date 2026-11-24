@@ -207,12 +207,22 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
       return [row.storage_path, ...(row.preview_path ? [row.preview_path] : [])];
     },
     async removePhotoFiles(pass, paths) {
-      const r = await withPass(pass).storage.from(PHOTO_BUCKET).remove(paths);
+      const store = withPass(pass).storage.from(PHOTO_BUCKET);
+      const r = await store.remove(paths);
       if (r.error) throw new Error(`Removing photo files failed: ${r.error.message}`);
-      // A file already gone (an earlier try removed it, then the record failed)
-      // is not an error, so a retry can finish the delete. The files are the
-      // parent's own (photoFiles reads them with the same pass), and the
-      // store's locks match (one folder per parent, migration 012).
+      // [2026-11-24, privacy review] The store answers "done" even when its
+      // locks quietly removed nothing, so every file not in its answer is
+      // looked up: still there means it wasn't removed, and the record must
+      // stay (rule 1.3, rule 8.5). Already gone (an earlier try removed it,
+      // then the record failed) is fine, so a retry can finish the delete.
+      const removed = new Set((r.data ?? []).map((f) => f.name));
+      for (const path of paths.filter((p) => !removed.has(p))) {
+        const folder = path.slice(0, path.lastIndexOf("/"));
+        const name = path.slice(path.lastIndexOf("/") + 1);
+        const found = await store.list(folder, { search: name });
+        if (found.error) throw new Error(`Checking a photo file failed: ${found.error.message}`);
+        if ((found.data ?? []).some((f) => f.name === name)) throw new Error("A photo file could not be removed.");
+      }
     },
   };
 }
