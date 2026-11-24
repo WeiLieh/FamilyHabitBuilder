@@ -2,6 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-24 22:18 SGT] HANDOFF: session 20 paused for a fresh context (read this first)
+- [2026-11-24 22:18 SGT] **State:** `main` has **#56** (session 19 notes) and **#57, My page's look** (UI decisions L1 to L13), both merged on 24 Nov. `npm run check` passes (**326 tests**). The branch `claude/kind-gates-5u8dbm` holds tonight's **decisions only** (no code): photo-check SPEC "Parked", Telegram bot SPEC "Owner decisions for tonight's builds (24 Nov)", Datastore SPEC "Proposed: migration 012", a backlog item and a known issue.
+- [2026-11-24 22:18 SGT] **Owner's plan tonight ("accelerate", known issues accepted), in this order, one pull request each, tests first in plain English:** (1) **photos**: the photo after a log (Add a photo on the behaviours that allow photos; consent at the first photo with the accepted draft; **no Claude check and no "Did you do it?"**; private Supabase Storage bucket; My page shows photos big through short-lived links; the dustbin deletes the photo first) plus migration 012 (a log photo may be `not_checked`, the bucket). Saving a moment photo is shared code; its button arrives with (3). (2) **"Add how you felt"** (rule 5.3: up to 280 characters, the confirmed prompt and "✅ Added to today's log."). (3) **Sunday Weekly Wrap Up + the 1 to 5 question + Add a moment** (rules 3.12, 3.15, 5.6, 7.7, 7.8; B2 is fully designed in `src/telegram-bot/SPEC.md`).
+- [2026-11-24 22:18 SGT] **Parked by the owner:** phone tests U63 to U72 (to be consolidated after more builds); CATCH-UP section 4 questions (Q12, list order); the photo check (backlog).
+- [2026-11-24 22:18 SGT] **Closed by the owner, not to raise again:** the two Low review items of #57: a rating outside 1 to 5 can't happen (database check, migration 003 line 267); no extra hostile-text test needed.
+- [2026-11-24 22:18 SGT] **Next session:** start-of-session routine, then build (1). This branch's decision notes go into (1)'s pull request.
+
 ## [2026-11-24 21:57 SGT] Session 20: My page gets the owner's look
 ### Done
 - [2026-11-24 21:57 SGT] Start-of-session routine (drift check passed, 24 checks). Owner merged #56 (session 19 notes) through Claude Code ("merge #56 first").

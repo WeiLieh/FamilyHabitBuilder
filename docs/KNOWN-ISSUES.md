@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-24 22:16 SGT] The photo consent wording is a draft
+- **Issue:** [2026-11-24 22:16 SGT] The first-photo consent uses Claude Code's draft ("We save your photos so you can see them on My page. Only you can see them, and you can delete any photo there."), accepted by the owner on 24 Nov to ship photos tonight.
+- **Impact:** [2026-11-24 22:16 SGT] It has not been checked by the PDPA reviewer; consent for children's photos must be clear and lawful before any real family.
+- **Workaround:** [2026-11-24 22:16 SGT] The owner is the only user; the PDPA reviewer's list already includes the photo consent wording. Replace it before real families.
+
 ### [2026-11-15 21:59 SGT] (a) The per-parent pass must stay on our server
 - **Issue:** [2026-11-15 21:59 SGT] The 10-minute pass can call the four delete functions directly (migration 011). Our server deletes a photo's files first, then its record (rule 8.5 order); a pass used from elsewhere could delete the record first and leave the files behind. It can also write experiment labels into events unchecked (privacy review of #51).
 - **Impact:** [2026-11-15 21:59 SGT] None today: the pass is made and used only on our server and never sent to the browser (tests P1, P2, W9). If that ever changed, photos could be orphaned where "delete my data" can't find them (PDPA risk), and telemetry could be polluted.

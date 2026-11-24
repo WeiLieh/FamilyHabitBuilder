@@ -7,6 +7,9 @@
 ## Purpose
 [2026-10-31 09:59 SGT] Store the app's data safely: **Supabase** (database and photo storage, Singapore) for permanent records, **Upstash Redis** (Singapore) for short-term chat memory. The Datastore owns **all SQL** (rule S6): table structure, first-load data, one-off content changes and database tests. Other modules own the **rules** for their own tables' content (for example the [Nudge repository](../nudge-repository/SPEC.md) owns the rules for `nudges` and `examples`).
 
+## Proposed: migration 012, a log photo may be "not checked" (owner decision of 24 Nov, awaiting the build)
+- [2026-11-24 22:16 SGT] The photo check is parked (owner, 24 Nov), so a log's photo is saved with no check. Today `photos` only allows `not_checked` for a moment photo (migration 005, line 110). Migration 012 would allow `not_checked` on a log photo too, and add the private Storage bucket for photos (owner: OK). The other photo functions (save onto a log, save a moment photo, delete one photo, consent required) are already built. Written test-first when photos are built.
+
 ## Files in this folder
 - [2026-10-31 09:59 SGT] `supabase/migrations/`: table structure changes, numbered, run once each in order in the Supabase SQL Editor (owner). **Never edit one after it has run** (rule B1, checked by fingerprint below).
 - [2026-10-31 09:59 SGT] `supabase/seed/`: first-load data (already imported).

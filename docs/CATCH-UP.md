@@ -2,9 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-15 22:36 SGT]** (session 19 ended: sign-in live; **Week so far built in plain HTML and deployed (#55)**, its phone tests U63 to U69 next time).
+**Last updated: [2026-11-24 22:18 SGT]** (session 20 paused: **My page's look live (#57)**; tonight's next builds decided: photos, "Add how you felt", the Sunday Wrap Up with the 1 to 5 question).
 
-> [2026-11-15 22:36 SGT] **⏰ Next:** **Phone tests U63 to U69** for Week so far ([src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)), then merge the end-of-session notes pull request. **In Claude Chat:** the look of My page, Settings (with withdrawing photo consent), tab 2, the empty states, and the drafted words in `src/web-app/words.ts`. **Next Claude Code build (your choice):** an older week's own page (rule 9.7), or photos with the Photo check.
+SUPERSEDED [2026-11-24 22:18 SGT] **Last updated: [2026-11-15 22:36 SGT]** (session 19 ended: sign-in live; **Week so far built in plain HTML and deployed (#55)**, its phone tests U63 to U69 next time).
+
+> [2026-11-24 22:18 SGT] **⏰ Next:** start a fresh session ("run start of session routine"), then build in order, one pull request each: (1) **photos** after a log, with no check (your decisions of 24 Nov in [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)); (2) **"Add how you felt"**; (3) the **Sunday Wrap Up, the 1 to 5 question and Add a moment**. Parked: phone tests U63 to U72, section 4 questions, the photo check.
+>
+> SUPERSEDED [2026-11-24 22:18 SGT] [2026-11-15 22:36 SGT] **⏰ Next:** **Phone tests U63 to U69** for Week so far ([src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)), then merge the end-of-session notes pull request. **In Claude Chat:** the look of My page, Settings (with withdrawing photo consent), tab 2, the empty states, and the drafted words in `src/web-app/words.ts`. **Next Claude Code build (your choice):** an older week's own page (rule 9.7), or photos with the Photo check.
 >
 > SUPERSEDED [2026-11-15 22:36 SGT] [2026-11-15 21:53 SGT] **⏰ Next:** **merge the end-of-session notes pull request.** **In Claude Chat:** My page's look and Settings (tab 4, with withdrawing photo consent), tab 2, the empty states. **Next Claude Code build:** the Week so far page once your look arrives (the reads and deletes are ready). **Answer when you can:** edit 14 and the known issues (section 4c).
 >

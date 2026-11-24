@@ -10,6 +10,9 @@
 ## Code in this folder
 - [2026-10-31 10:12 SGT] None yet (development order, step 5).
 
+## Parked (owner, 24 Nov)
+- [2026-11-24 22:16 SGT] **The photo check is parked** (owner, 24 Nov: "leave out photo checking for now"; backlog item "The photo check (Claude judges a log's photo)"). Photos are saved **without any check** and **without** the "Did you do it?" question: whatever the parent uploads is the photo. Rules 6.1 and 6.2 stay as written for when the check is built; until then no log photo is checked or labelled self-reported, and nothing is invented (rule 1.3: no check result is recorded as if a check ran). Needs a Datastore change (a log photo may be "not checked"; migration 012, proposed in [src/datastore/SPEC.md](../datastore/SPEC.md)).
+
 ## Design notes (owner, design chat, 2026-11-09)
 - [2026-11-09 21:48 SGT] **The photo check is an add-on** ([B1 part 2 handoff](../../docs/handoffs/2026-11-09-telegram-b1-not-today-photos-and-logs.md)): the log is already saved and counts; the check only adds a label. Match: photo-checked. No match, or the check could not run: one tap "✅ Yes, I did it" and the log is self-reported. Nothing is removed or blocked; no invented results (rule 1.3). Rules 6.1 and 6.2 already say this in substance. Saving a photo onto a saved log needs a Datastore change (proposal in [src/datastore/SPEC.md](../datastore/SPEC.md)).
 - [2026-11-09 21:48 SGT] **Saved moments are not checked** ([B2 handoff](../../docs/handoffs/2026-11-09-telegram-b2-answering-and-saving.md)): rules 6.1 and 6.2 apply to logs only.
