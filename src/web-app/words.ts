@@ -5,8 +5,8 @@
 // owner can change them without touching the logic. Words marked "draft" are
 // Claude Code's placeholders until the owner's wording arrives from Claude
 // Chat; the expired-link sentence is fixed by rule 9.3.
-// The pages are plain and unstyled on purpose: the look comes only from the
-// owner (CLAUDE.md rule 6), and My page's real layout comes later.
+// The look comes only from the owner (CLAUDE.md rule 6): [2026-11-24] My
+// page's pages now carry it (style.ts); the sign-in pages are still plain.
 // =============================================================================
 
 export const WEB_WORDS = {
@@ -37,7 +37,7 @@ export const WEB_WORDS = {
   tabs: { week: "Week so far", habits: "Habits so far", rewards: "Rewards", settings: "Settings" }, // rule 9.2
   habitsComingSoon: "Habits so far is coming soon.", // draft
   settingsComingSoon: "Settings are coming soon.", // draft
-  dustbin: "🗑", // draft; rule 9.6
+  dustbin: "Delete", // draft; rule 9.6. [2026-11-24] Now the dustbin's spoken label (screen readers); the picture is an outline bin (L12)
   confirmLine: "Delete this line? It will be gone for good. Your log stays.", // rule 9.6
   confirmReflection: "Delete this reflection? It will be gone for good.", // draft, rule 9.6
   confirmMomentLine: "Delete this moment's line? It will be gone for good.", // draft, rule 9.6

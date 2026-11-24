@@ -1,11 +1,15 @@
 // =============================================================================
 // src/web-app/week-page.ts: the HTML of My page's tabs (Week so far first)
 //
-// What it does: [2026-11-15] builds the inside of each page as plain HTML
-// (headings, paragraphs, lists, links, buttons and the browser's own <meter>
-// bar), with no styling: the look comes later from the owner (CLAUDE.md rule
-// 6; owner, 15 Nov: "vanilla HTML elements, I'll style it later"). It only
-// arranges data it is given; reading and deleting happen in handler.ts.
+// What it does: [2026-11-15] builds the inside of each page as HTML
+// (headings, paragraphs, lists, links and buttons). It only arranges data it
+// is given; reading and deleting happen in handler.ts.
+// [2026-11-24] The owner's look (docs/CONTEXT.md, "UI decisions") is added by
+// class names here, matched by the one stylesheet in style.ts (CLAUDE.md rule
+// 6). The words and their order are unchanged; small icons are drawn inline
+// (SVG, a picture written as text), so nothing is downloaded. The connection
+// card's bars are now drawn boxes whose height follows the answer, because a
+// browser's own <meter> bar can't stand upright.
 //   - Week so far (rule 9.4, layout B2): header; the moment (only if saved);
 //     days logged with the M to S strip and every log, newest first;
 //     reflections; the connection card (rule 9.5); the older weeks list and
@@ -39,17 +43,37 @@ export function weekRange(monday: string): string {
 const nameList = (names: string[]) => (names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`);
 const quoted = (text: string) => `“${esc(text)}”`;
 
-// A dustbin: a link to its own "Are you sure?" page (it deletes nothing itself).
-const dustbin = (kind: DeleteKind, id: number) => ` <a href="${BASE}?page=confirm&amp;kind=${kind}&amp;id=${id}">${W.dustbin}</a>`;
+// The small outline icons (L12), drawn in the text's own colour
+// ("currentColor"), so a tab's icon turns green with its label.
+const icon = (paths: string, size = 20) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+const ICONS = {
+  bin: icon(`<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>`, 18),
+  week: icon(`<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M8 3v4M16 3v4"/>`),
+  habits: icon(`<path d="M6 20v-6M12 20V6M18 20v-9"/>`),
+  rewards: icon(`<rect x="4" y="9" width="16" height="11" rx="1"/><path d="M3 9h18M12 9v11M12 9c-1.5-4-6-4-5 -1M12 9c1.5-4 6-4 5-1"/>`),
+  settings: icon(`<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>`),
+  up: icon(`<path d="M6 15l6-6 6 6"/>`, 16),
+};
 
-// The tab bar (rule 9.2): Rewards is shown but switched off for now.
-export function tabBar(): string {
+// A dustbin: a link to its own "Are you sure?" page (it deletes nothing itself).
+// Its label is read aloud by screen readers; the picture is the outline bin.
+const dustbin = (kind: DeleteKind, id: number) =>
+  ` <a class="bin" aria-label="${W.dustbin}" href="${BASE}?page=confirm&amp;kind=${kind}&amp;id=${id}">${ICONS.bin}</a>`;
+
+// The tab bar (rule 9.2): Rewards is shown but switched off for now. The tab
+// you are on is marked (aria-current), so it shows in green and screen
+// readers say "current page" (test ST5).
+export type Tab = "week" | "habits" | "settings";
+export function tabBar(current: Tab): string {
+  const tab = (name: Tab) =>
+    `<li><a class="tab" href="${BASE}?page=${name}"${name === current ? ' aria-current="page"' : ""}>${ICONS[name]}<span>${W.tabs[name]}</span></a></li>`;
   return (
     `<nav><ul>` +
-    `<li><a href="${BASE}?page=week">${W.tabs.week}</a></li>` +
-    `<li><a href="${BASE}?page=habits">${W.tabs.habits}</a></li>` +
-    `<li><button disabled>${W.tabs.rewards}</button></li>` +
-    `<li><a href="${BASE}?page=settings">${W.tabs.settings}</a></li>` +
+    tab("week") +
+    tab("habits") +
+    `<li><span class="tab off">${ICONS.rewards}<button disabled>${W.tabs.rewards}</button></span></li>` +
+    tab("settings") +
     `</ul></nav>`
   );
 }
@@ -57,13 +81,19 @@ export function tabBar(): string {
 // The connection card (rule 9.5): only real answers; "–" for a week without one.
 function connectionCard(weeks: ConnectionWeek[], monday: string): string {
   const title = `<h2>${W.connectionQuestion}</h2>`;
-  if (!weeks.some((w) => w.rating !== null)) return title + `<p>${W.firstAnswer}</p>`;
+  if (!weeks.some((w) => w.rating !== null)) return title + `<div class="box"><p class="sub">${W.firstAnswer}</p></div>`;
+  // Each bar: the answer on top, a drawn bar as tall as the answer (r1 to r5),
+  // the week under it. A week without a rating has "–" and no bar.
   const bars = weeks.map((w) => {
-    const label = w.monday === monday ? W.thisWeek : esc(dayMonth(w.monday));
-    const value = w.rating === null ? W.noRating : `${w.rating} <meter min="0" max="5" value="${w.rating}"></meter>`;
+    const now = w.monday === monday;
+    const label = now ? `<span class="now-label">${W.thisWeek}</span>` : `<span>${esc(dayMonth(w.monday))}</span>`;
+    const value =
+      w.rating === null
+        ? `<span class="n">${W.noRating}</span>`
+        : `<span class="n">${w.rating}</span> <span class="bar r${w.rating}${now ? " now" : ""}"></span>`;
     return `<li>${value} ${label}</li>`;
   });
-  return title + `<ol>${bars.join("")}</ol>`;
+  return title + `<div class="box"><ol class="bars">${bars.join("")}</ol></div>`;
 }
 
 // The count line of an older week (rule 9.7): parts with a zero are left out.
@@ -78,6 +108,7 @@ function countLine(w: OlderWeek): string {
   const days = w.daysLogged > 0 ? `${plural(w.daysLogged, "day", "days")} logged` : "";
   return [days, parts.join(", ")].filter(Boolean).join(" - ");
 }
+const tileClass = (t: OlderTile) => (t.kind === "reflection" ? "tile reflection" : "tile");
 const tileText = (t: OlderTile) =>
   t.kind === "moment"
     ? `${W.momentTile}: ${t.previewPath ? W.photoTile : esc(t.text ?? "")}`
@@ -93,7 +124,7 @@ function olderButton(remaining: number, oldestLoaded: string, shown: number): st
   const n = Math.min(OLDER_WEEKS_PER_PAGE, remaining);
   const back = addDays(oldestLoaded, -7 * n);
   const label = W.showOlder(n, OLDER_WEEKS_PER_PAGE, dayMonth(back), weekRange(back));
-  return `<p><a href="${BASE}?page=week&amp;older=${shown + OLDER_WEEKS_PER_PAGE}">${esc(label)}</a></p>`;
+  return `<p><a class="pill wide" href="${BASE}?page=week&amp;older=${shown + OLDER_WEEKS_PER_PAGE}">${ICONS.up}<span>${esc(label)}</span></a></p>`;
 }
 
 export type WeekPageData = {
@@ -109,58 +140,68 @@ export function weekPage(d: WeekPageData): string {
   const { week, monday } = d;
   const out: string[] = [];
   out.push(`<h1>${esc(W.hello(week.parentFirstName))}</h1>`);
-  out.push(`<p>${esc(W.weekWith(weekRange(monday), nameList(week.children)))}</p>`); // dates and names both made safe
+  out.push(`<p class="sub">${esc(W.weekWith(weekRange(monday), nameList(week.children)))}</p>`); // dates and names both made safe
 
   // The week's moment, at the top, only when one is saved (Sunday evening).
   if (week.moment) {
     const m = week.moment;
-    const photo = m.photo ? `<p>${W.photoLater}</p>` : "";
-    const line = m.line ? `<p>${quoted(m.line.text)}${dustbin("moment-line", m.line.moment_line_id)}</p>` : "";
-    out.push(`<section><h2>${W.momentTitle}</h2>${photo}${line}</section>`);
+    const photo = m.photo ? `<p class="muted">${W.photoLater}</p>` : "";
+    const line = m.line ? `<div class="row"><p class="grow moment-line">${quoted(m.line.text)}</p>${dustbin("moment-line", m.line.moment_line_id)}</div>` : "";
+    out.push(`<section><h2>${W.momentTitle}</h2><div class="box">${photo}${line}</div></section>`);
   }
 
   // Days logged: the strip, then every log newest first.
   const logged = new Set(week.logs.map((l) => l.day));
-  const strip = ["M", "T", "W", "T", "F", "S", "S"].map((letter, i) => `<li>${letter} ${logged.has(addDays(monday, i)) ? "✓" : "–"}</li>`);
+  // A logged day is a filled circle with a tick; an empty day a ring (its "–" is hidden by the look).
+  const strip = ["M", "T", "W", "T", "F", "S", "S"].map((letter, i) =>
+    logged.has(addDays(monday, i)) ? `<li>${letter} <span class="dot on">✓</span></li>` : `<li>${letter} <span class="dot">–</span></li>`,
+  );
+  // Each row: the habit, the day under it, then the photo and the line; the dustbin on the right.
   const rows = [...week.logs].reverse().map((l) => {
-    const line = l.line === null ? "" : `<br>${esc(l.line)}${dustbin("line", l.log_id)}`;
-    const photo = l.photo ? `<br>${W.photoLater}` : "";
-    return `<li>${esc(l.habit)} · ${esc(dayName(l.day))}${photo}${line}</li>`;
+    const photo = l.photo ? `<p class="muted">${W.photoLater}</p>` : "";
+    const line = l.line === null ? "" : `<p>${esc(l.line)}</p>`;
+    const bin = l.line === null ? "" : dustbin("line", l.log_id);
+    return `<li class="row"><div class="grow"><span class="habit">${esc(l.habit)}</span><span class="sep"> · </span><span class="when">${esc(dayName(l.day))}</span>${photo}${line}</div>${bin}</li>`;
   });
-  out.push(`<section><h2>${W.daysLogged(logged.size)}</h2><ol>${strip.join("")}</ol><ul>${rows.join("")}</ul></section>`);
+  out.push(`<section><h2>${W.daysLogged(logged.size)}</h2><div class="box"><ol class="strip">${strip.join("")}</ol><ul>${rows.join("")}</ul></div></section>`);
 
   // Reflections, word for word, in italics inside double quotes.
-  const reflections = [...week.reflections].reverse().map((r) => `<li><i>${quoted(r.text)}</i>${dustbin("reflection", r.reflection_id)}</li>`);
-  out.push(`<section><h2>${W.reflectionsThisWeek(week.reflections.length)}</h2><ul>${reflections.join("")}</ul></section>`);
+  const reflections = [...week.reflections]
+    .reverse()
+    .map((r) => `<li class="box"><div class="row"><p class="grow"><i>${quoted(r.text)}</i></p>${dustbin("reflection", r.reflection_id)}</div></li>`);
+  out.push(`<section><h2>${W.reflectionsThisWeek(week.reflections.length)}</h2><ul class="stack">${reflections.join("")}</ul></section>`);
 
   out.push(`<section>${connectionCard(d.connection, monday)}</section>`);
 
   // Older weeks: the list loaded so far, then the button for the next ones.
   const cards = d.older.map(
-    (w) => `<li><h3>${esc(weekRange(w.monday))}</h3><p>${countLine(w)}</p><ul>${w.tiles.map((t) => `<li>${tileText(t)}</li>`).join("")}</ul></li>`,
+    (w) =>
+      `<li><h3>${esc(weekRange(w.monday))}</h3><p class="count">${countLine(w)}</p>` +
+      `<ul class="box tiles">${w.tiles.map((t) => `<li class="${tileClass(t)}">${tileText(t)}</li>`).join("")}</ul></li>`,
   );
   const oldestLoaded = d.older.at(-1)?.monday ?? monday;
-  const list = cards.length > 0 ? `<h2>${W.olderWeeksTitle}</h2><ul>${cards.join("")}</ul>` : "";
+  const list = cards.length > 0 ? `<h2>${W.olderWeeksTitle}</h2><ul class="weeks">${cards.join("")}</ul>` : "";
   out.push(`<section>${list}${olderButton(d.olderRemaining, oldestLoaded, d.older.length)}</section>`);
 
-  out.push(tabBar());
+  out.push(tabBar("week"));
   return out.join("");
 }
 
-// "Are you sure?" on its own page (rule 9.6, wireframe A): Cancel and Delete.
+// "Are you sure?" on its own page (rule 9.6, wireframe A): Cancel (outlined)
+// and Delete (the only warning-red button, test ST7).
 export function confirmPage(kind: DeleteKind, id: number): string {
   const question = kind === "line" ? W.confirmLine : kind === "reflection" ? W.confirmReflection : W.confirmMomentLine;
   return (
-    `<p>${question}</p>` +
-    `<form method="post" action="${BASE}?page=delete">` +
+    `<p class="question">${question}</p>` +
+    `<form class="actions" method="post" action="${BASE}?page=delete">` +
     `<input type="hidden" name="kind" value="${kind}"><input type="hidden" name="id" value="${id}">` +
-    `<a href="${BASE}?page=week">${W.cancel}</a> <button type="submit">${W.delete}</button></form>`
+    `<a class="pill" href="${BASE}?page=week">${W.cancel}</a> <button class="pill danger" type="submit">${W.delete}</button></form>`
   );
 }
 
 // The two placeholder tabs. Settings holds Sign out for now (rule 9.2).
-export const habitsPage = () => `<h1>${W.tabs.habits}</h1><p>${W.habitsComingSoon}</p>` + tabBar();
+export const habitsPage = () => `<h1>${W.tabs.habits}</h1><p class="sub">${W.habitsComingSoon}</p>` + tabBar("habits");
 export const settingsPage = () =>
-  `<h1>${W.tabs.settings}</h1><p>${W.settingsComingSoon}</p>` +
-  `<form method="post" action="${BASE}?page=sign-out"><button type="submit">${esc(W.signOutButton)}</button></form>` +
-  tabBar();
+  `<h1>${W.tabs.settings}</h1><p class="sub">${W.settingsComingSoon}</p>` +
+  `<form method="post" action="${BASE}?page=sign-out"><button class="pill wide" type="submit">${esc(W.signOutButton)}</button></form>` +
+  tabBar("settings");

@@ -8,9 +8,9 @@
 //   WS1 header · WS2 days logged · WS3 logs newest first · WS4 reflections ·
 //   WS5 the moment · WS6 the connection card · WS7 older weeks · WS8 dustbins ·
 //   WS9 delete failures · WS10 tab bar · WS11 safety · WS12 a read that fails.
-// Photos and an older week's own page come later (owner, 15 Nov). The look
-// comes later from the owner (CLAUDE.md rule 6): these tests check content
-// and behaviour, never styling.
+// Photos and an older week's own page come later (owner, 15 Nov). These tests
+// check content and behaviour, never styling; [2026-11-24] the owner's look is
+// checked in tests/web-app-style.test.ts (ST1 to ST7).
 // =============================================================================
 
 import { beforeEach, describe, expect, it } from "vitest";
@@ -109,7 +109,9 @@ describe("Week so far (rule 9.4)", () => {
     const t = text(r);
     expect(t).toContain("How connected did you feel with your child?");
     expect(t).toContain("3 12 Oct – 19 Oct 4 26 Oct 5 2 Nov");
-    expect(r.body.match(/<meter /g)).toHaveLength(3); // a bar for each real answer, none for the "–" week
+    // [2026-11-24] Rewritten (the owner's look): the bars are drawn boxes, not the browser's <meter>, which can't stand upright.
+    expect(r.body.match(/class="bar /g)).toHaveLength(3); // a bar for each real answer, none for the "–" week
+    expect([...r.body.matchAll(/<span class="n">(\d)<\/span> <span class="bar r(\d)"/g)].map((m) => m[1] === m[2])).toEqual([true, true, true]); // each bar as tall as its answer (owner, 24 Nov)
     expect(t).not.toMatch(/average/i);
     expect(t).not.toContain("This week"); // the bar label (capital T) only once this week is answered
     // Once this week is answered, "This week" joins on the right.
@@ -119,7 +121,7 @@ describe("Week so far (rule 9.4)", () => {
     db.connection = db.connection.map((w) => ({ ...w, rating: null }));
     const none = await get("page=week");
     expect(text(none)).toContain("Your first answer arrives on Sunday.");
-    expect(none.body).not.toContain("<meter");
+    expect(none.body).not.toContain('class="bar '); // [2026-11-24] rewritten with WS6's bar check above: no bars at all
   });
 });
 

@@ -2,6 +2,18 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-24 21:57 SGT] Session 20: My page gets the owner's look
+### Done
+- [2026-11-24 21:57 SGT] Start-of-session routine (drift check passed, 24 checks). Owner merged #56 (session 19 notes) through Claude Code ("merge #56 first").
+- [2026-11-24 21:57 SGT] **The look recorded:** UI decisions **L1 to L13** in `docs/CONTEXT.md` (from the owner's 14 Nov layout files; Delete in warning red `#B42318`; no dark mode; option B for Claude Code's size picks); key decision: the stylesheet is allowed by its fingerprint (option A).
+- [2026-11-24 21:57 SGT] **Built:** `src/web-app/style.ts` and the class names in `week-page.ts` for Week so far, "Are you sure?", Habits so far and Settings. Tests ST1 to ST7 new, WS6 rewritten with a bar-height check (owner approved). `npm run check` passes (**326 tests**). Both review agents run: no High or Medium; the spec-compliance review's size findings became L13 and option B.
+### In progress
+- [2026-11-24 21:57 SGT] The styling pull request, for the owner to review and merge.
+### Next steps
+- [2026-11-24 21:57 SGT] Owner: phone tests U63 to U72 (`src/web-app/UAT-week-so-far.md`); decide whether the two Low review items go into `docs/KNOWN-ISSUES.md` (a rating outside 1 to 5 would show no bar; no hostile-text test for moments, reflections and tiles).
+### Blockers
+- [2026-11-24 21:57 SGT] None.
+
 ## [2026-11-15 22:36 SGT] HANDOFF: session 19 ended, after Week so far (read this first)
 - [2026-11-15 22:36 SGT] **State:** `main` has **#55, Week so far in plain HTML** (deployed), on top of sign-in (#51 to #54). `npm run check` passes (**319 tests**); database tests T1 to T118 pass. Nothing waiting in a pull request except this session's notes (H9).
 - [2026-11-15 22:36 SGT] **Built (owner-approved tests WS1 to WS13):** header, the week's moment, days logged with the M to S strip and logs newest first, reflections, the connection card (browser `<meter>` bars, "–" without an answer), older weeks list and button (`OLDER_WEEKS_MAX` = 52 per load, value 51), tab bar (Rewards disabled, Settings holds Sign out); dustbins on a line, a reflection, a moment line, with "Are you sure?" on its own page, **Cancel** and **Delete** (wireframe A, `docs/handoffs/2026-11-15-week-so-far-build/`). Both reviews run; fixes in.
