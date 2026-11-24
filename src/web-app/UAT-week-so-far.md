@@ -1,4 +1,4 @@
-# UAT: Week so far (plain HTML, no look yet)
+# UAT: Week so far (U63 to U69 plain HTML; U70 to U72 the owner's look)
 
 [2026-11-15 22:17 SGT] The owner's phone tests for My page's Week so far tab (rules 9.2, 9.4 to 9.7). No setup is needed: merging the pull request deploys it. Sign in with `/mypage` first. The page is plain and unstyled on purpose (CLAUDE.md rule 6).
 
@@ -10,4 +10,7 @@
 | U66 | Tap **Cancel** | Back on Week so far; the line is still there | [ ] |
 | U67 | Tap 🗑 again, then **Delete** | Back on Week so far; the line is gone, the log is still listed and still counted | [ ] |
 | U68 | Tap the older weeks button (if you joined more than a week ago) | Your older weeks listed below, each with its dates and count line | [ ] |
+| U70 | [2026-11-24 21:57 SGT] Open Week so far with your phone in **dark mode** | The page stays white; ticks are filled green circles; boxes have rounded corners; the dustbin is an outline icon | [ ] |
+| U71 | [2026-11-24 21:57 SGT] Look at the connection card and the tab bar | Bars stand upright, "This week" in deep green; the tab bar stays at the bottom while you scroll, with "Week so far" in green | [ ] |
+| U72 | [2026-11-24 21:57 SGT] Tap a dustbin | **Cancel** is an outlined button and **Delete** is red | [ ] |
 | U69 | Tap each tab | Habits so far and Settings say "coming soon"; Rewards can't be tapped; Settings has **Sign out** | [ ] |

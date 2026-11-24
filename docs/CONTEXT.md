@@ -82,6 +82,7 @@
   - **Web pages** are plain HTML served by Vercel functions, reached by a one-tap sign-in link from the bot.
 
 ## Key decisions and why
+- [2026-11-24 21:58 SGT] **How the stylesheet is allowed past the page's security rule (owner, 24 Nov): option A.** The Content Security Policy (the header telling the browser what a page may load) allows only our one stylesheet, named by its fingerprint (a SHA-256 hash), as it already does for the open page's one script. Injected styling and one-off `style="…"` attributes stay blocked. Option B, allowing any styling written in the page (`'unsafe-inline'`), was simpler but weaker; a security reviewer would flag it.
 - [2026-11-15 12:13 SGT] **How the per-parent pass is made (owner, 15 Nov): option A, a signed pass checked by the database** (rule 9.8). After sign-in, our server signs a short pass (about 10 minutes) for one parent with Supabase's signing secret, and Row Level Security checks every row against it. Analogy: a hotel key card that opens only your room, with the lock doing the checking. Alternative weighed: option B, each database function checks the sign-in itself (no signing secret on Vercel, but "this parent only" would live in each function's code, so one mistake could show another family's data). Cost: the signing secret sits in Vercel's settings (never in code or Git); a security reviewer will ask who can see it. No new library: Node's built-in tools sign the pass and handle the cookie.
 - [2026-11-15 09:23 SGT] **The Web app reaches the database with per-parent access, never the master key (owner, 15 Nov: "let's default to security"; rule 9.8).** After sign-in, our server gets a short-lived pass for that one parent, and the database's own rules (Row Level Security) let it see only that parent's rows. Two guards instead of one: a bug in our code still cannot show one family another family's children or photos. Alternative weighed: the server with the master key, as the Telegram bot does (simpler, nothing new, but one bug or one leaked key exposes every family). Cost: about one extra build step, test-first, before Week so far. The Telegram bot keeps the master key (server only, no browser involved).
 - [2026-11-12 23:20 SGT] **Scheduler confirmed (owner, 12 Nov): Supabase Cron**, for pull request 3 (the planner live). Free, in Singapore, no new vendor, and the same as the 24 Oct choice below. Alternatives weighed: Upstash QStash (retries and a dashboard, but a new vendor outside Singapore and signature checking), Vercel Pro (simplest, about US$20 a month), GitHub Actions (free but often late). Until then, the sign-up clean-up runs with Vercel's daily 7:00 pm job (temporary, decision D4).
@@ -146,6 +147,24 @@
 
 ## UI decisions
 <!-- Empty until the product manager supplies the look. -->
+- [2026-11-24 21:57 SGT] **L13, the remaining sizes from the layout files (owner approved after the spec-compliance review, 24 Nov):** day circles 32px; bars 28px wide with 2px corners; tiles 56px with 8px corners; 13px for the bars' answer numbers and the older-week count line; 15px for the "Are you sure?" question; 20px for an older week's dates; a 40px tap area for the dustbin; buttons at least 44px tall; an up-chevron on the older-weeks button.
+- [2026-11-24 21:57 SGT] **Claude Code's picks, option B (owner, 24 Nov):** the moment's line is 15px (the habit-name size, rule 9.4 "larger"); an empty day's ring is 1px (L6). Kept because the files have no equivalent: tile text 10px; a 104px space at the bottom of the page so the fixed tab bar never covers the last button. Option A (17px line, 1.5px ring) not chosen.
+- [2026-11-24 21:58 SGT] **Source and scope (owner, 24 Nov):** the look is taken from the owner's Claude Chat layout files of 14 Nov ([docs/handoffs/2026-11-14-web-app-week-so-far-layouts/](handoffs/2026-11-14-web-app-week-so-far-layouts/)), **look only**: where things go still follows rules 9.4 to 9.7. It applies to My page: Week so far, "Are you sure?", Habits so far and Settings. The sign-in, expired-link, signed-out and error pages stay plain for now. One hand-written stylesheet, no styling library (rule 6); it lives in `src/web-app/style.ts`.
+- [2026-11-24 21:58 SGT] **L1 font:** the phone's own system font (`system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`); nothing is downloaded.
+- [2026-11-24 21:58 SGT] **L2 main text:** near-black `#1F2328`.
+- [2026-11-24 21:58 SGT] **L3 secondary text** (dates, the day under a habit, labels): dark grey `#4F5660`.
+- [2026-11-24 21:58 SGT] **L4 accent:** deep green `#1F6F5C` for ticks, the current tab and the "This week" bar.
+- [2026-11-24 21:58 SGT] **L5 earlier weeks' bars:** pale green `#9CC7BC`.
+- [2026-11-24 21:58 SGT] **L6 box borders and empty day circles:** light grey `#D5D9DE`, 1px.
+- [2026-11-24 21:58 SGT] **L7 lines between log rows:** paler grey `#E6E9ED`.
+- [2026-11-24 21:58 SGT] **L8 background:** white `#FFFFFF`; one column about 390px wide (phone width).
+- [2026-11-24 21:58 SGT] **L9 sizes:** name 24px bold; section titles 20px bold; habit names 15px semi-bold; body 14px; small lines 12px; tab labels 11px.
+- [2026-11-24 21:58 SGT] **L10 shapes:** boxes with 12px rounded corners; buttons as 20px-rounded "pills"; ticks in filled green circles.
+- [2026-11-24 21:58 SGT] **L11 spacing:** 20px page margins, 16px inside boxes, 12px between rows.
+- [2026-11-24 21:58 SGT] **L12 icons:** thin outline dustbin and tab icons in dark grey; Rewards greyed out.
+- [2026-11-24 21:58 SGT] **Delete button: warning red `#B42318`** with white text (owner: "warning red"; the exact red is Claude Code's pick, easy to read with white text; the owner may change it). Only Delete on "Are you sure?" is red; **Cancel** is an outlined pill.
+- [2026-11-24 21:58 SGT] **Dark mode: none.** The page stays white when the phone is in dark mode (owner, 24 Nov).
+- [2026-11-24 21:58 SGT] **Defaults until designed (flagged to the owner, 24 Nov):** the ✓ habit tile in the older-weeks list uses the plain grey-bordered tile frame with ✓ and the habit's name (its look is still open, rule 9.7); the older-week cards have **no chevron** until they are links (an older week's own page is not built).
 
 ## Git and release workflow
 - [2026-10-24 18:26 SGT] GitHub repository: https://github.com/weilieh/familyhabitbuilder (confirmed by the product manager).

@@ -15,7 +15,8 @@
 //   - ?page=week (GET): My page's Week so far. The cookie is checked, our
 //     server signs a 10-minute pass for that one parent (pass.ts), and the
 //     database is read with it (rule 9.8). [2026-11-15] The page is built in
-//     plain HTML (week-page.ts); the look comes later from the owner (rule 6).
+//     HTML (week-page.ts). [2026-11-24] My page's pages carry the owner's
+//     look (style.ts, rule 6); the sign-in and error pages stay plain.
 //     &older=N adds N older weeks below it (rule 9.7).
 //   - ?page=confirm (GET) and ?page=delete (POST): a dustbin's "Are you sure?"
 //     page and the delete itself (rule 9.6, wireframe A).
@@ -23,6 +24,8 @@
 //     Sign out (rule 9.2).
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
 // Every answer tells browsers and caches not to keep a copy (rule 9.6).
+// [2026-11-24] The security rule lets through only our one script and our one
+// stylesheet, each named by its fingerprint (owner: option A).
 // [2026-11-15, privacy review] A form posted from another website (a forged
 // sign-in or sign-out) is refused: the browser's own "where did this come
 // from" headers (Sec-Fetch-Site, Origin) must say this site.
@@ -41,6 +44,7 @@ import { mondayOf, toSgt } from "../sgt.js";
 import type { DeleteKind, OlderWeek } from "../datastore/web-app-store.js";
 import { escapeHtml } from "./html.js";
 import { signPass } from "./pass.js";
+import { STYLESHEET, STYLESHEET_HASH } from "./style.js";
 import { confirmPage, habitsPage, settingsPage, weekPage } from "./week-page.js";
 import { WEB_WORDS } from "./words.js";
 
@@ -63,7 +67,8 @@ const OPEN_SCRIPT =
 const OPEN_SCRIPT_HASH = createHash("sha256").update(OPEN_SCRIPT).digest("base64");
 
 // Headers on every answer: no copies kept (rule 9.6), no address passed on to
-// other sites, no framing, and only our own one script may run.
+// other sites, no framing, and only our own one script and one stylesheet may
+// be used (each named by its fingerprint; nothing else, not even style="…").
 const SAFE_HEADERS: Record<string, string> = {
   "content-type": "text/html; charset=utf-8",
   "cache-control": "no-store, private",
@@ -71,22 +76,26 @@ const SAFE_HEADERS: Record<string, string> = {
   "referrer-policy": "no-referrer",
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
-  "content-security-policy": `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_HASH}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
+  "content-security-policy": `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_HASH}'; style-src 'sha256-${STYLESHEET_HASH}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
 };
 
 // The same headers, for the few plain answers api/web-app.ts makes itself.
 export const WEB_SAFE_HEADERS: Readonly<Record<string, string>> = SAFE_HEADERS;
 
 
-const page = (inner: string) =>
+// A whole page around its inside. "styled" adds My page's stylesheet
+// (style.ts): only My page's own pages carry the look for now (owner, 24 Nov).
+const page = (inner: string, styled: boolean) =>
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
-  `<meta name="robots" content="noindex"><title>${WEB_WORDS.pageTitle}</title></head><body>${inner}</body></html>`;
+  `<meta name="robots" content="noindex"><title>${WEB_WORDS.pageTitle}</title>${styled ? `<style>${STYLESHEET}</style>` : ""}</head><body>${inner}</body></html>`;
 const paragraph = (text: string) => `<p>${escapeHtml(text)}</p>`;
-const answer = (status: number, inner: string, extra: Record<string, string> = {}): WebResponse => ({
+const answer = (status: number, inner: string, extra: Record<string, string> = {}, styled = false): WebResponse => ({
   status,
   headers: { ...SAFE_HEADERS, ...extra },
-  body: page(inner),
+  body: page(inner, styled),
 });
+// My page's own pages: the same, with the owner's look.
+const styledAnswer = (inner: string) => answer(200, inner, {}, true);
 
 // A failure line for Vercel's logs, with anything that looks like a secret or
 // a quoted value blanked out (rule 9.3: the link stays out of logs).
@@ -186,7 +195,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
         remaining = pageOfWeeks.weeksRemaining;
         before = pageOfWeeks.weeks.at(-1)!.monday;
       }
-      return answer(200, weekPage({ week: w, monday, connection, older, olderRemaining: remaining }));
+      return styledAnswer(weekPage({ week: w, monday, connection, older, olderRemaining: remaining }));
     } catch (error) {
       logFailure("Reading My page failed", error);
       return didntWork();
@@ -207,7 +216,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     if (isAnswer(signed)) return signed;
     const entry = entryOf(new URL(req.url, "https://localhost").searchParams);
     if (!entry) return answer(400, paragraph(WEB_WORDS.badRequest));
-    return answer(200, confirmPage(entry.kind, entry.id));
+    return styledAnswer(confirmPage(entry.kind, entry.id));
   }
 
   // ?page=delete (POST): one layer, with that parent's pass; then back to Week so far.
@@ -228,7 +237,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
   // The two placeholder tabs (rule 9.2): signed in only, nothing read.
   const placeholder = (build: () => string) => async (req: WebRequest) => {
     const signed = await passFor(req);
-    return isAnswer(signed) ? signed : answer(200, build());
+    return isAnswer(signed) ? signed : styledAnswer(build());
   };
 
   // ?page=sign-out: end the sign-in, then clear the cookie. If ending it
