@@ -184,6 +184,24 @@ export const WORDS = {
   lineTooLong: (n: number) => `That line is ${n} characters. Please shorten it to 280 or fewer and send it again.`, // default confirmed, 9 Nov
   lineHasOne: "This log already has a line.\nYou can delete it on My page.", // draft, F7
   lineUndone: "That log was undone, so it can't take a line.", // draft, F7; pop-up
+  // ---- [2026-11-24] Sunday: the Wrap Up, the 1 to 5 question, "Add a moment" (rules 3.12, 5.6, 7.7, 7.8; B2, 9 to 11 Nov) ----
+  wrapUpSummary: (firstName: string, days: number, feelings: number, photos: number) =>
+    `<b>Your week, ${esc(firstName)}</b>\n\nHabits logged: ${days}\nFeelings logged: ${feelings}\nPhotos: ${photos}`, // rule 7.8, fixed template, style C
+  addMomentButton: "Add a moment from this week", // B2
+  viewWrapUpButton: "View wrap up", // B2
+  connectionQuestionTitle: "<b>How connected did you feel with your child?</b>\n(1 = not much, 5 = very)", // fixed, rule 5.6
+  questionExpiresLine: "<i>Question expires in 24 hrs</i>", // fixed, rule 5.6
+  connectionLabels: ["Disconnected", "Slightly connected", "Moderately connected", "Quite connected", "Strongly connected"], // rule 5.6
+  answered: (score: number, label: string) => `Answered: ${score}, ${label.toLowerCase()}`, // rule 5.6
+  answeredWeek: (mondayLabel: string) => `Answered (week of ${mondayLabel})`, // rule 5.6, tapped after midnight Sunday
+  questionExpired: "Question expired", // rule 5.6
+  questionClosed: "This question has closed.", // rule 5.6; pop-up
+  questionNotSaved: "🙇 Sorry, this question couldn't be saved, so its buttons won't work.", // draft, rule 1.3 (like W6)
+  wrapUpNotSaved: "🙇 Sorry, this Wrap Up couldn't be saved, so its buttons won't work.", // draft, rule 1.3 (privacy review)
+  momentPrompt: "Send a photo, or type one line about a moment from this week.\n\n<i>Upload within 24 hrs</i>", // rule 7.7
+  momentSaved: "✅ Saved as this week's moment.", // owner, 24 Nov ("album" dropped)
+  momentExpired: "Moment has expired. Tap Add a moment from this week to try again.", // rule 7.7, fixed
+  noWrapUpYet: "There's no Wrap Up yet.", // draft; pop-up
   noBehaviours: "You haven't chosen any habits yet.\nYou can choose them in Settings.", // draft
   // ---- Menu and help ----
   myPageLink: "Here's your page.", // draft

@@ -44,9 +44,10 @@ import { addDays, sgtInstant, toSgt, weekdayOf } from "../sgt.js";
 // A message the bot has sent to this parent. Only kind "nudge" counts toward
 // the daily cap and the 1-per-slot limit (rule 3.4); "reply" is anything said
 // in answer to the parent; "weekly_wrap_up" is the Sunday summary (rule 3.12),
-// which has its own timing and never uses a slot.
+// which has its own timing and never uses a slot. [2026-11-24] "connection_question"
+// is the Sunday 1 to 5 question (rule 5.6): its own message, never a nudge.
 export type SentMessage = {
-  kind: "nudge" | "reply" | "weekly_wrap_up";
+  kind: "nudge" | "reply" | "weekly_wrap_up" | "connection_question";
   date: string; // Singapore day it was sent
   slotStart?: number; // which slot, for nudge messages
   nudgeId?: number; // which behaviour, for nudge messages

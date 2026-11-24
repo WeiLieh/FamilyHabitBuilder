@@ -33,7 +33,7 @@ import { currentConsent, type ConsentRow } from "./consents.js";
 import type { Behaviour, DraftAnswers, ExampleIdea, PlanParent, StartSignUpResult, Store } from "./store.js";
 import type { Holidays } from "../nudge-engine/schedule.js";
 import type { Frequency } from "../nudge-engine/choices.js";
-import { addDays, sgtInstant } from "../sgt.js";
+import { addDays, mondayOf, sgtInstant } from "../sgt.js";
 import { randomUUID } from "node:crypto";
 import { LINE_WAIT_SECONDS, PHOTO_CONSENT_WORDING_VERSION } from "../settings.js";
 
@@ -527,6 +527,109 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         "Checking for a log waiting for a line",
       ) ?? [];
       return rows.length > 0;
+    },
+
+    // ---- [2026-11-24] Sunday: the Wrap Up, the 1 to 5 question, "Add a moment" (migration 014) ----
+    async sundayData(day) {
+      const monday = mondayOf(day);
+      const sunday = addDays(monday, 6);
+      // [2026-11-24, privacy review] Only parents who aren't paused (a paused parent gets nothing),
+      // and never the words of a "how you felt" line: only which logs have one.
+      const parents = whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute").eq("paused", false), "Reading parents"), "Reading parents");
+      const ids = parents.map((p) => Number(p.id));
+      if (ids.length === 0) return [];
+      const consents = whole(check(await db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording").in("parent_id", ids), "Reading consents"), "Reading consents");
+      const logs = whole(
+        check(await db.from("habit_logs").select("id, parent_id, nudge_id, for_day").in("parent_id", ids).is("undone_at", null).gte("for_day", monday).lte("for_day", sunday), "Reading this week's logs"),
+        "Reading this week's logs",
+      );
+      const withLine = new Set(
+        whole(check(await db.from("habit_logs").select("id").in("parent_id", ids).is("undone_at", null).not("description", "is", null).gte("for_day", monday).lte("for_day", sunday), "Counting this week's lines"), "Counting this week's lines")
+          .map((l) => Number(l.id)),
+      );
+      const sent = whole(
+        check(await db.from("messages_sent").select("parent_id, kind, for_day").in("parent_id", ids).in("kind", ["wrap_up", "connection_question"]).gte("for_day", monday).lte("for_day", sunday), "Reading Sunday messages"),
+        "Reading Sunday messages",
+      );
+      const logIds = logs.map((l) => Number(l.id));
+      const logPhotos = logIds.length === 0 ? [] : whole(check(await db.from("photos").select("log_id").in("log_id", logIds), "Reading this week's photos"), "Reading this week's photos");
+      const momentPhotos = whole(check(await db.from("photos").select("parent_id").in("parent_id", ids).eq("moment_week", monday), "Reading this week's moment photos"), "Reading this week's moment photos");
+      const momentLines = whole(check(await db.from("moment_lines").select("parent_id").in("parent_id", ids).eq("week_starting", monday), "Reading this week's moment lines"), "Reading this week's moment lines");
+      const reflections = whole(check(await db.from("reflections").select("parent_id").in("parent_id", ids).gte("for_day", monday).lte("for_day", sunday), "Reading this week's reflections"), "Reading this week's reflections");
+      const byParent = <T extends { parent_id: unknown }>(rows: T[], id: number) => rows.filter((r) => Number(r.parent_id) === id);
+      const photoLogs = new Set(logPhotos.map((p) => Number(p.log_id)));
+      return parents.map((p) => {
+        const id = Number(p.id);
+        const mine = byParent(logs, id);
+        const myConsents: ConsentRow[] = byParent(consents, id).map((c) => ({ topic: c.topic, answer: c.answer, createdAt: c.created_at }));
+        return {
+          parentId: id,
+          telegramId: Number(p.telegram_id),
+          firstName: String(p.first_name),
+          paused: Boolean(p.paused),
+          agreed: currentConsent(myConsents, "recording") === "agreed",
+          wrapUpMinute: Number(p.wrap_up_minute),
+          logs: mine.map((l) => ({ nudgeId: Number(l.nudge_id), date: String(l.for_day) })),
+          messagesSent: byParent(sent, id).map((m) => ({ kind: m.kind === "wrap_up" ? ("weekly_wrap_up" as const) : ("connection_question" as const), date: String(m.for_day) })),
+          feelings: mine.filter((l) => withLine.has(Number(l.id))).length + byParent(momentLines, id).length + byParent(reflections, id).length,
+          photos: mine.filter((l) => photoLogs.has(Number(l.id))).length + byParent(momentPhotos, id).length,
+        };
+      });
+    },
+    async recordSundayMessage(a) {
+      check(
+        await db.rpc("record_message_sent", {
+          p_parent: a.parentId, p_kind: a.kind, p_nudge: null, p_example: null, p_day: a.day, p_slot: null,
+          p_version: await settingsVersion(), p_variants: variants, p_telegram_message: a.telegramMessageId,
+        }),
+        "Recording a Sunday message",
+      );
+    },
+    async saveConnectionAnswer(parentId, week, score, updateId) {
+      const r = await db.rpc("save_connection_answer", {
+        p_parent: parentId, p_week: week, p_score: score, p_update: updateId, p_version: await settingsVersion(), p_variants: variants,
+      });
+      if (r.error && /has closed|No connection question/.test(r.error.message)) return "closed";
+      // 23505: this Telegram message was already saved (a resent tap): the first answer stands.
+      if ((r.error as { code?: string } | null)?.code === "23505") return "already";
+      return check(r, "Saving the connection answer") === true ? "saved" : "already";
+    },
+    async claimExpiredQuestions() {
+      const rows = check(await db.rpc("claim_expired_questions", { p_version: await settingsVersion(), p_variants: variants }), "Claiming expired questions") as
+        { parent_id: number; telegram_id: number; telegram_message_id: number | null; week: string }[] | null;
+      return (rows ?? []).map((r) => ({
+        parentId: Number(r.parent_id), telegramId: Number(r.telegram_id),
+        telegramMessageId: r.telegram_message_id === null ? null : Number(r.telegram_message_id), week: String(r.week),
+      }));
+    },
+    async askForMoment(parentId) {
+      const r = await db.rpc("ask_for_moment", { p_parent: parentId });
+      if (r.error && /No Wrap Up/.test(r.error.message)) return null;
+      return String(check(r, "Starting a moment"));
+    },
+    async momentState(parentId) {
+      const latest = check(
+        await db.from("messages_sent").select("for_day").eq("parent_id", parentId).eq("kind", "wrap_up").order("for_day", { ascending: false }).limit(1),
+        "Reading the latest Wrap Up",
+      ) ?? [];
+      if (!latest[0]) return null;
+      const week = mondayOf(String(latest[0].for_day));
+      const p = need(await db.from("parents").select("moment_asked_at").eq("id", parentId).single(), "Reading the moment's window");
+      const photo = check(await db.from("photos").select("id").eq("parent_id", parentId).eq("moment_week", week).limit(1), "Reading the moment's photo") ?? [];
+      const line = check(await db.from("moment_lines").select("id").eq("parent_id", parentId).eq("week_starting", week).limit(1), "Reading the moment's line") ?? [];
+      return { week, askedAt: p.moment_asked_at ? new Date(String(p.moment_asked_at)) : null, hasPhoto: photo.length > 0, hasLine: line.length > 0 };
+    },
+    async addMomentPhoto(parentId, week, path) {
+      const r = await db.rpc("add_moment_photo", { p_parent: parentId, p_week: week, p_path: path, p_version: await settingsVersion(), p_variants: variants });
+      if ((r.error as { code?: string } | null)?.code === "23505") return "has_photo"; // one moment photo a week (migration 005)
+      check(r, "Saving the moment's photo");
+      return "saved";
+    },
+    async saveMomentLine(parentId, week, text, updateId) {
+      const r = await db.rpc("save_moment_line", { p_parent: parentId, p_week: week, p_text: text, p_update: updateId, p_version: await settingsVersion(), p_variants: variants });
+      if ((r.error as { code?: string } | null)?.code === "23505") return "has_line"; // one moment line a week (migration 005)
+      const id = check(r, "Saving the moment's line");
+      return id === null ? "duplicate" : "saved";
     },
 
     // [2026-11-15] The database adds the 5-minute expiry from the settings version (migration 011).

@@ -23,6 +23,8 @@
 //     receipt of a log that allows photos asks for one (owner, 24 Nov).
 //   - [2026-11-24] "Add how you felt" (felt.ts): the button under every
 //     receipt, and the typed line it waits 10 minutes for (rule 5.3).
+//   - [2026-11-24] Sunday's buttons and the moment (sunday.ts): 1 to 5,
+//     "Add a moment from this week", "View wrap up"; a moment's photo or line.
 //   - anything else a person sends: "Unrecognised text." (owner, 11 Nov)
 // See src/telegram-bot/SPEC.md, "Build: thin slice 1".
 //
@@ -42,6 +44,7 @@ import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap }
 import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 import { PHOTO_CONSENT_NO, PHOTO_CONSENT_OK, photoConsentTap, photoMessage, withPhotoPrompt } from "./photos.js";
 import { feltButton, feltTap, typedLine } from "./felt.js";
+import { connectionTap, momentAskTap, typedMomentLine, viewWrapUpTap } from "./sunday.js";
 import type { Buttons } from "./telegram-api.js";
 
 // [2026-11-15] random: picks the reaction emoji (rule 5.14); tests pass a fixed one.
@@ -158,6 +161,8 @@ async function parentText(m: Extract<Incoming, { kind: "message" }>, text: strin
     try {
       // [2026-11-24, review] A forwarded message is someone else's words: never a line.
       if (!m.forwarded && (await typedLine(m.chatId, parent, text, m.updateId, deps))) return;
+      // [2026-11-24] Then the moment's line, if "Add a moment" is open (rule 7.7; W8, W9).
+      if (!m.forwarded && (await typedMomentLine(m.chatId, parent, text, m.updateId, deps))) return;
     } catch (error) {
       logFailure("Handling a typed line failed", error);
     }
@@ -232,6 +237,11 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
   // [2026-11-24] "Add how you felt" under a receipt (rule 5.3).
   const felt = /^felt:(\d+)$/.exec(t.data);
   if (felt) return feltTap(t, parent, Number(felt[1]), deps);
+  // [2026-11-24] Sunday's buttons (sunday.ts): 1 to 5, Add a moment, View wrap up.
+  const conn = /^conn:(\d{4}-\d{2}-\d{2}):([1-5])$/.exec(t.data);
+  if (conn) return connectionTap(t, parent, conn[1]!, Number(conn[2]), deps);
+  if (t.data === "moment:ask") return momentAskTap(t, parent, deps);
+  if (t.data === "wrapup:view") return viewWrapUpTap(t, parent, deps);
 
   // [2026-11-13] Nudge buttons carry the day and slot they were sent for:
   // "done:2026-11-11:1140" or "skip:2026-11-11:1140" (up to 3 nudges a day).

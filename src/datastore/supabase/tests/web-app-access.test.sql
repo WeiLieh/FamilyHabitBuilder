@@ -721,4 +721,77 @@ select pg_temp.expect_refused('T123 a page''s pass adding a line',
   $q$select public.add_log_line(pg_temp.cara(), 'x', 8007, 1, '["baseline"]')$q$, 'permission denied');
 select pg_temp.as_owner();
 
+-- =============================================================================
+-- [2026-11-24] Migration 014: the Sunday Wrap Up, the question's expiry and
+-- "Add a moment" (owner-approved tests of 24 Nov, T124 to T126).
+-- =============================================================================
+select pg_temp.as_owner();
+\i src/datastore/supabase/migrations/014_wrap_up_and_moments.sql
+insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute, signed_up_on) values (2003, 'Eve', 'cohort-1', 1200, '2026-11-01');
+create function pg_temp.eve() returns bigint language sql security definer as $$ select id from public.parents where telegram_id = 2003 $$;
+
+-- T124: "Add a moment" works only after a Wrap Up, answers that Wrap Up's week,
+-- and notes the time of the tap; a second Wrap Up the same week is refused.
+set role service_role;
+select pg_temp.expect_refused('T124 Add a moment before any Wrap Up', $q$select public.ask_for_moment(pg_temp.eve())$q$, 'No Wrap Up');
+select public.record_message_sent(pg_temp.eve(), 'wrap_up', null, null, '2026-11-22', null, pg_temp.v(), '["baseline"]', 501);
+do $$
+begin
+  assert public.ask_for_moment(pg_temp.eve()) = '2026-11-16', 'the moment belongs to the Wrap Up''s week (Monday 16 Nov)';
+  raise notice 'PASS: T124 Add a moment answers the latest Wrap Up''s week';
+end $$;
+select pg_temp.expect_refused('T124 a second Wrap Up the same week',
+  $q$select public.record_message_sent(pg_temp.eve(), 'wrap_up', null, null, '2026-11-22', null, pg_temp.v(), '["baseline"]', 502)$q$,
+  'messages_one_wrap_up_a_week');
+reset role;
+do $$
+begin
+  assert (select moment_asked_at from public.parents where id = pg_temp.eve()) > now() - interval '1 minute', 'the tap''s time is noted';
+  assert (select moment_asked_at from public.parents where id = pg_temp.cara()) is null, 'another parent''s window is untouched';
+  raise notice 'PASS: T124 the tap''s time is noted for that parent only';
+end $$;
+
+-- T125: a question past its 24 hours, unanswered, is claimed once (its
+-- "expired" event written); an answered one, or one still open, is not.
+set role service_role;
+select public.record_message_sent(pg_temp.eve(), 'connection_question', null, null, '2026-11-22', null, pg_temp.v(), '["baseline"]', 503);
+reset role;
+update public.messages_sent set sent_at = now() - interval '25 hours' where parent_id = pg_temp.eve() and kind = 'connection_question';
+set role service_role;
+do $$
+declare n int;
+begin
+  select count(*) into n from public.claim_expired_questions(pg_temp.v(), '["baseline"]') c where c.parent_id = pg_temp.eve() and c.telegram_message_id = 503;
+  assert n = 1, 'the expired question should be claimed with its Telegram message number';
+  select count(*) into n from public.claim_expired_questions(pg_temp.v(), '["baseline"]') c where c.parent_id = pg_temp.eve();
+  assert n = 0, 'an expired question is claimed only once';
+  raise notice 'PASS: T125 an expired, unanswered question is claimed once';
+end $$;
+reset role;
+update public.messages_sent set sent_at = now() - interval '2 hours' where parent_id = pg_temp.eve() and kind = 'connection_question';
+delete from public.events where parent_id = pg_temp.eve() and event_type_id = (select id from public.event_types where name = 'connection_question_expired');
+set role service_role;
+do $$
+begin
+  assert not exists (select 1 from public.claim_expired_questions(pg_temp.v(), '["baseline"]') c where c.parent_id = pg_temp.eve()), 'a question still open is not claimed';
+  raise notice 'PASS: T125 a question still within 24 hours is not claimed';
+end $$;
+reset role;
+-- (review) An answered question is never claimed, even after its 24 hours.
+insert into public.connection_answers (parent_id, week_starting, score) values (pg_temp.eve(), '2026-11-16', 4);
+update public.messages_sent set sent_at = now() - interval '30 hours' where parent_id = pg_temp.eve() and kind = 'connection_question';
+set role service_role;
+do $$
+begin
+  assert not exists (select 1 from public.claim_expired_questions(pg_temp.v(), '["baseline"]') c where c.parent_id = pg_temp.eve()), 'an answered question is not claimed';
+  raise notice 'PASS: T125 an answered question is never claimed';
+end $$;
+reset role;
+
+-- T126: the new functions are the bot's only; a page's pass can't use them.
+select pg_temp.pass_for(pg_temp.eve());
+select pg_temp.expect_refused('T126 a page''s pass tapping Add a moment', $q$select public.ask_for_moment(pg_temp.eve())$q$, 'permission denied');
+select pg_temp.expect_refused('T126 a page''s pass claiming questions', $q$select * from public.claim_expired_questions(1, '["baseline"]')$q$, 'permission denied');
+select pg_temp.as_owner();
+
 \echo ALL WEB APP ACCESS TESTS PASSED

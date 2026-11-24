@@ -121,6 +121,7 @@
 - **Workaround:** [2026-11-09 21:49 SGT] Before building: decide how long reflection text is kept (Datastore proposal question), keep it out of Telemetry (no text in the views, rule 8.11), and take reflections that mention the child to the owner's PDPA reviewer.
 
 ### [2026-11-09 21:49 SGT] The 24-hour moment window can catch a stray message
+- **Status:** [2026-11-24 22:57 SGT] The agreed mitigations are built and tested (W9): other prompts win; keyboard buttons, commands and forwarded messages are never a moment; the window closes after one photo and one line, or at the next Wrap Up. The 24-hour length itself stays; review it after the trial.
 - **Issue:** [2026-11-09 21:49 SGT] After "Add a moment", the bot waits 24 hours for a photo or line (B2 handoff, D-e). A later, unrelated message could be saved as a moment. This widens the 9 Nov finding "ignore this to skip has no time limit" (privacy review of the typed-text design, 9 Nov; owner agreed to log it, handoff of 9 Nov section 4a item 6).
 - **Impact:** [2026-11-09 21:49 SGT] Low to medium: an unrelated, possibly private message would show in the album. Moments are not sent to Claude.
 - **Workaround:** [2026-11-09 21:49 SGT] The agreed mitigations, each with a test at build time: other prompts win; keyboard labels, commands and button taps are never saved as moments; the window closes after one photo and one line, or at the next Wrap Up. Review the window length after the trial.
