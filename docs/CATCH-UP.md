@@ -2,13 +2,17 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-24 23:10 SGT]** (session 20 ended: **My page's look, photos, "Add how you felt" and the Sunday Wrap Up all live** (#57 to #60, migrations 012 to 014); first live Wrap Up Sunday 29 Nov).
+**Last updated: [2026-11-24 23:56 SGT]** (session 20 ended: the look, photos, "Add how you felt", the Sunday Wrap Up and the **Demo module** all merged (#57 to #63); `/demo` waits for migration 015 and one Vercel setting).
+
+SUPERSEDED [2026-11-24 23:56 SGT] **Last updated: [2026-11-24 23:10 SGT]** (session 20 ended: **My page's look, photos, "Add how you felt" and the Sunday Wrap Up all live** (#57 to #60, migrations 012 to 014); first live Wrap Up Sunday 29 Nov).
 
 SUPERSEDED [2026-11-24 23:10 SGT] **Last updated: [2026-11-24 22:18 SGT]** (session 20 paused: **My page's look live (#57)**; tonight's next builds decided: photos, "Add how you felt", the Sunday Wrap Up with the 1 to 5 question).
 
 SUPERSEDED [2026-11-24 22:18 SGT] **Last updated: [2026-11-15 22:36 SGT]** (session 19 ended: sign-in live; **Week so far built in plain HTML and deployed (#55)**, its phone tests U63 to U69 next time).
 
-> [2026-11-24 23:10 SGT] **⏰ Next:** **phone tests** U63 to U72, then U73 to U83 (U79 onwards on Sunday 29 Nov). Merge the session notes pull request. **Next build (your choice, 4c):** an older week's own page; Settings once designed (needed before real families); or Claude's words once the nudge personality is ready.
+> [2026-11-24 23:56 SGT] **⏰ Next:** to switch on the demo: run **migration 015**, add `DEMO_OWNER_TELEGRAM_IDS` (your Telegram user ID from @userinfobot) in Vercel and redeploy, then try `/demo`. **Phone tests** U63 to U83 (U79 onwards on Sunday 29 Nov). **Next build (your choice, 4c).**
+>
+> SUPERSEDED [2026-11-24 23:56 SGT] [2026-11-24 23:10 SGT] **⏰ Next:** **phone tests** U63 to U72, then U73 to U83 (U79 onwards on Sunday 29 Nov). Merge the session notes pull request. **Next build (your choice, 4c):** an older week's own page; Settings once designed (needed before real families); or Claude's words once the nudge personality is ready.
 >
 > SUPERSEDED [2026-11-24 23:10 SGT] [2026-11-24 22:18 SGT] **⏰ Next:** start a fresh session ("run start of session routine"), then build in order, one pull request each: (1) **photos** after a log, with no check (your decisions of 24 Nov in [src/telegram-bot/SPEC.md](../src/telegram-bot/SPEC.md)); (2) **"Add how you felt"**; (3) the **Sunday Wrap Up, the 1 to 5 question and Add a moment**. Parked: phone tests U63 to U72, section 4 questions, the photo check.
 >
@@ -110,6 +114,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 [2026-11-24 23:10 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-24-session-20.md](archive/CATCH-UP-sections-4-5-to-2026-11-24-session-20.md), word for word.
 
 **4a. Latest decisions (session 20, 24 Nov)**
+- [2026-11-24 23:56 SGT] **The Demo module** (#63, rules 12.1 to 12.7 in [src/demo/SPEC.md](../src/demo/SPEC.md)): `/demo` (you only) starts a fresh demo parent and the real sign-up without an invite; while it runs your account belongs to the demo and your real reminders pause; `/next` sends each chosen habit's reminder once, then the Wrap Up and the 1 to 5 question; `/demo stop` deletes it, photos first. Waits for migration 015 and the Vercel setting.
 - [2026-11-24 23:10 SGT] **My page has your look** (#57): UI decisions L1 to L13 in [docs/CONTEXT.md](CONTEXT.md), Delete in warning red, no dark mode; the stylesheet is allowed by its fingerprint (option A).
 - [2026-11-24 23:10 SGT] **Photos are live** (#58, migration 012) with **no photo check** (parked to the backlog) and no "Did you do it?"; consent at the first photo uses a draft wording (known issue).
 - [2026-11-24 23:10 SGT] **"Add how you felt" is live** (#59, migration 013; rule 8.4 edit 15): 10 minutes to type the line, once.
@@ -135,6 +140,7 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 5. Waiting on you (not blocking the next steps)
 
+- [2026-11-24 23:56 SGT] **Switch on the demo:** run migration 015 (the final copy, sent after the reviews); in Vercel add `DEMO_OWNER_TELEGRAM_IDS` = your Telegram user ID (from @userinfobot, not your mobile number), then redeploy; try `/demo`, `/next`, `/demo stop`.
 - [2026-11-24 23:10 SGT] **Phone tests:** U63 to U72 ([src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)), then U73 to U83 ([src/telegram-bot/UAT-session-20.md](../src/telegram-bot/UAT-session-20.md)); U79 to U83 on **Sunday 29 Nov** and Monday.
 - [2026-11-24 23:10 SGT] **Merge the end-of-session notes pull request** (H9).
 - [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice; the 90-day record line (K1); **photo consent wording** and withdrawing photo consent; reflections and lines that mention the child.

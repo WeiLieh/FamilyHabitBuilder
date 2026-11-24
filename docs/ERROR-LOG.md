@@ -6,6 +6,12 @@ One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 
 
+## [2026-11-24 23:56 SGT] A database test passed for the wrong reason
+- **What broke:** [2026-11-24 23:56 SGT] T127's check "a second demo parent for one owner is refused" passed, but because the insert named a column that no longer exists (`wrap_up_on`, removed by migration 004), not because of the one-demo rule. The test accepted either error message.
+- **Cause:** [2026-11-24 23:56 SGT] The expected-error pattern was too loose ("parents_one_demo_each|wrap_up_on|column"), so any failure counted as a pass.
+- **Fix:** [2026-11-24 23:56 SGT] The insert now uses today's columns and the pattern accepts only the one-demo rule's own error (#63).
+- **How to prevent it:** [2026-11-24 23:56 SGT] A "must be refused" test names exactly one expected reason; never widen the pattern to make it pass. Read the PASS line's reason when a new refusal test passes first time.
+
 ## [2026-11-24 23:10 SGT] Styling used sizes the owner had not approved (rule 6)
 - **What broke:** [2026-11-24 23:10 SGT] The first version of My page's stylesheet used eleven sizes from the owner's layout files that weren't in the approved list (L9 to L11), and four of Claude Code's own picks (17px moment line, 10px tile text, a 1.5px ring, a 104px gap). Rule 6 says the look comes only from the owner.
 - **Cause:** [2026-11-24 23:10 SGT] The approved list was written from a quick scan of the main layout file; the details needed while building (circle, tile and button sizes) were filled in without going back to the owner.

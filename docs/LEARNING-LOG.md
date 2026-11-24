@@ -6,6 +6,16 @@
 
 ## Notebook
 
+### [2026-11-24 23:56 SGT] A demo mode with a stand-in account
+- **Concept:** a demo mode: a switch that lets the owner use the real app as a separate, throwaway user, then delete everything that user did.
+- **In plain English:** `/demo` creates a fresh "demo parent". While it's on, the bot treats the owner's messages as coming from that demo parent (known by the owner's Telegram number made negative), so the real sign-up, reminders and replies run unchanged, and every reply still lands in the owner's own chat. `/demo stop` deletes the demo parent and all it saved.
+- **Analogy:** a rehearsal on the real stage with the real set and script, where the stage manager calls each scene (`/next`) and the props are cleared away afterwards.
+- **Why and when to use it:** to show real behaviour to an audience without faking screens or mixing demo data into real data and metrics. Not a replacement for tests, and never for real families.
+- **Best practices:** only an allow-list of owners can start it; mark demo data and keep it out of Telemetry; delete it completely, photo files first; never let a failed check guess which account a message belongs to.
+- **Where it showed up in this project:** the Demo module (#63, rules 12.1 to 12.7, migration 015).
+- **Explain it to others:** "I can demo the real app live: a throwaway user, the real flows step by step, and one command wipes it afterwards, without touching real data or metrics."
+- **Governance angle:** a reviewer asks who can switch it on (only the owner's account), whether demo data can reach reports (no), and whether it is fully deleted (yes, files first).
+
 ### [2026-11-24 23:10 SGT] A guest list by fingerprint (Content Security Policy)
 - **Concept:** Content Security Policy (CSP): a header the server sends with each page, telling the browser what the page may load or run.
 - **In plain English:** our pages tell the browser "run only this one script and use only this one stylesheet", naming each by its fingerprint (a hash). Anything slipped into the page, even one hidden style, doesn't match a fingerprint, so the browser refuses it.

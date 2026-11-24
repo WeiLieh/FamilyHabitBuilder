@@ -2,6 +2,13 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-24 23:56 SGT] HANDOFF: session 20 ended, after the Demo module (read this first)
+- [2026-11-24 23:56 SGT] **State:** `main` has **#57 to #60** (the look, photos, "Add how you felt", the Sunday Wrap Up; migrations 012 to 014 applied), **#61, #62** (notes, known issues archived) and **#63, the Demo module** (`src/demo/`, rules 12.1 to 12.7). `npm run check` passes (**379 tests**, no drift warnings); database tests T1 to T130 pass.
+- [2026-11-24 23:56 SGT] **Waiting on the owner before `/demo` works:** (1) run **migration 015** (the final copy, sent after the reviews); (2) add `DEMO_OWNER_TELEGRAM_IDS` in Vercel with your **Telegram user ID** (from @userinfobot, not your mobile number), then redeploy. Then try `/demo`, `/next`, `/demo stop`.
+- [2026-11-24 23:56 SGT] **Owner decisions (Demo, 24 Nov):** Q1 to Q14 in `src/demo/SPEC.md`: a switch on your own account; presenter-paced with `/next`; a short week (each chosen habit's reminder once, then the Wrap Up and the 1 to 5 question); every reply as for a real parent; no invite code but the agreement and photo consent shown; owner only; demo data deleted at `/demo stop` and never in Telemetry.
+- [2026-11-24 23:56 SGT] **Next time (owner):** phone tests U63 to U83, plus a first real demo; the first live Wrap Up is **Sunday 29 Nov**. **Next build (owner's choice):** an older week's own page; Settings once designed (withdrawing photo consent and "delete my data" removing photo files, needed before real families); or Claude's words once the nudge personality is ready.
+- [2026-11-24 23:56 SGT] **Mistake logged** (`docs/ERROR-LOG.md`): a database test that passed for the wrong reason (caught while building, fixed).
+
 ## [2026-11-24 23:10 SGT] HANDOFF: session 20 ended (read this first)
 - [2026-11-24 23:14 SGT] **After the handoff (owner):** #61 merged; `docs/KNOWN-ISSUES.md` trimmed (owner: "yes archive"): two finished entries resolved (the Web app's sign-in and deletes; "ignore this to skip") and every resolved entry moved word for word to `docs/archive/KNOWN-ISSUES-resolved-to-2026-11-24.md` (299 → 273 lines).
 - [2026-11-24 23:10 SGT] **State:** `main` has **#57** (My page's look, UI decisions L1 to L13), **#58** (photos after a log, no check), **#59** ("Add how you felt", rule 8.4 edit 15) and **#60** (the Sunday Wrap Up, the 1 to 5 question and Add a moment, rule 8.4 edit 16). **Migrations 012, 013 and 014 applied** by the owner. `npm run check` passes (**366 tests**); database tests T1 to T126 pass. Nothing waiting except this session's notes (H9).
