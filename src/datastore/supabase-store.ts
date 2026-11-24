@@ -35,7 +35,7 @@ import type { Holidays } from "../nudge-engine/schedule.js";
 import type { Frequency } from "../nudge-engine/choices.js";
 import { addDays, sgtInstant } from "../sgt.js";
 import { randomUUID } from "node:crypto";
-import { PHOTO_CONSENT_WORDING_VERSION } from "../settings.js";
+import { LINE_WAIT_SECONDS, PHOTO_CONSENT_WORDING_VERSION } from "../settings.js";
 
 // [2026-11-24] The private photo store (migration 012): one folder per parent.
 const PHOTO_BUCKET = "photos";
@@ -341,7 +341,7 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
         }),
         "Saving the log",
       );
-      return id === null ? "duplicate" : "saved";
+      return id === null ? "duplicate" : { logId: Number(id) };
     },
 
     async recordNotToday(parentId, updateId) {
@@ -503,6 +503,30 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       if (!log) return null;
       const photos = check(await db.from("photos").select("storage_path").eq("log_id", logId).limit(1), "Reading the log's photo") ?? [];
       return { loggedAt: new Date(String(log.logged_at)), photoPath: photos[0] ? String(photos[0].storage_path) : null };
+    },
+
+    // ---- [2026-11-24] "Add how you felt" (migration 013) ----
+    async askForLine(parentId, logId) {
+      const r = await db.rpc("ask_for_line", { p_parent: parentId, p_log: logId });
+      if (r.error && /does not belong|undone/.test(r.error.message)) return "not_allowed";
+      return check(r, "Asking for a line") === "has_line" ? "has_line" : "asked";
+    },
+    async addLogLine(parentId, text, updateId) {
+      const r = check(
+        await db.rpc("add_log_line", { p_parent: parentId, p_text: text, p_update: updateId, p_version: await settingsVersion(), p_variants: variants }),
+        "Adding a line to a log",
+      );
+      if (r === "saved" || r === "duplicate" || r === "none") return r;
+      throw new Error("Adding a line to a log gave an unexpected answer");
+    },
+    // The database decides the wait when saving; this only chooses which reply to give.
+    async lineWaiting(parentId) {
+      const since = new Date(Date.now() - LINE_WAIT_SECONDS * 1000).toISOString();
+      const rows = check(
+        await db.from("habit_logs").select("id").eq("parent_id", parentId).is("undone_at", null).is("description", null).gte("line_asked_at", since).limit(1),
+        "Checking for a log waiting for a line",
+      ) ?? [];
+      return rows.length > 0;
     },
 
     // [2026-11-15] The database adds the 5-minute expiry from the settings version (migration 011).

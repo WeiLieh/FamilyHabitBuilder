@@ -120,6 +120,12 @@ export function photoUpdate(telegramId: number, fileId: string, caption?: string
     },
   };
 }
+// [2026-11-24] A text message the person forwarded from someone else.
+export function forwardedUpdate(telegramId: number, text: string, updateId = ++updateCounter): unknown {
+  const u = textUpdate(telegramId, "Wei Lieh", text, updateId) as { message: Record<string, unknown> };
+  u.message.forward_origin = { type: "user", sender_user: { id: 999, is_bot: false, first_name: "Someone" }, date: 1 };
+  return u;
+}
 export function tapUpdate(telegramId: number, data: string, messageId = 55, updateId = ++updateCounter): unknown {
   return {
     update_id: updateId,

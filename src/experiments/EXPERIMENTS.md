@@ -12,6 +12,7 @@
 - [2026-10-24 18:26 SGT] The exact format the code reads is agreed once the technology stack is chosen.
 
 ## The 31 values (agreed 1 Nov)
+- [2026-11-24 22:41 SGT] Values 55 and 56 added ("Add how you felt"), so **55 values are in use**.
 - [2026-11-24 22:29 SGT] Values 52 and 53 added (photos, owner 24 Nov); with value 51 (the older weeks limit, 15 Nov), **52 values are in use**.
 - [2026-11-24 22:37 SGT] Value 54 added (the Undo margin with a photo, review fix), so **53 values are in use**.
 - [2026-11-15 16:38 SGT] Value 50 added (the per-parent pass, Web app sign-in), so **49 values are in use**.
@@ -81,6 +82,8 @@
 | 52 | Tuneable | [2026-11-24 22:29 SGT] Photo wait: after a log of a behaviour that allows photos, how long a photo sent still joins that log (owner, 15 Nov). | Seconds. Today: 600 (10 minutes) | settings.ts |
 | 53 | Guardrail | [2026-11-24 22:29 SGT] Photo link: how long the link My page uses to show a photo works (privacy). | Seconds. Today: 300 (5 minutes) | settings.ts |
 | 54 | Fixed | [2026-11-24 22:37 SGT] Undo margin with a photo: Undo on a log with a photo stops this many seconds early by our server's clock, so a photo file is never removed for an Undo the database refuses (review fix). | Seconds. Always 30 | settings.ts |
+| 55 | Tuneable | [2026-11-24 22:41 SGT] Line wait: after "Add how you felt", how long the next typed line is still saved on that log (rule 5.3; the known issue of 9 Nov asked for a limit). | Seconds. Today: 600 (10 minutes) | settings.ts |
+| 56 | Fixed | [2026-11-24 22:41 SGT] Line length: the longest "how you felt" line (rule 5.3). | Always 280 characters | settings.ts and the database |
 
 ## Starting values (hypotheses, from `docs/SPEC.md`)
 - [2026-10-31 19:09 SGT] **This list describes the starting values in words. The values in force are in `src/settings.ts`; if the two ever differ, the code wins (rule 1.4).** Update this list in the same pull request as the code.

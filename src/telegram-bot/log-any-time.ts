@@ -34,6 +34,7 @@ import { logFailure } from "./log-failure.js";
 import type { Incoming } from "./updates.js";
 import { WORDS } from "./words.js";
 import { withPhotoPrompt } from "./photos.js";
+import { feltButton } from "./felt.js";
 
 type Parent = { id: number; paused: boolean };
 type Tap = Extract<Incoming, { kind: "tap" }>;
@@ -90,7 +91,8 @@ export async function logBehaviour(
   // The receipt, as a new message; with Undo only for a keyboard log.
   // [2026-11-24] With "Send a photo of what you did." if the behaviour allows photos (PH1).
   const text = await withPhotoPrompt(before ? WORDS.receiptAgain(behaviour.name) : WORDS.receipt(behaviour.name), behaviour.id, deps);
-  const buttons = via === "keyboard" ? [[{ text: WORDS.undoButton, data: `undo:${saved.logId}` }]] : [];
+  // [2026-11-24] Every receipt also has "Add how you felt" (rule 5.3, F1).
+  const buttons = via === "keyboard" ? [[{ text: WORDS.undoButton, data: `undo:${saved.logId}` }], [feltButton(saved.logId)]] : [[feltButton(saved.logId)]];
   await quietly("Saved, but sending the receipt failed", () => telegram.sendMessage(chatId, text, buttons));
   return "saved";
 }

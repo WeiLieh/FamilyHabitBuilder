@@ -43,7 +43,8 @@ const RECEIPT = "✅ <b>Saved</b>\nShowing affection today.";
 const AGAIN = "✅ <b>Saved</b>\nShowing affection, again today.\nIt counts once for your week.";
 const SORRY_SAVE = "🙇 Sorry, that didn't save. Please try again.";
 const SORRY = "🙇 Sorry, that didn't work. Please try again.";
-const undoButton = (logId: number) => [[{ text: "Undo", data: `undo:${logId}` }]];
+// [2026-11-24] Rewritten (rule 5.3, F1): a keyboard receipt has Undo and, below it, "Add how you felt" (K2 to K5, K9 use it).
+const undoButton = (logId: number) => [[{ text: "Undo", data: `undo:${logId}` }], [{ text: "Add how you felt", data: `felt:${logId}` }]];
 // [2026-11-15] Rule 5.14: a saved keyboard tap also gets one reaction on the parent's message (checked in detail by R1 to R4 in tests/telegram-bot-style-c.test.ts).
 const REACTION = { kind: "react", chatId: ME, messageId: expect.any(Number), emoji: expect.any(String) };
 const lastSend = () => telegram.calls.filter((c) => c.kind === "send").at(-1);
@@ -217,7 +218,8 @@ describe("/log (rules 5.1, 5.7)", () => {
     expect(store.logs).toEqual([expect.objectContaining({ nudgeId: 2, messageId: null, via: "log_command" })]);
     expect(telegram.calls).toEqual([
       { kind: "removeButtons", chatId: ME, messageId: 901 },
-      { kind: "send", chatId: ME, text: RECEIPT, buttons: [] },
+      // [2026-11-24] Rewritten (rule 5.3, F1): no Undo, but "Add how you felt".
+      { kind: "send", chatId: ME, text: RECEIPT, buttons: [[{ text: "Add how you felt", data: `felt:${store.logs[0]!.id}` }]] },
       { kind: "answer", tapId: expect.any(String), popup: null },
     ]);
   });

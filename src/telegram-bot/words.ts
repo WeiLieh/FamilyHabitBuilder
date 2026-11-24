@@ -177,6 +177,13 @@ export const WORDS = {
   photoAdded: "✅ Photo added to today's log.", // B1 part 2 (9 Nov), PH4
   photoNoLog: "I couldn't match this photo to a log from the last 10 minutes.\nLog the habit first, then send the photo.", // draft, D4
   photoHasOne: "This log already has a photo.\nYou can delete it on My page and send another.", // draft, D5
+  // ---- [2026-11-24] "Add how you felt" (rule 5.3; owner, 8 Nov and 24 Nov) ----
+  feltButton: "Add how you felt", // owner, 8 Nov
+  feltPrompt: "How did it feel? Type a line (up to 280 characters), or ignore this to skip.", // owner confirmed, 8 Nov
+  lineAdded: "✅ Added to today's log.", // owner confirmed, 8 Nov
+  lineTooLong: (n: number) => `That line is ${n} characters. Please shorten it to 280 or fewer and send it again.`, // default confirmed, 9 Nov
+  lineHasOne: "This log already has a line.\nYou can delete it on My page.", // draft, F7
+  lineUndone: "That log was undone, so it can't take a line.", // draft, F7; pop-up
   noBehaviours: "You haven't chosen any habits yet.\nYou can choose them in Settings.", // draft
   // ---- Menu and help ----
   myPageLink: "Here's your page.", // draft

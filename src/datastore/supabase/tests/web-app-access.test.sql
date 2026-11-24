@@ -640,4 +640,85 @@ begin
 end $$;
 select pg_temp.as_owner();
 
+-- =============================================================================
+-- [2026-11-24] Migration 013: "Add how you felt" (owner-approved tests of 24
+-- Nov, T121 to T123): a line added once to the parent's own log, within the
+-- 10-minute wait after tapping the button.
+-- =============================================================================
+select pg_temp.as_owner();
+\i src/datastore/supabase/migrations/013_add_how_you_felt.sql
+select public.record_settings_version('Line wait', '{"undo_window_seconds": 600, "connection_answer_window_hours": 24,
+  "sign_in_link_seconds": 300, "sign_in_days": 30, "older_weeks_per_page": 4, "tile_text_chars": 40, "connection_weeks": 4,
+  "line_wait_seconds": 600}'::jsonb);
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, telegram_update_id) values
+  (pg_temp.cara(), pg_temp.n1(), public.sgt_today(), 'keyboard', 7200),
+  (pg_temp.cara(), pg_temp.n2(), public.sgt_today(), 'keyboard', 7201);
+create function pg_temp.log(p_update bigint) returns bigint language sql security definer as $$ select id from public.habit_logs where telegram_update_id = p_update $$;
+
+-- T121: the tap notes the time and saves no words; the typed line goes to that
+-- log once; a resent message is saved once; another line isn't saved over it.
+set role service_role;
+do $$
+begin
+  assert public.ask_for_line(pg_temp.cara(), pg_temp.log(7200)) = 'asked', 'the tap should be noted';
+  assert (select description from public.habit_logs where id = pg_temp.log(7200)) is null, 'the tap saves no words';
+  assert public.add_log_line(pg_temp.cara(), 'We laughed at the park', 8001, pg_temp.v(), '["baseline"]') = 'saved', 'the line should be saved';
+  assert (select description from public.habit_logs where id = pg_temp.log(7200)) = 'We laughed at the park', 'the line should be on the log';
+  assert public.add_log_line(pg_temp.cara(), 'We laughed at the park', 8001, pg_temp.v(), '["baseline"]') = 'duplicate', 'a resent message is saved once';
+  assert public.add_log_line(pg_temp.cara(), 'A second line', 8002, pg_temp.v(), '["baseline"]') = 'none', 'nothing waits once the line is saved';
+  assert public.ask_for_line(pg_temp.cara(), pg_temp.log(7200)) = 'has_line', 'a log with a line says so';
+  assert (select description from public.habit_logs where id = pg_temp.log(7200)) = 'We laughed at the park', 'the line is never rewritten';
+  assert exists (select 1 from public.events e join public.event_types t on t.id = e.event_type_id where t.name = 'log_line_added'), 'an event is written';
+  raise notice 'PASS: T121 a line is added once to the log that asked, a resent message once';
+end $$;
+-- T121 (review, 24 Nov): only the latest tap waits; an earlier tapped log stops waiting.
+reset role;
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, telegram_update_id) values
+  (pg_temp.cara(), pg_temp.n1(), public.sgt_today(), 'keyboard', 7202), (pg_temp.cara(), pg_temp.n2(), public.sgt_today(), 'keyboard', 7203);
+set role service_role;
+do $$
+begin
+  perform public.ask_for_line(pg_temp.cara(), pg_temp.log(7202));
+  perform public.ask_for_line(pg_temp.cara(), pg_temp.log(7203));
+  assert public.add_log_line(pg_temp.cara(), 'For the second', 8010, pg_temp.v(), '["baseline"]') = 'saved', 'the line goes to the latest tap';
+  assert (select description from public.habit_logs where id = pg_temp.log(7203)) = 'For the second', 'on the second log';
+  assert public.add_log_line(pg_temp.cara(), 'Unrelated', 8011, pg_temp.v(), '["baseline"]') = 'none', 'the first log no longer waits';
+  raise notice 'PASS: T121 only the latest tap waits';
+end $$;
+reset role;
+
+-- T122: only within the wait, at most 280 characters, never empty.
+set role service_role;
+select public.ask_for_line(pg_temp.cara(), pg_temp.log(7201));
+reset role;
+select pg_temp.expect_refused('T122 a line over 280 characters',
+  $q$select public.add_log_line(pg_temp.cara(), repeat('a', 281), 8003, pg_temp.v(), '["baseline"]')$q$, 'description_check');
+select pg_temp.expect_refused('T122 an empty line',
+  $q$select public.add_log_line(pg_temp.cara(), '   ', 8004, pg_temp.v(), '["baseline"]')$q$, 'empty');
+update public.habit_logs set line_asked_at = now() - interval '11 minutes' where id = pg_temp.log(7201);
+do $$
+begin
+  assert public.add_log_line(pg_temp.cara(), 'Too late', 8005, pg_temp.v(), '["baseline"]') = 'none', 'after 10 minutes nothing waits';
+  assert (select description from public.habit_logs where id = pg_temp.log(7201)) is null, 'the late line is not saved';
+  raise notice 'PASS: T122 only within the 10-minute wait, at most 280 characters, never empty';
+end $$;
+
+-- T123: only the parent's own log, never an undone one; the functions are the
+-- bot's only (a page's pass or a signed-out browser can't use them).
+select pg_temp.expect_refused('T123 asking for a line on another parent''s log',
+  $q$select public.ask_for_line(pg_temp.cara() + 1000, pg_temp.log(7201))$q$, 'does not belong');
+update public.habit_logs set undone_at = now() where id = pg_temp.log(7201);
+select pg_temp.expect_refused('T123 asking for a line on an undone log',
+  $q$select public.ask_for_line(pg_temp.cara(), pg_temp.log(7201))$q$, 'undone');
+update public.habit_logs set line_asked_at = now() where id = pg_temp.log(7201);
+do $$
+begin
+  assert public.add_log_line(pg_temp.cara(), 'Undone line', 8006, pg_temp.v(), '["baseline"]') = 'none', 'an undone log takes no line';
+  raise notice 'PASS: T123 an undone log takes no line';
+end $$;
+select pg_temp.pass_for(pg_temp.cara());
+select pg_temp.expect_refused('T123 a page''s pass adding a line',
+  $q$select public.add_log_line(pg_temp.cara(), 'x', 8007, 1, '["baseline"]')$q$, 'permission denied');
+select pg_temp.as_owner();
+
 \echo ALL WEB APP ACCESS TESTS PASSED
