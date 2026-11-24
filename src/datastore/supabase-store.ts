@@ -533,21 +533,29 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
     async sundayData(day) {
       const monday = mondayOf(day);
       const sunday = addDays(monday, 6);
-      const parents = whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute"), "Reading parents"), "Reading parents");
-      const consents = whole(check(await db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording"), "Reading consents"), "Reading consents");
+      // [2026-11-24, privacy review] Only parents who aren't paused (a paused parent gets nothing),
+      // and never the words of a "how you felt" line: only which logs have one.
+      const parents = whole(check(await db.from("parents").select("id, telegram_id, first_name, paused, wrap_up_minute").eq("paused", false), "Reading parents"), "Reading parents");
+      const ids = parents.map((p) => Number(p.id));
+      if (ids.length === 0) return [];
+      const consents = whole(check(await db.from("consents").select("parent_id, topic, answer, created_at").eq("topic", "recording").in("parent_id", ids), "Reading consents"), "Reading consents");
       const logs = whole(
-        check(await db.from("habit_logs").select("id, parent_id, nudge_id, for_day, description").is("undone_at", null).gte("for_day", monday).lte("for_day", sunday), "Reading this week's logs"),
+        check(await db.from("habit_logs").select("id, parent_id, nudge_id, for_day").in("parent_id", ids).is("undone_at", null).gte("for_day", monday).lte("for_day", sunday), "Reading this week's logs"),
         "Reading this week's logs",
       );
+      const withLine = new Set(
+        whole(check(await db.from("habit_logs").select("id").in("parent_id", ids).is("undone_at", null).not("description", "is", null).gte("for_day", monday).lte("for_day", sunday), "Counting this week's lines"), "Counting this week's lines")
+          .map((l) => Number(l.id)),
+      );
       const sent = whole(
-        check(await db.from("messages_sent").select("parent_id, kind, for_day").in("kind", ["wrap_up", "connection_question"]).gte("for_day", monday).lte("for_day", sunday), "Reading Sunday messages"),
+        check(await db.from("messages_sent").select("parent_id, kind, for_day").in("parent_id", ids).in("kind", ["wrap_up", "connection_question"]).gte("for_day", monday).lte("for_day", sunday), "Reading Sunday messages"),
         "Reading Sunday messages",
       );
       const logIds = logs.map((l) => Number(l.id));
       const logPhotos = logIds.length === 0 ? [] : whole(check(await db.from("photos").select("log_id").in("log_id", logIds), "Reading this week's photos"), "Reading this week's photos");
-      const momentPhotos = whole(check(await db.from("photos").select("parent_id").eq("moment_week", monday), "Reading this week's moment photos"), "Reading this week's moment photos");
-      const momentLines = whole(check(await db.from("moment_lines").select("parent_id").eq("week_starting", monday), "Reading this week's moment lines"), "Reading this week's moment lines");
-      const reflections = whole(check(await db.from("reflections").select("parent_id").gte("for_day", monday).lte("for_day", sunday), "Reading this week's reflections"), "Reading this week's reflections");
+      const momentPhotos = whole(check(await db.from("photos").select("parent_id").in("parent_id", ids).eq("moment_week", monday), "Reading this week's moment photos"), "Reading this week's moment photos");
+      const momentLines = whole(check(await db.from("moment_lines").select("parent_id").in("parent_id", ids).eq("week_starting", monday), "Reading this week's moment lines"), "Reading this week's moment lines");
+      const reflections = whole(check(await db.from("reflections").select("parent_id").in("parent_id", ids).gte("for_day", monday).lte("for_day", sunday), "Reading this week's reflections"), "Reading this week's reflections");
       const byParent = <T extends { parent_id: unknown }>(rows: T[], id: number) => rows.filter((r) => Number(r.parent_id) === id);
       const photoLogs = new Set(logPhotos.map((p) => Number(p.log_id)));
       return parents.map((p) => {
@@ -563,7 +571,7 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
           wrapUpMinute: Number(p.wrap_up_minute),
           logs: mine.map((l) => ({ nudgeId: Number(l.nudge_id), date: String(l.for_day) })),
           messagesSent: byParent(sent, id).map((m) => ({ kind: m.kind === "wrap_up" ? ("weekly_wrap_up" as const) : ("connection_question" as const), date: String(m.for_day) })),
-          feelings: mine.filter((l) => l.description !== null).length + byParent(momentLines, id).length + byParent(reflections, id).length,
+          feelings: mine.filter((l) => withLine.has(Number(l.id))).length + byParent(momentLines, id).length + byParent(reflections, id).length,
           photos: mine.filter((l) => photoLogs.has(Number(l.id))).length + byParent(momentPhotos, id).length,
         };
       });

@@ -30,8 +30,8 @@
 
 import type { MomentState, SundayParent } from "../datastore/store.js";
 import { planConnectionQuestion, planWeeklyWrapUp } from "../nudge-engine/wrap-up.js";
-import { LINE_MAX_CHARS, MOMENT_WINDOW_HOURS } from "../settings.js";
-import { addDays, mondayOf, sgtInstant, toSgt } from "../sgt.js";
+import { LINE_MAX_CHARS, MOMENT_WINDOW_HOURS, WEEKLY_WRAP_UP_WEEKDAY } from "../settings.js";
+import { addDays, mondayOf, sgtInstant, toSgt, weekdayOf } from "../sgt.js";
 import type { BotDeps } from "./handle-update.js";
 import { logFailure } from "./log-failure.js";
 import { runMenuCommand } from "./menu.js";
@@ -56,6 +56,8 @@ const questionButtons = (week: string): Button[] => [1, 2, 3, 4, 5].map((n) => (
 export async function sendSundayMessages(deps: BotDeps, result: Counts): Promise<void> {
   const { store, now } = deps;
   const day = toSgt(now).date;
+  // [2026-11-24, privacy review] Only on Sunday: the other six days read nothing.
+  if (weekdayOf(day) !== WEEKLY_WRAP_UP_WEEKDAY) return;
   let parents: SundayParent[];
   try {
     parents = await store.sundayData(day);
@@ -88,8 +90,10 @@ async function sendSummary(p: SundayParent, day: string, { store, telegram }: Bo
   try {
     await store.recordSundayMessage({ parentId: p.parentId, kind: "wrap_up", day, telegramMessageId: messageId });
   } catch (error) {
+    // [2026-11-24, privacy review] Its buttons can't work (no Wrap Up is recorded): say so, as for the question.
     logFailure(`Wrap Up sent but not recorded for parent ${p.parentId}`, error);
     result.failed++;
+    await quietly(`Editing the unsaved Wrap Up for parent ${p.parentId} failed`, () => telegram.editMessage(p.telegramId, messageId, WORDS.wrapUpNotSaved));
   }
 }
 

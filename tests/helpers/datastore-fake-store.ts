@@ -469,7 +469,7 @@ export class FakeStore implements Store {
     this.failReadIfAsked("sundayData");
     const monday = mondayOf(day);
     const inWeek = (d: string) => mondayOf(d) === monday;
-    return this.parents.map((p) => {
+    return this.parents.filter((p) => !p.paused).map((p) => {
       const logs = this.logs.filter((l) => l.parentId === p.id && !l.undoneAt && inWeek(l.day));
       return {
         parentId: p.id,

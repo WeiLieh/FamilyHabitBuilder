@@ -93,6 +93,12 @@ describe("Sending on Sunday (W1 to W4)", () => {
     expect(sends()).toEqual([{ kind: "send", chatId: ME, text: QUESTION, buttons: QUESTION_BUTTONS }]);
   });
 
+  it("W3 (review) on the other six days, Sunday's data isn't read at all", async () => {
+    store.failReadsOf.add("sundayData"); // would count as a failure if it were asked
+    const r = await run(at("2026-11-21", 21 * 60)); // Saturday
+    expect(r.failed).toBe(0);
+  });
+
   it("W3 nothing when paused, not Sunday, before the time or not agreed; later that Sunday is fine; once a week only", async () => {
     addLog("2026-11-17");
     await run(at(SUNDAY, 19 * 60 + 55)); // before 8:00 pm
@@ -234,7 +240,8 @@ describe("View wrap up and failures (W11, W12)", () => {
     telegram.failFor.delete(ME);
     store.failSundayRecord = true;
     await run(hoursAfter(0.1));
-    expect(telegram.calls.filter((c) => c.kind === "edit").at(-1)).toMatchObject({ text: "🙇 Sorry, this question couldn't be saved, so its buttons won't work." });
+    const edits = telegram.calls.filter((c) => c.kind === "edit").map((c) => (c as { text: string }).text);
+    expect(edits).toEqual(["🙇 Sorry, this Wrap Up couldn't be saved, so its buttons won't work.", "🙇 Sorry, this question couldn't be saved, so its buttons won't work."]); // review fix: both say so
     store.failSundayRecord = false;
     await run(hoursAfter(0.2));
     store.failAnswers = true;

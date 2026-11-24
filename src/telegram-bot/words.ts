@@ -197,6 +197,7 @@ export const WORDS = {
   questionExpired: "Question expired", // rule 5.6
   questionClosed: "This question has closed.", // rule 5.6; pop-up
   questionNotSaved: "🙇 Sorry, this question couldn't be saved, so its buttons won't work.", // draft, rule 1.3 (like W6)
+  wrapUpNotSaved: "🙇 Sorry, this Wrap Up couldn't be saved, so its buttons won't work.", // draft, rule 1.3 (privacy review)
   momentPrompt: "Send a photo, or type one line about a moment from this week.\n\n<i>Upload within 24 hrs</i>", // rule 7.7
   momentSaved: "✅ Saved as this week's moment.", // owner, 24 Nov ("album" dropped)
   momentExpired: "Moment has expired. Tap Add a moment from this week to try again.", // rule 7.7, fixed

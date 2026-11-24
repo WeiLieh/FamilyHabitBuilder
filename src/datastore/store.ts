@@ -205,7 +205,8 @@ export interface Store {
   lineWaiting(parentId: number): Promise<boolean>;
 
   // ---- [2026-11-24] The Sunday Wrap Up, the 1 to 5 question and "Add a moment" (tests W1 to W12; migration 014) ----
-  // Every parent, with what Sunday's messages need; "day" is today in Singapore.
+  // Every parent who isn't paused, with what Sunday's messages need (counts, never
+  // the words); "day" is today in Singapore. Asked only on Sundays (privacy review).
   sundayData(day: string): Promise<SundayParent[]>;
   // A Wrap Up summary or connection question was sent (with Telegram's number for it).
   recordSundayMessage(a: { parentId: number; kind: "wrap_up" | "connection_question"; day: string; telegramMessageId: number }): Promise<void>;
