@@ -324,6 +324,10 @@ describe("Saving safely (rules 1.3, 9.6, 9.9)", () => {
     expect(text(await get("page=settings"))).not.toContain("Saved.");
     expect(text(await get("page=settings&saved=1&telegram=0"))).not.toContain("Saved");
     expect(text(await getWithNotice("page=settings", "made-up"))).not.toContain("Saved");
+    // A row's own page and a failed read clear it too, so an old "Saved." can't show later.
+    expect((await getWithNotice("page=settings&part=pause", "saved")).headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`);
+    db.fail = "settings";
+    expect((await getWithNotice("page=settings", "saved")).headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`);
   });
 
   it("SE13 a failed save or read says it didn't work, and never shows the change as done", async () => {

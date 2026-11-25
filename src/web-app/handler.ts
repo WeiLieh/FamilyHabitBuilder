@@ -307,16 +307,17 @@ export function createWebAppHandler(deps: {
     const params = new URL(req.url, "https://localhost").searchParams;
     const part = params.get("part");
     if (part !== null && !isPart(part)) return answer(404, paragraph(WEB_WORDS.notFound));
+    // The notice is shown at most once: any Settings page clears it, even one
+    // that doesn't show it or that fails (privacy review, 25 Nov).
+    const sent = cookieOf(req, NOTICE);
+    const clearing = (r: WebResponse) => (sent === null ? r : { ...r, headers: { ...r.headers, "set-cookie": noticeCookie("", 0) } });
     try {
       const s = await db.settings(signed.pass);
-      if (part !== null) return styledAnswer(settingsPart(part, s));
-      const sent = cookieOf(req, NOTICE);
-      const notice = NOTICES.find((n) => n === sent) ?? null;
-      const page = styledAnswer(settingsList(s, notice));
-      return sent === null ? page : { ...page, headers: { ...page.headers, "set-cookie": noticeCookie("", 0) } };
+      if (part !== null) return clearing(styledAnswer(settingsPart(part, s)));
+      return clearing(styledAnswer(settingsList(s, NOTICES.find((n) => n === sent) ?? null)));
     } catch (error) {
       logFailure("Reading Settings failed", error);
-      return didntWork();
+      return clearing(didntWork());
     }
   }
 
