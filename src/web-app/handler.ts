@@ -120,14 +120,22 @@ function logFailure(what: string, error: unknown): void {
   console.error(`${what}: ${safe}`);
 }
 
-// The sign-in cookie's value, if the browser sent one.
-function cookieOf(req: WebRequest): string | null {
+// A cookie's value, if the browser sent it (the sign-in cookie by default).
+function cookieOf(req: WebRequest, wanted = COOKIE): string | null {
   for (const part of (req.headers.cookie ?? "").split(";")) {
     const [name, ...rest] = part.trim().split("=");
-    if (name === COOKIE) return rest.join("=") || null;
+    if (name === wanted) return rest.join("=") || null;
   }
   return null;
 }
+
+// [2026-11-25] "Saved." after a Settings save travels in this short-lived
+// cookie, set only by our server, never in the address, so a crafted link
+// can't make a page say something was saved (privacy review item 3).
+const NOTICE = "__Host-fhb_notice";
+const NOTICES = ["saved", "saved-not-told"] as const;
+type Notice = (typeof NOTICES)[number];
+const noticeCookie = (value: Notice | "", maxAge: number) => `${NOTICE}=${value}; Max-Age=${maxAge}; ${COOKIE_FLAGS}`;
 
 // [2026-11-24] photoOrigin: our Supabase project's address ("https://…supabase.co"), where photo links point.
 // [2026-11-25] tellPause: has the bot send its short line to that Telegram
@@ -290,8 +298,8 @@ export function createWebAppHandler(deps: {
     return { status: 303, headers: { ...headers, location: `${BASE}?page=week` }, body: "" };
   }
 
-  // [2026-11-25] ?page=settings (&part=…, &saved=1): the Settings list or one
-  // row's own page (rule 9.9). The settings must be read, or the page says it
+  // [2026-11-25] ?page=settings (&part=…): the Settings list or one row's own
+  // page (rule 9.9). The list shows "Saved." once, from our notice cookie. The settings must be read, or the page says it
   // didn't work (rule 1.3).
   async function settings(req: WebRequest): Promise<WebResponse> {
     const signed = await passFor(req);
@@ -299,14 +307,17 @@ export function createWebAppHandler(deps: {
     const params = new URL(req.url, "https://localhost").searchParams;
     const part = params.get("part");
     if (part !== null && !isPart(part)) return answer(404, paragraph(WEB_WORDS.notFound));
+    // The notice is shown at most once: any Settings page clears it, even one
+    // that doesn't show it or that fails (privacy review, 25 Nov).
+    const sent = cookieOf(req, NOTICE);
+    const clearing = (r: WebResponse) => (sent === null ? r : { ...r, headers: { ...r.headers, "set-cookie": noticeCookie("", 0) } });
     try {
       const s = await db.settings(signed.pass);
-      if (part !== null) return styledAnswer(settingsPart(part, s));
-      const notice = params.get("saved") === "1" ? (params.get("telegram") === "0" ? "saved-not-told" : "saved") : null;
-      return styledAnswer(settingsList(s, notice));
+      if (part !== null) return clearing(styledAnswer(settingsPart(part, s)));
+      return clearing(styledAnswer(settingsList(s, NOTICES.find((n) => n === sent) ?? null)));
     } catch (error) {
       logFailure("Reading Settings failed", error);
-      return didntWork();
+      return clearing(didntWork());
     }
   }
 
@@ -346,8 +357,8 @@ export function createWebAppHandler(deps: {
       logFailure("Saving Settings failed", error);
       return didntWork();
     }
-    const location = `${BASE}?page=settings&saved=1${told ? "" : "&telegram=0"}`;
-    return { status: 303, headers: { ...headers, location }, body: "" };
+    const notice: Notice = told ? "saved" : "saved-not-told";
+    return { status: 303, headers: { ...headers, location: `${BASE}?page=settings`, "set-cookie": noticeCookie(notice, 60) }, body: "" };
   }
 
   // ?page=delete-my-data (POST): only with "I understand" ticked. The photo

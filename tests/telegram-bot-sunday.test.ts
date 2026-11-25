@@ -87,6 +87,17 @@ describe("Sending on Sunday (W1 to W4)", () => {
     expect(store.sundaySent.map((m) => m.kind)).toEqual(["wrap_up", "connection_question"]);
   });
 
+  // [2026-11-25] Owner (25 Nov): any activity counts (rule 3.12), so a week with only a reflection gets the summary.
+  it("W2 a week with no habit log but a reflection gets the summary too, then the question", async () => {
+    store.reflections.push({ parentId, day: "2026-11-18" });
+    store.reflections.push({ parentId, day: "2026-11-11" }); // last week: doesn't count
+    await run();
+    expect(sends()).toEqual([
+      { kind: "send", chatId: ME, text: "<b>Your week, John</b>\n\nHabits logged: 0\nFeelings logged: 1\nPhotos: 0", buttons: SUMMARY_BUTTONS },
+      { kind: "send", chatId: ME, text: QUESTION, buttons: QUESTION_BUTTONS },
+    ]);
+  });
+
   it("W2 with no activity that week, only the question is sent", async () => {
     addLog("2026-11-12"); // last week
     await run();

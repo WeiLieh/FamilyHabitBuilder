@@ -601,6 +601,8 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
           messagesSent: byParent(sent, id).map((m) => ({ kind: m.kind === "wrap_up" ? ("weekly_wrap_up" as const) : ("connection_question" as const), date: String(m.for_day) })),
           feelings: mine.filter((l) => withLine.has(Number(l.id))).length + byParent(momentLines, id).length + byParent(reflections, id).length,
           photos: mine.filter((l) => photoLogs.has(Number(l.id))).length + byParent(momentPhotos, id).length,
+          // [2026-11-25] Any activity counts for the Wrap Up, not only logs (rule 3.12).
+          otherActivity: byParent(reflections, id).length + byParent(momentLines, id).length + byParent(momentPhotos, id).length,
         };
       });
     },

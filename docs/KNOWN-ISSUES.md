@@ -4,6 +4,26 @@
 
 ## Open
 
+### [2026-11-25 23:10 SGT] On a shared phone, "Saved." can show for the next parent within a minute
+- **Issue:** [2026-11-25 23:10 SGT] The "✅ Saved." notice lives in a 60-second cookie that sign-out and "delete my data" don't clear (privacy review, Low).
+- **Impact:** [2026-11-25 23:10 SGT] If one parent saves, signs out, and another signs in on the same phone within 60 seconds, the second may see "Saved." once. Nothing personal is shown.
+- **Workaround:** [2026-11-25 23:10 SGT] None needed (owner, 25 Nov: "leave it").
+
+### [2026-11-25 22:50 SGT] The Web app now holds the bot's Telegram token (privacy review, Settings)
+- **Issue:** [2026-11-25 22:50 SGT] `api/web-app.ts` uses `TELEGRAM_BOT_TOKEN` to send the bot's line after a pause or Behaviours change in Settings. Before, only the bot held it.
+- **Impact:** [2026-11-25 22:50 SGT] If the Web app were ever broken into, someone could message parents as the bot. The token is never in a page, an address or a log.
+- **Workaround:** [2026-11-25 22:50 SGT] Accepted by the owner (25 Nov). Alternative if needed later: Settings leaves a note for the bot to send at its next alarm run (up to 10 minutes later).
+
+### [2026-11-25 22:50 SGT] "Delete my data" can stop halfway, after the photo files are gone
+- **Issue:** [2026-11-25 22:50 SGT] The photo files are removed first (rule 8.5); if the records' delete then fails, the photos are gone while the records stay.
+- **Impact:** [2026-11-25 22:50 SGT] The parent is told it didn't work; Week so far shows broken photos until they try again, which finishes the delete.
+- **Workaround:** [2026-11-25 22:50 SGT] Try "Delete my data" again (accepted by the owner, 25 Nov).
+
+### [2026-11-25 22:50 SGT] After "delete my data", a paused parent's Telegram Menu still shows /resume
+- **Issue:** [2026-11-25 22:50 SGT] The Menu isn't put back after the delete.
+- **Impact:** [2026-11-25 22:50 SGT] Harmless: the data is gone; tapping /resume gets the reply for someone not signed up.
+- **Workaround:** [2026-11-25 22:50 SGT] None needed (accepted by the owner, 25 Nov).
+
 ### [2026-11-25 22:32 SGT] Settings' switch, tick boxes and row sizes are not yet the owner's decisions
 - **Issue:** [2026-11-25 22:32 SGT] Settings (rule 9.9) uses sizes and the accent green for its switch, tick boxes, rows and Back link that aren't in the UI decisions (docs/ERROR-LOG.md, 25 Nov).
 - **Impact:** [2026-11-25 22:32 SGT] The look may differ from what the owner wants; nothing is wrong with how it works.
