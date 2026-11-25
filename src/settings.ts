@@ -80,6 +80,9 @@ export const DEFAULT_WEEKLY_WRAP_UP = { minutes: 20 * 60 };
 // ---- Moved here on 1 Nov (decision L, rule 1.4): numbers that lived in the Nudge engine ----
 // Frequencies a parent can choose for a quick behaviour (value 8 in src/experiments/EXPERIMENTS.md).
 export const QUICK_FREQUENCIES: readonly string[] = ["every_day", "every_2_days"];
+// [2026-11-25] The most quick behaviours a parent may choose (rule 2.1); Settings
+// checks it (rule 9.9), and the database checks it too (migrations 015, 016).
+export const MAX_QUICK_PICKS = 2;
 // Frequencies for a deliberate behaviour, and how many times a week each one means.
 export const DELIBERATE_FREQUENCY_TIMES_PER_WEEK: Readonly<Record<string, number>> = {
   once_a_week: 1,

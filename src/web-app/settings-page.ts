@@ -21,7 +21,9 @@ import type { SettingsChange, WebSettings } from "../datastore/web-app-store.js"
 import { checkWrapUpTime } from "../nudge-engine/wrap-up.js";
 import { availableSlotStarts, checkSchedules } from "../nudge-engine/schedule.js";
 import {
+  DEFAULT_FREQUENCIES,
   DELIBERATE_FREQUENCY_TIMES_PER_WEEK,
+  MAX_QUICK_PICKS,
   MAX_CHILDREN,
   MAX_SLOTS_PER_SCHEDULE,
   NAME_MAX_CHARS,
@@ -130,8 +132,8 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
       const chosen = new Map(s.picks.map((k) => [k.nudgeId, k.frequency]));
       const quick = s.behaviours.filter((b) => b.category === "quick");
       const deliberate = s.behaviours.filter((b) => b.category === "deliberate");
-      const quickFreq = quick.map((b) => chosen.get(b.id)).find((f) => f) ?? "every_2_days";
-      const delibFreq = deliberate.map((b) => chosen.get(b.id)).find((f) => f) ?? "once_a_week";
+      const quickFreq = quick.map((b) => chosen.get(b.id)).find((f) => f) ?? DEFAULT_FREQUENCIES.quick;
+      const delibFreq = deliberate.map((b) => chosen.get(b.id)).find((f) => f) ?? DEFAULT_FREQUENCIES.deliberate;
       const tick = (name: string, value: string, label: string, on: boolean, type: "checkbox" | "radio") =>
         `<label class="choice"><input type="${type}" name="${name}" value="${esc(value)}"${on ? " checked" : ""}><span>${esc(label)}</span></label>`;
       const noDeliberate = !deliberate.some((b) => chosen.has(b.id));
@@ -305,7 +307,7 @@ export function checkSave(form: URLSearchParams, s: WebSettings): SaveCheck {
       const qf = form.get("quick_frequency") ?? "";
       const df = form.get("deliberate_frequency") ?? "";
       if (!QUICK_FREQUENCIES.includes(qf) || !DELIBERATE_FREQUENCIES.includes(df)) return bad("behaviours", S.pickHowOften);
-      if (quick.length > 2) return bad("behaviours", S.upTo2Quick);
+      if (quick.length > MAX_QUICK_PICKS) return bad("behaviours", S.upTo2Quick);
       if (quick.length + (deliberate === null ? 0 : 1) < 1) return bad("behaviours", S.keepOneBehaviour);
       const picks = [...quick.map((nudgeId) => ({ nudgeId, frequency: qf })), ...(deliberate === null ? [] : [{ nudgeId: deliberate, frequency: df }])];
       return { ok: true, changes: [{ kind: "behaviours", picks }] };
