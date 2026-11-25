@@ -2,7 +2,9 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-24 23:56 SGT]** (session 20 ended: the look, photos, "Add how you felt", the Sunday Wrap Up and the **Demo module** all merged (#57 to #63); `/demo` waits for migration 015 and one Vercel setting).
+**Last updated: [2026-11-25 23:18 SGT]** (session 21 ended: **Settings live** (#64 to #66, migrations 015 to 017 applied); pause both ways; the Wrap Up counts any activity; next: the testing backlog, then the look and Habits so far).
+
+SUPERSEDED [2026-11-25 23:18 SGT] **Last updated: [2026-11-24 23:56 SGT]** (session 20 ended: the look, photos, "Add how you felt", the Sunday Wrap Up and the **Demo module** all merged (#57 to #63); `/demo` waits for migration 015 and one Vercel setting).
 
 SUPERSEDED [2026-11-24 23:56 SGT] **Last updated: [2026-11-24 23:10 SGT]** (session 20 ended: **My page's look, photos, "Add how you felt" and the Sunday Wrap Up all live** (#57 to #60, migrations 012 to 014); first live Wrap Up Sunday 29 Nov).
 
@@ -10,7 +12,9 @@ SUPERSEDED [2026-11-24 23:10 SGT] **Last updated: [2026-11-24 22:18 SGT]** (sess
 
 SUPERSEDED [2026-11-24 22:18 SGT] **Last updated: [2026-11-15 22:36 SGT]** (session 19 ended: sign-in live; **Week so far built in plain HTML and deployed (#55)**, its phone tests U63 to U69 next time).
 
-> [2026-11-24 23:56 SGT] **⏰ Next:** to switch on the demo: run **migration 015**, add `DEMO_OWNER_TELEGRAM_IDS` (your Telegram user ID from @userinfobot) in Vercel and redeploy, then try `/demo`. **Phone tests** U63 to U83 (U79 onwards on Sunday 29 Nov). **Next build (your choice, 4c).**
+> [2026-11-25 23:18 SGT] **⏰ Next:** **the testing backlog** (section 5), starting with Settings U84 to U98 tonight or tomorrow, and the first live Wrap Up on **Sunday 29 Nov**. Then decide (4b): automating the tests, step 2 (the look), step 3 (Habits so far).
+>
+> SUPERSEDED [2026-11-25 23:18 SGT] [2026-11-24 23:56 SGT] **⏰ Next:** to switch on the demo: run **migration 015**, add `DEMO_OWNER_TELEGRAM_IDS` (your Telegram user ID from @userinfobot) in Vercel and redeploy, then try `/demo`. **Phone tests** U63 to U83 (U79 onwards on Sunday 29 Nov). **Next build (your choice, 4c).**
 >
 > SUPERSEDED [2026-11-24 23:56 SGT] [2026-11-24 23:10 SGT] **⏰ Next:** **phone tests** U63 to U72, then U73 to U83 (U79 onwards on Sunday 29 Nov). Merge the session notes pull request. **Next build (your choice, 4c):** an older week's own page; Settings once designed (needed before real families); or Claude's words once the nudge personality is ready.
 >
@@ -50,7 +54,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-24 23:10 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 014 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt" and the Sunday Wrap Up live** → (4) Web app ⬅ **sign-in, Week so far, your look and photos live; next: an older week's page, Settings, tab 2** → then Claude's words (the personality and warm reply); the photo check is parked.
+[2026-11-25 23:18 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 017 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt", the Sunday Wrap Up and pause both ways live** → (4) Web app ⬅ **sign-in, Week so far, Settings, your look and photos live; next: the look's open choices, Habits so far, an older week's page** → then Claude's words (the personality and warm reply); the photo check is parked.
+
+SUPERSEDED [2026-11-25 23:18 SGT] [2026-11-24 23:10 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 014 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt" and the Sunday Wrap Up live** → (4) Web app ⬅ **sign-in, Week so far, your look and photos live; next: an older week's page, Settings, tab 2** → then Claude's words (the personality and warm reply); the photo check is parked.
 
 SUPERSEDED [2026-11-24 23:10 SGT] [2026-11-15 22:36 SGT] **Development order (agreed):** (1) Nudge repository, then Nudge engine decisions ✅ done → (2) Datastore ✅ **migrations up to 011 applied** → (3) Telegram bot ✅ live → (4) Web app ⬅ **sign-in live; Week so far built (plain HTML, #55); next: its phone tests, then an older week's page or photos, and your look** → then Claude's words (the personality and warm reply)
 
@@ -98,10 +104,12 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - **1.1 to 1.5** (users, Singapore time, no fallbacks, numbers live once in code with five kinds, "delete my data" reaches every store): [docs/SPEC.md](SPEC.md), "Cross-cutting rules"
 - **2.1 to 2.5, 3.1 to 3.13, 3.15 to 3.17**: [Nudge engine](../src/nudge-engine/SPEC.md)
 - **4.1 to 4.7**: [Nudge repository](../src/nudge-repository/SPEC.md)
+- [2026-11-25 23:18 SGT] **12.1 to 12.7**: [Demo](../src/demo/SPEC.md)
 - **5.1, 5.3, 5.4, 5.6 to 5.15, 3.14**: [Telegram bot](../src/telegram-bot/SPEC.md) (and the onboarding decisions of 12 Nov, section "Recorded: group A finished") · **5.2, 10.1 to 10.4**: [Telemetry](../src/telemetry/SPEC.md) · **5.5, 8.1 to 8.13**: [Datastore](../src/datastore/SPEC.md) (the 19 tables are listed there, under "Tables")
 - **6.1, 6.2**: [Photo check](../src/photo-check/SPEC.md)
 - **7.1 to 7.8**: [Variable rewards](../src/variable-rewards/SPEC.md)
-- [2026-11-15 11:41 SGT] **9.1 to 9.8**: [Web app](../src/web-app/SPEC.md) (adds 9.8, per-parent access)
+- [2026-11-25 23:18 SGT] **9.1 to 9.9**: [Web app](../src/web-app/SPEC.md) (adds 9.9, Settings)
+- SUPERSEDED [2026-11-25 23:18 SGT] [2026-11-15 11:41 SGT] **9.1 to 9.8**: [Web app](../src/web-app/SPEC.md) (adds 9.8, per-parent access)
 - SUPERSEDED [2026-11-15 11:41 SGT] [2026-11-14 22:24 SGT] **9.1 to 9.7**: [Web app](../src/web-app/SPEC.md) (My page's four tabs, sign-in, Week so far, the connection card, deleting, older weeks; plus two parked questions)
 - SUPERSEDED [2026-11-14 22:24 SGT] **9.1**: [Web app](../src/web-app/SPEC.md) (plus two parked questions)
 - **11.1 to 11.13**: [Experiments](../src/experiments/SPEC.md); the values (38 in use) and their five kinds are in [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)
@@ -111,38 +119,32 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-11-24 23:10 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-24-session-20.md](archive/CATCH-UP-sections-4-5-to-2026-11-24-session-20.md), word for word.
+[2026-11-25 23:18 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-25-session-21.md](archive/CATCH-UP-sections-4-5-to-2026-11-25-session-21.md), word for word.
 
-**4a. Latest decisions (session 20, 24 Nov)**
-- [2026-11-24 23:56 SGT] **The Demo module** (#63, rules 12.1 to 12.7 in [src/demo/SPEC.md](../src/demo/SPEC.md)): `/demo` (you only) starts a fresh demo parent and the real sign-up without an invite; while it runs your account belongs to the demo and your real reminders pause; `/next` sends each chosen habit's reminder once, then the Wrap Up and the 1 to 5 question; `/demo stop` deletes it, photos first. Waits for migration 015 and the Vercel setting.
-- [2026-11-24 23:10 SGT] **My page has your look** (#57): UI decisions L1 to L13 in [docs/CONTEXT.md](CONTEXT.md), Delete in warning red, no dark mode; the stylesheet is allowed by its fingerprint (option A).
-- [2026-11-24 23:10 SGT] **Photos are live** (#58, migration 012) with **no photo check** (parked to the backlog) and no "Did you do it?"; consent at the first photo uses a draft wording (known issue).
-- [2026-11-24 23:10 SGT] **"Add how you felt" is live** (#59, migration 013; rule 8.4 edit 15): 10 minutes to type the line, once.
-- [2026-11-24 23:10 SGT] **The Sunday Wrap Up, the 1 to 5 question and Add a moment are live** (#60, migration 014; rule 8.4 edit 16): first real run **Sunday 29 Nov**; moment receipt "✅ Saved as this week's moment."; View wrap up sends a fresh link.
+**4a. Latest decisions (session 21, 25 Nov)**
+- [2026-11-25 23:18 SGT] **Settings is live** (#64 to #66, rule 9.9 in [src/web-app/SPEC.md](../src/web-app/SPEC.md)): your wireframe's four groups; the Wrap Up has a time only (rule 3.12 won); pausing works both ways and Telegram says so (rule 5.7); /settings opens Settings; after a Behaviours save the bot sends the new habit buttons; delete my data removes the photo files first.
+- [2026-11-25 23:18 SGT] **The Sunday Wrap Up counts any activity** (a log, a reflection or a moment, rule 3.12), in the Demo too.
+- [2026-11-25 23:18 SGT] **Four known issues accepted:** the bot token in the Web app; a delete stopping halfway; the Menu after a delete; "Saved." on a shared phone.
 
-**4b. For Claude Chat (bring each back as a handoff file, habit H10)**
-- [2026-11-15 17:00 SGT] (1) **My page, the rest:** tab 4 Settings (also **withdrawing photo consent**), tab 2 "Habits so far", tab 3 Rewards later; the empty states; the ✓ habit tile (it has a plain frame for now).
-- [2026-11-15 17:00 SGT] (2) **Words still to draft:** the B1 drafts in `src/telegram-bot/words.ts`; the Web app drafts in `src/web-app/words.ts`; [2026-11-24 23:10 SGT] the new drafts (photo consent, "no log for this photo", "already has a line", "This photo couldn't be loaded.").
-- [2026-11-24 23:10 SGT] (3) **The photo consent wording** for your PDPA reviewer (known issue), with withdrawing consent.
+**4b. For you to decide**
+- [2026-11-25 23:18 SGT] **Automating the phone tests:** a desktop-app session with browser control driving Telegram Web (most Telegram and Settings tests), and/or Playwright tests for My page here (needs a fresh sign-in link each run). Phone-only and clock-based tests stay with you.
+- [2026-11-25 23:18 SGT] **Step 2, the look:** the Settings switch and tick boxes (accent green?), row heights, the Back header, text boxes, the underlined Remove, the ✓ habit tile, the empty states (list in `docs/KNOWN-ISSUES.md`).
+- [2026-11-25 23:18 SGT] **Step 3, Habits so far:** layout wireframes first (rule 9.2 says only "show me we're growing"), then a high-fidelity mock-up shown only to you.
+- [2026-11-25 23:18 SGT] `docs/KNOWN-ISSUES.md` is 309 lines: move resolved and oldest entries word for word to `docs/archive/`?
 
-**4c. Questions for you (none block the next build)**
-- [2026-11-14 10:38 SGT] **Q12** when the birth year is collected (parked).
-- [2026-11-15 11:41 SGT] List order: this week newest first, an older week oldest first (parked).
-- [2026-11-24 23:10 SGT] **Next build (your choice):** an older week's own page (rule 9.7); Settings, once designed (with withdrawing photo consent and "delete my data" removing photo files, both needed before real families); or Claude's words (the warm reply, rules 3.11 and 7.5) once the nudge personality is ready.
+**4c. Still for Claude Chat (bring each back as a handoff file, habit H10)**
+- [2026-11-15 17:00 SGT] Tab 2 "Habits so far", tab 3 Rewards later; the empty states; the ✓ habit tile.
+- [2026-11-24 23:10 SGT] Words still to draft (B1 drafts, Web app drafts, the photo-consent and "Saved." lines), and **the photo consent wording** for your PDPA reviewer.
 
-**4d. Still to design**
-- [2026-11-15 17:00 SGT] How the bot records **which child** a log was with (backlog).
-
-**4e. Parked (you asked me not to raise these first)**
-- [2026-11-14 10:38 SGT] "Pause" versus "stop"; whether stopping is as easy as starting; the first alpha experiment; the Terms & Conditions page; [2026-11-24 23:10 SGT] the photo check (backlog).
+**4d. Parked (you asked me not to raise these first)**
+- [2026-11-14 10:38 SGT] "Pause" versus "stop"; whether stopping is as easy as starting; the first alpha experiment; the Terms & Conditions page; [2026-11-24 23:10 SGT] the photo check (backlog); [2026-11-14 10:38 SGT] Q12 when the birth year is collected; [2026-11-15 11:41 SGT] list order; how the bot records which child a log was with.
 
 ---
 
 ## 5. Waiting on you (not blocking the next steps)
 
-- [2026-11-24 23:56 SGT] **Switch on the demo:** run migration 015 (the final copy, sent after the reviews); in Vercel add `DEMO_OWNER_TELEGRAM_IDS` = your Telegram user ID (from @userinfobot, not your mobile number), then redeploy; try `/demo`, `/next`, `/demo stop`.
-- [2026-11-24 23:10 SGT] **Phone tests:** U63 to U72 ([src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)), then U73 to U83 ([src/telegram-bot/UAT-session-20.md](../src/telegram-bot/UAT-session-20.md)); U79 to U83 on **Sunday 29 Nov** and Monday.
-- [2026-11-24 23:10 SGT] **Merge the end-of-session notes pull request** (H9).
-- [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice; the 90-day record line (K1); **photo consent wording** and withdrawing photo consent; reflections and lines that mention the child.
+- [2026-11-25 23:18 SGT] **The testing backlog, in order:** Settings U84 to U98 ([src/web-app/UAT-settings.md](../src/web-app/UAT-settings.md); U97 with a test account only); Week so far U63 to U72 ([src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)); photos and lines U73 to U78, then **Sunday 29 Nov** U79 to U82 and Monday U83 ([src/telegram-bot/UAT-session-20.md](../src/telegram-bot/UAT-session-20.md)); the Demo (add `DEMO_OWNER_TELEGRAM_IDS` in Vercel, then `/demo`, `/next`, `/demo stop`); older U45, U46, U53 ([src/telegram-bot/UAT-b1.md](../src/telegram-bot/UAT-b1.md)), U33, U35 ([src/telegram-bot/UAT-planner.md](../src/telegram-bot/UAT-planner.md)). Retired: U49, U52.
+- [2026-11-25 23:18 SGT] **Merge the end-of-session notes pull request** (H9).
+- [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice; the 90-day record line (K1); photo consent wording and withdrawing it ([2026-11-25 23:18 SGT] Settings now says "to withdraw it, delete your data"); reflections and lines that mention the child.
 - [2026-11-14 10:38 SGT] **Nudge personality** ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) before Claude's warm reply (rule 7.5).
 - [2026-11-14 10:38 SGT] **Before launch:** upload MOE school holiday and Singapore public holiday dates; fill in the Terms & Conditions page.
