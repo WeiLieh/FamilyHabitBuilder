@@ -167,6 +167,14 @@ describe("The short week (DM6 to DM9)", () => {
     expect(lastText()).toMatch(/^<b>Your week, Wei Lieh<\/b>/);
   });
 
+  // [2026-11-25] Rule 3.12 (owner, 25 Nov): any activity counts, in the demo too (the demo changes only the pacing).
+  it("DM7 a demo week with no log but a reflection still gets the summary before the question", async () => {
+    store.reflections.push({ parentId: demoParent()!.id, day: today });
+    for (let i = 0; i < 3; i++) await say("/next"); // the three reminders, none tapped
+    await say("/next");
+    expect(lastText()).toMatch(/^<b>Your week, Wei Lieh<\/b>\n\nHabits logged: 0\nFeelings logged: 1/);
+  });
+
   it("DM8 every reply works as for a real parent: receipt with the photo line, a photo, 'how you felt', 1 to 5, Add a moment, View wrap up", async () => {
     const demo = demoParent()!;
     await say("/next");

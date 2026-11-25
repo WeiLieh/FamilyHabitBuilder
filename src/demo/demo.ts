@@ -162,13 +162,14 @@ async function nextStep(chatId: number, owner: number, deps: BotDeps): Promise<v
         return await sendDemoReminder(chatId, demo.id, b, i, deps);
       }
     }
-    // 2. The Wrap Up summary (with a log this week), then 3. the 1 to 5 question.
+    // 2. The Wrap Up summary (with any activity this week: a log, a reflection
+    // or a moment, rule 3.12, as for a real parent), then 3. the 1 to 5 question.
     const p = (await store.sundayData(day, demo.id))[0];
     if (!p) throw new Error("The demo parent has no Sunday data");
     const here = { ...p, telegramId: chatId, paused: false };
     const counts = { failed: 0 };
     const sentThisWeek = (kind: "weekly_wrap_up" | "connection_question") => p.messagesSent.some((m) => m.kind === kind && mondayOf(m.date) === mondayOf(day));
-    if (p.logs.length > 0 && !sentThisWeek("weekly_wrap_up")) return void (await sendSummary(here, day, deps, counts));
+    if ((p.logs.length > 0 || p.otherActivity > 0) && !sentThisWeek("weekly_wrap_up")) return void (await sendSummary(here, day, deps, counts));
     if (!sentThisWeek("connection_question")) return void (await sendQuestion(here, day, deps, counts));
     await telegram.sendMessage(chatId, DEMO_WORDS.done);
   } catch (error) {
