@@ -1,14 +1,15 @@
 // =============================================================================
 // tests/web-app-settings.test.ts: My page's Settings tab
 //
-// What it checks: [2026-11-25] the owner-approved tests SE1 to SE14 for rule
+// What it checks: [2026-11-25] the owner-approved tests SE1 to SE15 for rule
 // 9.9 (Settings, from the owner's clickable wireframe of 15 Nov): the list in
 // four groups, each row's own page with Back, and what each control saves.
 //   SE1 the list · SE2 a row's own page · SE3 pause · SE4 reminder times ·
 //   SE5 behaviours · SE6 Weekly Wrap Up (a time only, rule 3.12) · SE7 name
 //   and children · SE8 What we record · SE9 Coming soon rows · SE10 delete my
 //   data · SE11 sign out · SE12 "Saved." · SE13 a failed save says so (rule
-//   1.3) · SE14 safety (forged forms, no copies kept).
+//   1.3) · SE14 safety (forged forms, no copies kept) · SE15 the new habit
+//   buttons in Telegram after a Behaviours save (owner, 25 Nov).
 // It checks behaviour and words, not the look. The database is a pretend one
 // (tests/helpers/web-app-fake-db.ts) that follows the same counting rules as
 // migration 016; the real database is checked by T131 to T145.

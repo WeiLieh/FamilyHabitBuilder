@@ -1211,5 +1211,13 @@ select pg_temp.as_owner();
 set role anon;
 select pg_temp.expect_refused('T146 a signed-out browser', $q$select public.web_set_behaviours('[]', 1, '[]')$q$, 'permission denied');
 reset role;
+do $$
+begin
+  assert (select pg_get_userbyid(proowner) from pg_proc where oid = 'public.web_set_behaviours(jsonb, bigint, jsonb)'::regprocedure) = 'web_page_writer',
+    'it still runs as the narrow writer role';
+  assert not has_function_privilege('service_role', 'public.web_set_behaviours(jsonb, bigint, jsonb)', 'execute'), 'the master key can''t call it';
+  assert has_function_privilege('authenticated', 'public.web_set_behaviours(jsonb, bigint, jsonb)', 'execute'), 'a parent''s pass can';
+  raise notice 'PASS: T146 the same owner and rights as migration 016';
+end $$;
 
 \echo ALL WEB APP ACCESS TESTS PASSED
