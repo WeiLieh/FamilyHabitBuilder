@@ -4,6 +4,11 @@
 
 ## Open
 
+### [2026-11-25 23:10 SGT] On a shared phone, "Saved." can show for the next parent within a minute
+- **Issue:** [2026-11-25 23:10 SGT] The "✅ Saved." notice lives in a 60-second cookie that sign-out and "delete my data" don't clear (privacy review, Low).
+- **Impact:** [2026-11-25 23:10 SGT] If one parent saves, signs out, and another signs in on the same phone within 60 seconds, the second may see "Saved." once. Nothing personal is shown.
+- **Workaround:** [2026-11-25 23:10 SGT] None needed (owner, 25 Nov: "leave it").
+
 ### [2026-11-25 22:50 SGT] The Web app now holds the bot's Telegram token (privacy review, Settings)
 - **Issue:** [2026-11-25 22:50 SGT] `api/web-app.ts` uses `TELEGRAM_BOT_TOKEN` to send the bot's line after a pause or Behaviours change in Settings. Before, only the bot held it.
 - **Impact:** [2026-11-25 22:50 SGT] If the Web app were ever broken into, someone could message parents as the bot. The token is never in a page, an address or a log.
