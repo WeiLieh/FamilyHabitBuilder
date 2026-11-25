@@ -472,6 +472,8 @@ export class FakeStore implements Store {
   momentLines: { parentId: number; week: string; text: string; updateId: number }[] = [];
   failSundayRecord = false;
   failAnswers = false;
+  // [2026-11-25] Reflections (only what the Sunday job counts: whose and which day).
+  reflections: { parentId: number; day: string }[] = [];
   async sundayData(day: string, onlyParentId?: number): Promise<SundayParent[]> {
     this.failReadIfAsked("sundayData");
     const monday = mondayOf(day);
@@ -490,8 +492,15 @@ export class FakeStore implements Store {
         messagesSent: this.sundaySent
           .filter((m) => m.parentId === p.id && inWeek(m.day))
           .map((m) => ({ kind: m.kind === "wrap_up" ? ("weekly_wrap_up" as const) : ("connection_question" as const), date: m.day })),
-        feelings: logs.filter((l) => this.lines.has(l.id)).length + this.momentLines.filter((m) => m.parentId === p.id && m.week === monday).length,
+        feelings:
+          logs.filter((l) => this.lines.has(l.id)).length +
+          this.momentLines.filter((m) => m.parentId === p.id && m.week === monday).length +
+          this.reflections.filter((r) => r.parentId === p.id && inWeek(r.day)).length,
         photos: logs.filter((l) => this.photos.some((ph) => ph.logId === l.id)).length + this.momentPhotos.filter((m) => m.parentId === p.id && m.week === monday).length,
+        otherActivity:
+          this.reflections.filter((r) => r.parentId === p.id && inWeek(r.day)).length +
+          this.momentLines.filter((m) => m.parentId === p.id && m.week === monday).length +
+          this.momentPhotos.filter((m) => m.parentId === p.id && m.week === monday).length,
       };
     });
   }

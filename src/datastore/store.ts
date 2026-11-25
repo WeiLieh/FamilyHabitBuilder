@@ -90,6 +90,7 @@ export type SundayParent = {
   messagesSent: SentMessage[]; // this week's Wrap Up and connection question
   feelings: number; // "how you felt" lines, moment lines and reflections this week (D6)
   photos: number; // photos saved this week, on logs and moments (D6)
+  otherActivity: number; // [2026-11-25] this week's reflections, moment lines and moment photos (rule 3.12)
 };
 // [2026-11-24] The state of "Add a moment from this week" (rule 7.7).
 // [2026-11-24, review] wrapUpSentAt: when that Wrap Up was sent (a tap before it belongs to an earlier one).

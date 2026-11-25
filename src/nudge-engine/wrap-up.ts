@@ -20,8 +20,9 @@
 //   2. Only on Sunday, from the parent's chosen time until midnight. If the
 //      scheduler is late, it still goes out later that Sunday, never Monday.
 //   3. At most once a week, even if the parent changes the time after it went.
-//   4. Only if the parent logged at least once this week (Monday to Sunday).
-//      Any log counts, including behaviours the parent didn't choose.
+//   4. Only if the parent did something this week (Monday to Sunday): any
+//      log (including behaviours the parent didn't choose), or [2026-11-25]
+//      a reflection or a moment (rule 3.12, owner 9 Nov; fixed 25 Nov).
 //
 // [2026-11-24] planConnectionQuestion (below) decides the 1 to 5 question the same way, without rule 4.
 //
@@ -44,6 +45,8 @@ export type WrapUpInput = {
   paused: boolean; // the one Pause switch: stops nudges, the Wrap Up and the connection question (owner, 9 Nov)
   logs: LogEntry[]; // every log, chosen behaviour or not
   messagesSent: SentMessage[];
+  // [2026-11-25] This week's reflections, moment lines and moment photos (rule 3.12: any activity counts).
+  otherActivity?: number;
 };
 
 export type NoWrapUpReason = "paused" | "not_sunday" | "too_early" | "already_sent" | "nothing_logged";
@@ -66,9 +69,9 @@ export function planWeeklyWrapUp(input: WrapUpInput): WrapUpResult {
   const sentThisWeek = input.messagesSent.some((m) => m.kind === "weekly_wrap_up" && mondayOf(m.date) === thisWeek);
   if (sentThisWeek) return { send: false, reason: "already_sent" };
 
-  // ---- 4. Something to sum up: at least one log this week ----
+  // ---- 4. Something to sum up: a log this week, or a reflection or moment ----
   const loggedThisWeek = input.logs.some((log) => mondayOf(log.date) === thisWeek);
-  if (!loggedThisWeek) return { send: false, reason: "nothing_logged" };
+  if (!loggedThisWeek && (input.otherActivity ?? 0) === 0) return { send: false, reason: "nothing_logged" };
 
   return { send: true };
 }

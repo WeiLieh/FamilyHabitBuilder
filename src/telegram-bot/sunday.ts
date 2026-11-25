@@ -68,7 +68,7 @@ export async function sendSundayMessages(deps: BotDeps, result: Counts): Promise
   }
   for (const p of parents) {
     if (!p.agreed) continue; // only parents who agreed to recording (rule 11.9)
-    const input = { now, wrapUp: { minutes: p.wrapUpMinute }, paused: p.paused, logs: p.logs, messagesSent: p.messagesSent };
+    const input = { now, wrapUp: { minutes: p.wrapUpMinute }, paused: p.paused, logs: p.logs, messagesSent: p.messagesSent, otherActivity: p.otherActivity };
     if (planWeeklyWrapUp(input).send) await sendSummary(p, day, deps, result);
     if (planConnectionQuestion(input).send) await sendQuestion(p, day, deps, result);
   }

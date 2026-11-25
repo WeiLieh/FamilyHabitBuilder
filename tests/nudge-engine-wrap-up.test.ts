@@ -91,6 +91,12 @@ describe("Weekly Wrap Up: when it is sent (rule 3.12)", () => {
     expect(planWeeklyWrapUp(input({ logs: [] }))).toEqual({ send: false, reason: "nothing_logged" });
   });
 
+  // [2026-11-25] Owner (25 Nov): "fix the Sunday job too": rule 3.12 counts any activity, not only logs.
+  it("is sent for a week with no log but a reflection or a moment (any activity, rule 3.12)", () => {
+    expect(planWeeklyWrapUp(input({ logs: [], otherActivity: 1 }))).toEqual({ send: true });
+    expect(planWeeklyWrapUp(input({ logs: [], otherActivity: 0 }))).toEqual({ send: false, reason: "nothing_logged" });
+  });
+
   it("doesn't count a log from last Sunday: that belongs to last week", () => {
     expect(planWeeklyWrapUp(input({ logs: [{ nudgeId: 1, date: "2026-11-01" }] }))).toEqual({
       send: false,
