@@ -37,6 +37,7 @@ function input(overrides: Partial<WrapUpInput>): WrapUpInput {
     paused: false,
     logs: [{ nudgeId: 1, date: "2026-11-04" }], // one log on Wednesday
     messagesSent: [],
+    otherActivity: 0, // [2026-11-25] no reflection or moment unless a test says so
     ...overrides,
   };
 }

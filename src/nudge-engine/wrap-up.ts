@@ -46,7 +46,7 @@ export type WrapUpInput = {
   logs: LogEntry[]; // every log, chosen behaviour or not
   messagesSent: SentMessage[];
   // [2026-11-25] This week's reflections, moment lines and moment photos (rule 3.12: any activity counts).
-  otherActivity?: number;
+  otherActivity: number;
 };
 
 export type NoWrapUpReason = "paused" | "not_sunday" | "too_early" | "already_sent" | "nothing_logged";
@@ -71,7 +71,7 @@ export function planWeeklyWrapUp(input: WrapUpInput): WrapUpResult {
 
   // ---- 4. Something to sum up: a log this week, or a reflection or moment ----
   const loggedThisWeek = input.logs.some((log) => mondayOf(log.date) === thisWeek);
-  if (!loggedThisWeek && (input.otherActivity ?? 0) === 0) return { send: false, reason: "nothing_logged" };
+  if (!loggedThisWeek && input.otherActivity === 0) return { send: false, reason: "nothing_logged" };
 
   return { send: true };
 }
