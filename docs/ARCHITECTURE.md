@@ -10,7 +10,7 @@ flowchart LR
     photo["Photo check<br/>Designed, parked"]:::part
     rewards["Variable rewards<br/>Designed, partly built"]:::part
     datastore["Datastore<br/>Tables live"]:::part
-    webapp["Web app<br/>Sign-in, Week so far, look and photos live"]:::part
+    webapp["Web app<br/>Sign-in, Week so far, Settings, look and photos live"]:::part
     telemetry["Telemetry<br/>Designed, not built"]:::part
     experiments["Experiments<br/>Designed, not built"]:::part
     demo["Demo<br/>Built, waiting for migration 015"]:::done
@@ -44,6 +44,8 @@ flowchart LR
     classDef part fill:#f9a825,color:#000000
     classDef todo fill:#9e9e9e,color:#000000
 ```
+
+[2026-11-25 23:18 SGT] Web app status: "Sign-in, Week so far, Settings, look and photos live" (#64 to #66, migrations 016 and 017).
 
 [2026-11-25 22:32 SGT] Two new arrows (Settings, rule 9.9): the **Web app uses the Telegram bot** (after a pause or resume in Settings, the bot sends its short line and changes the Menu, owner 25 Nov) and **the Nudge engine** (Settings checks times and the Wrap Up time with the engine's own rules, as sign-up does).
 

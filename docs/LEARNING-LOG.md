@@ -6,6 +6,24 @@
 
 ## Notebook
 
+### [2026-11-25 23:18 SGT] A keyboard that only changes when a message brings a new one
+- **Concept:** Telegram's reply keyboard (the row of habit buttons under the chat) and how to keep it in step with a change made elsewhere.
+- **In plain English:** the button row is attached to a message the bot sent. It can't be edited later; it only changes when the bot sends a new message carrying a new row. So when a parent changed their habits on the Web app, Telegram kept showing the old buttons until the bot sent something new. The fix: after a Behaviours save, the bot sends one short line ("✅ Your habits are updated.") with the new row.
+- **Analogy:** a printed menu on a restaurant table. Changing the dishes in the kitchen doesn't change the menu; someone has to bring a new menu to the table.
+- **Why and when to use it:** whenever one part of the app (the Web app) changes something another part shows (Telegram), make the second part refresh, or say why it can't. Not needed when the second part reads fresh data every time (reminders and /log already did).
+- **Best practices:** tell the person in the place they look (Telegram), in one line; if the telling fails, say so instead of pretending (rule 1.3); test with the real app, because a pretend Telegram can't show this.
+- **Where it showed up in this project:** the owner tried Settings and found the old buttons (25 Nov); migration 017 lets the save hand back the Telegram chat; tests SE15 and PZ5.
+- **Explain it to others:** "Telegram's buttons are stamped onto a message, so when you change your habits on the web page, the bot sends you a fresh message with the new buttons. If it can't reach you, the page tells you."
+
+### [2026-11-25 23:18 SGT] A one-time "Saved." message in a short-lived cookie
+- **Concept:** a "flash message": a one-time notice shown after a form is saved, kept in a short-lived cookie (a small note the browser holds for our site) instead of in the web address.
+- **In plain English:** after Save, the page goes back to the Settings list and says "✅ Saved." At first that came from "&saved=1" in the address, so anyone could send a link that made the page say "Saved." when nothing was saved. Now our server sets a cookie for 60 seconds, the list shows the notice once and clears it.
+- **Analogy:** a receptionist's sticky note saying "your parcel arrived", which only staff can write and which is thrown away once you've read it, instead of a sign anyone can hold up.
+- **Why and when to use it:** for any "done" message after a save. Not for anything that must last or be shared (that belongs in the database).
+- **Best practices:** only our server writes it; accept only known values; show it once and clear it everywhere; never put personal details in it.
+- **Where it showed up in this project:** privacy review item 3 on Settings (25 Nov); test SE12; a known issue for a shared phone within 60 seconds.
+- **Explain it to others:** "The 'Saved' message now comes from a one-minute note only our server can write, so a crafted link can't fake it."
+
 ### [2026-11-24 23:56 SGT] A demo mode with a stand-in account
 - **Concept:** a demo mode: a switch that lets the owner use the real app as a separate, throwaway user, then delete everything that user did.
 - **In plain English:** `/demo` creates a fresh "demo parent". While it's on, the bot treats the owner's messages as coming from that demo parent (known by the owner's Telegram number made negative), so the real sign-up, reminders and replies run unchanged, and every reply still lands in the owner's own chat. `/demo stop` deletes the demo parent and all it saved.

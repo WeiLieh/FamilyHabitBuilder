@@ -109,7 +109,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 | Photo check | photo-check | `src/photo-check/` | `src/photo-check/SPEC.md` | Designed, parked | yes |
 | Variable rewards | variable-rewards | `src/variable-rewards/` | `src/variable-rewards/SPEC.md` | Designed, partly built | yes |
 | Datastore | datastore | `src/datastore/` | `src/datastore/SPEC.md` | Tables live | yes |
-| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in, Week so far, look and photos live | yes |
+| Web app | web-app | `src/web-app/` | `src/web-app/SPEC.md` | Sign-in, Week so far, Settings, look and photos live | yes |
 | Telemetry | telemetry | `src/telemetry/` | `src/telemetry/SPEC.md` | Designed, not built | yes |
 | Experiments | experiments | `src/experiments/` | `src/experiments/SPEC.md` | Designed, not built | yes |
 | Demo | demo | `src/demo/` | `src/demo/SPEC.md` | Built, waiting for migration 015 | yes |
