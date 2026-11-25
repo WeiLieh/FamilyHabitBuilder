@@ -47,7 +47,7 @@ beforeEach(() => {
     { monday: "2026-10-26", rating: 4 },
     { monday: "2026-11-02", rating: 5 },
   ];
-  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: "https://abcd.supabase.co" });
+  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: "https://abcd.supabase.co", tellPause: async () => {} });
 });
 
 const get = (query: string) => handle({ method: "GET", url: `/api/web-app?${query}`, headers: { host: HOST, cookie: `__Host-fhb_sign_in=${COOKIE_SECRET}` }, body: "" });
@@ -230,14 +230,15 @@ describe("Deleting (rule 9.6, wireframe A)", () => {
 });
 
 describe("Tabs and safety (rules 9.2, 9.6, 9.8)", () => {
-  it("WS10 the tab bar has four tabs; Rewards is greyed out and can't be tapped; Settings holds Sign out", async () => {
+  // [2026-11-25] Rewritten (rule 9.9): Settings is built, and Sign out is its own row with its own page (SE11).
+  it("WS10 the tab bar has four tabs; Rewards is greyed out and can't be tapped; Settings leads to Sign out", async () => {
     const r = await get("page=week");
     expect(r.body).toContain('href="/api/web-app?page=week"');
     expect(r.body).toContain('href="/api/web-app?page=habits"');
     expect(r.body).toContain("<button disabled>Rewards</button>");
     expect(r.body).toContain('href="/api/web-app?page=settings"');
     const settings = await get("page=settings");
-    expect(settings.body).toContain('action="/api/web-app?page=sign-out"');
+    expect(settings.body).toContain('href="/api/web-app?page=settings&amp;part=sign-out"');
     expect(text(await get("page=habits"))).toContain("Habits so far");
   });
 

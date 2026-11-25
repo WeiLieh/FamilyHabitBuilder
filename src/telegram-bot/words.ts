@@ -207,7 +207,11 @@ export const WORDS = {
   myPageLink: "Here's your page.", // draft
   settingsLink: "Change your times and habits in Settings.", // draft
   openSettingsButton: "Open Settings ↗", // draft
-  pauseLink: "To pause your reminders, open Settings.", // draft (B1-D3: pausing happens in Settings)
+  // [2026-11-25] Pause in Telegram too (owner, 25 Nov: both ways; the lines are Claude Code's, owner: "use your liner").
+  pauseQuestion: "<b>Pause your reminders?</b>",
+  pauseButton: "⏸ Pause",
+  paused: "⏸ <b>Your reminders are paused.</b>\nSend /resume any time to restart them.",
+  pauseCancelled: "OK, your reminders stay on.", // draft
   alreadyPaused: "Your reminders are already paused.", // draft, B1-D8
   alreadyOn: "Your reminders are already on.", // draft, B1-D8
   resumeQuestion: "<b>Resume your reminders?</b>", // owner, B1 tests

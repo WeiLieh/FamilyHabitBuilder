@@ -41,7 +41,7 @@ import { WORDS } from "./words.js";
 import { logFailure } from "./log-failure.js"; // [2026-11-12] no personal values in logs (P2)
 import { onboardingTap, onboardingText, startNowTap, startOnboarding } from "./onboarding.js";
 import { logBehaviour, logTap, matchKeyboard, sendHelp, sendLogChoice, undoTap } from "./log-any-time.js";
-import { parseCommand, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
+import { parseCommand, pauseTap, resumeTap, runMenuCommand, syncMenu } from "./menu.js";
 import { PHOTO_CONSENT_NO, PHOTO_CONSENT_OK, photoConsentTap, photoMessage, withPhotoPrompt } from "./photos.js";
 import { feltButton, feltTap, typedLine } from "./felt.js";
 import { connectionTap, momentAskTap, typedMomentLine, viewWrapUpTap } from "./sunday.js";
@@ -243,6 +243,7 @@ async function handleTap(t: Extract<Incoming, { kind: "tap" }>, deps: BotDeps): 
   const log = /^log:(\d+)$/.exec(t.data);
   if (log) return logTap(t, parent, Number(log[1]), deps);
   if (t.data === "resume:yes" || t.data === "resume:no") return resumeTap(t, parent, deps);
+  if (t.data === "pause:yes" || t.data === "pause:no") return pauseTap(t, parent, deps); // [2026-11-25] PZ2
   // [2026-11-24] OK or "Don't save my photos" on the photo consent question.
   if (t.data === PHOTO_CONSENT_OK || t.data === PHOTO_CONSENT_NO) return photoConsentTap(t, parent, deps);
   // [2026-11-24] "Add how you felt" under a receipt (rule 5.3).

@@ -16,7 +16,7 @@
 import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
 import { handleUpdate, type BotDeps } from "../src/telegram-bot/handle-update.js";
-import { menuCommands } from "../src/telegram-bot/menu.js";
+import { menuCommands, tellPauseChange } from "../src/telegram-bot/menu.js";
 import { parseUpdate } from "../src/telegram-bot/updates.js";
 import { createHash } from "node:crypto";
 import { sgtInstant } from "../src/sgt.js";
@@ -243,12 +243,67 @@ describe("/log (rules 5.1, 5.7)", () => {
 
 describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
   // [2026-11-15] Rewritten (Web app sign-in, rule 9.3): /mypage now sends a one-time sign-in link (W1 below), so it left this test.
-  it("M1 /settings and /pause reply with a link button to the placeholder Settings page", async () => {
+  // [2026-11-25] Rewritten (rule 9.9, owner-approved tests PZ1 to PZ4): Settings is built, so /settings sends a
+  // one-time sign-in link that opens Settings, and /pause now pauses in Telegram (owner: "both ways").
+  it("M1 /settings sends a one-time sign-in link that opens Settings; only its fingerprint is stored", async () => {
     await say("/settings");
+    const send = telegram.calls[0] as { kind: "send"; text: string; buttons: { text: string; url: string }[][] };
+    expect(send.text).toBe("Change your times and habits in Settings.");
+    expect(send.buttons[0]![0]!.text).toBe("Open Settings ↗");
+    const url = send.buttons[0]![0]!.url;
+    expect(url.startsWith(`${WEB_PAGES.signIn}&next=settings#`)).toBe(true);
+    const secret = url.split("#")[1]!;
+    expect(store.signInLinks).toEqual([{ parentId, fingerprint: createHash("sha256").update(secret).digest("hex") }]);
+  });
+
+  it("PZ1 /pause, or typing 'pause', asks 'Pause your reminders?' with ⏸ Pause and Cancel", async () => {
     await say("/pause");
+    await say("Pause");
+    const question = {
+      kind: "send",
+      chatId: ME,
+      text: "<b>Pause your reminders?</b>",
+      buttons: [[{ text: "⏸ Pause", data: "pause:yes" }, { text: "Cancel", data: "pause:no" }]],
+    };
+    expect(telegram.calls).toEqual([question, question]);
+    expect(store.parents[0]!.paused).toBe(false);
+  });
+
+  it("PZ2 ⏸ Pause pauses, says so, and the Menu shows /resume; Cancel keeps reminders on", async () => {
+    await tap("pause:yes", 903);
+    expect(store.parents[0]!.paused).toBe(true);
+    expect(store.events).toContainEqual(expect.objectContaining({ parentId, type: "settings_changed" }));
     expect(telegram.calls).toEqual([
-      { kind: "send", chatId: ME, text: "Change your times and habits in Settings.", buttons: [[{ text: "Open Settings ↗", url: WEB_PAGES.settings }]] },
-      { kind: "send", chatId: ME, text: "To pause your reminders, open Settings.", buttons: [[{ text: "Open Settings ↗", url: WEB_PAGES.settings }]] },
+      { kind: "removeButtons", chatId: ME, messageId: 903 },
+      { kind: "send", chatId: ME, text: "⏸ <b>Your reminders are paused.</b>\nSend /resume any time to restart them.", buttons: [] },
+      { kind: "menu", chatId: ME, commands: menuCommands(true) },
+      { kind: "answer", tapId: expect.any(String), popup: null },
+    ]);
+    store.parents[0]!.paused = false;
+    telegram.calls = [];
+    await tap("pause:no", 904);
+    expect(store.parents[0]!.paused).toBe(false);
+    expect(telegram.sentTexts()).toEqual(["OK, your reminders stay on."]);
+  });
+
+  it("PZ3 a pause or resume made in Settings is told in Telegram, and the Menu follows", async () => {
+    await tellPauseChange(telegram, ME, true);
+    await tellPauseChange(telegram, ME, false);
+    expect(telegram.calls).toEqual([
+      { kind: "send", chatId: ME, text: "⏸ <b>Your reminders are paused.</b>\nSend /resume any time to restart them.", buttons: [] },
+      { kind: "menu", chatId: ME, commands: menuCommands(true) },
+      { kind: "send", chatId: ME, text: "✅ <b>Your reminders are back on.</b>", buttons: [] },
+      { kind: "menu", chatId: ME, commands: null },
+    ]);
+  });
+
+  it("PZ4 a pause that doesn't save says so, keeps the buttons, and leaves the Menu alone (rule 1.3)", async () => {
+    store.failWrites = true;
+    await tap("pause:yes", 903);
+    expect(store.parents[0]!.paused).toBe(false);
+    expect(telegram.calls).toEqual([
+      { kind: "send", chatId: ME, text: SORRY, buttons: [] },
+      { kind: "answer", tapId: expect.any(String), popup: null },
     ]);
   });
 

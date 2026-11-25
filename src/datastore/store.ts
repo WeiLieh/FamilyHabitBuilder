@@ -174,6 +174,8 @@ export interface Store {
   undoLog(parentId: number, logId: number): Promise<"undone" | "expired" | "not_allowed">;
   // /resume: turn this parent's reminders back on (rule 8.4 edit 1, with an event).
   resumeReminders(parentId: number): Promise<void>;
+  // [2026-11-25] /pause in Telegram (owner, 25 Nov: both ways): paused on, with its event.
+  pauseReminders(parentId: number): Promise<void>;
   // [2026-11-15] /mypage: keep a new sign-in link's fingerprint (never the link
   // itself) for this parent; it works once, for 5 minutes (rule 9.3, migration 011).
   createSignInLink(parentId: number, fingerprint: string): Promise<void>;

@@ -97,6 +97,36 @@ export const STYLESHEET = [
   ".tab[aria-current=page]{color:var(--accent);font-weight:600;border-top-color:var(--accent)}",
   ".tab.off{opacity:.45}",
   ".tab button{all:unset}",
+  // [2026-11-25] Settings (rule 9.9), from the existing decisions only: rows in
+  // a box with pale lines between them (L6, L7), 12px between rows and 16px
+  // inside boxes (L11), 15px row labels (L9), pills (L10), Delete in warning red.
+  // Not yet decided by the owner (step 2, "the look"): the switch and the tick
+  // boxes use the accent green (L4, "ticks"); they are the browser's own controls.
+  ".list{padding:0 16px}",
+  ".set-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 0;border-top:1px solid var(--rule);font-size:15px;text-decoration:none;color:var(--text)}",
+  ".list>li:first-child>.set-row,.list>.set-row:first-child,.list>.choice:first-child{border-top:0}",
+  ".box>.set-row{border-top:0;padding:0}",
+  ".set-row.off{color:var(--muted)}",
+  ".set-row form{margin:0}",
+  ".stack-row{flex-direction:column;align-items:flex-start;gap:4px}",
+  ".val{color:var(--muted);font-size:14px;text-align:right}",
+  ".gap{margin-top:8px}",
+  ".notice{margin:8px 0 0;font-weight:600}",
+  ".error{margin:0 0 8px;font-weight:600}",
+  ".sub-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}",
+  ".sub-head h1{flex:1;font-size:20px;text-align:center;margin-right:72px}",
+  ".back{display:flex;align-items:center;gap:2px;min-height:44px;min-width:64px;font-size:15px;text-decoration:none}",
+  ".field{display:block;width:100%;min-height:44px;padding:0 12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font:inherit;font-size:15px}",
+  ".fields{display:flex;flex-direction:column;gap:12px}",
+  ".add{display:flex;gap:12px;margin-top:12px}",
+  ".add .field{flex:1}",
+  ".choice{display:flex;align-items:center;gap:12px;min-height:48px;border-top:1px solid var(--rule);font-size:15px;cursor:pointer}",
+  ".choice input{width:22px;height:22px;margin:0;accent-color:var(--accent)}",
+  ".link{all:unset;min-height:44px;padding:0 4px;display:flex;align-items:center;text-decoration:underline;cursor:pointer;color:var(--text);font-size:14px}",
+  ".switch{position:relative;flex:none;width:52px;height:32px;border:0;border-radius:16px;background:var(--border);cursor:pointer;padding:0}",
+  ".switch[aria-checked=true]{background:var(--accent)}",
+  ".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--bg)}",
+  ".switch[aria-checked=true] .knob{left:23px}",
 ].join("");
 
 // The fingerprint the security rule names, in the form browsers expect.

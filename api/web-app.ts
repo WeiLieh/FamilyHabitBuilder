@@ -7,14 +7,19 @@
 // key and the pass-signing secret, never the master key (rule 9.8, test W9).
 // If a setting is missing in Vercel, every request is refused rather than run
 // half-configured (rule 1.3).
+// [2026-11-25] It also holds the bot's Telegram token, used for one thing
+// only: after a pause or resume in Settings, the bot's short line and the
+// Menu change (owner, 25 Nov; src/telegram-bot/menu.ts, tellPauseChange).
 // =============================================================================
 
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createWebAppStore } from "../src/datastore/web-app-store.js";
+import { createTelegramApi } from "../src/telegram-bot/telegram-api.js";
+import { tellPauseChange } from "../src/telegram-bot/menu.js";
 import { createWebAppHandler, WEB_SAFE_HEADERS } from "../src/web-app/handler.js";
 
 const env = process.env;
-const configured = Boolean(env.SUPABASE_URL && env.SUPABASE_ANON_KEY && env.SUPABASE_JWT_SECRET);
+const configured = Boolean(env.SUPABASE_URL && env.SUPABASE_ANON_KEY && env.SUPABASE_JWT_SECRET && env.TELEGRAM_BOT_TOKEN);
 // A form from our own pages is tiny; anything bigger is refused.
 const MAX_BODY_BYTES = 4096;
 
@@ -25,6 +30,7 @@ const handle = configured
       now: () => new Date(),
       // [2026-11-24] Photos load only from our own Supabase project (PH11).
       photoOrigin: new URL(env.SUPABASE_URL!).origin,
+      tellPause: (chat, paused) => tellPauseChange(createTelegramApi(env.TELEGRAM_BOT_TOKEN!), chat, paused),
     })
   : null;
 

@@ -458,6 +458,17 @@ export function createSupabaseStore(url: string, serverKey: string): Store {
       );
     },
 
+    // [2026-11-25] /pause in Telegram: the same narrow edit 1, paused on (PZ2).
+    async pauseReminders(parentId) {
+      const p = need(await db.from("parents").select("wrap_up_minute").eq("id", parentId).single(), "Reading the parent's settings");
+      check(
+        await db.rpc("update_parent_settings", {
+          p_parent: parentId, p_paused: true, p_wrap_up_minute: Number(p.wrap_up_minute), p_version: await settingsVersion(), p_variants: variants,
+        }),
+        "Pausing reminders",
+      );
+    },
+
     // ---- [2026-11-24] Photos after a log (migration 012) ----
     async photoAllowed(nudgeId) {
       const n = need(await db.from("nudges").select("photo_upload_allowed").eq("id", nudgeId).single(), "Reading whether a behaviour allows photos");

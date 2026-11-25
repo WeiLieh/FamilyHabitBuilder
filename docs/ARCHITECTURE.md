@@ -28,6 +28,8 @@ flowchart LR
     telegram <--> demo
     demo --> engine
     demo --> datastore
+    webapp --> telegram
+    webapp --> engine
     telemetry -.- telegram
     telemetry -.- engine
     telemetry -.- repository
@@ -42,6 +44,8 @@ flowchart LR
     classDef part fill:#f9a825,color:#000000
     classDef todo fill:#9e9e9e,color:#000000
 ```
+
+[2026-11-25 22:32 SGT] Two new arrows (Settings, rule 9.9): the **Web app uses the Telegram bot** (after a pause or resume in Settings, the bot sends its short line and changes the Menu, owner 25 Nov) and **the Nudge engine** (Settings checks times and the Wrap Up time with the engine's own rules, as sign-up does).
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (a status starting with "Built"); yellow = in design or partly built; grey = "Not started" (rule D4).
 
