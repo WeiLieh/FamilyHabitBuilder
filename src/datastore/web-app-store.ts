@@ -162,8 +162,9 @@ export interface WebAppDb {
   changeSetting(pass: string, change: SettingsChange): Promise<number | null>;
   // [2026-11-25] Every photo file of this parent, to remove first (T143).
   allPhotoFiles(pass: string): Promise<string[]>;
-  // [2026-11-25] "Delete my data" (rule 1.5), after the photo files are gone (T142).
-  deleteMyData(pass: string): Promise<void>;
+  // [2026-11-25] "Delete my data" (rule 1.5), after the photo files are gone:
+  // removedFiles must list every one, or the database refuses (T142, T143).
+  deleteMyData(pass: string, removedFiles: string[]): Promise<void>;
 }
 
 // The database's own words for "this link can't be used" and "not signed in"
@@ -314,8 +315,8 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
       if (r.error) throw new Error(`Listing photo files failed: ${r.error.message}`);
       return z.array(z.string()).parse(r.data);
     },
-    async deleteMyData(pass) {
-      const r = await withPass(pass).rpc("web_delete_my_data");
+    async deleteMyData(pass, removedFiles) {
+      const r = await withPass(pass).rpc("web_delete_my_data", { p_removed_files: removedFiles });
       if (r.error) throw new Error(`Deleting my data failed: ${r.error.message}`);
     },
   };

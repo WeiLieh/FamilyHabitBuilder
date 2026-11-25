@@ -1028,6 +1028,10 @@ select pg_temp.expect_refused('T137 three quick behaviours',
      jsonb_build_object('nudge_id', pg_temp.quick2(), 'frequency', 'every_day'), jsonb_build_object('nudge_id', pg_temp.quick3(), 'frequency', 'every_day')),
      pg_temp.v(), '["baseline"]')$q$, 'up to 2 quick');
 select pg_temp.expect_refused('T137 no behaviour at all', $q$select public.web_set_behaviours('[]', pg_temp.v(), '["baseline"]')$q$, 'at least 1');
+select pg_temp.expect_refused('T137 two deliberate behaviours',
+  $q$select public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.delib(), 'frequency', 'once_a_week'),
+     jsonb_build_object('nudge_id', (select min(id) from public.nudges where category = 'deliberate' and active and starts_unlocked and id > pg_temp.delib()), 'frequency', 'once_a_week')),
+     pg_temp.v(), '["baseline"]')$q$, 'up to 2 quick and 1 deliberate');
 select pg_temp.expect_refused('T137 the same behaviour twice',
   $q$select public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick(), 'frequency', 'every_day'),
      jsonb_build_object('nudge_id', pg_temp.quick(), 'frequency', 'every_2_days')), pg_temp.v(), '["baseline"]')$q$, 'up to 2 quick');
@@ -1058,7 +1062,7 @@ select pg_temp.pass_for(pg_temp.gail());
 -- T139: a frequency must be a frequency word (the app checks it is one of the
 -- options in src/settings.ts, as at sign-up).
 select pg_temp.expect_refused('T139 a frequency that is not a word',
-  $q$select public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.delib(), 'frequency', 'Gailry Day!')), pg_temp.v(), '["baseline"]')$q$, 'at least 1');
+  $q$select public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.delib(), 'frequency', 'Every Day!')), pg_temp.v(), '["baseline"]')$q$, 'at least 1');
 
 -- T140: times on one schedule: 1 to 3, each a time of day, no repeats.
 do $$
@@ -1073,7 +1077,7 @@ select pg_temp.expect_refused('T140 four times', $q$select public.web_set_times(
 select pg_temp.expect_refused('T140 the same time twice', $q$select public.web_set_times('school', array[420, 420], pg_temp.v(), '["baseline"]')$q$, 'twice');
 select pg_temp.expect_refused('T140 an unknown schedule', $q$select public.web_set_times('holiday', array[420], pg_temp.v(), '["baseline"]')$q$, 'Unknown schedule');
 
--- Gailry change above wrote its event (rule 11.2).
+-- Every change above wrote its event (rule 11.2).
 select pg_temp.as_owner();
 do $$
 begin
@@ -1121,11 +1125,11 @@ end $$;
 select pg_temp.pass_for(null);
 select pg_temp.expect_refused('T145 reading Settings with no pass', $q$select public.web_settings()$q$, 'Not signed in');
 select pg_temp.expect_refused('T145 pausing with no pass', $q$select public.web_set_paused(true, pg_temp.v(), '["baseline"]')$q$, 'Not signed in');
-select pg_temp.expect_refused('T145 deleting with no pass', $q$select public.web_delete_my_data()$q$, 'Not signed in');
+select pg_temp.expect_refused('T145 deleting with no pass', $q$select public.web_delete_my_data(array[]::text[])$q$, 'Not signed in');
 select pg_temp.as_owner();
 set role anon;
 select pg_temp.expect_refused('T145 a signed-out browser reading Settings', $q$select public.web_settings()$q$, 'permission denied');
-select pg_temp.expect_refused('T145 a signed-out browser deleting', $q$select public.web_delete_my_data()$q$, 'permission denied');
+select pg_temp.expect_refused('T145 a signed-out browser deleting', $q$select public.web_delete_my_data(array[]::text[])$q$, 'permission denied');
 reset role;
 
 -- T143: the photo files are listed first, only the pass's own.
@@ -1140,15 +1144,28 @@ select pg_temp.as_owner();
 
 -- T142: delete my data removes every row about the parent and ends every
 -- sign-in; one deletion-log row with no name or ID; Finn untouched.
+-- Gail also has a log with a line, a reflection, a moment line, a connection
+-- answer, a sign-in link, a sign-in, and an unfinished demo sign-up.
 insert into public.web_sign_ins (parent_id, sign_in_fingerprint, expires_at)
 select pg_temp.gail(), pg_temp.fp('gailsignin'), now() + interval '1 day';
+insert into public.web_sign_in_links (parent_id, link_fingerprint, expires_at, settings_version)
+select pg_temp.gail(), pg_temp.fp('gaillink'), now() + interval '5 minutes', pg_temp.v();
+insert into public.habit_logs (parent_id, nudge_id, for_day, logged_via, description, telegram_update_id)
+values (pg_temp.gail(), pg_temp.quick(), public.sgt_today(), 'keyboard', 'Gail line', 9601);
+insert into public.reflections (parent_id, for_day, source, text, telegram_update_id) values (pg_temp.gail(), public.sgt_today(), 'typed', 'Gail reflection', 9602);
+insert into public.moment_lines (parent_id, week_starting, text, telegram_update_id) values (pg_temp.gail(), '2026-11-16', 'Gail moment', 9603);
+insert into public.connection_answers (parent_id, week_starting, score) values (pg_temp.gail(), '2026-11-16', 4);
+insert into public.sign_up_drafts (telegram_id, step, answers) values (-3001, 'children', '{"children": ["Ivy"]}');
 create temp table deletions_before as select count(*) as n from public.deletion_log;
-create temp table eve_id as select pg_temp.gail() as id;
+create temp table gail_id as select pg_temp.gail() as id;
 select pg_temp.pass_for(pg_temp.gail());
-select public.web_delete_my_data();
+-- T143: refused until every photo file is said to be removed first.
+select pg_temp.expect_refused('T143 deleting before the photo files are removed',
+  $q$select public.web_delete_my_data(array[pg_temp.gail()::text || '/m.jpg'])$q$, 'photo file first');
+select public.web_delete_my_data(array(select public.web_photo_paths()));
 select pg_temp.as_owner();
 do $$
-declare e bigint := (select id from eve_id);
+declare e bigint := (select id from gail_id);
 begin
   assert not exists (select 1 from public.parents where id = e), 'Gail is gone';
   assert not exists (select 1 from public.children where parent_id = e), 'her children are gone';
@@ -1158,6 +1175,12 @@ begin
   assert not exists (select 1 from public.photos where parent_id = e), 'her photo records are gone';
   assert not exists (select 1 from public.events where parent_id = e), 'her events are gone';
   assert not exists (select 1 from public.web_sign_ins where parent_id = e), 'her sign-ins are ended';
+  assert not exists (select 1 from public.web_sign_in_links where parent_id = e), 'her sign-in links are gone';
+  assert not exists (select 1 from public.habit_logs where parent_id = e), 'her logs are gone';
+  assert not exists (select 1 from public.reflections where parent_id = e), 'her reflections are gone';
+  assert not exists (select 1 from public.moment_lines where parent_id = e), 'her moment lines are gone';
+  assert not exists (select 1 from public.connection_answers where parent_id = e), 'her answers are gone';
+  assert not exists (select 1 from public.sign_up_drafts where telegram_id = -3001), 'her unfinished demo sign-up is gone';
   assert (select count(*) from public.deletion_log) = (select n from deletions_before) + 1, 'one deletion-log row';
   assert exists (select 1 from public.parents where id = pg_temp.finn()), 'Finn is untouched';
   raise notice 'PASS: T142 delete my data removes everything about the parent';

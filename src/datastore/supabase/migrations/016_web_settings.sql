@@ -13,7 +13,8 @@
 --      their behaviours (and how often), the times on one schedule;
 --   3. list every photo file they have (web_photo_paths), so our server can
 --      remove the files first, and then "delete my data" (web_delete_my_data,
---      rule 1.5, rule 8.5 order).
+--      rule 1.5, rule 8.5 order), which is refused unless it is told every
+--      file was removed.
 --
 -- Why it is built this way:
 --   * Like migration 011's deletes, every change runs as web_page_writer, a
@@ -34,8 +35,10 @@
 --     live once, in code).
 --   * Pausing or resuming returns the parent's Telegram chat number to our
 --     server only, so the bot can tell them in Telegram and change their Menu
---     (owner, 25 Nov: "also send a short line in Telegram"). A page never
---     shows it.
+--     (owner, 25 Nov: "also send a short line in Telegram"). The pass lives
+--     only on our server (the browser holds a sign-in cookie, never a pass),
+--     and a page never shows the number. The pass still can't read it from
+--     the table (T131); only this one function hands it back.
 --   * Everything is one transaction: if any step fails, nothing changes.
 --
 -- How to apply: Supabase > SQL Editor > paste this file > Run, once, AFTER
@@ -224,18 +227,29 @@ begin
   perform write_event(me, 'slots_replaced', p_version, p_variants);
 end $$;
 
--- "Delete my data" (rule 1.5) for the pass's parent: our server has removed
--- the photo files first (rule 8.5). Removing the parent removes every row
--- about them through the links, sign-ins included, so the cookie stops
--- working; one deletion-log row with no name or ID is kept.
-create function public.web_delete_my_data()
+-- "Delete my data" (rule 1.5) for the pass's parent. Our server must first
+-- remove every photo file (rule 8.5) and then hand over the list it removed:
+-- the delete is refused unless that list covers every file the database
+-- still holds, so a photo can't be left in storage with no record of it
+-- (privacy review, 25 Nov). Removing the parent removes every row about
+-- them through the links, sign-ins and a running demo included, so the
+-- cookie stops working; an unfinished demo sign-up goes too. One
+-- deletion-log row with no name or ID is kept.
+create function public.web_delete_my_data(p_removed_files text[])
 returns void language plpgsql security definer set search_path = public, pg_temp as $$
 declare me bigint := pass_parent_id();
+        chat bigint;
 begin
   if me is null then raise exception 'Not signed in (rule 9.8).'; end if;
-  -- A running demo of this parent goes too, through its link (migration 015).
-  delete from parents where id = me;
+  if exists (select 1 from photos ph, unnest(array[ph.storage_path, ph.preview_path]) x
+              where ph.parent_id in (select id from parents where id = me or demo_of = me)
+                and x is not null and x <> all (coalesce(p_removed_files, array[]::text[]))) then
+    raise exception 'Remove every photo file first (rule 8.5).';
+  end if;
+  select telegram_id into chat from parents where id = me;
   if not found then raise exception 'Not signed in (rule 9.8).'; end if;
+  delete from sign_up_drafts where telegram_id = -chat;  -- an unfinished demo sign-up (migration 015)
+  delete from parents where id = me;
   insert into deletion_log (on_day, how_many) values (sgt_today(), 1);
 end $$;
 
@@ -250,7 +264,7 @@ alter function public.web_add_child(text, bigint, jsonb) owner to web_page_write
 alter function public.web_rename_child(bigint, text, bigint, jsonb) owner to web_page_writer;
 alter function public.web_set_behaviours(jsonb, bigint, jsonb) owner to web_page_writer;
 alter function public.web_set_times(text, integer[], bigint, jsonb) owner to web_page_writer;
-alter function public.web_delete_my_data() owner to web_page_writer;
+alter function public.web_delete_my_data(text[]) owner to web_page_writer;
 revoke create on schema public from web_page_writer;
 revoke web_page_writer from current_user;
 comment on role web_page_writer is 'Runs the Web app''s narrow deletes and Settings changes (rule 8.4 edits 6, 11 to 13, 17). Cannot sign in; still behind Row Level Security.';
@@ -279,6 +293,13 @@ create policy web_writer_slots_add on public.slots for insert to web_page_writer
 create policy web_writer_slots_remove on public.slots for delete to web_page_writer using (parent_id = public.pass_parent_id());
 -- The behaviours are shared content: the writer may read them, to count a choice.
 create policy web_writer_habit_names on public.nudges for select to web_page_writer using (true);
+-- An unfinished demo sign-up of the pass's parent (its number is the parent's made negative).
+create policy web_writer_demo_draft_read on public.sign_up_drafts for select to web_page_writer
+  using (telegram_id = -(select p.telegram_id from public.parents p where p.id = public.pass_parent_id()));
+create policy web_writer_demo_draft_delete on public.sign_up_drafts for delete to web_page_writer
+  using (telegram_id = -(select p.telegram_id from public.parents p where p.id = public.pass_parent_id()));
+-- The writer reads the parent's demo row too, so the photo check covers the demo's photos.
+create policy web_writer_demo_parent_read on public.parents for select to web_page_writer using (demo_of = public.pass_parent_id());
 -- The deletion log holds no name or ID, so the writer may add a row to it, never read it.
 create policy web_writer_deletion_log_add on public.deletion_log for insert to web_page_writer with check (true);
 
@@ -287,11 +308,11 @@ revoke all on function public.web_settings(), public.web_photo_paths(),
   public.web_set_paused(boolean, bigint, jsonb), public.web_set_wrap_up_time(integer, bigint, jsonb),
   public.web_set_name(text, bigint, jsonb), public.web_add_child(text, bigint, jsonb),
   public.web_rename_child(bigint, text, bigint, jsonb), public.web_set_behaviours(jsonb, bigint, jsonb),
-  public.web_set_times(text, integer[], bigint, jsonb), public.web_delete_my_data()
+  public.web_set_times(text, integer[], bigint, jsonb), public.web_delete_my_data(text[])
   from public, anon, authenticated, service_role;
 
 -- A parent's pass: the extra columns the Settings tab shows (never Telegram
--- IDs, cohorts, birth years or wording versions).
+-- IDs from the table, cohorts, birth years or wording versions).
 grant select (paused, wrap_up_minute) on public.parents to authenticated;
 grant select (id, parent_id, nudge_id, frequency, stopped_at) on public.picks to authenticated;
 grant select (id, parent_id, schedule, start_minute) on public.slots to authenticated;
@@ -301,11 +322,15 @@ grant execute on function public.web_settings(), public.web_photo_paths(),
   public.web_set_paused(boolean, bigint, jsonb), public.web_set_wrap_up_time(integer, bigint, jsonb),
   public.web_set_name(text, bigint, jsonb), public.web_add_child(text, bigint, jsonb),
   public.web_rename_child(bigint, text, bigint, jsonb), public.web_set_behaviours(jsonb, bigint, jsonb),
-  public.web_set_times(text, integer[], bigint, jsonb), public.web_delete_my_data()
+  public.web_set_times(text, integer[], bigint, jsonb), public.web_delete_my_data(text[])
   to authenticated;
 
--- The writer role: exactly what the changes above need.
-grant select (id, telegram_id, first_name) on public.parents to web_page_writer;
+-- The writer role: exactly what the changes above need (telegram_id: only for
+-- the pause's Telegram line and the demo sign-up's number).
+grant select (id, telegram_id, first_name, demo_of) on public.parents to web_page_writer;
+grant select (id, parent_id, storage_path, preview_path) on public.photos to web_page_writer;
+grant select (id, telegram_id) on public.sign_up_drafts to web_page_writer;
+grant delete on public.sign_up_drafts to web_page_writer;
 grant update (paused, wrap_up_minute, first_name) on public.parents to web_page_writer;
 grant delete on public.parents to web_page_writer;
 grant select (id, parent_id, first_name, birth_year, replaces_id, created_at) on public.children to web_page_writer;

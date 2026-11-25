@@ -183,8 +183,10 @@ export class FakeWebDb implements WebAppDb {
     this.maybeFail("allPhotoFiles", [pass]);
     return [...this.photoStore];
   }
-  async deleteMyData(pass: string): Promise<void> {
-    this.maybeFail("deleteMyData", [pass]);
+  async deleteMyData(pass: string, removedFiles: string[]): Promise<void> {
+    this.maybeFail("deleteMyData", [pass, removedFiles]);
+    // Like migration 016: refused unless every photo file was removed first.
+    if ([...this.photoStore].some((f) => !removedFiles.includes(f))) throw new Error("Remove every photo file first (rule 8.5).");
     this.deleted = true;
     for (const s of this.signIns.values()) s.ended = true;
   }
