@@ -8,10 +8,13 @@
 //     /pause (owner, B1-D8; Telegram allows a different Menu per chat);
 //   - recognises a command, with or without the "/" and in any capitals
 //     ("LOG", "/log" and "log" all work; "/log hug" does not, test M4);
-//   - answers /settings and /pause with a link to the placeholder Settings
-//     page (B1-D3: pausing itself happens in Settings, not built yet), /help
+//   - [2026-11-25] answers /settings with a one-time sign-in link that opens
+//     Settings on My page (rule 9.9), /pause with "Pause your reminders?" and
+//     its two buttons (owner, 25 Nov: pause and resume both ways, PZ1), /help
 //     with the help text and the keyboard (how existing parents get it, M3),
-//     and /resume with "Resume your reminders?" and its two buttons (M2).
+//     and /resume with "Resume your reminders?" and its two buttons (M2);
+//   - tells a parent in Telegram when they pause or resume in Settings, and
+//     switches their Menu to match (tellPauseChange, PZ3).
 // /log itself is in log-any-time.ts.
 // [2026-11-15] /mypage sends a new one-time sign-in link to the Web app (rule
 // 9.3): a random secret goes after the "#" in the link, and only its
@@ -73,12 +76,27 @@ export async function runMenuCommand(
       await telegram.sendMessage(chatId, WORDS.myPageLink, link(WORDS.openMyPageButton, `${WEB_PAGES.signIn}#${secret}`));
       return;
     }
-    case "settings":
-      await telegram.sendMessage(chatId, WORDS.settingsLink, link(WORDS.openSettingsButton, WEB_PAGES.settings));
+    case "settings": {
+      // [2026-11-25] The same one-time link as /mypage, landing on Settings (rule 9.9).
+      const secret = newSecret();
+      try {
+        await store.createSignInLink(parent.id, fingerprintOf(secret));
+      } catch (error) {
+        logFailure("Making a sign-in link failed", error);
+        await telegram.sendMessage(chatId, WORDS.signUpFailed);
+        return;
+      }
+      await telegram.sendMessage(chatId, WORDS.settingsLink, link(WORDS.openSettingsButton, `${WEB_PAGES.signIn}&next=settings#${secret}`));
       return;
+    }
     case "pause":
       if (!parent.paused) {
-        await telegram.sendMessage(chatId, WORDS.pauseLink, link(WORDS.openSettingsButton, WEB_PAGES.settings));
+        await telegram.sendMessage(chatId, WORDS.pauseQuestion, [
+          [
+            { text: WORDS.pauseButton, data: "pause:yes" },
+            { text: WORDS.cancelButton, data: "pause:no" },
+          ],
+        ]);
         return;
       }
       await telegram.sendMessage(chatId, WORDS.alreadyPaused);
@@ -137,4 +155,44 @@ export async function resumeTap(t: Tap, parent: Parent, { store, telegram }: Bot
   // Back to everyone's default Menu, which shows /pause (B1-D8).
   await quietly("Putting /pause back in the Menu failed", () => telegram.setMenu(t.chatId, null));
   await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+}
+
+// [2026-11-25] The two buttons under "Pause your reminders?" (PZ2, PZ4): the
+// mirror of resumeTap.
+export async function pauseTap(t: Tap, parent: Parent, { store, telegram }: BotDeps): Promise<void> {
+  const quietly = (what: string, work: () => Promise<unknown>) => work().catch((error) => logFailure(what, error));
+  if (t.data === "pause:no") {
+    await quietly("Removing the pause buttons failed", () => telegram.removeButtons(t.chatId, t.messageId));
+    await quietly("Sending 'stay on' failed", () => telegram.sendMessage(t.chatId, WORDS.pauseCancelled));
+    await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+    return;
+  }
+  if (parent.paused) {
+    // Already paused (paused in another way since): say so, nothing to save.
+    await quietly("Removing the pause buttons failed", () => telegram.removeButtons(t.chatId, t.messageId));
+    await quietly("Sending 'already paused' failed", () => telegram.sendMessage(t.chatId, WORDS.alreadyPaused));
+    await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+    return;
+  }
+  try {
+    await store.pauseReminders(parent.id);
+  } catch (error) {
+    // Not saved: say so, and leave the buttons so they can try again (rule 1.3).
+    logFailure("Pausing reminders failed", error);
+    await quietly("Sending 'didn't work' failed", () => telegram.sendMessage(t.chatId, WORDS.signUpFailed));
+    await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+    return;
+  }
+  await quietly("Removing the pause buttons failed", () => telegram.removeButtons(t.chatId, t.messageId));
+  await quietly("Sending 'paused' failed", () => telegram.sendMessage(t.chatId, WORDS.paused));
+  await quietly("Showing /resume in the Menu failed", () => telegram.setMenu(t.chatId, menuCommands(true)));
+  await quietly("Answering the tap failed", () => telegram.answerTap(t.tapId));
+}
+
+// [2026-11-25] After a pause or resume on My page's Settings (already saved):
+// the short line in Telegram, and the Menu switched to match (PZ3). A failure
+// is passed back, so the Settings page can say Telegram wasn't told (rule 1.3).
+export async function tellPauseChange(telegram: BotDeps["telegram"], chatId: number, paused: boolean): Promise<void> {
+  await telegram.sendMessage(chatId, paused ? WORDS.paused : WORDS.resumed);
+  await telegram.setMenu(chatId, paused ? menuCommands(true) : null);
 }

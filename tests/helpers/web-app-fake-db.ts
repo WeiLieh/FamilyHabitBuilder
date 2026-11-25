@@ -8,11 +8,14 @@
 // follows the database's rules for the deletes (only that parent's entries,
 // one layer, removed or blanked). Set `fail` to the name of a call to make it
 // fail, to check a failure is shown as a failure (rule 1.3).
+// [2026-11-25] Also the Settings tab (migration 016): one parent's settings,
+// changed by the same counting rules as the database (T131 to T145), the
+// Telegram chat returned for a pause, and "delete my data".
 // Moved here from tests/web-app-sign-in.test.ts so both Web app test files
 // share one pretend database (the sign-in behaviour is unchanged).
 // =============================================================================
 
-import type { ConnectionWeek, DeleteKind, OlderWeeksPage, WebAppDb, WebWeek } from "../../src/web-app/handler.js";
+import type { ConnectionWeek, DeleteKind, OlderWeeksPage, SettingsChange, WebAppDb, WebSettings, WebWeek } from "../../src/web-app/handler.js";
 
 export class FakeWebDb implements WebAppDb {
   calls: { what: string; args: unknown[] }[] = [];
@@ -111,5 +114,80 @@ export class FakeWebDb implements WebAppDb {
       w.moment.line = null;
       if (!w.moment.photo) w.moment = null;
     }
+  }
+
+  // [2026-11-25] The Settings tab (migration 016). Behaviours 1 and 2 are quick,
+  // 3 is quick too, 4 is deliberate.
+  telegramChat = 2001;
+  settingsData: WebSettings = {
+    firstName: "Cara",
+    paused: false,
+    wrapUpMinute: 1200,
+    children: [{ id: 11, firstName: "Riley" }],
+    picks: [{ nudgeId: 1, frequency: "every_2_days" }],
+    behaviours: [
+      { id: 1, name: "Showing affection", category: "quick" },
+      { id: 2, name: "Praising effort", category: "quick" },
+      { id: 3, name: "Bedtime chat", category: "quick" },
+      { id: 4, name: "One-on-one time", category: "deliberate" },
+    ],
+    schoolSlots: [420, 1140],
+    nonSchoolSlots: [540],
+    recordingAgreedAt: new Date("2026-11-12T03:00:00Z"),
+  };
+  deleted = false;
+  async settings(pass: string): Promise<WebSettings> {
+    this.maybeFail("settings", [pass]);
+    return structuredClone(this.settingsData);
+  }
+  async changeSetting(pass: string, change: SettingsChange): Promise<number | null> {
+    this.maybeFail("changeSetting", [pass, change]);
+    const s = this.settingsData;
+    switch (change.kind) {
+      case "paused":
+        s.paused = change.paused;
+        return this.telegramChat;
+      case "wrap-up-time":
+        s.wrapUpMinute = change.minute;
+        return null;
+      case "name":
+        if (change.firstName.trim() === "") throw new Error("A name can't be blank.");
+        s.firstName = change.firstName.trim();
+        return null;
+      case "add-child":
+        if (s.children.length >= 3) throw new Error("A parent can have up to 3 children (Q7b).");
+        s.children.push({ id: 100 + s.children.length, firstName: change.firstName.trim() });
+        return null;
+      case "rename-child": {
+        const c = s.children.find((x) => x.id === change.childId);
+        if (!c) throw new Error("That child was not found.");
+        c.firstName = change.firstName.trim();
+        return null;
+      }
+      case "behaviours": {
+        const cat = (id: number) => s.behaviours.find((b) => b.id === id)?.category;
+        const quick = change.picks.filter((k) => cat(k.nudgeId) === "quick").length;
+        const deliberate = change.picks.filter((k) => cat(k.nudgeId) === "deliberate").length;
+        if (quick + deliberate < 1 || quick > 2 || deliberate > 1) throw new Error("Choose up to 2 quick and 1 deliberate behaviour, at least 1 (rule 2.1).");
+        s.picks = structuredClone(change.picks);
+        return null;
+      }
+      case "times":
+        if (change.minutes.length < 1 || change.minutes.length > 3) throw new Error("Each schedule needs 1 to 3 times (rule 3.1).");
+        if (change.schedule === "school") s.schoolSlots = [...change.minutes].sort((a, b) => a - b);
+        else s.nonSchoolSlots = [...change.minutes].sort((a, b) => a - b);
+        return null;
+    }
+  }
+  async allPhotoFiles(pass: string): Promise<string[]> {
+    this.maybeFail("allPhotoFiles", [pass]);
+    return [...this.photoStore];
+  }
+  async deleteMyData(pass: string, removedFiles: string[]): Promise<void> {
+    this.maybeFail("deleteMyData", [pass, removedFiles]);
+    // Like migration 016: refused unless every photo file was removed first.
+    if ([...this.photoStore].some((f) => !removedFiles.includes(f))) throw new Error("Remove every photo file first (rule 8.5).");
+    this.deleted = true;
+    for (const s of this.signIns.values()) s.ended = true;
   }
 }

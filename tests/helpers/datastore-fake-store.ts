@@ -608,6 +608,14 @@ export class FakeStore implements Store {
     this.signInLinks = mine(this.signInLinks);
   }
 
+  async pauseReminders(parentId: number): Promise<void> {
+    this.failIfAsked();
+    const p = this.parents.find((x) => x.id === parentId);
+    if (!p) throw new Error(`No parent ${parentId}`);
+    p.paused = true;
+    this.events.push({ parentId, type: "settings_changed", updateId: null });
+  }
+
   async resumeReminders(parentId: number): Promise<void> {
     this.failIfAsked();
     const p = this.parents.find((x) => x.id === parentId);

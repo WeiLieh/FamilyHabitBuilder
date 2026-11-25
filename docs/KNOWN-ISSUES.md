@@ -4,6 +4,21 @@
 
 ## Open
 
+### [2026-11-25 22:32 SGT] Settings' switch, tick boxes and row sizes are not yet the owner's decisions
+- **Issue:** [2026-11-25 22:32 SGT] Settings (rule 9.9) uses sizes and the accent green for its switch, tick boxes, rows and Back link that aren't in the UI decisions (docs/ERROR-LOG.md, 25 Nov).
+- **Impact:** [2026-11-25 22:32 SGT] The look may differ from what the owner wants; nothing is wrong with how it works.
+- **Workaround:** [2026-11-25 22:32 SGT] The owner decides them in step 2 (the look of My page); until then they follow L1 to L13 as closely as possible.
+
+### [2026-11-25 22:32 SGT] Saving several children at once is not all or nothing
+- **Issue:** [2026-11-25 22:32 SGT] On the Children page, a rename and an add are saved one after another. If the second fails, the first stays saved and the page says it didn't work.
+- **Impact:** [2026-11-25 22:32 SGT] Low: the parent sees the failure and the list shows what was saved.
+- **Workaround:** [2026-11-25 22:32 SGT] Try again; nothing is duplicated (an unchanged name is not saved twice).
+
+### [2026-11-25 22:32 SGT] A running demo's photo files are not removed by "delete my data"
+- **Issue:** [2026-11-25 22:32 SGT] If the owner deletes their own data while a demo is running, the demo's rows go (migration 016) but the delete is refused until the demo's photo files are listed too, and the page can only list the parent's own.
+- **Impact:** [2026-11-25 22:32 SGT] Owner only: the delete says it didn't work while a demo with photos runs.
+- **Workaround:** [2026-11-25 22:32 SGT] Send `/demo stop` first (it removes the demo's photos), then delete.
+
 ### [2026-11-24 23:10 SGT] A failed "Question expired" edit is not retried
 - **Issue:** [2026-11-24 23:10 SGT] After 24 hours the alarm marks the 1 to 5 question as closed, then edits the message to "Question expired". If that edit fails, it is logged as a failure but not tried again, so the old 1 to 5 buttons stay on screen (privacy review of #60, Low; owner added it, 24 Nov).
 - **Impact:** [2026-11-24 23:10 SGT] Low: a tap on the old buttons is still refused with "This question has closed.", so nothing wrong is saved.

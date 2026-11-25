@@ -13,4 +13,4 @@
 | U70 | [2026-11-24 21:57 SGT] Open Week so far with your phone in **dark mode** | The page stays white; ticks are filled green circles; boxes have rounded corners; the dustbin is an outline icon | [ ] |
 | U71 | [2026-11-24 21:57 SGT] Look at the connection card and the tab bar | Bars stand upright, "This week" in deep green; the tab bar stays at the bottom while you scroll, with "Week so far" in green | [ ] |
 | U72 | [2026-11-24 21:57 SGT] Tap a dustbin | **Cancel** is an outlined button and **Delete** is red | [ ] |
-| U69 | Tap each tab | Habits so far and Settings say "coming soon"; Rewards can't be tapped; Settings has **Sign out** | [ ] |
+| U69 | Tap each tab | Habits so far says "coming soon"; Rewards can't be tapped; [2026-11-25 22:32 SGT] Settings shows its list (UAT-settings.md) | [ ] |

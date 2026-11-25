@@ -4,6 +4,7 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 
 ## [2026-11-24 23:10 SGT] Session 20 (2026-11-24 evening)
 - [2026-11-24 23:10 SGT] About 1 h 40 min elapsed (about 21:30 to 23:10 SGT), nearly all active. Start-of-session routine; My page's look (UI decisions L1 to L13, ST1 to ST7, #57); then three builds, each with tests approved in plain English, both reviews and their fixes: photos (PH1 to PH12, migration 012, #58), "Add how you felt" (F1 to F9, migration 013, #59) and the Sunday Wrap Up, the 1 to 5 question and Add a moment (W1 to W12, migration 014, #60). Tests 319 → 366; database tests T118 → T126.
+- [2026-11-24 23:56 SGT] Continued after the first handoff: about 45 min (about 23:10 to 23:55 SGT), all active: known issues archived (#62); the Demo module designed with the owner in three rounds of questions (Q1 to Q14), spec recorded, tests DM1 to DM13 and T127 to T130 approved, built, both reviews and their fixes, #63 merged. Tests 366 → 379; database tests T126 → T130.
 - **Notes for timeboxing:** with designs already recorded and the owner answering in one line ("all approve"), each build took about 25 to 35 minutes including both reviews. Holding each push until the previous pull request was merged kept one module per pull request (H4).
 
 ## [2026-11-15 17:00 SGT] Session 19 (2026-11-15 midday and afternoon)

@@ -35,7 +35,7 @@ beforeEach(() => {
     olderWeeks: 0,
   };
   db.photoStore.add(PATH);
-  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: ORIGIN });
+  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: ORIGIN, tellPause: async () => {} });
 });
 
 const cookie = `__Host-fhb_sign_in=${COOKIE_SECRET}`;

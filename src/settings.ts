@@ -80,6 +80,9 @@ export const DEFAULT_WEEKLY_WRAP_UP = { minutes: 20 * 60 };
 // ---- Moved here on 1 Nov (decision L, rule 1.4): numbers that lived in the Nudge engine ----
 // Frequencies a parent can choose for a quick behaviour (value 8 in src/experiments/EXPERIMENTS.md).
 export const QUICK_FREQUENCIES: readonly string[] = ["every_day", "every_2_days"];
+// [2026-11-25] The most quick behaviours a parent may choose (rule 2.1); Settings
+// checks it (rule 9.9), and the database checks it too (migrations 015, 016).
+export const MAX_QUICK_PICKS = 2;
 // Frequencies for a deliberate behaviour, and how many times a week each one means.
 export const DELIBERATE_FREQUENCY_TIMES_PER_WEEK: Readonly<Record<string, number>> = {
   once_a_week: 1,
@@ -213,16 +216,15 @@ export const MAX_CHILDREN = 3;
 // [2026-11-12] Rule 2.5: how often each picked behaviour is nudged until the parent changes it in Settings.
 export const DEFAULT_FREQUENCIES = { quick: "every_2_days", deliberate: "once_a_week" } as const;
 // [2026-11-12] The placeholder web page until the Web app exists (owner, 12 Nov):
-// public/my-page.html on the live Vercel address. (public/settings.html exists
-// too, but nothing links to it yet: the /settings command comes with the Menu.)
-// [2026-11-14] B1-D3: /settings and /pause link to public/settings.html.
+// public/my-page.html on the live Vercel address.
+// [2026-11-25] The placeholder public/settings.html is removed: /settings now
+// sends a sign-in link that opens Settings on My page (rule 9.9).
 export const WEB_PAGES = {
   myPage: "https://family-habit-builder.vercel.app/my-page.html",
   // [2026-11-15] The page a /mypage link opens (rule 9.3). The link's secret is
   // added after a "#", which browsers never send to a server, so it can't land
   // in server logs; the page's one button sends it.
   signIn: "https://family-habit-builder.vercel.app/api/web-app?page=open",
-  settings: "https://family-habit-builder.vercel.app/settings.html",
   // [2026-11-15] The Terms & Conditions page the agreement links to (public/terms.html);
   // a plain page until the owner fills it in, before any real family signs up.
   terms: "https://family-habit-builder.vercel.app/terms.html",

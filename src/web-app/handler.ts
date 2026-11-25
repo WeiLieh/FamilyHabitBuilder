@@ -20,8 +20,14 @@
 //     &older=N adds N older weeks below it (rule 9.7).
 //   - ?page=confirm (GET) and ?page=delete (POST): a dustbin's "Are you sure?"
 //     page and the delete itself (rule 9.6, wireframe A).
-//   - ?page=habits and ?page=settings (GET): placeholder tabs; Settings holds
-//     Sign out (rule 9.2).
+//   - ?page=habits (GET): a placeholder tab (rule 9.2).
+//   - [2026-11-25] ?page=settings (GET): the Settings list, and &part=… each
+//     row's own page (rule 9.9, settings-page.ts). ?page=settings-save (POST)
+//     checks and saves one change, then back to the list with "Saved."; a
+//     pause change also has the bot tell the parent in Telegram (owner, 25
+//     Nov). ?page=delete-my-data (POST): only with the box ticked; every
+//     photo file leaves the store first, then every record (rules 1.5, 8.5),
+//     then the cookie is cleared.
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
 // Every answer tells browsers and caches not to keep a copy (rule 9.6).
 // [2026-11-24] The security rule lets through only our one script and our one
@@ -48,11 +54,12 @@ import type { DeleteKind, OlderWeek } from "../datastore/web-app-store.js";
 import { escapeHtml } from "./html.js";
 import { signPass } from "./pass.js";
 import { STYLESHEET, STYLESHEET_HASH } from "./style.js";
-import { confirmPage, habitsPage, settingsPage, weekPage } from "./week-page.js";
+import { checkSave, deletedPage, isPart, settingsList, settingsPart } from "./settings-page.js";
+import { confirmPage, habitsPage, weekPage } from "./week-page.js";
 import { WEB_WORDS } from "./words.js";
 
 // The database menu this handler orders from (src/datastore/web-app-store.ts).
-export type { ConnectionWeek, DeleteKind, OlderWeeksPage, WebAppDb, WebWeek } from "../datastore/web-app-store.js";
+export type { ConnectionWeek, DeleteKind, OlderWeeksPage, SettingsChange, WebAppDb, WebSettings, WebWeek } from "../datastore/web-app-store.js";
 export type WebRequest = { method: string; url: string; headers: Record<string, string | undefined>; body: string };
 export type WebResponse = { status: number; headers: Record<string, string>; body: string };
 
@@ -122,7 +129,15 @@ function cookieOf(req: WebRequest): string | null {
 }
 
 // [2026-11-24] photoOrigin: our Supabase project's address ("https://…supabase.co"), where photo links point.
-export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now: () => Date; photoOrigin: string }) {
+// [2026-11-25] tellPause: has the bot send its short line to that Telegram
+// chat and change the Menu after a pause change on Settings (owner, 25 Nov).
+export function createWebAppHandler(deps: {
+  db: WebAppDb;
+  jwtSecret: string;
+  now: () => Date;
+  photoOrigin: string;
+  tellPause: (chat: number, paused: boolean) => Promise<void>;
+}) {
   const { db, jwtSecret, now } = deps;
   const headers = withPhotos(deps.photoOrigin);
   const answer = (status: number, inner: string, extra: Record<string, string> = {}, styled = false): WebResponse => ({
@@ -137,18 +152,24 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
   const expired = () => answer(410, paragraph(WEB_WORDS.expired));
 
   // ?page=open: one button, nothing personal, nothing asked of the database.
-  const openPage = () =>
+  // [2026-11-25] &next=settings (from /settings in Telegram) lands on Settings after the button.
+  const openPage = (req: WebRequest) =>
     answer(
       200,
       paragraph(WEB_WORDS.openIntro) +
         `<form method="post" action="${BASE}?page=sign-in"><input type="hidden" name="secret" id="secret" value="">` +
+        (landingOf(new URL(req.url, "https://localhost").searchParams.get("next")) === "settings" ? `<input type="hidden" name="next" value="settings">` : "") +
         `<button type="submit">${escapeHtml(WEB_WORDS.openButton)}</button></form>` +
         `<noscript>${paragraph(WEB_WORDS.noScript)}</noscript><script>${OPEN_SCRIPT}</script>`,
     );
 
+  // Where a sign-in lands: Week so far, or Settings when asked (only these two).
+  const landingOf = (next: string | null) => (next === "settings" ? "settings" : "week");
+
   // ?page=sign-in: use the link up and set the protected cookie.
   async function signIn(req: WebRequest): Promise<WebResponse> {
-    const linkSecret = new URLSearchParams(req.body).get("secret") ?? "";
+    const form = new URLSearchParams(req.body);
+    const linkSecret = form.get("secret") ?? "";
     if (!SECRET.test(linkSecret)) return expired(); // no secret (no script, a broken link): nothing to check
     const cookieSecret = newSecret();
     let until: Date | "expired";
@@ -163,7 +184,7 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     const maxAge = Math.max(0, Math.round((until.getTime() - now().getTime()) / 1000));
     return {
       status: 303,
-      headers: { ...headers, location: `${BASE}?page=week`, "set-cookie": `${COOKIE}=${cookieSecret}; Max-Age=${maxAge}; ${COOKIE_FLAGS}` },
+      headers: { ...headers, location: `${BASE}?page=${landingOf(form.get("next"))}`, "set-cookie": `${COOKIE}=${cookieSecret}; Max-Age=${maxAge}; ${COOKIE_FLAGS}` },
       body: "",
     };
   }
@@ -265,7 +286,88 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     return { status: 303, headers: { ...headers, location: `${BASE}?page=week` }, body: "" };
   }
 
-  // The two placeholder tabs (rule 9.2): signed in only, nothing read.
+  // [2026-11-25] ?page=settings (&part=…, &saved=1): the Settings list or one
+  // row's own page (rule 9.9). The settings must be read, or the page says it
+  // didn't work (rule 1.3).
+  async function settings(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    const params = new URL(req.url, "https://localhost").searchParams;
+    const part = params.get("part");
+    if (part !== null && !isPart(part)) return answer(404, paragraph(WEB_WORDS.notFound));
+    try {
+      const s = await db.settings(signed.pass);
+      if (part !== null) return styledAnswer(settingsPart(part, s));
+      const notice = params.get("saved") === "1" ? (params.get("telegram") === "0" ? "saved-not-told" : "saved") : null;
+      return styledAnswer(settingsList(s, notice));
+    } catch (error) {
+      logFailure("Reading Settings failed", error);
+      return didntWork();
+    }
+  }
+
+  // ?page=settings-save (POST): check what was sent, save it, back to the list.
+  // A problem with what was sent shows the same page with its reason (400) and
+  // saves nothing; a failed save says it didn't work (rule 1.3).
+  async function settingsSave(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    let told = true;
+    try {
+      const s = await db.settings(signed.pass);
+      const check = checkSave(new URLSearchParams(req.body), s);
+      if (!check.ok) {
+        return check.part === null
+          ? answer(400, paragraph(WEB_WORDS.badRequest))
+          : { ...styledAnswer(settingsPart(check.part, s, check.error)), status: 400 };
+      }
+      for (const change of check.changes) {
+        const chat = await db.changeSetting(signed.pass, change);
+        if (change.kind === "paused" && chat !== null) {
+          // Saved already: if Telegram can't be told, the page says so instead of hiding it.
+          try {
+            await deps.tellPause(chat, change.paused);
+          } catch (error) {
+            logFailure("Telling Telegram about a pause failed", error);
+            told = false;
+          }
+        }
+      }
+    } catch (error) {
+      logFailure("Saving Settings failed", error);
+      return didntWork();
+    }
+    const location = `${BASE}?page=settings&saved=1${told ? "" : "&telegram=0"}`;
+    return { status: 303, headers: { ...headers, location }, body: "" };
+  }
+
+  // ?page=delete-my-data (POST): only with "I understand" ticked. The photo
+  // files leave the store first (rule 8.5); the database refuses the delete
+  // unless it is told every one was removed. Then the cookie is cleared.
+  async function deleteMyData(req: WebRequest): Promise<WebResponse> {
+    const signed = await passFor(req);
+    if (isAnswer(signed)) return signed;
+    if (new URLSearchParams(req.body).get("understood") !== "yes") {
+      try {
+        const s = await db.settings(signed.pass);
+        return { ...styledAnswer(settingsPart("delete-sure", s, WEB_WORDS.settings.tickTheBox)), status: 400 };
+      } catch (error) {
+        logFailure("Reading Settings failed", error);
+        return didntWork();
+      }
+    }
+    try {
+      const files = await db.allPhotoFiles(signed.pass);
+      if (files.length > 0) await db.removePhotoFiles(signed.pass, files);
+      await db.deleteMyData(signed.pass, files);
+    } catch (error) {
+      logFailure("Deleting my data failed", error);
+      return didntWork();
+    }
+    return answer(200, deletedPage(), { "set-cookie": `${COOKIE}=; Max-Age=0; ${COOKIE_FLAGS}` }, true);
+  }
+
+  // The placeholder tab (rule 9.2): signed in only, nothing read.
   const placeholder = (build: () => string) => async (req: WebRequest) => {
     const signed = await passFor(req);
     return isAnswer(signed) ? signed : styledAnswer(build());
@@ -293,7 +395,9 @@ export function createWebAppHandler(deps: { db: WebAppDb; jwtSecret: string; now
     confirm: { method: "GET", run: confirm },
     delete: { method: "POST", run: remove },
     habits: { method: "GET", run: placeholder(habitsPage) },
-    settings: { method: "GET", run: placeholder(settingsPage) },
+    settings: { method: "GET", run: settings },
+    "settings-save": { method: "POST", run: settingsSave },
+    "delete-my-data": { method: "POST", run: deleteMyData },
     "sign-out": { method: "POST", run: signOut },
   };
 

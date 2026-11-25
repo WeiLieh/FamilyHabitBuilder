@@ -20,6 +20,11 @@
 // photo's file names and removing those files, all with that parent's pass:
 // the store's locks let a pass reach only its own parent's folder.
 //
+// [2026-11-25] Settings (rule 9.9, owner-approved tests T131 to T145;
+// migration 016): read the whole Settings tab, make each narrow change
+// (rule 8.4 edit 17), list every photo file, and "delete my data", all with
+// that parent's pass. Each change is stamped with the settings version.
+//
 // Why a separate menu: the Web app and the bot hold different keys and may
 // do different things; keeping them apart means the Web app can't reach the
 // bot's master-key connection by mistake (test W9).
@@ -93,6 +98,40 @@ const DELETE_FUNCTIONS: Record<DeleteKind, { fn: string; idName: string }> = {
   "moment-photo": { fn: "web_delete_photo", idName: "p_photo" },
 };
 
+// [2026-11-25] The Settings tab (migration 016). Times are minutes after
+// midnight, Singapore time (420 = 7:00 am).
+const settingsShape = z.object({
+  first_name: z.string(),
+  paused: z.boolean(),
+  wrap_up_minute: z.number(),
+  children: z.array(z.object({ id: z.number(), first_name: z.string() })),
+  picks: z.array(z.object({ nudge_id: z.number(), frequency: z.string() })),
+  behaviours: z.array(z.object({ id: z.number(), name: z.string(), category: z.enum(["quick", "deliberate"]) })),
+  school_slots: z.array(z.number()),
+  non_school_slots: z.array(z.number()),
+  recording_agreed_at: z.string().nullable(),
+});
+export type WebSettings = {
+  firstName: string;
+  paused: boolean;
+  wrapUpMinute: number;
+  children: { id: number; firstName: string }[];
+  picks: { nudgeId: number; frequency: string }[];
+  behaviours: { id: number; name: string; category: "quick" | "deliberate" }[];
+  schoolSlots: number[];
+  nonSchoolSlots: number[];
+  recordingAgreedAt: Date | null;
+};
+// One change on the Settings tab (rule 8.4 edit 17).
+export type SettingsChange =
+  | { kind: "paused"; paused: boolean }
+  | { kind: "wrap-up-time"; minute: number }
+  | { kind: "name"; firstName: string }
+  | { kind: "add-child"; firstName: string }
+  | { kind: "rename-child"; childId: number; firstName: string }
+  | { kind: "behaviours"; picks: { nudgeId: number; frequency: string }[] }
+  | { kind: "times"; schedule: "school" | "non_school"; minutes: number[] };
+
 export interface WebAppDb {
   // The button press: use the link (once) and start a sign-in. Gives the
   // sign-in's end, or "expired" for a used, expired or unknown link.
@@ -116,6 +155,16 @@ export interface WebAppDb {
   photoFiles(pass: string, photoId: number): Promise<string[]>;
   // [2026-11-24] Remove photo files from the store, before the record (rule 8.5, PH12).
   removePhotoFiles(pass: string, paths: string[]): Promise<void>;
+  // [2026-11-25] The Settings tab, read in one go (T131).
+  settings(pass: string): Promise<WebSettings>;
+  // [2026-11-25] One Settings change. A pause change gives back the parent's
+  // Telegram chat, so the bot can tell them (owner, 25 Nov); others give null.
+  changeSetting(pass: string, change: SettingsChange): Promise<number | null>;
+  // [2026-11-25] Every photo file of this parent, to remove first (T143).
+  allPhotoFiles(pass: string): Promise<string[]>;
+  // [2026-11-25] "Delete my data" (rule 1.5), after the photo files are gone:
+  // removedFiles must list every one, or the database refuses (T142, T143).
+  deleteMyData(pass: string, removedFiles: string[]): Promise<void>;
 }
 
 // The database's own words for "this link can't be used" and "not signed in"
@@ -128,6 +177,13 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
   const signedOut = createClient(url, publicKey, options);
   // One parent's connection: the same public key, plus their pass in the header.
   const withPass = (pass: string) => createClient(url, publicKey, { ...options, global: { headers: { Authorization: `Bearer ${pass}` } } });
+
+  // Each event is stamped with the settings version in force (rule 11.2).
+  async function version(db: ReturnType<typeof withPass>): Promise<number> {
+    const v = await db.rpc("current_settings_version");
+    if (v.error) throw new Error(`Reading the settings version failed: ${v.error.message}`);
+    return z.number().parse(v.data);
+  }
 
   return {
     async redeemSignInLink(linkSecret, signInSecret) {
@@ -187,11 +243,8 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
     },
     async deleteEntry(pass, kind, id) {
       const db = withPass(pass);
-      // Each event is stamped with the settings version in force (rule 11.2).
-      const v = await db.rpc("current_settings_version");
-      if (v.error) throw new Error(`Reading the settings version failed: ${v.error.message}`);
       const { fn, idName } = DELETE_FUNCTIONS[kind];
-      const r = await db.rpc(fn, { [idName]: id, p_version: z.number().parse(v.data), p_variants: [...WEEK_ONE_VARIANTS] });
+      const r = await db.rpc(fn, { [idName]: id, p_version: await version(db), p_variants: [...WEEK_ONE_VARIANTS] });
       if (r.error) throw new Error(`Deleting failed: ${r.error.message}`);
     },
     async photoLink(pass, path) {
@@ -223,6 +276,48 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
         if (found.error) throw new Error(`Checking a photo file failed: ${found.error.message}`);
         if ((found.data ?? []).some((f) => f.name === name)) throw new Error("A photo file could not be removed.");
       }
+    },
+    async settings(pass) {
+      const r = await withPass(pass).rpc("web_settings");
+      if (r.error) throw new Error(`Reading Settings failed: ${r.error.message}`);
+      const s = settingsShape.parse(r.data);
+      return {
+        firstName: s.first_name,
+        paused: s.paused,
+        wrapUpMinute: s.wrap_up_minute,
+        children: s.children.map((c) => ({ id: c.id, firstName: c.first_name })),
+        picks: s.picks.map((k) => ({ nudgeId: k.nudge_id, frequency: k.frequency })),
+        behaviours: s.behaviours,
+        schoolSlots: s.school_slots,
+        nonSchoolSlots: s.non_school_slots,
+        recordingAgreedAt: s.recording_agreed_at ? new Date(s.recording_agreed_at) : null,
+      };
+    },
+    async changeSetting(pass, change) {
+      const db = withPass(pass);
+      const stamp = { p_version: await version(db), p_variants: [...WEEK_ONE_VARIANTS] };
+      // Which database function each change uses, and its inputs.
+      const [fn, args]: [string, Record<string, unknown>] =
+        change.kind === "paused" ? ["web_set_paused", { p_paused: change.paused }]
+        : change.kind === "wrap-up-time" ? ["web_set_wrap_up_time", { p_minute: change.minute }]
+        : change.kind === "name" ? ["web_set_name", { p_first_name: change.firstName }]
+        : change.kind === "add-child" ? ["web_add_child", { p_first_name: change.firstName }]
+        : change.kind === "rename-child" ? ["web_rename_child", { p_child: change.childId, p_first_name: change.firstName }]
+        : change.kind === "behaviours"
+          ? ["web_set_behaviours", { p_picks: change.picks.map((k) => ({ nudge_id: k.nudgeId, frequency: k.frequency })) }]
+          : ["web_set_times", { p_schedule: change.schedule, p_minutes: change.minutes }];
+      const r = await db.rpc(fn, { ...args, ...stamp });
+      if (r.error) throw new Error(`Saving a Settings change failed: ${r.error.message}`);
+      return change.kind === "paused" ? z.number().parse(r.data) : null;
+    },
+    async allPhotoFiles(pass) {
+      const r = await withPass(pass).rpc("web_photo_paths");
+      if (r.error) throw new Error(`Listing photo files failed: ${r.error.message}`);
+      return z.array(z.string()).parse(r.data);
+    },
+    async deleteMyData(pass, removedFiles) {
+      const r = await withPass(pass).rpc("web_delete_my_data", { p_removed_files: removedFiles });
+      if (r.error) throw new Error(`Deleting my data failed: ${r.error.message}`);
     },
   };
 }

@@ -15,7 +15,7 @@
 //     reflections; the connection card (rule 9.5); the older weeks list and
 //     its button (rule 9.7); the tab bar (rule 9.2).
 //   - "Are you sure?" (rule 9.6, wireframe A): its own page, Cancel and Delete.
-//   - Habits so far and Settings: placeholders (Settings holds Sign out).
+//   - Habits so far: a placeholder. [2026-11-25] Settings: settings-page.ts.
 // Everything a parent typed goes through escapeHtml, so it is shown, never obeyed.
 // [2026-11-24] Photos (owner-approved tests PH11, PH12): a log's or the
 // moment's photo is shown big, through a short-lived link our server made
@@ -219,9 +219,6 @@ export function confirmPage(kind: DeleteKind, id: number): string {
   );
 }
 
-// The two placeholder tabs. Settings holds Sign out for now (rule 9.2).
+// The placeholder tab, Habits so far (rule 9.2). [2026-11-25] Settings has
+// its own pages now (settings-page.ts, rule 9.9).
 export const habitsPage = () => `<h1>${W.tabs.habits}</h1><p class="sub">${W.habitsComingSoon}</p>` + tabBar("habits");
-export const settingsPage = () =>
-  `<h1>${W.tabs.settings}</h1><p class="sub">${W.settingsComingSoon}</p>` +
-  `<form method="post" action="${BASE}?page=sign-out"><button class="pill wide" type="submit">${esc(W.signOutButton)}</button></form>` +
-  tabBar("settings");
