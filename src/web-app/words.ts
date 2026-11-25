@@ -87,7 +87,7 @@ export const WEB_WORDS = {
     pauseNote: "While paused we send no reminders. Your photos, lines and weeks stay exactly as they are.",
     pauseTelegram: "You can also pause or resume from Telegram: send /pause or /resume to the bot.", // owner, 25 Nov: both ways
     wrapUpTime: "Sunday at", // draft
-    wrapUpNote: "A short summary of your week, sent on Sunday when you have logged something that week.",
+    wrapUpNote: "A short summary of your week, sent on Sunday when you have logged a habit, a reflection or a moment that week.", // owner, 25 Nov: matches rule 3.12
     recordText: "The habits you log, and any lines, reflections or weekly moment you add.",
     photos: "Photos",
     photosText: "Photos you send are stored so you can see them on My Page. You can delete any photo or line from Week so far.",

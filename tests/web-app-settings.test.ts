@@ -64,10 +64,18 @@ const post = (query: string, body: string, extra: Record<string, string> = {}) =
   });
 const save = (body: string) => post("page=settings-save", body);
 const text = (r: WebResponse) => r.body.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ");
-const savedRedirect = (r: WebResponse) => {
+// [2026-11-25] "Saved." travels in a short-lived cookie our server sets, never
+// in the address, so a crafted link can't make the page say it (privacy review item 3).
+const NOTICE = "__Host-fhb_notice";
+const noticeOf = (r: WebResponse) => /__Host-fhb_notice=([a-z-]+);/.exec(r.headers["set-cookie"] ?? "")?.[1] ?? null;
+const savedRedirect = (r: WebResponse, notice = "saved") => {
   expect(r.status).toBe(303);
-  expect(r.headers.location).toBe("/api/web-app?page=settings&saved=1");
+  expect(r.headers.location).toBe("/api/web-app?page=settings");
+  expect(noticeOf(r)).toBe(notice);
+  expect(r.headers["set-cookie"]).toContain("Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 };
+const getWithNotice = (query: string, notice: string) =>
+  handle({ method: "GET", url: `/api/web-app?${query}`, headers: { host: HOST, cookie: `__Host-fhb_sign_in=${COOKIE_SECRET}; ${NOTICE}=${notice}` }, body: "" });
 
 describe("The Settings list (rule 9.9)", () => {
   it("SE1 shows the four groups in the wireframe's order, each row with its current value", async () => {
@@ -133,10 +141,9 @@ describe("Reminders (rule 9.9)", () => {
   it("SE3 if the Telegram line can't be sent, the pause is still saved and the page says Telegram wasn't told", async () => {
     tellFails = true;
     const r = await save("part=pause&paused=on");
-    expect(r.status).toBe(303);
-    expect(r.headers.location).toBe("/api/web-app?page=settings&saved=1&telegram=0");
+    savedRedirect(r, "saved-not-told");
     expect(db.settingsData.paused).toBe(true);
-    expect(text(await get("page=settings&saved=1&telegram=0"))).toContain("Saved, but we couldn't tell you in Telegram.");
+    expect(text(await getWithNotice("page=settings", "saved-not-told"))).toContain("Saved, but we couldn't tell you in Telegram.");
   });
 
   it("SE4 reminder times: each time with Remove, an Add a time list, and the rules explained in words", async () => {
@@ -206,7 +213,7 @@ describe("Reminders (rule 9.9)", () => {
   it("SE15 if Telegram can't be told, the habits are still saved and the page says Telegram wasn't told", async () => {
     tellFails = true;
     const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
-    expect(r.headers.location).toBe("/api/web-app?page=settings&saved=1&telegram=0");
+    savedRedirect(r, "saved-not-told");
     expect(db.settingsData.picks).toEqual([{ nudgeId: 2, frequency: "every_day" }]);
   });
 
@@ -219,7 +226,7 @@ describe("Reminders (rule 9.9)", () => {
 
   it("SE6 the Weekly Wrap Up page sets a Sunday time only, with no on/off switch (rule 3.12)", async () => {
     const page = await get("page=settings&part=wrap-up");
-    expect(text(page)).toContain("A short summary of your week, sent on Sunday when you have logged something that week.");
+    expect(text(page)).toContain("A short summary of your week, sent on Sunday when you have logged a habit, a reflection or a moment that week.");
     expect(page.body).not.toContain('role="switch"');
     expect(page.body).toContain('<option value="1200" selected>8:00 pm</option>');
     savedRedirect(await save("part=wrap-up&minute=1170"));
@@ -309,9 +316,14 @@ describe("Privacy and account (rule 9.9)", () => {
 });
 
 describe("Saving safely (rules 1.3, 9.6, 9.9)", () => {
-  it("SE12 after a save the Settings list says ✅ Saved.", async () => {
-    expect(text(await get("page=settings&saved=1"))).toContain("✅ Saved.");
+  // [2026-11-25] Rewritten (privacy review item 3, owner: "yes ok"): the notice comes from our cookie, not the address.
+  it("SE12 after a save the Settings list says ✅ Saved. once; a crafted address can't make it say so", async () => {
+    const shown = await getWithNotice("page=settings", "saved");
+    expect(text(shown)).toContain("✅ Saved.");
+    expect(shown.headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`); // shown once, then cleared
     expect(text(await get("page=settings"))).not.toContain("Saved.");
+    expect(text(await get("page=settings&saved=1&telegram=0"))).not.toContain("Saved");
+    expect(text(await getWithNotice("page=settings", "made-up"))).not.toContain("Saved");
   });
 
   it("SE13 a failed save or read says it didn't work, and never shows the change as done", async () => {

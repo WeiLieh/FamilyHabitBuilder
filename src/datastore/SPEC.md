@@ -107,10 +107,13 @@
 | 012_photos_unchecked_and_storage.sql | 4e18b9edf3ab |
 | 013_add_how_you_felt.sql | 1d7cccfb8305 |
 | 014_wrap_up_and_moments.sql | c83c6bcb82a6 |
+| 015_demo.sql | 0880d8f9e7f4 |
 | 016_web_settings.sql | 71e7b3e8cfcd |
 | 017_behaviours_tell_telegram.sql | 49ab9e7d7ba7 |
 
 [2026-11-25 22:39 SGT] Rows for 012, 013 and 014 (applied by the owner on 24 Nov) and 016 (applied by the owner on 25 Nov) added; 015 waits for the owner to confirm it has run.
+
+[2026-11-25 22:50 SGT] 015 added: the owner confirmed on 25 Nov that it has run.
 
 ## Content scripts
 - [2026-10-31 18:12 SGT] `2026-10-31_more_examples.sql`: applied by the owner on 31 Oct (32 rows). Live Supabase now has 77 examples, matching the seed file.
