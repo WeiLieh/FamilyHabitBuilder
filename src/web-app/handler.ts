@@ -52,7 +52,7 @@ import { confirmPage, habitsPage, settingsPage, weekPage } from "./week-page.js"
 import { WEB_WORDS } from "./words.js";
 
 // The database menu this handler orders from (src/datastore/web-app-store.ts).
-export type { ConnectionWeek, DeleteKind, OlderWeeksPage, WebAppDb, WebWeek } from "../datastore/web-app-store.js";
+export type { ConnectionWeek, DeleteKind, OlderWeeksPage, SettingsChange, WebAppDb, WebSettings, WebWeek } from "../datastore/web-app-store.js";
 export type WebRequest = { method: string; url: string; headers: Record<string, string | undefined>; body: string };
 export type WebResponse = { status: number; headers: Record<string, string>; body: string };
 
