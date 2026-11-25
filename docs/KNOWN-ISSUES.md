@@ -175,13 +175,6 @@
 - **Impact:** [2026-11-09 17:50 SGT] Low. Parents may assume "delete my data" removes everything.
 - **Workaround:** [2026-11-09 17:50 SGT] Owner decided (9 Nov): mention it in the PDPA (Personal Data Protection Act) note for parents and the owner's PDPA reviewer (the note is not written yet).
 
-### [2026-11-08 22:34 SGT] Withdrawing photo consent has no flow yet
-- [2026-11-15 12:13 SGT] Owner (15 Nov): it goes on **Settings** (tab 4 of My page); raise it when the Settings designs arrive from Claude Chat.
-- [2026-11-09 17:44 SGT] Owner (9 Nov): agreed, design it with group C.
-- **Issue:** [2026-11-08 22:34 SGT] Photo consent is now asked at the first photo (rule 5.5), so it can be withdrawn on its own, without leaving the app. There is no design for withdrawing it (stop asking for photos; keep or delete the photos already sent). Singapore's Personal Data Protection Act (PDPA) section 16 (withdrawing consent) applies (privacy review of the Telegram onboarding design, 3 Nov; owner agreed to log it on 8 Nov).
-- **Impact:** [2026-11-08 22:34 SGT] None yet (no photos). Needed before real families send photos.
-- **Workaround:** [2026-11-08 22:34 SGT] Design it with group C (Settings on the Web app, with the photo store); take PDPA section 16 to the owner's PDPA reviewer.
-
 ### [2026-11-08 22:34 SGT] A child's name reaches more places than the database
 - [2026-11-12 22:17 SGT] Progress: migration 007 adds the name column and keeps it out of the Telemetry view of children, with a test (T76). Still open: the chat memory and the Telegram chat (not built yet).
 - [2026-11-09 17:44 SGT] Owner (9 Nov): keep children's names out of the Telemetry views, **with a test that checks it**. The child's name is **never sent to Claude**; it is only shown in Telegram messages, to make them feel personal (answers part of Q4).
@@ -207,12 +200,6 @@
 - **Impact:** [2026-11-01 16:32 SGT] Low now (nothing reads Telemetry yet). If Telemetry code queried the full tables, the database would not stop it.
 - **Workaround:** [2026-11-01 16:32 SGT] When building Telemetry, give it its own database role that can read only the `telemetry_` views, with a test.
 
-### [2026-11-01 16:32 SGT] "Delete my data" doesn't yet remove photos and chat memory
-- **Update:** [2026-11-24 23:43 SGT] When "delete my data" is built, it must also remove the owner's **demo parent's photo files** first (Demo module): the database deletes a demo parent's rows with its owner (migration 015), but not its files (privacy review of the Demo module).
-- **Issue:** [2026-11-01 16:32 SGT] Rule 8.5 order is photos, then chat memory, then rows, then the log. The database function only does the rows and the log; the photo store and chat memory are not built yet (both reviews).
-- **Impact:** [2026-11-01 16:32 SGT] None yet (no photos or chat memory exist). If the rows were deleted first, photos would be left with no owner.
-- **Workaround:** [2026-11-01 16:32 SGT] Build the photo and chat-memory steps with the Photo check and Telegram bot, before any real photos (already in the backlog: "delete my data" built once).
-
 ### [2026-11-01 16:32 SGT] Migration 001 repeats a number from settings.ts
 - **Issue:** [2026-11-01 16:32 SGT] `001_create_nudge_repository.sql` repeats "at least 3 examples per nudge" (`MIN_EXAMPLES_PER_NUDGE`) and its comment points to the old path `shared/settings.ts` (spec review). Applied migrations can't be edited (rule B1).
 - **Impact:** [2026-11-01 16:32 SGT] If the number changes in `src/settings.ts`, the database keeps the old one until a new migration changes it.
@@ -227,11 +214,6 @@
 - **Issue:** [2026-10-31 18:04 SGT] The Weekly Wrap Up decision (`src/nudge-engine/wrap-up.ts`) and the nudge planner trust the lists of logs and sent messages they are given. If reading them from the Datastore fails and the caller passes empty lists, a failure would look like "never sent" (the Wrap Up could go out twice) or "nothing logged" (silently skipped). Found by the privacy and security review of PR B; owner agreed to log it.
 - **Impact:** [2026-10-31 18:04 SGT] None yet (nothing is sent). Once the scheduler is wired up, this would break rule 1.3 (no fallbacks).
 - **Workaround:** [2026-10-31 18:04 SGT] When building the scheduler (Datastore and Telegram bot steps), a failed read must stop the decision for that parent and be reported as a failure, never replaced with an empty list. Add a test for it then.
-
-### [2026-10-31 14:47 SGT] No real families may send photos until consent and "delete my data" are built
-- **Issue:** [2026-10-31 14:47 SGT] Photo consent at sign-up and the "delete my data" function exist only as specs, not as code (found by the privacy and security review of PR #11; owner agreed to log it).
-- **Impact:** [2026-10-31 14:47 SGT] Photos may show children. Collecting them without recorded consent or a working way to delete them would break the agreed privacy rules and the Singapore Personal Data Protection Act (PDPA) expectations.
-- **Workaround:** [2026-10-31 14:47 SGT] Do not onboard real families or accept real photos until both are built and tested. Testing with the owner's own sample photos is fine.
 
 ### [2026-10-31 14:47 SGT] New Supabase tables start with broad default access
 - [2026-10-31 15:07 SGT] Lower risk than first written: the project was created with "Automatically expose new tables" off and "Enable automatic RLS" on (`docs/CONTEXT.md`, 25 Oct), so new tables start locked from the Data API. Database-level grants can still be wider than needed, so the lock-down steps and permission tests remain the rule.
@@ -305,5 +287,7 @@
 - [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
 
 ## Resolved
+
+[2026-11-25 23:20 SGT] Three entries resolved by Settings (25 Nov) were moved word for word to [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-25.md](archive/KNOWN-ISSUES-resolved-to-2026-11-25.md) (owner approved).
 
 [2026-11-24 23:13 SGT] Resolved entries up to 24 Nov were moved word for word to [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-24.md](archive/KNOWN-ISSUES-resolved-to-2026-11-24.md) (owner approved). Earlier ones are in [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-12.md](archive/KNOWN-ISSUES-resolved-to-2026-11-12.md).
