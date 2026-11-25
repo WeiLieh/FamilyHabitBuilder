@@ -17,6 +17,7 @@ import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
 import { handleUpdate, type BotDeps } from "../src/telegram-bot/handle-update.js";
 import { menuCommands, tellPauseChange } from "../src/telegram-bot/menu.js";
+import { tellHabitsChange } from "../src/telegram-bot/log-any-time.js";
 import { parseUpdate } from "../src/telegram-bot/updates.js";
 import { createHash } from "node:crypto";
 import { sgtInstant } from "../src/sgt.js";
@@ -294,6 +295,14 @@ describe("The Menu (rule 5.7, B1-D3, B1-D8)", () => {
       { kind: "menu", chatId: ME, commands: menuCommands(true) },
       { kind: "send", chatId: ME, text: "✅ <b>Your reminders are back on.</b>", buttons: [] },
       { kind: "menu", chatId: ME, commands: null },
+    ]);
+  });
+
+  // [2026-11-25] Owner-approved (25 Nov): after a Behaviours save in Settings, the new habit buttons.
+  it("PZ5 a Behaviours change made in Settings is told in Telegram with the new habit buttons", async () => {
+    await tellHabitsChange(telegram, ME, ["Praising effort", "One-on-one time"]);
+    expect(telegram.calls).toEqual([
+      { kind: "send", chatId: ME, text: "✅ <b>Your habits are updated.</b>", buttons: [], keyboard: ["✅ Praising effort", "✅ One-on-one time"] },
     ]);
   });
 

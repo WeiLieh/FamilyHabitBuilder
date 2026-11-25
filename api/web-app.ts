@@ -9,13 +9,15 @@
 // half-configured (rule 1.3).
 // [2026-11-25] It also holds the bot's Telegram token, used for one thing
 // only: after a pause or resume in Settings, the bot's short line and the
-// Menu change (owner, 25 Nov; src/telegram-bot/menu.ts, tellPauseChange).
+// Menu change (owner, 25 Nov; src/telegram-bot/menu.ts, tellPauseChange), and
+// after a Behaviours save, the line with the new habit buttons (tellHabitsChange).
 // =============================================================================
 
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createWebAppStore } from "../src/datastore/web-app-store.js";
 import { createTelegramApi } from "../src/telegram-bot/telegram-api.js";
 import { tellPauseChange } from "../src/telegram-bot/menu.js";
+import { tellHabitsChange } from "../src/telegram-bot/log-any-time.js";
 import { createWebAppHandler, WEB_SAFE_HEADERS } from "../src/web-app/handler.js";
 
 const env = process.env;
@@ -31,6 +33,7 @@ const handle = configured
       // [2026-11-24] Photos load only from our own Supabase project (PH11).
       photoOrigin: new URL(env.SUPABASE_URL!).origin,
       tellPause: (chat, paused) => tellPauseChange(createTelegramApi(env.TELEGRAM_BOT_TOKEN!), chat, paused),
+      tellHabits: (chat, names) => tellHabitsChange(createTelegramApi(env.TELEGRAM_BOT_TOKEN!), chat, names),
     })
   : null;
 

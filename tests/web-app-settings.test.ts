@@ -25,6 +25,7 @@ const HOST = "family-habit-builder.vercel.app";
 
 let db: FakeWebDb;
 let told: { chat: number; paused: boolean }[];
+let toldHabits: { chat: number; names: string[] }[];
 let tellFails: boolean;
 let handle: ReturnType<typeof createWebAppHandler>;
 beforeEach(() => {
@@ -32,6 +33,7 @@ beforeEach(() => {
   db.now = now;
   db.signIns.set(COOKIE_SECRET, { parentId: 7, ended: false });
   told = [];
+  toldHabits = [];
   tellFails = false;
   handle = createWebAppHandler({
     db,
@@ -42,6 +44,11 @@ beforeEach(() => {
     tellPause: async (chat, paused) => {
       if (tellFails) throw new Error("Telegram unavailable");
       told.push({ chat, paused });
+    },
+    // [2026-11-25] The bot's line and new habit buttons after a Behaviours save (owner, 25 Nov).
+    tellHabits: async (chat, names) => {
+      if (tellFails) throw new Error("Telegram unavailable");
+      toldHabits.push({ chat, names });
     },
   });
 });
@@ -186,6 +193,27 @@ describe("Reminders (rule 9.9)", () => {
     const madeUp = await save("part=behaviours&quick=1&quick_frequency=hourly&deliberate=none&deliberate_frequency=once_a_week");
     expect(madeUp.status).toBe(400);
     expect(db.settingsData.picks).toHaveLength(3);
+  });
+
+  // [2026-11-25] Owner-approved (25 Nov): the keyboard in Telegram follows a Behaviours change.
+  it("SE15 after a Behaviours save, the bot sends its line with the new habit buttons, in the order chosen", async () => {
+    savedRedirect(await save("part=behaviours&quick=2&quick=1&quick_frequency=every_day&deliberate=4&deliberate_frequency=once_a_week"));
+    expect(toldHabits).toEqual([{ chat: 2001, names: ["Praising effort", "Showing affection", "One-on-one time"] }]);
+    expect(told).toEqual([]);
+  });
+
+  it("SE15 if Telegram can't be told, the habits are still saved and the page says Telegram wasn't told", async () => {
+    tellFails = true;
+    const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(r.headers.location).toBe("/api/web-app?page=settings&saved=1&telegram=0");
+    expect(db.settingsData.picks).toEqual([{ nudgeId: 2, frequency: "every_day" }]);
+  });
+
+  it("SE15 a Behaviours save that fails sends nothing to Telegram", async () => {
+    db.fail = "changeSetting";
+    const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(r.status).toBe(503);
+    expect(toldHabits).toEqual([]);
   });
 
   it("SE6 the Weekly Wrap Up page sets a Sunday time only, with no on/off switch (rule 3.12)", async () => {

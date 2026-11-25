@@ -44,7 +44,7 @@ beforeEach(() => {
   db = new FakeWebDb();
   db.now = now;
   db.links.set(LINK_SECRET, 7);
-  handle = createWebAppHandler({ db, jwtSecret: JWT_SECRET, now: () => now, photoOrigin: "https://abcd.supabase.co", tellPause: async () => {} });
+  handle = createWebAppHandler({ db, jwtSecret: JWT_SECRET, now: () => now, photoOrigin: "https://abcd.supabase.co", tellPause: async () => {}, tellHabits: async () => {} });
   logged = [];
   vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => void logged.push(a.join(" ")));
   vi.spyOn(console, "log").mockImplementation((...a: unknown[]) => void logged.push(a.join(" ")));

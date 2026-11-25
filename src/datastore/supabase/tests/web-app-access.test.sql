@@ -1186,4 +1186,30 @@ begin
   raise notice 'PASS: T142 delete my data removes everything about the parent';
 end $$;
 
+-- =============================================================================
+-- [2026-11-25] Migration 017: a Behaviours save hands back the Telegram chat
+-- (owner-approved, 25 Nov; T146), for the bot's new habit buttons.
+-- =============================================================================
+select pg_temp.as_owner();
+\i src/datastore/supabase/migrations/017_behaviours_tell_telegram.sql
+select pg_temp.pass_for(pg_temp.finn());
+do $$
+declare chat bigint;
+begin
+  chat := public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick2(), 'frequency', 'every_day')), pg_temp.v(), '["baseline"]');
+  assert chat = 3002, 'the chat to send the new habit buttons to';
+  assert public.web_settings() -> 'picks' = jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick2(), 'frequency', 'every_day')), 'the new choice is saved';
+  raise notice 'PASS: T146 a Behaviours save returns the Telegram chat';
+end $$;
+select pg_temp.expect_refused('T146 the same checks still hold (three quick)',
+  $q$select public.web_set_behaviours(jsonb_build_array(jsonb_build_object('nudge_id', pg_temp.quick(), 'frequency', 'every_day'),
+     jsonb_build_object('nudge_id', pg_temp.quick2(), 'frequency', 'every_day'), jsonb_build_object('nudge_id', pg_temp.quick3(), 'frequency', 'every_day')),
+     pg_temp.v(), '["baseline"]')$q$, 'up to 2 quick');
+select pg_temp.pass_for(null);
+select pg_temp.expect_refused('T146 no pass', $q$select public.web_set_behaviours('[]', pg_temp.v(), '["baseline"]')$q$, 'Not signed in');
+select pg_temp.as_owner();
+set role anon;
+select pg_temp.expect_refused('T146 a signed-out browser', $q$select public.web_set_behaviours('[]', 1, '[]')$q$, 'permission denied');
+reset role;
+
 \echo ALL WEB APP ACCESS TESTS PASSED

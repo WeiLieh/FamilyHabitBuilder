@@ -170,7 +170,7 @@ export class FakeWebDb implements WebAppDb {
         const deliberate = change.picks.filter((k) => cat(k.nudgeId) === "deliberate").length;
         if (quick + deliberate < 1 || quick > 2 || deliberate > 1) throw new Error("Choose up to 2 quick and 1 deliberate behaviour, at least 1 (rule 2.1).");
         s.picks = structuredClone(change.picks);
-        return null;
+        return this.telegramChat; // [2026-11-25] migration 017: for the new habit buttons
       }
       case "times":
         if (change.minutes.length < 1 || change.minutes.length > 3) throw new Error("Each schedule needs 1 to 3 times (rule 3.1).");
