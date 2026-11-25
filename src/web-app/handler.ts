@@ -25,7 +25,8 @@
 //     row's own page (rule 9.9, settings-page.ts). ?page=settings-save (POST)
 //     checks and saves one change, then back to the list with "Saved."; a
 //     pause change also has the bot tell the parent in Telegram (owner, 25
-//     Nov). ?page=delete-my-data (POST): only with the box ticked; every
+//     Nov), and so does a Behaviours change, with the new habit buttons.
+//     ?page=delete-my-data (POST): only with the box ticked; every
 //     photo file leaves the store first, then every record (rules 1.5, 8.5),
 //     then the cookie is cleared.
 //   - ?page=sign-out (POST): ends the sign-in in the database and clears the cookie.
@@ -137,6 +138,9 @@ export function createWebAppHandler(deps: {
   now: () => Date;
   photoOrigin: string;
   tellPause: (chat: number, paused: boolean) => Promise<void>;
+  // [2026-11-25] After a Behaviours save: the bot's line and the new habit
+  // buttons, named in the order chosen (owner, 25 Nov; migration 017).
+  tellHabits: (chat: number, names: string[]) => Promise<void>;
 }) {
   const { db, jwtSecret, now } = deps;
   const headers = withPhotos(deps.photoOrigin);
@@ -323,14 +327,19 @@ export function createWebAppHandler(deps: {
       }
       for (const change of check.changes) {
         const chat = await db.changeSetting(signed.pass, change);
-        if (change.kind === "paused" && chat !== null) {
-          // Saved already: if Telegram can't be told, the page says so instead of hiding it.
-          try {
-            await deps.tellPause(chat, change.paused);
-          } catch (error) {
-            logFailure("Telling Telegram about a pause failed", error);
-            told = false;
+        if (chat === null) continue;
+        // Saved already: if Telegram can't be told, the page says so instead of hiding it.
+        try {
+          if (change.kind === "paused") await deps.tellPause(chat, change.paused);
+          if (change.kind === "behaviours") {
+            // The names in the order the database now holds them (the order the bot uses).
+            const after = await db.settings(signed.pass);
+            const names = after.picks.map((k) => after.behaviours.find((b) => b.id === k.nudgeId)?.name).filter((n) => n !== undefined);
+            await deps.tellHabits(chat, names);
           }
+        } catch (error) {
+          logFailure("Telling Telegram about a Settings change failed", error);
+          told = false;
         }
       }
     } catch (error) {

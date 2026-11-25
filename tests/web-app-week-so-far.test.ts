@@ -47,7 +47,7 @@ beforeEach(() => {
     { monday: "2026-10-26", rating: 4 },
     { monday: "2026-11-02", rating: 5 },
   ];
-  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: "https://abcd.supabase.co", tellPause: async () => {} });
+  handle = createWebAppHandler({ db, jwtSecret: "test-signing-secret-not-real-0123456789", now: () => now, photoOrigin: "https://abcd.supabase.co", tellPause: async () => {}, tellHabits: async () => {} });
 });
 
 const get = (query: string) => handle({ method: "GET", url: `/api/web-app?${query}`, headers: { host: HOST, cookie: `__Host-fhb_sign_in=${COOKIE_SECRET}` }, body: "" });

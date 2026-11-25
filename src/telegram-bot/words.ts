@@ -212,6 +212,7 @@ export const WORDS = {
   pauseButton: "⏸ Pause",
   paused: "⏸ <b>Your reminders are paused.</b>\nSend /resume any time to restart them.",
   pauseCancelled: "OK, your reminders stay on.", // draft
+  habitsUpdated: "✅ <b>Your habits are updated.</b>", // [2026-11-25] owner: "the line is fine"
   alreadyPaused: "Your reminders are already paused.", // draft, B1-D8
   alreadyOn: "Your reminders are already on.", // draft, B1-D8
   resumeQuestion: "<b>Resume your reminders?</b>", // owner, B1 tests

@@ -176,3 +176,12 @@ export async function sendHelp(chatId: number, parent: Parent, { store, telegram
   if (chosen && chosen.length > 0) await telegram.sendWithKeyboard(chatId, WORDS.help, keyboardLabels(chosen));
   else await telegram.sendMessage(chatId, WORDS.help);
 }
+
+// [2026-11-25] After a Behaviours change on My page's Settings (already saved):
+// the bot's line with the new habit buttons, so the keyboard under the chat
+// matches (owner, 25 Nov; test PZ5). Telegram only changes that keyboard when
+// a message brings a new one. A failure is passed back, so the Settings page
+// can say Telegram wasn't told (rule 1.3).
+export async function tellHabitsChange(telegram: BotDeps["telegram"], chatId: number, names: string[]): Promise<void> {
+  await telegram.sendWithKeyboard(chatId, WORDS.habitsUpdated, names.map((n) => WORDS.keyboardLabel(n)));
+}

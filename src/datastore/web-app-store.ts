@@ -157,8 +157,9 @@ export interface WebAppDb {
   removePhotoFiles(pass: string, paths: string[]): Promise<void>;
   // [2026-11-25] The Settings tab, read in one go (T131).
   settings(pass: string): Promise<WebSettings>;
-  // [2026-11-25] One Settings change. A pause change gives back the parent's
-  // Telegram chat, so the bot can tell them (owner, 25 Nov); others give null.
+  // [2026-11-25] One Settings change. A pause or Behaviours change gives back
+  // the parent's Telegram chat, so the bot can tell them (owner, 25 Nov;
+  // migrations 016, 017); others give null.
   changeSetting(pass: string, change: SettingsChange): Promise<number | null>;
   // [2026-11-25] Every photo file of this parent, to remove first (T143).
   allPhotoFiles(pass: string): Promise<string[]>;
@@ -308,7 +309,7 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
           : ["web_set_times", { p_schedule: change.schedule, p_minutes: change.minutes }];
       const r = await db.rpc(fn, { ...args, ...stamp });
       if (r.error) throw new Error(`Saving a Settings change failed: ${r.error.message}`);
-      return change.kind === "paused" ? z.number().parse(r.data) : null;
+      return change.kind === "paused" || change.kind === "behaviours" ? z.number().parse(r.data) : null;
     },
     async allPhotoFiles(pass) {
       const r = await withPass(pass).rpc("web_photo_paths");

@@ -1,14 +1,15 @@
 // =============================================================================
 // tests/web-app-settings.test.ts: My page's Settings tab
 //
-// What it checks: [2026-11-25] the owner-approved tests SE1 to SE14 for rule
+// What it checks: [2026-11-25] the owner-approved tests SE1 to SE15 for rule
 // 9.9 (Settings, from the owner's clickable wireframe of 15 Nov): the list in
 // four groups, each row's own page with Back, and what each control saves.
 //   SE1 the list · SE2 a row's own page · SE3 pause · SE4 reminder times ·
 //   SE5 behaviours · SE6 Weekly Wrap Up (a time only, rule 3.12) · SE7 name
 //   and children · SE8 What we record · SE9 Coming soon rows · SE10 delete my
 //   data · SE11 sign out · SE12 "Saved." · SE13 a failed save says so (rule
-//   1.3) · SE14 safety (forged forms, no copies kept).
+//   1.3) · SE14 safety (forged forms, no copies kept) · SE15 the new habit
+//   buttons in Telegram after a Behaviours save (owner, 25 Nov).
 // It checks behaviour and words, not the look. The database is a pretend one
 // (tests/helpers/web-app-fake-db.ts) that follows the same counting rules as
 // migration 016; the real database is checked by T131 to T145.
@@ -25,6 +26,7 @@ const HOST = "family-habit-builder.vercel.app";
 
 let db: FakeWebDb;
 let told: { chat: number; paused: boolean }[];
+let toldHabits: { chat: number; names: string[] }[];
 let tellFails: boolean;
 let handle: ReturnType<typeof createWebAppHandler>;
 beforeEach(() => {
@@ -32,6 +34,7 @@ beforeEach(() => {
   db.now = now;
   db.signIns.set(COOKIE_SECRET, { parentId: 7, ended: false });
   told = [];
+  toldHabits = [];
   tellFails = false;
   handle = createWebAppHandler({
     db,
@@ -42,6 +45,11 @@ beforeEach(() => {
     tellPause: async (chat, paused) => {
       if (tellFails) throw new Error("Telegram unavailable");
       told.push({ chat, paused });
+    },
+    // [2026-11-25] The bot's line and new habit buttons after a Behaviours save (owner, 25 Nov).
+    tellHabits: async (chat, names) => {
+      if (tellFails) throw new Error("Telegram unavailable");
+      toldHabits.push({ chat, names });
     },
   });
 });
@@ -186,6 +194,27 @@ describe("Reminders (rule 9.9)", () => {
     const madeUp = await save("part=behaviours&quick=1&quick_frequency=hourly&deliberate=none&deliberate_frequency=once_a_week");
     expect(madeUp.status).toBe(400);
     expect(db.settingsData.picks).toHaveLength(3);
+  });
+
+  // [2026-11-25] Owner-approved (25 Nov): the keyboard in Telegram follows a Behaviours change.
+  it("SE15 after a Behaviours save, the bot sends its line with the new habit buttons, in the order chosen", async () => {
+    savedRedirect(await save("part=behaviours&quick=2&quick=1&quick_frequency=every_day&deliberate=4&deliberate_frequency=once_a_week"));
+    expect(toldHabits).toEqual([{ chat: 2001, names: ["Praising effort", "Showing affection", "One-on-one time"] }]);
+    expect(told).toEqual([]);
+  });
+
+  it("SE15 if Telegram can't be told, the habits are still saved and the page says Telegram wasn't told", async () => {
+    tellFails = true;
+    const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(r.headers.location).toBe("/api/web-app?page=settings&saved=1&telegram=0");
+    expect(db.settingsData.picks).toEqual([{ nudgeId: 2, frequency: "every_day" }]);
+  });
+
+  it("SE15 a Behaviours save that fails sends nothing to Telegram", async () => {
+    db.fail = "changeSetting";
+    const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(r.status).toBe(503);
+    expect(toldHabits).toEqual([]);
   });
 
   it("SE6 the Weekly Wrap Up page sets a Sunday time only, with no on/off switch (rule 3.12)", async () => {
