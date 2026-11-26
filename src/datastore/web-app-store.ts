@@ -129,6 +129,8 @@ export type SettingsChange =
   | { kind: "name"; firstName: string }
   | { kind: "add-child"; firstName: string }
   | { kind: "rename-child"; childId: number; firstName: string }
+  // [2026-11-26] Remove a child with every earlier name (migration 018; at least 1 stays).
+  | { kind: "remove-child"; childId: number }
   | { kind: "behaviours"; picks: { nudgeId: number; frequency: string }[] }
   | { kind: "times"; schedule: "school" | "non_school"; minutes: number[] };
 
@@ -304,6 +306,7 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
         : change.kind === "name" ? ["web_set_name", { p_first_name: change.firstName }]
         : change.kind === "add-child" ? ["web_add_child", { p_first_name: change.firstName }]
         : change.kind === "rename-child" ? ["web_rename_child", { p_child: change.childId, p_first_name: change.firstName }]
+        : change.kind === "remove-child" ? ["web_remove_child", { p_child: change.childId }]
         : change.kind === "behaviours"
           ? ["web_set_behaviours", { p_picks: change.picks.map((k) => ({ nudge_id: k.nudgeId, frequency: k.frequency })) }]
           : ["web_set_times", { p_schedule: change.schedule, p_minutes: change.minutes }];

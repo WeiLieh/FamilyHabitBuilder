@@ -1220,4 +1220,70 @@ begin
   raise notice 'PASS: T146 the same owner and rights as migration 016';
 end $$;
 
+-- =============================================================================
+-- [2026-11-26] Migration 018: remove a child in Settings (owner-approved tests
+-- of 26 Nov, T147 to T150). Finn (3002) has one child; Hana (3003) is new.
+-- =============================================================================
+select pg_temp.as_owner();
+\i src/datastore/supabase/migrations/018_remove_a_child.sql
+insert into public.parents (telegram_id, first_name, cohort, wrap_up_minute) values (3003, 'Hana', 'cohort-1', 1200);
+insert into public.children (parent_id, first_name) select id, 'Hana junior' from public.parents where telegram_id = 3003;
+insert into public.children (parent_id, first_name) select id, 'Hana second' from public.parents where telegram_id = 3003;
+select pg_temp.pass_for(pg_temp.finn());
+-- Finn adds a child by mistake and corrects the name twice: three rows, one child.
+select public.web_add_child('Mistake', pg_temp.v(), '["baseline"]');
+select public.web_rename_child((select (c ->> 'id')::bigint from jsonb_array_elements(public.web_settings() -> 'children') c where c ->> 'first_name' = 'Mistake'), 'Mistake two', pg_temp.v(), '["baseline"]');
+select public.web_rename_child((select (c ->> 'id')::bigint from jsonb_array_elements(public.web_settings() -> 'children') c where c ->> 'first_name' = 'Mistake two'), 'Mistake three', pg_temp.v(), '["baseline"]');
+
+-- T147: removing a child deletes that child and every earlier name of theirs,
+-- for good, and writes a "child removed" event.
+do $$
+declare kid bigint := (select (c ->> 'id')::bigint from jsonb_array_elements(public.web_settings() -> 'children') c where c ->> 'first_name' = 'Mistake three');
+        before bigint := pg_temp.events_for(pg_temp.finn(), 'child_removed');
+begin
+  perform public.web_remove_child(kid, pg_temp.v(), '["baseline"]');
+  assert jsonb_array_length(public.web_settings() -> 'children') = 1, 'one child left';
+  assert public.web_settings() -> 'children' -> 0 ->> 'first_name' = 'Finn junior', 'the right child stays';
+  assert pg_temp.events_for(pg_temp.finn(), 'child_removed') = before + 1, 'one child_removed event';
+  raise notice 'PASS: T147 removing a child (with an event)';
+end $$;
+select pg_temp.as_owner();
+do $$
+begin
+  assert not exists (select 1 from public.children where first_name like 'Mistake%'), 'no row of that child is left, not even an old name';
+  assert (select count(*) from public.children where parent_id = pg_temp.finn()) = 1, 'Finn has one row left';
+  raise notice 'PASS: T147 the child''s earlier names are gone too';
+end $$;
+
+-- T148: a parent's last child can't be removed.
+select pg_temp.pass_for(pg_temp.finn());
+select pg_temp.expect_refused('T148 removing the last child',
+  $q$select public.web_remove_child((public.web_settings() -> 'children' -> 0 ->> 'id')::bigint, pg_temp.v(), '["baseline"]')$q$, 'at least 1 child');
+
+-- T149: a parent can't remove another parent's child (Hana's, with Finn's pass).
+select pg_temp.expect_refused('T149 removing another parent''s child',
+  $q$select public.web_remove_child((select min(id) from public.children where first_name = 'Hana junior'), pg_temp.v(), '["baseline"]')$q$, 'not found');
+select pg_temp.as_owner();
+do $$
+begin
+  assert (select count(*) from public.children where first_name in ('Hana junior', 'Hana second')) = 2, 'Hana''s children are untouched';
+  raise notice 'PASS: T149 another parent''s children are untouched';
+end $$;
+
+-- T150: without a pass, or signed out, nothing can be removed.
+select pg_temp.pass_for(null);
+select pg_temp.expect_refused('T150 no pass', $q$select public.web_remove_child(1, pg_temp.v(), '["baseline"]')$q$, 'Not signed in');
+select pg_temp.as_owner();
+set role anon;
+select pg_temp.expect_refused('T150 a signed-out browser', $q$select public.web_remove_child(1, 1, '[]')$q$, 'permission denied');
+reset role;
+do $$
+begin
+  assert (select pg_get_userbyid(proowner) from pg_proc where oid = 'public.web_remove_child(bigint, bigint, jsonb)'::regprocedure) = 'web_page_writer',
+    'it runs as the narrow writer role';
+  assert not has_function_privilege('service_role', 'public.web_remove_child(bigint, bigint, jsonb)', 'execute'), 'the master key can''t call it';
+  assert has_function_privilege('authenticated', 'public.web_remove_child(bigint, bigint, jsonb)', 'execute'), 'a parent''s pass can';
+  raise notice 'PASS: T150 the same owner and rights as the other Settings changes';
+end $$;
+
 \echo ALL WEB APP ACCESS TESTS PASSED
