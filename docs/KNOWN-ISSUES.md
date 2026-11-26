@@ -6,30 +6,10 @@
 
 [2026-11-26 23:06 SGT] The 13 oldest **open** entries (logged 24 to 31 Oct) were moved word for word to [docs/archive/KNOWN-ISSUES-open-to-2026-10-31.md](archive/KNOWN-ISSUES-open-to-2026-10-31.md) to keep this file short (owner approved). They are still open.
 
-### [2026-11-26 22:38 SGT] DEF-1: a 3rd quick tick in Settings says "✅ Saved." instead of "Choose up to 2 quick behaviours." (UAT U87, FAIL)
-- **Issue:** [2026-11-26 22:38 SGT] On Behaviours, three quick boxes could be ticked; Save showed "✅ Saved." and Telegram "✅ Your habits are updated.", and the stored behaviours stayed as before. The server's own check does refuse three (`src/web-app/settings-page.ts` line 310, test SE5 passes), so the third tick most likely never reached the server: the save that arrived held the old two. **Cause not found yet**; to reproduce in a real browser (Playwright, already installed) before fixing.
-- **Impact:** [2026-11-26 22:38 SGT] No wrong data is saved, but the parent is told "Saved." when their choice was not saved (rule 1.3 spirit: never a misleading success).
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix (owner, 26 Nov: "fix them here"). The page could also stop a 3rd tick in the browser, which needs no new library.
-
-### [2026-11-26 22:38 SGT] DEF-2: "✅ Your habits are updated." is sent after a Behaviours save that changes nothing (seen in UAT U98)
-- **Issue:** [2026-11-26 22:38 SGT] `settingsSave` in `src/web-app/handler.ts` tells Telegram after **every** Behaviours save, without checking whether the picks changed. Seen 4 times at 21:39 to 21:40 and twice for one change (22:02 and 22:04, most likely two saves). The run also reported it after Wrap Up saves; the code sends it only for Behaviours, so that report still needs checking.
-- **Impact:** [2026-11-26 22:38 SGT] Extra bot messages; a parent may think something changed when it didn't.
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the saved picks differ from the ones before.
-
-### [2026-11-26 22:38 SGT] DEF-3: repeated taps on the pause switch send one Telegram message per tap (UAT U90)
-- **Issue:** [2026-11-26 22:38 SGT] The pause page's switch is a form button that sends the value the page was drawn with (`src/web-app/settings-page.ts` lines 193 to 195). Tapping it several times before the page reloads sends "pause" again each time, and `settingsSave` tells Telegram every time, even when nothing changed. 17 messages arrived in one minute (16 "paused", 1 "back on").
-- **Impact:** [2026-11-26 22:38 SGT] A burst of bot messages; Telegram may slow the bot down if it sends too many too fast.
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the pause state actually changes (the same fix as DEF-2), and possibly make the switch ignore a second tap until the page reloads.
-
 ### [2026-11-26 22:38 SGT] DEF-4: no reminder arrived in the 9:30 pm slot added at 9:32 pm (UAT U45, BLOCKED)
 - **Issue:** [2026-11-26 22:38 SGT] The run added a 9:30 pm school-day time at 9:32 pm with reminders on; nothing came by 10:00 pm. **Probably by design, to check:** each behaviour is nudged at most once a day (rule 3.8), the owner had 2 quick behaviours and 7:00 am and 7:00 pm reminders today, and a behaviour logged today gets no reminder (rule 3.6). If both were already nudged or logged, 9:30 pm had nothing due. Needs today's rows in `messages_sent` and `logs` (Supabase) to confirm.
 - **Impact:** [2026-11-26 22:38 SGT] U45 (a keyboard tap answering a waiting reminder) is still untested on the live bot; app tests cover it.
 - **Workaround:** [2026-11-26 22:38 SGT] Run U45 at the next reminder that arrives (owner taps the keyboard, not ✅ Done).
-
-### [2026-11-26 22:38 SGT] A child can't be removed in Settings (UAT U86)
-- **Issue:** [2026-11-26 22:38 SGT] Rule 9.9 says "removing is not designed yet"; emptying a child's box gives "Each child needs a name." The UAT run left a test child, "UAT Child", on the owner's account.
-- **Impact:** [2026-11-26 22:38 SGT] The owner's real account names a child who doesn't exist, in messages that take turns naming children (rule 3.16) and on My page. A parent who adds a child by mistake can't undo it.
-- **Workaround:** [2026-11-26 22:38 SGT] Claude Code can remove "UAT Child" in Supabase with the owner's approval; designing "remove a child" goes to the backlog.
 
 ### [2026-11-25 23:10 SGT] On a shared phone, "Saved." can show for the next parent within a minute
 - **Issue:** [2026-11-25 23:10 SGT] The "✅ Saved." notice lives in a 60-second cookie that sign-out and "delete my data" don't clear (privacy review, Low).
@@ -238,6 +218,31 @@
 - **Workaround:** [2026-11-01 09:56 SGT] Check the list before adding by hand, or add examples through a content script. Option later: a database "unique" rule on nudge plus text (ask the owner first; it is a migration).
 
 ## Resolved
+
+### [2026-11-26 22:38 SGT] DEF-1: a 3rd quick tick in Settings says "✅ Saved." instead of "Choose up to 2 quick behaviours." (UAT U87, FAIL)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-1 fixed: the other quick boxes grey out once 2 are ticked, and the server still refuses a 3rd (tests SE18, SE19, SB1).
+- **Issue:** [2026-11-26 22:38 SGT] On Behaviours, three quick boxes could be ticked; Save showed "✅ Saved." and Telegram "✅ Your habits are updated.", and the stored behaviours stayed as before. The server's own check does refuse three (`src/web-app/settings-page.ts` line 310, test SE5 passes), so the third tick most likely never reached the server: the save that arrived held the old two. **Cause not found yet**; to reproduce in a real browser (Playwright, already installed) before fixing.
+- **Impact:** [2026-11-26 22:38 SGT] No wrong data is saved, but the parent is told "Saved." when their choice was not saved (rule 1.3 spirit: never a misleading success).
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix (owner, 26 Nov: "fix them here"). The page could also stop a 3rd tick in the browser, which needs no new library.
+
+### [2026-11-26 22:38 SGT] DEF-2: "✅ Your habits are updated." is sent after a Behaviours save that changes nothing (seen in UAT U98)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-2 fixed: a Behaviours save with the same picks sends nothing to the database or Telegram (test SE24).
+- **Issue:** [2026-11-26 22:38 SGT] `settingsSave` in `src/web-app/handler.ts` tells Telegram after **every** Behaviours save, without checking whether the picks changed. Seen 4 times at 21:39 to 21:40 and twice for one change (22:02 and 22:04, most likely two saves). The run also reported it after Wrap Up saves; the code sends it only for Behaviours, so that report still needs checking.
+- **Impact:** [2026-11-26 22:38 SGT] Extra bot messages; a parent may think something changed when it didn't.
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the saved picks differ from the ones before.
+
+### [2026-11-26 22:38 SGT] DEF-3: repeated taps on the pause switch send one Telegram message per tap (UAT U90)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-3 fixed: the switch ignores repeat taps, and a pause that is already so sends nothing (tests SE25, SB2).
+- **Issue:** [2026-11-26 22:38 SGT] The pause page's switch is a form button that sends the value the page was drawn with (`src/web-app/settings-page.ts` lines 193 to 195). Tapping it several times before the page reloads sends "pause" again each time, and `settingsSave` tells Telegram every time, even when nothing changed. 17 messages arrived in one minute (16 "paused", 1 "back on").
+- **Impact:** [2026-11-26 22:38 SGT] A burst of bot messages; Telegram may slow the bot down if it sends too many too fast.
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the pause state actually changes (the same fix as DEF-2), and possibly make the switch ignore a second tap until the page reloads.
+
+### [2026-11-26 22:38 SGT] A child can't be removed in Settings (UAT U86)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): Fixed: a 🗑 beside each name asks first, then removes the child and every earlier name (migration 018, applied; tests SE20 to SE22, T147 to T150).
+- **Issue:** [2026-11-26 22:38 SGT] Rule 9.9 says "removing is not designed yet"; emptying a child's box gives "Each child needs a name." The UAT run left a test child, "UAT Child", on the owner's account.
+- **Impact:** [2026-11-26 22:38 SGT] The owner's real account names a child who doesn't exist, in messages that take turns naming children (rule 3.16) and on My page. A parent who adds a child by mistake can't undo it.
+- **Workaround:** [2026-11-26 22:38 SGT] Claude Code can remove "UAT Child" in Supabase with the owner's approval; designing "remove a child" goes to the backlog.
+
 
 [2026-11-25 23:20 SGT] Three entries resolved by Settings (25 Nov) were moved word for word to [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-25.md](archive/KNOWN-ISSUES-resolved-to-2026-11-25.md) (owner approved).
 

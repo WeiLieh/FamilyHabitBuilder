@@ -26,5 +26,9 @@ jobs:
           cache: npm
       # 3. Install exactly the library versions recorded in package-lock.json.
       - run: npm ci
+      # 3b. [2026-11-26] Download the Chromium browser for the real-browser tests
+      #     (tests/web-app-settings-browser.test.ts; Playwright, owner-approved as a
+      #     test-only library), with the system files it needs on Linux.
+      - run: npx playwright install --with-deps chromium
       # 4. Type check, tests, build. If any step fails, the pull request shows a red cross.
       - run: npm run check
