@@ -10,10 +10,18 @@
 // and the Wrap Up time come from src/nudge-engine (rules 3.1, 3.12), the
 // frequency options and name length from src/settings.ts (rule 1.4).
 //
-// Why plain forms: My page's security rule allows no page scripts, so every
-// switch, tick box and "Remove" is a button inside a small form that our
-// server answers. Each row's own page has Back and no tab bar (as in the
-// wireframe). Everything a parent typed goes through escapeHtml.
+// Why plain forms: every switch, tick box and dustbin is a button inside a
+// small form that our server answers, so every page works and is checked by
+// the server even without scripts. Each row's own page has Back and no tab
+// bar (as in the wireframe). Everything a parent typed goes through escapeHtml.
+// [2026-11-26] The Settings fixes (owner, 26 Nov, "all as recommended"; W1 to
+// W7): after a Save the parent stays on that row's page, where a pop-up says
+// "Saved." with OK; a dustbin (🗑) per child, which asks first, and per time;
+// and one small page script (SETTINGS_SCRIPT, allowed by its fingerprint in
+// handler.ts), only on Behaviours and Pause: it greys out the other quick boxes
+// once 2 are ticked, and lets the pause switch slide before the page reloads.
+// A save that changes nothing (the same picks, a pause already so) is not sent
+// to the database or Telegram (DEF-2, DEF-3).
 // The look comes from the owner's UI decisions (style.ts, CLAUDE.md rule 6).
 // =============================================================================
 
@@ -35,7 +43,7 @@ import {
 import { toSgt } from "../sgt.js";
 import { formatTime } from "../sgt.js";
 import { escapeHtml as esc } from "./html.js";
-import { BASE, tabBar } from "./week-page.js";
+import { BASE, BIN_ICON, tabBar } from "./week-page.js";
 import { WEB_WORDS } from "./words.js";
 
 const S = WEB_WORDS.settings;
@@ -45,6 +53,26 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 export const PARTS = ["name", "children", "behaviours", "times", "pause", "wrap-up", "consent", "delete", "delete-sure", "sign-out"] as const;
 export type Part = (typeof PARTS)[number];
 export const isPart = (x: string | null): x is Part => PARTS.some((p) => p === x);
+// [2026-11-26] What the Saved pop-up says (W1): plain "Saved.", or that Telegram wasn't told (rule 1.3).
+export const NOTICES = ["saved", "saved-not-told"] as const;
+export type Notice = (typeof NOTICES)[number];
+
+// [2026-11-26] The one page script, on Behaviours and Pause only (W2, W6; owner
+// Q2: the switch slides, then the form is sent; nothing is saved in the
+// background). In plain English:
+//   - in a group marked data-max, once that many boxes are ticked, the
+//     unticked ones are switched off and greyed (class "greyed", L15);
+//     unticking one brings them back. The server still checks (DEF-1).
+//   - on a form marked data-slide, a tap flips the switch (it slides, L16),
+//     further taps are ignored, and the form is sent 0.2 seconds later.
+// It is written as one fixed text so its fingerprint never changes by accident.
+export const SETTINGS_SCRIPT =
+  'document.querySelectorAll("[data-max]").forEach(function(g){var max=Number(g.getAttribute("data-max"));var boxes=g.querySelectorAll("input[type=checkbox]");' +
+  'function sync(){var n=0;boxes.forEach(function(b){if(b.checked)n++});boxes.forEach(function(b){var off=!b.checked&&n>=max;b.disabled=off;b.parentNode.classList.toggle("greyed",off)})}' +
+  'boxes.forEach(function(b){b.addEventListener("change",sync)});sync()});' +
+  'document.querySelectorAll("form[data-slide]").forEach(function(f){var busy=false;f.addEventListener("submit",function(e){e.preventDefault();if(busy)return;busy=true;' +
+  'var s=f.querySelector("[role=switch]");s.setAttribute("aria-checked",s.getAttribute("aria-checked")==="true"?"false":"true");setTimeout(function(){f.submit()},200)})});';
+const script = `<script>${SETTINGS_SCRIPT}</script>`;
 
 // "7:00pm" -> "7:00 pm", the owner's agreed style.
 export const timeText = (minutes: number) => formatTime(minutes).replace(/(am|pm)$/, " $1");
@@ -70,12 +98,12 @@ const row = (label: string, part: Part, value = "") =>
 const offRow = (label: string) => `<li><span class="set-row off"><span class="grow">${label}</span><span class="val">${S.comingSoon}</span></span></li>`;
 const group = (title: string, rows: string[]) => `<h2>${title}</h2><ul class="box list">${rows.join("")}</ul>`;
 
-export function settingsList(s: WebSettings, notice: "saved" | "saved-not-told" | null): string {
+// [2026-11-26] The list no longer says "Saved.": the row's own page does, in a pop-up (W1).
+export function settingsList(s: WebSettings): string {
   const quick = s.picks.filter((k) => s.behaviours.find((b) => b.id === k.nudgeId)?.category === "quick").length;
   const deliberate = s.picks.length - quick;
   return (
     `<h1>${WEB_WORDS.tabs.settings}</h1>` +
-    (notice ? `<p class="notice" role="status">${notice === "saved" ? S.saved : S.savedNotTold}</p>` : "") +
     group(S.aboutYou, [row(S.yourName, "name", s.firstName), row(S.children, "children", s.children.map((c) => c.firstName).join(", ") || S.noneYet)]) +
     group(S.reminders, [
       row(S.behaviours, "behaviours", S.behavioursValue(quick, deliberate)),
@@ -96,14 +124,43 @@ export function settingsList(s: WebSettings, notice: "saved" | "saved-not-told" 
 const header = (title: string) =>
   `<header class="sub-head"><a class="back" href="${BASE}?page=settings">${back}<span>${S.back}</span></a><h1>${title}</h1></header>`;
 // A small form posting one change. "fields" are hidden inputs plus the button.
-const form = (inner: string, action = "settings-save") => `<form method="post" action="${BASE}?page=${action}">${inner}</form>`;
+// "attrs" marks a form for the page script (data-slide).
+const form = (inner: string, action = "settings-save", attrs = "") => `<form method="post" action="${BASE}?page=${action}"${attrs}>${inner}</form>`;
 const hidden = (name: string, value: string | number) => `<input type="hidden" name="${name}" value="${esc(String(value))}">`;
 const errorLine = (error: string | null) => (error ? `<p class="error" role="alert">${esc(error)}</p>` : "");
 const saveButton = `<button class="pill wide primary" type="submit">${S.save}</button>`;
 const timeOptions = (choices: number[], selected: number | null) =>
   choices.map((m) => `<option value="${m}"${m === selected ? " selected" : ""}>${timeText(m)}</option>`).join("");
 
-export function settingsPart(part: Part, s: WebSettings, error: string | null = null): string {
+// [2026-11-26] A pop-up over the dimmed page (W1, W4; L14). It is part of the
+// page our server draws, so it needs no script: OK and Cancel are links.
+const dialog = (inner: string) => `<div class="dim" role="dialog" aria-modal="true" aria-labelledby="pop-words"><div class="box pop">${inner}</div></div>`;
+const savedPopUp = (part: Part, notice: Notice) =>
+  dialog(
+    `<span class="dot on" aria-hidden="true">✓</span><p id="pop-words" role="status">${notice === "saved" ? S.saved : S.savedNotTold}</p>` +
+      `<a class="pill wide" href="${partLink(part)}">${S.ok}</a>`,
+  );
+// "Remove [name]?" (W4): Cancel goes back to Children; Remove sends the removal.
+const removeChildPopUp = (child: { id: number; firstName: string }) =>
+  dialog(
+    `<p id="pop-words" class="question">${esc(S.removeChildQuestion(child.firstName))} ${S.removeChildNote}</p>` +
+      `<div class="actions"><a class="pill" href="${partLink("children")}">${WEB_WORDS.cancel}</a>` +
+      form(`${hidden("part", "children-remove")}${hidden("child", child.id)}<button class="pill danger" type="submit">${S.remove}</button>`) +
+      `</div>`,
+  );
+
+// What a row's page may show besides its own content: a problem with what was
+// sent, the Saved pop-up (from our notice cookie), or the "Remove [name]?"
+// question for that child (Children only).
+export type PartExtras = { error?: string | null; notice?: Notice | null; removing?: { id: number; firstName: string } | null };
+
+export function settingsPart(part: Part, s: WebSettings, extras: PartExtras = {}): string {
+  const error = extras.error ?? null;
+  const pop = (extras.removing && part === "children" ? removeChildPopUp(extras.removing) : "") + (extras.notice ? savedPopUp(part, extras.notice) : "");
+  return pageOf(part, s, error) + pop;
+}
+
+function pageOf(part: Part, s: WebSettings, error: string | null): string {
   switch (part) {
     case "name":
       return (
@@ -116,8 +173,14 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
         )
       );
     case "children": {
+      // [2026-11-26] A 🗑 beside each name, a link that asks first (W3, W4); the last child has none.
+      const bin = (c: { id: number; firstName: string }) =>
+        s.children.length > 1
+          ? `<a class="bin" aria-label="${esc(S.removeLabel(c.firstName))}" href="${partLink("children")}&amp;remove=${c.id}">${BIN_ICON}</a>`
+          : "";
       const boxes = s.children.map(
-        (c, i) => `<input class="field" aria-label="${S.childLabel(i + 1)}" name="child-${c.id}" maxlength="${NAME_MAX_CHARS}" value="${esc(c.firstName)}">`,
+        (c, i) =>
+          `<div class="child-row"><input class="field" aria-label="${S.childLabel(i + 1)}" name="child-${c.id}" maxlength="${NAME_MAX_CHARS}" value="${esc(c.firstName)}">${bin(c)}</div>`,
       );
       if (s.children.length < MAX_CHILDREN) {
         boxes.push(`<input class="field" aria-label="${S.addChildLabel}" name="new" maxlength="${NAME_MAX_CHARS}" placeholder="${S.addChildLabel}">`);
@@ -141,7 +204,7 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
         header(S.behaviours) +
         form(
           errorLine(error) +
-            `<h2>${S.quickBehaviours}</h2><div class="box list">${quick.map((b) => tick("quick", String(b.id), b.name, chosen.has(b.id), "checkbox")).join("")}</div>` +
+            `<h2>${S.quickBehaviours}</h2><div class="box list" data-max="${MAX_QUICK_PICKS}">${quick.map((b) => tick("quick", String(b.id), b.name, chosen.has(b.id), "checkbox")).join("")}</div>` +
             `<p class="muted gap">${S.chooseUpTo2}</p>` +
             `<h2>${S.howOftenQuick}</h2><div class="box list">${QUICK_FREQUENCIES.map((f) => tick("quick_frequency", f, FREQUENCY_WORDS[f] ?? f, f === quickFreq, "radio")).join("")}</div>` +
             `<h2>${S.oneDeliberate}</h2><div class="box list">${tick("deliberate", "none", S.none, noDeliberate, "radio")}${deliberate
@@ -151,7 +214,8 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
             `<h2>${S.howOftenDeliberate}</h2><div class="box list">${DELIBERATE_FREQUENCIES.map((f) => tick("deliberate_frequency", f, FREQUENCY_WORDS[f] ?? f, f === delibFreq, "radio")).join("")}</div>` +
             hidden("part", "behaviours") +
             saveButton,
-        )
+        ) +
+        script
       );
     }
     case "times": {
@@ -160,7 +224,10 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
           (m) =>
             `<li class="set-row"><span class="grow">${timeText(m)}</span>` +
             (slots.length > 1
-              ? form(`${hidden("part", "times")}${hidden("schedule", key)}${hidden("action", "remove")}${hidden("minute", m)}<button class="link" type="submit">${S.remove}</button>`)
+              ? form(
+                  `${hidden("part", "times")}${hidden("schedule", key)}${hidden("action", "remove")}${hidden("minute", m)}` +
+                    `<button class="bin" type="submit" aria-label="${S.removeLabel(timeText(m))}">${BIN_ICON}</button>`,
+                )
               : "") +
             `</li>`,
         );
@@ -193,8 +260,11 @@ export function settingsPart(part: Part, s: WebSettings, error: string | null = 
             `<button class="switch" type="submit" role="switch" aria-checked="${s.paused}" aria-labelledby="pause-label"><span class="knob"></span></button></div></div>` +
             hidden("part", "pause") +
             hidden("paused", s.paused ? "off" : "on"),
+          "settings-save",
+          " data-slide",
         ) +
-        `<p class="muted gap">${S.pauseNote}</p><p class="muted gap">${S.pauseTelegram}</p>`
+        `<p class="muted gap">${S.pauseNote}</p><p class="muted gap">${S.pauseTelegram}</p>` +
+        script
       );
     case "wrap-up":
       return (
@@ -255,29 +325,39 @@ export const deletedPage = () => `<h1>${S.deletedTitle}</h1><p class="sub gap">$
 
 // What a save becomes: the database changes to make, the page and its words
 // if something is wrong, or "not this form" for something our pages never send.
-export type SaveCheck = { ok: true; changes: SettingsChange[] } | { ok: false; part: Part; error: string } | { ok: false; part: null };
+// [2026-11-26] "part" on a good save is the row's page to go back to (W1).
+// An empty list of changes means nothing changed: nothing is sent (DEF-2, DEF-3).
+export type SaveCheck = { ok: true; part: Part; changes: SettingsChange[] } | { ok: false; part: Part; error: string } | { ok: false; part: null };
 
 const cleanName = (raw: string | null) => (raw ?? "").trim();
+
+// The same picks, in any order (a form sends them in the page's order).
+const samePicks = (a: { nudgeId: number; frequency: string }[], b: { nudgeId: number; frequency: string }[]) => {
+  const key = (x: { nudgeId: number; frequency: string }[]) => x.map((k) => `${k.nudgeId}:${k.frequency}`).sort().join(",");
+  return key(a) === key(b);
+};
 
 export function checkSave(form: URLSearchParams, s: WebSettings): SaveCheck {
   const part = form.get("part");
   const bad = (p: Part, error: string): SaveCheck => ({ ok: false, part: p, error });
+  const good = (p: Part, changes: SettingsChange[]): SaveCheck => ({ ok: true, part: p, changes });
   switch (part) {
     case "pause": {
       const v = form.get("paused");
       if (v !== "on" && v !== "off") return { ok: false, part: null };
-      return { ok: true, changes: [{ kind: "paused", paused: v === "on" }] };
+      // [2026-11-26] Already so (a repeated tap): nothing to send (DEF-3).
+      return good("pause", (v === "on") === s.paused ? [] : [{ kind: "paused", paused: v === "on" }]);
     }
     case "wrap-up": {
       const minute = Number(form.get("minute"));
       if (!Number.isInteger(minute) || !checkWrapUpTime(minute).ok) return bad("wrap-up", S.pickAListedTime);
-      return { ok: true, changes: [{ kind: "wrap-up-time", minute }] };
+      return good("wrap-up", [{ kind: "wrap-up-time", minute }]);
     }
     case "name": {
       const name = cleanName(form.get("first_name"));
       if (name === "") return bad("name", S.typeAName);
       if (name.length > NAME_MAX_CHARS) return bad("name", S.nameTooLong(NAME_MAX_CHARS));
-      return { ok: true, changes: [{ kind: "name", firstName: name }] };
+      return good("name", [{ kind: "name", firstName: name }]);
     }
     case "children": {
       const changes: SettingsChange[] = [];
@@ -295,7 +375,14 @@ export function checkSave(form: URLSearchParams, s: WebSettings): SaveCheck {
         if (added.length > NAME_MAX_CHARS) return bad("children", S.nameTooLong(NAME_MAX_CHARS));
         changes.push({ kind: "add-child", firstName: added });
       }
-      return { ok: true, changes };
+      return good("children", changes);
+    }
+    // [2026-11-26] Remove a child (W3, W4; migration 018 deletes every earlier name too).
+    case "children-remove": {
+      const id = Number(form.get("child"));
+      if (!s.children.some((c) => c.id === id)) return { ok: false, part: null };
+      if (s.children.length <= 1) return bad("children", S.keepOneChild);
+      return good("children", [{ kind: "remove-child", childId: id }]);
     }
     case "behaviours": {
       const known = (id: number, category: "quick" | "deliberate") => s.behaviours.some((b) => b.id === id && b.category === category);
@@ -310,7 +397,8 @@ export function checkSave(form: URLSearchParams, s: WebSettings): SaveCheck {
       if (quick.length > MAX_QUICK_PICKS) return bad("behaviours", S.upTo2Quick);
       if (quick.length + (deliberate === null ? 0 : 1) < 1) return bad("behaviours", S.keepOneBehaviour);
       const picks = [...quick.map((nudgeId) => ({ nudgeId, frequency: qf })), ...(deliberate === null ? [] : [{ nudgeId: deliberate, frequency: df }])];
-      return { ok: true, changes: [{ kind: "behaviours", picks }] };
+      // [2026-11-26] The same picks as now: nothing to send (DEF-2).
+      return good("behaviours", samePicks(picks, s.picks) ? [] : [{ kind: "behaviours", picks }]);
     }
     case "times": {
       const schedule = form.get("schedule");
@@ -325,7 +413,7 @@ export function checkSave(form: URLSearchParams, s: WebSettings): SaveCheck {
       if (next.length === 0) return bad("times", S.keepOneTime);
       const check = checkSchedules(schedule === "school" ? { school: next, nonSchool: s.nonSchoolSlots } : { school: s.schoolSlots, nonSchool: next });
       if (!check.ok) return bad("times", check.reasons.join(" "));
-      return { ok: true, changes: [{ kind: "times", schedule, minutes: next }] };
+      return good("times", [{ kind: "times", schedule, minutes: next }]);
     }
     default:
       return { ok: false, part: null };
