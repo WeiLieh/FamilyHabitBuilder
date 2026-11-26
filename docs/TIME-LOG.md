@@ -4,6 +4,8 @@ Time spent with Claude Code on this project, for tracking efficiency and timebox
 
 ## [2026-11-26 23:03 SGT] Session 22 (2026-11-26 evening)
 - [2026-11-26 23:03 SGT] About 2 h elapsed (about 21:00 to 23:05 SGT), nearly all active. Start-of-session routine; the owner chose to automate UAT (option A): a runbook, then a Claude session on the owner's computer ran 38 tests in Telegram Web (21:25 to 22:32); the results recorded and sorted into 4 defects, 1 design gap and 6 rules working as designed; Settings fixes decided with six wireframes (W1 to W7, "all as recommended") and approved tests; pull request 1 (migration 018, remove a child, T147 to T150, both reviews) opened as #68.
+- [2026-11-26 23:49 SGT] Continued after the handoff: about 45 min (about 23:04 to 23:49 SGT), all active: start-of-session routine; known issues archived; pull request #69, the Settings fixes (10 new tests, 4 rewritten, 2 real-browser tests, both reviews), merged; the look of 25 Nov (8 conflicts raised with a layout wireframe, answered in one message; migration 019, ST2 rewritten, 5 new tests, both reviews), #70 merged; session notes.
+- **Notes for timeboxing (second half):** listing every conflict with a recommendation let the owner answer eight questions in one line; the browser tests needed three tries because Playwright's stand-in server doesn't pass the browser's 'same site' label or follow redirects (both noted in the test).
 - **Notes for timeboxing:** the automated run took about 70 minutes for 38 tests with the owner tapping My page steps (the agent couldn't tap the pop-up page). Checking each "surprise" against its rule before calling it a defect saved fixing six things that weren't broken.
 
 ## [2026-11-25 23:18 SGT] Session 21 (2026-11-25 evening)

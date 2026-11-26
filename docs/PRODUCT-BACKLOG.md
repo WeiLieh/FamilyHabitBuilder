@@ -4,6 +4,12 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-26 23:49 SGT] A test that guards Week so far's layout (A1, B1, C1)
+- **Item:** [2026-11-26 23:49 SGT] A small test that fails if a green band, photo thumbnails, a child's name on a log row, or five connection circles appear on Week so far (the owner's 26 Nov choices; the spec-compliance review found they are followed by code only).
+- **Why it matters:** [2026-11-26 23:49 SGT] The look's handoff showed all four; a later change could bring one back by mistake.
+- **Priority:** [2026-11-26 23:49 SGT] Low
+- **Status:** [2026-11-26 23:49 SGT] Not started (offered to the owner, 26 Nov)
+
 ## [2026-11-26 22:38 SGT] Coded end-to-end tests (UAT option B)
 - **Item:** [2026-11-26 22:38 SGT] A script that signs in to Telegram as a second test account, sends the bot messages and checks the replies, plus Playwright tests for My page. Needs a Telegram user-client library (owner approval, rule 8), a second Telegram account and its login secret, and a place to run it (probably not this cloud container, whose network may block Telegram's own connection).
 - **Why it matters:** [2026-11-26 22:38 SGT] Re-checking every release with one command, with no one watching, once real families depend on the app.

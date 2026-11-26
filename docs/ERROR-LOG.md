@@ -5,6 +5,18 @@
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 
+## [2026-11-26 23:49 SGT] Styling values not approved first, a third time (rule 6)
+- **What broke:** [2026-11-26 23:49 SGT] The look of 25 Nov left a few values out (today's outline width, the active tab's bar width and corners). Claude Code picked 2px, 20px and 2px while building and told the owner afterwards, instead of listing them first, as the 24 and 25 Nov entries say. The spec-compliance review flagged them.
+- **Cause:** [2026-11-26 23:49 SGT] The owner had just answered eight questions; Claude Code filled the last small gaps itself rather than ask a ninth.
+- **Fix:** [2026-11-26 23:49 SGT] Recorded in `docs/CONTEXT.md` as "Claude Code's picks, by analogy" and shown to the owner before merging (#70).
+- **How to prevent it:** [2026-11-26 23:49 SGT] Third time, so a one-line rule is proposed for CLAUDE.md (practice 4): "Before writing any style, list every value the UI decisions don't give, with a proposal, and get my approval first." Waiting for the owner.
+
+## [2026-11-26 23:49 SGT] Code comments dated 27 Nov without running the clock (second time)
+- **What broke:** [2026-11-26 23:49 SGT] The Settings fixes' code comments were dated "[2026-11-27]"; the real date was 26 Nov (Singapore). Caught when the clock was run for the spec entry, and corrected before the commit.
+- **Cause:** [2026-11-26 23:49 SGT] The date was guessed from the late hour instead of run, as on 25 Nov.
+- **Fix:** [2026-11-26 23:49 SGT] All corrected to 2026-11-26 before any commit.
+- **How to prevent it:** [2026-11-26 23:49 SGT] Run `TZ=Asia/Singapore date '+%Y-%m-%d %H:%M'` before the first edit of a build and use that output for every comment and prefix. A third time means proposing a CLAUDE.md rule.
+
 ## [2026-11-26 22:38 SGT] The UAT runbook expected four things the rules don't promise
 - **What broke:** [2026-11-26 22:38 SGT] Claude Code's `docs/UAT-RUNBOOK.md` (26 Nov) expected Undo under a ✅ Done receipt (U101), a 3rd demo reminder after Not today (U100), a 🗑 for a log's line while it has a photo (U65), and "Hi [first name]" (U63). The run marked U100 and U101 PARTLY and listed the others as surprising, though the app followed rules 5.8, 12.5, 9.6 and 9.4.
 - **Cause:** [2026-11-26 22:38 SGT] The runbook was written from the UAT checklists and memory, not checked against each rule's current wording.

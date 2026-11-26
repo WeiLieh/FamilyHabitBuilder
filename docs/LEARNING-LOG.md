@@ -6,6 +6,15 @@
 
 ## Notebook
 
+### [2026-11-26 23:49 SGT] Design tokens: naming each colour once
+- **Concept:** design tokens (named values such as `--accent` or `--page`, written once at the top of the stylesheet).
+- **In plain English:** every colour has a name, and the rest of the stylesheet uses the name, never the colour code. Changing the look means changing a handful of names at the top, not hunting through hundreds of lines.
+- **Analogy:** a paint chart in a decorator's van: the plan says "wall colour B" everywhere, so repainting the whole house means changing one swatch.
+- **Why and when to use it:** whenever a look may change (it did tonight, in one go); not worth it for a one-page throwaway.
+- **Best practices:** name by role (page, card, accent), not by colour ("green"); keep the list short; let a test (ST2) check no colour sneaks in outside the list.
+- **Where it showed up in this project:** the look of 25 Nov replaced the whole palette by changing the names at the top of `src/web-app/style.ts`; Settings took the new colours with no extra work because it used the same names.
+- **Explain it to others:** "We name every colour once, by what it's for. When the designer changed the palette, we swapped the names and every page followed, and a test makes sure nobody slips in an unapproved colour."
+
 ### [2026-11-26 23:03 SGT] Automated user acceptance testing (UAT) with an AI agent driving a browser
 - **Concept:** user acceptance testing (UAT), checking the app works the way a real user expects, done by an AI agent that controls a browser, following a written runbook.
 - **In plain English:** instead of tapping through 38 checks yourself, a Claude session on your own computer opened Telegram Web, sent the commands, read the replies and filled in a results table. It paused for the things only you should do: signing in, choosing a photo, giving consent.

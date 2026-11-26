@@ -2,6 +2,24 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-26 23:49 SGT] HANDOFF: session 22 ended, after the Settings fixes and the new look (read this first)
+- [2026-11-26 23:49 SGT] **State:** `main` has **#69** (the Settings fixes, rule 9.9, W1 to W7, DEF-1 to DEF-3; Playwright 1.63.0 test-only) and **#70** (the look of 25 Nov, UI decisions L17 to L22, migration 019). **Migration 018 applied** by the owner; **migration 019 not yet** (the page works either side of it: older-week habit tiles show plain until it runs). `npm run check` passes (**424 tests**, 37 files, no drift); `npm run test:db` passes (T1 to T151). This session's notes are a small pull request (H9).
+- [2026-11-26 23:49 SGT] **Built tonight:** the Saved pop-up on each row's page, greyed quick boxes, a 🗑 per child (asks first) and per time, the sliding pause switch, Telegram told only on a change; two real-browser tests (SB1, SB2). Then the new look: pale mint page, white cards on soft shadows, rounded font, deeper green, today outlined, faded tabs and dustbins (40%), an outlined older-weeks button, and a colour and icon per habit on older-week tiles (by the habit's code). Settings takes the new colours only.
+- [2026-11-26 23:49 SGT] **Owner decisions tonight:** known issues archived (13 oldest open entries, still open); the rebuilt SE16 to SE25 list, black at 40% in ST2 and a red Remove: confirmed; the two Low privacy findings logged; the look's handoff applied with **layout unchanged (A1, B1, C1)**: no green band, big photos, connection bars; section 2 colours and all nine habit tiles approved; Settings takes the new colours; ST2 rewritten; the 40% fade kept; the tab bar shadow and migration 019 "as recommended".
+- [2026-11-26 23:49 SGT] **Owner, waiting:** run **migration 019** (step G19 in `src/web-app/UAT-week-so-far.md`); phone tests **U104 to U110** (Settings fixes) and **U111 to U116** (the look, including the faded labels in daylight); remove "UAT Child" with the new 🗑 (U107); **Sunday 29 Nov** the first live Wrap Up (U79 to U82), Monday U83.
+- [2026-11-26 23:49 SGT] **Next (owner to choose, CATCH-UP 4b):** a small test that guards layout A1, B1, C1 (offered, not answered); step 3, Habits so far (wireframes first); an older week's own page (page 3; it gets the new look when built); the Settings switch and tick box sizes (still Claude Code's 25 Nov values).
+- [2026-11-26 23:49 SGT] **Proposed CLAUDE.md rule** (third time styling values weren't approved first, `docs/ERROR-LOG.md`): see CATCH-UP 4b. Not added until the owner agrees.
+
+## [2026-11-26 23:49 SGT] Session 22, second half (after the handoff): Settings fixes and the look
+### Done
+- [2026-11-26 23:49 SGT] Start-of-session routine (drift 24/24). #68 merged, migration 018 applied (owner). Known issues archived (owner approved). #69 Settings fixes (H3 reviews: privacy High fixed by pinning Playwright; spec check no mismatches). #70 the look (H3 reviews: no High or Medium; both Lows and the spec check's points fixed).
+### In progress
+- [2026-11-26 23:49 SGT] None.
+### Next steps
+- [2026-11-26 23:49 SGT] See the HANDOFF entry above.
+### Blockers
+- [2026-11-26 23:49 SGT] None.
+
 ## [2026-11-26 23:03 SGT] HANDOFF: session 22 paused for a fresh context (read this first)
 - [2026-11-26 23:03 SGT] **State:** `main` = #67. **#68 open** on `claude/kind-gates-5u8dbm`: tonight's UAT results, the Settings-fix decisions, and **migration 018** (remove a child; T147 to T150; both reviews run, one Low fixed, owner "ignore both" on the rest). **Migration 018 not yet applied.** `npm run check` passes (**406 tests**); `npm run test:db` passes (332 PASS lines, T1 to T150).
 - [2026-11-26 23:03 SGT] **Next (Claude Code), after the owner merges #68: pull request 2, the Settings fixes (Web app)**, tests approved by the owner on 26 Nov: new SE16 to SE25 and ST8; rewritten SE3, SE4, SE12, SE15 (rule 12). The decisions are rule 9.9's "Proposed change" (W1 to W7, DEF-1 to DEF-3), wireframes in `docs/handoffs/2026-11-26-settings-fixes-wireframes/`, look values L14 to L16 in `docs/CONTEXT.md`. Owner's Q1 A: **Playwright approved, test-only**: `npm install --save-dev --save-exact playwright@1.63.0` (matches the browser in `/opt/pw-browsers`), add it to "Approved libraries", and add `npx playwright install --with-deps chromium` after `npm ci` in `.github/workflows/check.yml`. Owner's Q2: the switch **slides (0.2 s) then submits** (no background save; CSP keeps `default-src 'none'`).

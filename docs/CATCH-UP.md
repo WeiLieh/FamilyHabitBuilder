@@ -2,7 +2,9 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/CATCH-UP-superseded.md](archive/CATCH-UP-superseded.md) to keep this file short (owner approved).
 
-**Last updated: [2026-11-26 23:03 SGT]** (session 22 paused for a fresh context: **tonight's UAT run by Claude in Telegram Web** and recorded; Settings fixes decided; **#68 open** (migration 018, remove a child); next: pull request 2, the Settings fixes).
+**Last updated: [2026-11-26 23:49 SGT]** (session 22 ended: **Settings fixes (#69) and the new look (#70) merged**; migration 018 applied, 019 waiting; layout unchanged by your choice).
+
+SUPERSEDED [2026-11-26 23:49 SGT] **Last updated: [2026-11-26 23:03 SGT]** (session 22 paused for a fresh context: **tonight's UAT run by Claude in Telegram Web** and recorded; Settings fixes decided; **#68 open** (migration 018, remove a child); next: pull request 2, the Settings fixes).
 
 SUPERSEDED [2026-11-26 23:03 SGT] **Last updated: [2026-11-25 23:18 SGT]** (session 21 ended: **Settings live** (#64 to #66, migrations 015 to 017 applied); pause both ways; the Wrap Up counts any activity; next: the testing backlog, then the look and Habits so far).
 
@@ -14,7 +16,9 @@ SUPERSEDED [2026-11-24 23:10 SGT] **Last updated: [2026-11-24 22:18 SGT]** (sess
 
 SUPERSEDED [2026-11-24 22:18 SGT] **Last updated: [2026-11-15 22:36 SGT]** (session 19 ended: sign-in live; **Week so far built in plain HTML and deployed (#55)**, its phone tests U63 to U69 next time).
 
-> [2026-11-26 23:03 SGT] **⏰ Next:** run **migration 018** and merge **#68**; then a fresh session builds **pull request 2, the Settings fixes** (tests already approved). Sunday 29 Nov: the first live Wrap Up (U79 to U82).
+> [2026-11-26 23:49 SGT] **⏰ Next:** run **migration 019**; phone tests U104 to U116; **Sunday 29 Nov** the first live Wrap Up (U79 to U82). Then answer 4b (the proposed CLAUDE.md rule; what to build next).
+>
+> SUPERSEDED [2026-11-26 23:49 SGT] [2026-11-26 23:03 SGT] **⏰ Next:** run **migration 018** and merge **#68**; then a fresh session builds **pull request 2, the Settings fixes** (tests already approved). Sunday 29 Nov: the first live Wrap Up (U79 to U82).
 >
 > SUPERSEDED [2026-11-26 23:03 SGT] [2026-11-25 23:18 SGT] **⏰ Next:** **the testing backlog** (section 5), starting with Settings U84 to U98 tonight or tomorrow, and the first live Wrap Up on **Sunday 29 Nov**. Then decide (4b): automating the tests, step 2 (the look), step 3 (Habits so far).
 >
@@ -58,7 +62,9 @@ The modules from your architecture diagram, coloured by progress (9 since 31 Oct
 
 **Colours:** [2026-11-11 17:48 SGT] green = built (status starts with "Built"); yellow = in design or partly built; grey = not started. The drift test checks each box's colour fits its status (rule D4).
 
-[2026-11-25 23:18 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 017 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt", the Sunday Wrap Up and pause both ways live** → (4) Web app ⬅ **sign-in, Week so far, Settings, your look and photos live; next: the look's open choices, Habits so far, an older week's page** → then Claude's words (the personality and warm reply); the photo check is parked.
+[2026-11-26 23:49 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 018 applied, 019 waiting** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt", the Sunday Wrap Up and pause both ways live** → (4) Web app ⬅ **sign-in, Week so far, Settings (with its fixes), the new look of 25 Nov and photos live; next: Habits so far, an older week's page** → then Claude's words (the personality and warm reply); the photo check is parked.
+
+SUPERSEDED [2026-11-26 23:49 SGT] [2026-11-25 23:18 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 017 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt", the Sunday Wrap Up and pause both ways live** → (4) Web app ⬅ **sign-in, Week so far, Settings, your look and photos live; next: the look's open choices, Habits so far, an older week's page** → then Claude's words (the personality and warm reply); the photo check is parked.
 
 SUPERSEDED [2026-11-25 23:18 SGT] [2026-11-24 23:10 SGT] **Development order (agreed):** (1) Nudge repository, Nudge engine decisions ✅ → (2) Datastore ✅ **migrations up to 014 applied** → (3) Telegram bot ✅ **daily loop, photos, "Add how you felt" and the Sunday Wrap Up live** → (4) Web app ⬅ **sign-in, Week so far, your look and photos live; next: an older week's page, Settings, tab 2** → then Claude's words (the personality and warm reply); the photo check is parked.
 
@@ -123,22 +129,23 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 4. Questions to think about before next session
 
-[2026-11-26 23:03 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-26-session-22.md](archive/CATCH-UP-sections-4-5-to-2026-11-26-session-22.md), word for word.
+[2026-11-26 23:49 SGT] Open items only (CLAUDE.md, H2 addition). The previous version is in [docs/archive/CATCH-UP-sections-4-5-to-2026-11-26-session-22-end.md](archive/CATCH-UP-sections-4-5-to-2026-11-26-session-22-end.md), word for word.
 
-**4a. Latest decisions (session 22, 26 Nov)**
-- [2026-11-26 23:03 SGT] **UAT is automated (option A):** a Claude session on your computer drives Telegram Web with [docs/UAT-RUNBOOK.md](UAT-RUNBOOK.md); results come back here. Coded tests (option B) are in the backlog.
-- [2026-11-26 23:03 SGT] **Tonight's UAT:** 31 pass, U87 fail, U45 blocked; defects DEF-1 to DEF-4 in `docs/KNOWN-ISSUES.md` (DEF-4 left for now). Six "surprises" were the rules working (Undo only for keyboard logs, Not today ends the day, one dustbin per layer, and more).
-- [2026-11-26 23:03 SGT] **Settings fixes decided ("all as recommended"):** W1 to W7 in [src/web-app/SPEC.md](../src/web-app/SPEC.md) (proposed change to rule 9.9): the Saved pop-up and staying on the page, greyed quick boxes, a dustbin per child (asks first) and per time, the sliding switch (slides, then reloads), Telegram told only on a change. Look values L14 to L16. Playwright approved as a test-only library. The tests were approved.
-- [2026-11-26 23:03 SGT] **Pull request 1 of 2 open, [#68](https://github.com/WeiLieh/FamilyHabitBuilder/pull/68):** migration 018, remove a child. The two review items: "ignore both".
+**4a. Latest decisions (session 22, second half, 26 Nov)**
+- [2026-11-26 23:49 SGT] **Settings fixes live** ([#69](https://github.com/WeiLieh/FamilyHabitBuilder/pull/69)): the Saved pop-up, greyed quick boxes, a 🗑 per child (asks first) and per time, the sliding switch, Telegram told only on a change. Playwright 1.63.0 (test only) runs two real-browser tests.
+- [2026-11-26 23:49 SGT] **The new look live** ([#70](https://github.com/WeiLieh/FamilyHabitBuilder/pull/70)), from your 25 Nov handoff: UI decisions **L17 to L22** in [docs/CONTEXT.md](CONTEXT.md). **Layout unchanged (A1, B1, C1):** no green band, big photos, connection bars. All nine habit tile colours approved; Settings takes the new colours only; the 40% fade kept.
 
 **4b. For you to decide**
-- [2026-11-26 23:03 SGT] May `docs/KNOWN-ISSUES.md` (318 lines) have its oldest open entries moved word for word to `docs/archive/`?
-- [2026-11-25 23:18 SGT] **Step 2, the look:** the Settings switch and tick boxes, row heights, the Back header, text boxes, the ✓ habit tile, the empty states (list in `docs/KNOWN-ISSUES.md`).
+- [2026-11-26 23:49 SGT] **A proposed CLAUDE.md rule** (third time, `docs/ERROR-LOG.md`): "Before writing any style, list every value the UI decisions don't give, with a proposal, and get my approval first." Add it?
+- [2026-11-26 23:49 SGT] **A small test that guards the layout A1, B1, C1** (in the backlog, Low): build it next time?
 - [2026-11-25 23:18 SGT] **Step 3, Habits so far:** layout wireframes first, then a high-fidelity mock-up shown only to you.
+- [2026-11-26 23:49 SGT] **The Settings switch and tick boxes:** their sizes are still Claude Code's 25 Nov values (known issue); keep them, or design them in Claude Chat?
+- [2026-11-26 23:49 SGT] **An older week's own page** (rule 9.7, page 3): build it next? It gets the new look when built.
 
 **4c. Still for Claude Chat (bring each back as a handoff file, habit H10)**
-- [2026-11-15 17:00 SGT] Tab 2 "Habits so far", tab 3 Rewards later; the empty states; the ✓ habit tile.
+- [2026-11-15 17:00 SGT] Tab 2 "Habits so far", tab 3 Rewards later; the empty states.
 - [2026-11-24 23:10 SGT] Words still to draft (B1 drafts, Web app drafts, the photo-consent and "Saved." lines), and **the photo consent wording** for your PDPA reviewer.
+- [2026-11-26 23:49 SGT] From the look's open list: whether the habit tile colours also appear on Habits so far and Rewards; a logo or wordmark; dark mode (none for now).
 
 **4d. Parked (you asked me not to raise these first)**
 - [2026-11-14 10:38 SGT] "Pause" versus "stop"; whether stopping is as easy as starting; the first alpha experiment; the Terms & Conditions page; [2026-11-24 23:10 SGT] the photo check (backlog); [2026-11-14 10:38 SGT] Q12 when the birth year is collected; [2026-11-15 11:41 SGT] list order; how the bot records which child a log was with; [2026-11-26 23:03 SGT] DEF-4 (no 9:30 pm reminder, probably rule 3.8).
@@ -147,8 +154,9 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 
 ## 5. Waiting on you (not blocking the next steps)
 
-- [2026-11-26 23:03 SGT] **Run migration 018** in Supabase's SQL Editor, then **merge #68**.
-- [2026-11-26 23:03 SGT] **Still to test:** U45, U46, U35, U33 at a reminder (tap the keyboard, not ✅ Done); U70 dark mode on your phone; **Sunday 29 Nov** U79 to U82 and Monday U83 ([src/telegram-bot/UAT-session-20.md](../src/telegram-bot/UAT-session-20.md)); U97 with a test account only. "UAT Child" is still on your account: remove it with the new 🗑 once pull request 2 is live.
+- [2026-11-26 23:49 SGT] **Run migration 019** in Supabase's SQL Editor (step G19 in [src/web-app/UAT-week-so-far.md](../src/web-app/UAT-week-so-far.md)); until then older-week habit tiles show plain.
+- [2026-11-26 23:49 SGT] **Phone tests:** U104 to U110, the Settings fixes ([src/web-app/UAT-settings.md](../src/web-app/UAT-settings.md); U107 removes "UAT Child"); U111 to U116, the look (read the faded labels in daylight).
+- [2026-11-26 23:03 SGT] **Still to test:** U45, U46, U35, U33 at a reminder (tap the keyboard, not ✅ Done); U70 dark mode on your phone; **Sunday 29 Nov** U79 to U82 and Monday U83 ([src/telegram-bot/UAT-session-20.md](../src/telegram-bot/UAT-session-20.md)); U97 with a test account only.
 - [2026-11-14 10:38 SGT] **PDPA reviewer, one combined list:** agreement wording (Q8) and the `/start` notice; the 90-day record line (K1); photo consent wording and withdrawing it ([2026-11-25 23:18 SGT] Settings now says "to withdraw it, delete your data"); reflections and lines that mention the child.
 - [2026-11-14 10:38 SGT] **Nudge personality** ([src/nudge-engine/NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md)) before Claude's warm reply (rule 7.5).
 - [2026-11-14 10:38 SGT] **Before launch:** upload MOE school holiday and Singapore public holiday dates; fill in the Terms & Conditions page.
