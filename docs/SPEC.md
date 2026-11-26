@@ -53,6 +53,7 @@ Every entry carries a date/time prefix (see CLAUDE.md). This file is `docs/SPEC.
 - The one diagram: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Project memory: [CATCH-UP.md](CATCH-UP.md), [CONTEXT.md](CONTEXT.md), [PROGRESS.md](PROGRESS.md), [TIME-LOG.md](TIME-LOG.md), [KNOWN-ISSUES.md](KNOWN-ISSUES.md), [ERROR-LOG.md](ERROR-LOG.md), [PRODUCT-BACKLOG.md](PRODUCT-BACKLOG.md), [LEARNING-LOG.md](LEARNING-LOG.md), [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)
 - Module specs: [Experiments](../src/experiments/SPEC.md) (with its plain-English experiment plans, [EXPERIMENTS.md](../src/experiments/EXPERIMENTS.md)), [Nudge engine](../src/nudge-engine/SPEC.md), [Nudge repository](../src/nudge-repository/SPEC.md), [Datastore](../src/datastore/SPEC.md), [Variable rewards](../src/variable-rewards/SPEC.md) (with its working design, [DESIGN.md](../src/variable-rewards/DESIGN.md)), [Telemetry](../src/telemetry/SPEC.md), [Telegram bot](../src/telegram-bot/SPEC.md), [Photo check](../src/photo-check/SPEC.md), [Web app](../src/web-app/SPEC.md), [Demo](../src/demo/SPEC.md) (with its AI personality, [NUDGE-CONTEXT.md](../src/nudge-engine/NUDGE-CONTEXT.md))
+- [2026-11-26 22:38 SGT] Owner checklists (UAT): [Demo](../src/demo/UAT-demo.md)
 - [2026-11-26 21:14 SGT] Owner checklists (UAT): [UAT runbook, Claude drives Telegram Web](UAT-RUNBOOK.md)
 - [2026-11-14 14:06 SGT] Owner checklists (UAT): [Telegram bot, B1 log any time](../src/telegram-bot/UAT-b1.md)
 - [2026-11-12 23:20 SGT] Owner checklists (UAT): [Telegram bot, onboarding](../src/telegram-bot/UAT-onboarding.md)

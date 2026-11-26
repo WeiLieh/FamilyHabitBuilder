@@ -39,6 +39,8 @@
 
 [2026-11-15 12:13 SGT] **Closed by the owner (15 Nov): "most of the test cases passed, so let's close this."** Not run, and closed without a result: U45, U46, U52, U53.
 
+[2026-11-26 22:38 SGT] **Results, 26 Nov evening (after the 15 Nov close):** Run by Claude in Telegram Web on the owner's computer ([docs/UAT-RUNBOOK.md](../../docs/UAT-RUNBOOK.md)), 26 Nov 21:25 to 22:32 SGT; the owner tapped every My page step. Defects DEF-1 to DEF-4 are in [docs/KNOWN-ISSUES.md](../../docs/KNOWN-ISSUES.md). **Pass:** U53 (checked through U91 and U92). **Blocked:** U45 (a 9:30 pm time was added at 9:32 pm; no reminder came by 10:00 pm; DEF-4). U46 not run (needs a reminder).
+
 ## Test cases
 Use your test account (it has picks, times and a child's name). An account that signed up before B1 has no keyboard yet: send `/help` to get it (U40).
 
@@ -49,7 +51,7 @@ Use your test account (it has picks, times and a child's name). An account that 
 | U42 | Tap the same button again | "✅ Saved: <behaviour>, again today. It counts once for your week." with **Undo** | Telegram | [ ] |
 | U43 | Within 10 minutes, tap **Undo** on one receipt | The Undo button goes; "Undone. It won't count." | Telegram; that row's `undone_at` is filled | [ ] |
 | U44 | Wait more than 10 minutes, then tap **Undo** on the other receipt | The button disappears; a pop-up "Undo expired."; nothing is undone | Telegram; `undone_at` still empty | [ ] |
-| U45 | When a reminder arrives, tap that behaviour on the keyboard instead of ✅ Done | The reminder keeps its words and **loses its buttons**; the receipt arrives below with Undo | Telegram; the new log's `from_message_id` is the nudge's number in `messages_sent` | [ ] |
+| U45 | When a reminder arrives, tap that behaviour on the keyboard instead of ✅ Done | The reminder keeps its words and **loses its buttons**; the receipt arrives below with Undo | Telegram; the new log's `from_message_id` is the nudge's number in `messages_sent` | [ ] BLOCKED (no reminder came; DEF-4), 26 Nov |
 | U46 | Tap 😴 Not today on a reminder, then tap a behaviour on the keyboard | The receipt arrives as normal (logging still works after Not today) | Telegram | [ ] |
 | U47 | Send `/log` | "Which one did you do today?" with one button per behaviour you picked | Telegram | [ ] |
 | U48 | Tap one of them | The /log message loses its buttons; "✅ Saved: <behaviour> today." **without** Undo | Telegram; `logged_via` is `log_command` | [ ] |
@@ -57,6 +59,6 @@ Use your test account (it has picks, times and a child's name). An account that 
 | U50 | Type `Help` (no slash, a capital H), then `/log hug` | The help text; then "Unrecognised text." | Telegram | [ ] |
 | U51 | Send `/resume` (you are not paused) | "Your reminders are already on." | Telegram | [ ] |
 | U52 | (Optional, with Claude's help in Supabase) pause the test account, then send `/pause` | "Your reminders are already paused." and, after reopening the chat, the Menu shows **/resume** instead of /pause | Telegram | [ ] |
-| U53 | (Paused) send `/resume`, tap **✅ Resume** | "✅ Your reminders are back on."; the Menu shows /pause again | Telegram; `parents.paused` is false | [ ] |
+| U53 | (Paused) send `/resume`, tap **✅ Resume** | "✅ Your reminders are back on."; the Menu shows /pause again | Telegram; `parents.paused` is false | [x] PASS, 26 Nov |
 | U54 | With a fresh invite code and another account, start sign-up, stop on the children screen, then open your invite link again | The earlier "Any other children?" message **loses its buttons**, then "Welcome back! Let's carry on." and the screen again, with buttons | Telegram | [ ] |
 | U55 | Finish that sign-up | "You're all set …" brings the keyboard with that account's behaviours | Telegram | [ ] |

@@ -4,6 +4,18 @@
 
 One entry per item: Item / Why it matters / Priority / Status. Newest first.
 
+## [2026-11-26 22:38 SGT] Coded end-to-end tests (UAT option B)
+- **Item:** [2026-11-26 22:38 SGT] A script that signs in to Telegram as a second test account, sends the bot messages and checks the replies, plus Playwright tests for My page. Needs a Telegram user-client library (owner approval, rule 8), a second Telegram account and its login secret, and a place to run it (probably not this cloud container, whose network may block Telegram's own connection).
+- **Why it matters:** [2026-11-26 22:38 SGT] Re-checking every release with one command, with no one watching, once real families depend on the app.
+- **Priority:** [2026-11-26 22:38 SGT] Medium (before beta)
+- **Status:** [2026-11-26 22:38 SGT] Not started
+
+## [2026-11-26 22:38 SGT] Remove a child in Settings
+- **Item:** [2026-11-26 22:38 SGT] Design and build removing a child on My page's Settings (rule 9.9 says "removing is not designed yet"): what happens to messages that named them and to logs.
+- **Why it matters:** [2026-11-26 22:38 SGT] Found in UAT U86: a child added by mistake can't be taken back; the owner's account still has "UAT Child".
+- **Priority:** [2026-11-26 22:38 SGT] Medium (before real families)
+- **Status:** [2026-11-26 22:38 SGT] Not started
+
 ## [2026-11-24 22:16 SGT] The photo check (Claude judges a log's photo)
 - **Item:** [2026-11-24 22:16 SGT] Build the Photo check (rules 6.1, 6.2): Claude judges whether a log's photo fits the behaviour; no match or an outage asks "Did you do it?" and labels the log self-reported.
 - **Why it matters:** [2026-11-24 22:16 SGT] It was the designed way to make photo logs trustworthy. Parked by the owner on 24 Nov to ship photos faster; until then any uploaded photo is saved unchecked. Sending children's photos to Claude (outside Singapore) needs the PDPA reviewer first.

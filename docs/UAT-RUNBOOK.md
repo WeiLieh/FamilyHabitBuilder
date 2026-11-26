@@ -2,6 +2,8 @@
 
 [2026-11-26 21:14 SGT] Written for a **Claude session on the owner's own computer** (Claude desktop app, with browser control). That session reads this file, runs the owner's user acceptance tests (UAT) in the owner's browser, and fills in the results table at the end. The owner pastes the table back into the Claude Code cloud session, which records the results in the UAT files. Decided by the owner on 26 Nov (option A: Claude drives the browser; coded tests are a backlog item).
 
+[2026-11-26 22:38 SGT] **Learned in the first run (26 Nov):** My page opens as a pop-up the agent can read but not tap, so the owner taps the My page steps; the agent can't attach files, so the owner attaches the photo; the Demo's checklist is [src/demo/UAT-demo.md](../src/demo/UAT-demo.md). Four expectations were corrected against their rules (U63, U65, U100, U101; old rows kept as SUPERSEDED).
+
 ---
 
 ## 0. Read this first (for the Claude session running the tests)
@@ -74,7 +76,8 @@ You are helping the owner of the Family Habit App, a Telegram bot plus a web pag
 ### Part B: Week so far, looking only (open with `/mypage`)
 | ID | Do this | Expect |
 |---|---|---|
-| U63 | Send `/mypage`, tap the link, then the button | "Hi [first name]", the week's dates "with [children]", the M to S strip with ✓ on each day logged, then the logs, newest first |
+| U63 | [2026-11-26 22:38 SGT] Send `/mypage`, tap the link, then the button | "Hi [parent's name]" (the saved name, rule 9.4), the week's dates "with [children]", the M to S strip with ✓ on each day logged, then the logs, newest first |
+| SUPERSEDED [2026-11-26 22:38 SGT] U63 | Send `/mypage`, tap the link, then the button | "Hi [first name]", the week's dates "with [children]", the M to S strip with ✓ on each day logged, then the logs, newest first |
 | U64 | Look at the reflections and the connection card | "[N] reflection(s) this week" with the words in italics and quotes; "How connected did you feel with your child?" with a bar per answered week and "–" for a week without an answer (or "Your first answer arrives on Sunday.") |
 | U71 | Look at the connection card and the tab bar; scroll down | Bars stand upright, "This week" in deep green; the tab bar stays at the bottom while scrolling, "Week so far" in green |
 | U68 | Tap the older weeks button (if there is one) | Older weeks listed, each with its dates and a count line. If there's no button, NOT RUN (joined less than a week ago) |
@@ -100,7 +103,8 @@ Wait in the bot's chat until a reminder arrives (reminders are sent in the 30 mi
 ### Part E: deleting on My page (only what part D created)
 | ID | Do this | Expect |
 |---|---|---|
-| U65 + U72 | On Week so far, tap the 🗑 next to the line `UAT test line, please ignore` | A page: "Delete this line? It will be gone for good. Your log stays." with **Cancel** (an outlined button) and **Delete** (red) |
+| U65 + U72 | [2026-11-26 22:38 SGT] On Week so far, if the log still has a photo, delete the photo first (U76): a log shows one 🗑, for its photo first, then its line (rule 9.6). Then tap the 🗑 next to the line `UAT test line, please ignore` | A page: "Delete this line? It will be gone for good. Your log stays." with **Cancel** (an outlined button) and **Delete** (red) |
+| SUPERSEDED [2026-11-26 22:38 SGT] U65 + U72 | On Week so far, tap the 🗑 next to the line `UAT test line, please ignore` | A page: "Delete this line? It will be gone for good. Your log stays." with **Cancel** (an outlined button) and **Delete** (red) |
 | U66 | Tap **Cancel** | Back on Week so far; the line is still there |
 | U67 | Tap 🗑 on the same line again, then **Delete** | Back on Week so far; the line is gone; the log is still listed and still counted |
 | U76 | ASK THE OWNER: "Shall I delete the test photo?" If yes, tap the photo's 🗑, then **Delete** | "Delete this photo? It will be gone for good. Your log stays."; then the photo is gone, the log stays |
@@ -110,8 +114,10 @@ While a demo runs, the owner's real reminders are paused; `/demo stop` deletes t
 | ID | Do this | Expect |
 |---|---|---|
 | U99 | Send `/demo` | A fresh sign-up starts (the agreement shown, no invite code asked); the Menu gains `/next` and `/demo_stop` |
-| U100 | Finish the sign-up (pick any habits; ASK THE OWNER at the photo consent), then send `/next` several times | Each chosen habit's reminder once, in the order picked; then the Wrap Up summary; then the 1 to 5 question; then "That's the whole week. Type /demo stop to finish." |
-| U101 | During the demo: tap ✅ Done on one reminder, Undo on its receipt, 😴 Not today on another, and tap a number on the 1 to 5 question | Each answer works as it does for a real parent (receipt, "Undo", the note below, "Answered: …") |
+| U100 | [2026-11-26 22:38 SGT] Finish the sign-up (pick any habits; ASK THE OWNER at the photo consent), then send `/next` several times | Each chosen habit's reminder once, in the order picked, until one gets 😴 Not today (that ends the day's reminders, rule 12.5); then the Wrap Up summary; then the 1 to 5 question; then "That's the whole week. Type /demo stop to finish." |
+| SUPERSEDED [2026-11-26 22:38 SGT] U100 | Finish the sign-up (pick any habits; ASK THE OWNER at the photo consent), then send `/next` several times | Each chosen habit's reminder once, in the order picked; then the Wrap Up summary; then the 1 to 5 question; then "That's the whole week. Type /demo stop to finish." |
+| U101 | [2026-11-26 22:38 SGT] During the demo: tap ✅ Done on one reminder, 😴 Not today on another, a number on the 1 to 5 question, and a habit on the keyboard, then Undo on its receipt | Done: the receipt with no Undo (Undo is only for keyboard logs, rule 5.8); Not today: the note below; the number: "Answered: …"; the keyboard tap: the receipt with Undo, then "Undone. It won't count." |
+| SUPERSEDED [2026-11-26 22:38 SGT] U101 | During the demo: tap ✅ Done on one reminder, Undo on its receipt, 😴 Not today on another, and tap a number on the 1 to 5 question | Each answer works as it does for a real parent (receipt, "Undo", the note below, "Answered: …") |
 | U102 | During the demo, send `/mypage` and open it | My page shows the **demo** parent's week, not the owner's |
 | U103 | Send `/demo stop` | Back to the owner's account; the Menu loses /next; then `/mypage` shows the owner's own week again |
 

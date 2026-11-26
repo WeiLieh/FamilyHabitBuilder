@@ -2,6 +2,18 @@
 
 [2026-11-12 23:24 SGT] Older replaced (superseded) lines were moved word for word to [docs/archive/PROGRESS-superseded.md](archive/PROGRESS-superseded.md) to keep this file short (owner approved).
 
+## [2026-11-26 22:38 SGT] Session 22: the testing backlog, run by Claude in Telegram Web
+### Done
+- [2026-11-26 22:38 SGT] Start-of-session routine (drift check passed, 24 checks). Owner chose to automate UAT with option A (`docs/CONTEXT.md`): runbook `docs/UAT-RUNBOOK.md`, run on the owner's computer 21:25 to 22:32 SGT.
+- [2026-11-26 22:38 SGT] Results recorded in the UAT files and the new Demo checklist `src/demo/UAT-demo.md`: 31 PASS, U87 FAIL, U45 BLOCKED, U86 PARTLY, U97 and U70 not run; U100 and U101 pass against rules 12.5 and 5.8 (the runbook's expectations were wrong, logged in `docs/ERROR-LOG.md`).
+- [2026-11-26 22:38 SGT] Defects DEF-1 to DEF-4 and "can't remove a child" added to `docs/KNOWN-ISSUES.md` (now 318 lines, over 300); backlog: coded tests (option B), remove a child.
+### In progress
+- [2026-11-26 22:38 SGT] Fixing the defects, test-first, with the owner.
+### Next steps
+- [2026-11-26 22:38 SGT] Owner: confirm the defect list and which by-design items to keep; then the fix tests in plain English. Still to run: U45, U46, U35, U33 at a reminder; U70 on the phone; U79 to U83 on Sunday 29 and Monday 30 Nov.
+### Blockers
+- [2026-11-26 22:38 SGT] None.
+
 ## [2026-11-25 23:18 SGT] HANDOFF: session 21 ended, after Settings (read this first)
 - [2026-11-25 23:18 SGT] **State:** `main` has **#64** (session 20 notes, migration 016, Settings), **#65** (migration 017: the new habit buttons after a Behaviours save) and **#66** (Settings review fixes, the Wrap Up counting any activity). **Migrations 015, 016 and 017 applied** by the owner (fingerprints recorded). `npm run check` passes (**406 tests**, no drift); database tests **T1 to T146** pass. Nothing open except this session's notes (H9).
 - [2026-11-25 23:18 SGT] **Built (owner-approved tests):** Settings from the owner's wireframe of 15 Nov (rule 9.9; SE1 to SE15): name, children, behaviours, times, pause, Weekly Wrap Up time, What we record, delete my data (photo files first, refused otherwise), sign out; pause and resume both ways with a short Telegram line and the Menu switched (rule 5.7; PZ1 to PZ5); /settings opens Settings; the new habit buttons in Telegram after a Behaviours save; "Saved." from a cookie, not the address; the Sunday Wrap Up (and the Demo) count any activity (rule 3.12).
