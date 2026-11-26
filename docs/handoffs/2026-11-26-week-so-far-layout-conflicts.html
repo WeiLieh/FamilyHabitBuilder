@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week so far layout choices</title>
+<style>
+:root{--bg:#fff;--ink:#222;--mid:#777;--line:#bbb;--fill:#e6e6e6;--dark:#555}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1c;--ink:#eee;--mid:#aaa;--line:#555;--fill:#333;--dark:#bbb}}
+:root[data-theme="dark"]{--bg:#1c1c1c;--ink:#eee;--mid:#aaa;--line:#555;--fill:#333;--dark:#bbb}
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}.note{color:var(--mid);margin:0 0 16px;max-width:60em}
+h2{font-size:15px;margin:24px 0 8px}
+.pair{display:flex;flex-wrap:wrap;gap:20px}
+.cap{width:240px}.cap h3{font-size:13px;margin:0 0 6px}.cap p{color:var(--mid);font-size:12px;margin:6px 0 0}
+.ph{width:240px;border:2px solid var(--line);border-radius:18px;overflow:hidden;box-sizing:border-box;padding:10px;min-height:190px}
+.band{background:var(--fill);margin:-10px -10px 0;padding:12px 10px 34px}
+.t{font-weight:600}.s{color:var(--mid);font-size:12px}
+.photo{height:70px;border:1px solid var(--line);background:var(--fill);border-radius:8px;margin:6px 0;display:flex;align-items:center;justify-content:center;color:var(--mid);font-size:11px}
+.lift{margin-top:-26px;position:relative}
+.row{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--fill)}
+.thumb{width:36px;height:36px;border:1px solid var(--line);background:var(--fill);border-radius:6px;flex:none;font-size:9px;color:var(--mid);display:flex;align-items:center;justify-content:center}
+.grow{flex:1}.bin{width:10px;height:12px;border:1.5px solid var(--dark);border-radius:2px;flex:none}
+.bars{display:flex;justify-content:space-around;align-items:flex-end;height:80px}
+.bar{width:16px;background:var(--fill);border:1px solid var(--line)}
+.circ{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.c{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--dark)}.c.on{background:var(--dark)}
+.lbl{font-size:10px;color:var(--mid);text-align:center}
+</style></head><body>
+<h1>Week so far: 3 layout choices in the 25 Nov styling file</h1>
+<p class="note">Layout only, plain greys, no look. On the left is what the rules say now (rules 9.4 and 9.5). On the right is what the styling file shows. Each pair is a decision for you to make.</p>
+
+<h2>A. The header and the week's moment</h2>
+<div class="pair">
+<div class="cap"><h3>A1 · Now (rule 9.4)</h3><div class="ph">
+<div class="t">Hi Cara</div><div class="s">23 to 29 Nov with Riley</div>
+<div class="photo">moment photo (Sunday night only)</div><div class="s">"Best week so far"</div>
+<div class="t" style="margin-top:8px">3 days logged this week</div></div>
+<p>A plain header. The moment sits under it, only from Sunday's Wrap Up until midnight.</p></div>
+<div class="cap"><h3>A2 · Styling file</h3><div class="ph">
+<div class="band"><div class="t">Hi Cara</div><div class="s">23 to 29 Nov with Riley</div></div>
+<div class="photo lift">moment photo overlaps the band</div><div class="s">"Best week so far"</div>
+<div class="t" style="margin-top:8px">3 days logged this week</div></div>
+<p>A coloured band holds the header, and the moment photo overlaps its lower edge. Open question: for 6 days of the week there is no moment, so what sits on the band's edge then?</p></div>
+</div>
+
+<h2>B. A log row with a photo</h2>
+<div class="pair">
+<div class="cap"><h3>B1 · Now (rule 9.4: "photo shown big, never a small preview")</h3><div class="ph">
+<div class="row"><div class="grow"><div class="t">Showing affection</div><div class="s">Tue</div>
+<div class="photo">photo, full width</div><div>We laughed a lot</div></div><span class="bin"></span></div></div>
+<p>The photo fills the row's width, with the line under it.</p></div>
+<div class="cap"><h3>B2 · Styling file</h3><div class="ph">
+<div class="row"><span class="thumb">photo</span><div class="grow"><div class="t">Showing affection</div><div class="s">Tue · Riley</div><div>We laughed a lot</div></div><span class="bin"></span></div>
+<div class="row"><span class="thumb">♥ tile</span><div class="grow"><div class="t">Showing affection</div><div class="s">Wed · Riley</div></div><span class="bin"></span></div></div>
+<p>A small 56 px thumbnail, or a coloured habit tile when there's no photo. It also shows "· child", but the app doesn't record which child a log was with (your 15 Nov decision; parked).</p></div>
+</div>
+
+<h2>C. The connection card</h2>
+<div class="pair">
+<div class="cap"><h3>C1 · Now (rule 9.5: bars only, last 4 weeks)</h3><div class="ph">
+<div class="t">How connected did you feel with your child?</div>
+<div class="bars"><span class="bar" style="height:40%"></span><span class="bar" style="height:60%"></span><span class="bar" style="height:80%"></span><span class="bar" style="height:60%"></span></div>
+<div class="lbl">26 Oct · 2 Nov · 9 Nov · 16 Nov</div></div>
+<p>One bar per week, so you can see the trend.</p></div>
+<div class="cap"><h3>C2 · Styling file</h3><div class="ph">
+<div class="t">How connected did you feel with your child?</div>
+<div class="circ"><span class="c on"></span><span class="c on"></span><span class="c on"></span><span class="c on"></span><span class="c"></span></div>
+<div class="lbl">one answer: 4 of 5</div></div>
+<p>Five circles filled up to one answer. Which week does it show, and is the 4-week trend dropped?</p></div>
+</div>
+</body></html>

@@ -17,36 +17,51 @@
 //
 // The colours are named once, at the top (":root"), so each approved colour
 // appears in exactly one place; test ST2 checks no other colour sneaks in.
+// [2026-11-26] The look of 25 Nov (UI decisions L17 to L22, owner "all as
+// recommended", 26 Nov): a pale mint page with white cards that float on
+// soft shadows instead of borders, a deeper green, a soft rounded font,
+// semi-bold headings, faded unselected tabs and dustbins, and a colour and
+// icon per habit on the older weeks' tiles. Settings takes the new colours but
+// keeps its thin-bordered 12px boxes (owner, 26 Nov). Shadows are the one
+// place a colour is written as rgba(...) (red, green, blue, strength): the
+// approved values, checked by ST2.
 // =============================================================================
 
 import { createHash } from "node:crypto";
 
 export const STYLESHEET = [
-  // The approved colours (L2 to L8 and the warning red). "color-scheme: light"
-  // tells the phone this page is light only, so it stays white in dark mode.
-  ":root{color-scheme:light;--text:#1F2328;--muted:#4F5660;--accent:#1F6F5C;--bar:#9CC7BC;--border:#D5D9DE;--rule:#E6E9ED;--bg:#FFFFFF;--danger:#B42318}",
+  // [2026-11-26] The approved colours (L17, L5's bars and the warning red).
+  // "color-scheme: light" tells the phone this page is light only, so it stays
+  // light in dark mode.
+  ":root{color-scheme:light;--text:#1D2B27;--muted:#5F706B;--accent:#1E7A6C;--bar:#9CC7BC;--ring:#D3DEDA;--rule:#EAF0EE;--page:#F2F7F5;--card:#FFFFFF;--danger:#B42318}",
   "*{box-sizing:border-box}",
-  "html{background:var(--bg)}",
-  // L1, L8, L9, L11: the system font, one phone-wide column, 20px margins, and
-  // room at the bottom so the fixed tab bar never covers the last button.
-  "body{margin:0 auto;max-width:390px;padding:24px 20px 104px;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}",
-  "h1{font-size:24px;font-weight:700;margin:0 0 2px}",
-  "h2{font-size:20px;font-weight:700;margin:28px 0 8px}",
-  "h3{font-size:20px;font-weight:700;margin:0}",
+  "html{background:var(--page)}",
+  // L18, L8, L9, L11: a soft rounded system font (nothing downloaded: Nunito
+  // only if the phone has it), one phone-wide column, 20px margins, and room
+  // at the bottom so the fixed tab bar never covers the last button.
+  "body{margin:0 auto;max-width:390px;padding:24px 20px 104px;background:var(--page);color:var(--text);font:14px/1.45 ui-rounded,Nunito,'Segoe UI',system-ui,-apple-system,Roboto,sans-serif}",
+  "h1{font-size:24px;font-weight:600;margin:0 0 2px}",
+  "h2{font-size:20px;font-weight:600;margin:28px 0 8px}",
+  "h3{font-size:20px;font-weight:600;margin:0}",
   "p{margin:0}",
   "ul,ol{list-style:none;margin:0;padding:0}",
   "a{color:inherit}",
   "svg{display:block;flex:none}",
   ".sub{color:var(--muted)}",
   ".muted{color:var(--muted);font-size:12px}",
-  // L6, L10, L11: a box with a light grey border, 12px corners, 16px inside.
-  ".box{border:1px solid var(--border);border-radius:12px;padding:16px;background:var(--bg)}",
+  // L6, L10, L11: a box with a light grey border, 12px corners, 16px inside
+  // (Settings). [2026-11-26] L19: on Week so far every box is also a "card":
+  // white, no border, the soft two-layer shadow, 20px corners.
+  ".box{border:1px solid var(--ring);border-radius:12px;padding:16px;background:var(--card)}",
+  ".card{border:0;border-radius:20px;box-shadow:0 2px 4px rgba(20,60,52,.05),0 10px 24px rgba(20,60,52,.08)}",
   // The seven-day strip: a letter over a circle; a logged day is a filled green
   // circle with a white tick; an empty day is a grey ring (its "–" is hidden).
   ".strip{display:flex;justify-content:space-between;padding-bottom:12px}",
   ".strip li{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}",
-  ".dot{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:transparent;font-size:15px;font-weight:700}",
-  ".dot.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}",
+  ".dot{width:32px;height:32px;border-radius:50%;border:1px solid var(--ring);display:flex;align-items:center;justify-content:center;color:transparent;font-size:15px;font-weight:700}",
+  ".dot.on{background:var(--accent);border-color:var(--accent);color:var(--card)}",
+  // [2026-11-26] L20: today, not logged yet, a green outline.
+  ".dot.today{border:2px solid var(--accent)}",
   // Rows: content on the left, the dustbin on the right; a pale line between rows (L7).
   ".row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--rule)}",
   ".row:first-child{border-top:0}",
@@ -57,14 +72,16 @@ export const STYLESHEET = [
   // A row alone inside its own box (a reflection, the moment's line) needs no extra space or line.
   ".box>.row{padding:0;border-top:0}",
   ".box>.muted+.row{margin-top:8px}",
-  // L12: the dustbin, dark grey, with a tap area big enough for a thumb (40px).
-  ".bin{flex:none;width:40px;height:40px;margin:-8px -10px -8px 0;display:flex;align-items:center;justify-content:center;color:var(--muted)}",
+  // L12: the dustbin, with a tap area big enough for a thumb (40px).
+  // [2026-11-26] L21: the main text colour at 40%, like the unselected tabs.
+  ".bin{flex:none;width:40px;height:40px;margin:-8px -10px -8px 0;display:flex;align-items:center;justify-content:center;color:var(--text);opacity:.4}",
   // Reflections: each in its own box, in italics (rule 9.4).
   ".stack{display:flex;flex-direction:column;gap:8px}",
   ".quote{font-style:italic}",
   ".moment-line{font-size:15px}",
-  // [2026-11-24] A photo, shown big (rule 9.4): the full width, the box's 12px corners (L10).
-  ".photo{display:block;width:100%;height:auto;border-radius:12px;margin:8px 0}",
+  // [2026-11-24] A photo, shown big (rule 9.4): the full width.
+  // [2026-11-26] L19: no border, 20px corners, the strong soft shadow.
+  ".photo{display:block;width:100%;height:auto;border:0;border-radius:20px;box-shadow:0 10px 24px rgba(20,60,52,.25);margin:8px 0}",
   // The connection card's bars: the answer on top, the bar, the week under it.
   // A bar's height follows the answer (1 to 5); "This week" is deep green (L4, L5).
   ".bars{display:flex;justify-content:space-around;align-items:flex-end;min-height:150px}",
@@ -79,23 +96,43 @@ export const STYLESHEET = [
   ".count{font-size:13px;color:var(--muted);margin-bottom:8px}",
   ".tiles{display:flex;flex-wrap:wrap;gap:8px}",
   ".tiles:empty{display:none}",
-  ".tile{width:56px;height:56px;border:1px solid var(--border);border-radius:8px;padding:4px;font-size:10px;line-height:1.25;overflow:hidden;color:var(--muted)}",
-  ".tile.reflection{font-style:italic}",
-  // Pills (L10): the older weeks button, Cancel and Sign out are outlined;
+  // [2026-11-26] L22: 46px tiles with 12px corners on the white card; a
+  // reflection pale green with italic green text; a habit's tile its own
+  // colours (background, then the icon's), by the habit's code.
+  ".tile{width:46px;height:46px;border:0;border-radius:12px;padding:4px;font-size:10px;line-height:1.25;overflow:hidden;color:var(--muted);background:var(--page);position:relative;display:flex;align-items:center;justify-content:center;text-align:center}",
+  ".tile.reflection{background:#DDEEEA;color:var(--accent);font-style:italic}",
+  ".habit-saf{background:#FFE4EA;color:#D6456B}",
+  ".habit-gat{background:#FFEBD2;color:#C9731B}",
+  ".habit-dpr{background:#E0ECFF;color:#3B6FD0}",
+  ".habit-twc{background:#EDE6FB;color:#7452C6}",
+  ".habit-sqt{background:#FFF3C4;color:#A07A0C}",
+  ".habit-iac{background:#D9F0F2;color:#1C8394}",
+  ".habit-sge{background:#E8F0D3;color:#5C7D1F}",
+  ".habit-ite{background:#F2E4D8;color:#8A5636}",
+  ".habit-asd{background:#E5E9EF;color:#4F5F78}",
+  // Words only screen readers read aloud (a habit tile's name under its icon).
+  ".vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}",
+  // Pills (L10; [2026-11-26] L19: full pills, fully round ends at any height):
+  // the older weeks button, Cancel and Sign out are outlined;
   // only Delete is filled with the warning red.
-  ".pill{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border:1px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}",
+  ".pill{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border:1px solid var(--ring);border-radius:999px;background:var(--card);color:var(--text);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}",
   ".pill.wide{width:100%;margin-top:20px}",
-  ".pill.danger{background:var(--danger);border-color:var(--danger);color:var(--bg)}",
+  ".pill.danger{background:var(--danger);border-color:var(--danger);color:var(--card)}",
+  // [2026-11-26] L22: the older weeks button, an outlined green pill, 50px tall.
+  ".pill.outline{min-height:50px;border:2px solid var(--accent);background:none;color:var(--accent);font-weight:700}",
   ".actions{display:flex;gap:12px;margin-top:20px}",
   ".actions .pill{flex:1}",
   ".question{font-size:15px;margin-top:8px}",
-  // The tab bar, fixed to the bottom; the current tab is green with a line on top.
-  "nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--rule);padding-bottom:env(safe-area-inset-bottom)}",
+  // The tab bar, fixed to the bottom. [2026-11-26] L21: white with a soft
+  // upward shadow; the current tab green and bold with a 4px bar above its
+  // icon; the others in the main text colour at 40%, Rewards at 20%.
+  "nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);box-shadow:0 -2px 4px rgba(20,60,52,.05);padding-bottom:env(safe-area-inset-bottom)}",
   "nav ul{display:flex;max-width:390px;margin:0 auto}",
   "nav li{flex:1}",
-  ".tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 10px;border-top:2px solid transparent;font-size:11px;color:var(--muted);text-decoration:none}",
-  ".tab[aria-current=page]{color:var(--accent);font-weight:600;border-top-color:var(--accent)}",
-  ".tab.off{opacity:.45}",
+  ".tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0 10px;font-size:11px;color:var(--text);opacity:.4;text-decoration:none}",
+  ".tab[aria-current=page]{color:var(--accent);font-weight:700;opacity:1}",
+  '.tab[aria-current=page]::before{content:"";width:20px;height:4px;border-radius:2px;background:var(--accent)}',
+  ".tab.off{opacity:.2}",
   ".tab button{all:unset}",
   // [2026-11-25] Settings (rule 9.9), from the existing decisions only: rows in
   // a box with pale lines between them (L6, L7), 12px between rows and 16px
@@ -116,15 +153,15 @@ export const STYLESHEET = [
   ".sub-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}",
   ".sub-head h1{flex:1;font-size:20px;text-align:center;margin-right:72px}",
   ".back{display:flex;align-items:center;gap:2px;min-height:44px;min-width:64px;font-size:15px;text-decoration:none}",
-  ".field{display:block;width:100%;min-height:44px;padding:0 12px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font:inherit;font-size:15px}",
+  ".field{display:block;width:100%;min-height:44px;padding:0 12px;border:1px solid var(--ring);border-radius:12px;background:var(--card);color:var(--text);font:inherit;font-size:15px}",
   ".fields{display:flex;flex-direction:column;gap:12px}",
   ".add{display:flex;gap:12px;margin-top:12px}",
   ".add .field{flex:1}",
   ".choice{display:flex;align-items:center;gap:12px;min-height:48px;border-top:1px solid var(--rule);font-size:15px;cursor:pointer}",
   ".choice input{width:22px;height:22px;margin:0;accent-color:var(--accent)}",
-  ".switch{position:relative;flex:none;width:52px;height:32px;border:0;border-radius:16px;background:var(--border);cursor:pointer;padding:0}",
+  ".switch{position:relative;flex:none;width:52px;height:32px;border:0;border-radius:16px;background:var(--ring);cursor:pointer;padding:0}",
   ".switch[aria-checked=true]{background:var(--accent)}",
-  ".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--bg);transition:left .2s}",
+  ".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--card);transition:left .2s}",
   ".switch[aria-checked=true] .knob{left:23px}",
   // [2026-11-26] The Settings fixes (owner, 26 Nov): L14 the pop-up, a box on
   // the page dimmed with black at 40% ("66" is 40% of full strength in this

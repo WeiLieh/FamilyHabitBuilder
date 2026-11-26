@@ -64,6 +64,8 @@ const tileShape = z.object({
   kind: z.enum(["moment", "log", "reflection"]),
   preview_path: z.string().optional(),
   habit: z.string().optional(),
+  // [2026-11-26] Migration 019: the habit's short code (e.g. "SAF"), for its tile's colour and icon (L22).
+  code: z.string().optional(),
   text: z.string().optional(),
 });
 const olderShape = z.object({
@@ -80,7 +82,7 @@ const olderShape = z.object({
   weeks_remaining: z.number(),
   next_oldest_monday: z.string().nullable(),
 });
-export type OlderTile = { kind: "moment" | "log" | "reflection"; previewPath?: string; habit?: string; text?: string };
+export type OlderTile = { kind: "moment" | "log" | "reflection"; previewPath?: string; habit?: string; code?: string; text?: string };
 export type OlderWeek = { monday: string; daysLogged: number; habitLogs: number; reflections: number; moment: boolean; tiles: OlderTile[] };
 export type OlderWeeksPage = { weeks: OlderWeek[]; weeksRemaining: number; nextOldestMonday: string | null };
 // Read 3: a week's Monday and its 1 to 5 answer, or null for no answer.
@@ -233,7 +235,7 @@ export function createWebAppStore(url: string, publicKey: string): WebAppDb {
           habitLogs: w.habit_logs,
           reflections: w.reflections,
           moment: w.moment,
-          tiles: w.tiles.map((t) => ({ kind: t.kind, previewPath: t.preview_path, habit: t.habit, text: t.text })),
+          tiles: w.tiles.map((t) => ({ kind: t.kind, previewPath: t.preview_path, habit: t.habit, code: t.code, text: t.text })),
         })),
         weeksRemaining: o.weeks_remaining,
         nextOldestMonday: o.next_oldest_monday,

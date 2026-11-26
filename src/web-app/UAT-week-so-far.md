@@ -16,3 +16,17 @@
 | U71 | [2026-11-24 21:57 SGT] Look at the connection card and the tab bar | Bars stand upright, "This week" in deep green; the tab bar stays at the bottom while you scroll, with "Week so far" in green | [x] PASS, 26 Nov |
 | U72 | [2026-11-24 21:57 SGT] Tap a dustbin | **Cancel** is an outlined button and **Delete** is red | [x] PASS, 26 Nov |
 | U69 | Tap each tab | Habits so far says "coming soon"; Rewards can't be tapped; [2026-11-25 22:32 SGT] Settings shows its list (UAT-settings.md) | [x] PASS, 26 Nov |
+
+## [2026-11-26 23:39 SGT] The look of 25 Nov (U111 to U116)
+| Step | Do this | Expect | Result |
+|---|---|---|---|
+| G19 | Supabase > SQL Editor: paste `src/datastore/supabase/migrations/019_older_week_tile_codes.sql` > Run (before or after merging the look's pull request; either order works) | "Success. No rows returned" | [ ] |
+
+| ID | Do this | Expect | Result |
+|---|---|---|---|
+| U111 | Open **Week so far** | A pale mint page; the boxes are white cards with soft shadows and rounder corners, no grey borders; the text in a softer, rounded font | [ ] |
+| U112 | Look at the day strip | Logged days are filled green with a white tick; **today** (if not logged yet) has a green outline; other days are grey rings | [ ] |
+| U113 | Look at the tab bar and a dustbin | Week so far is green and bold with a short bar above its icon; the other tabs and the dustbins are faded; Rewards fainter still. **In bright daylight**, can you still read the faded labels? (your 26 Nov choice: keep 40%) | [ ] |
+| U114 | Tap **Show 4 older weeks** | The button is a green outlined pill; in each older week, a log without a photo is a coloured tile with its habit's icon (for example a pink heart for Showing affection); a reflection is a pale green tile in italics | [ ] |
+| U115 | Open a log with a photo | The photo is big, with rounded corners and a soft shadow, no border | [ ] |
+| U116 | Open **Settings**, then **Children** | The same mint page and greens; Settings' boxes keep their thin border | [ ] |

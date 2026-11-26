@@ -1286,4 +1286,37 @@ begin
   raise notice 'PASS: T150 the same owner and rights as the other Settings changes';
 end $$;
 
+-- ---- [2026-11-26] Migration 019: each older-week habit tile names its habit's code (L22) ----
+\i src/datastore/supabase/migrations/019_older_week_tile_codes.sql
+select pg_temp.pass_for(pg_temp.cara());
+
+-- T151: a log tile without a photo now also carries its habit's code; a photo
+-- tile is unchanged; still no names, lines or reference numbers; and the pass
+-- gains only the nudges' code column.
+do $$
+declare o jsonb := public.web_older_weeks('2026-11-09');
+begin
+  assert (o -> 'weeks' -> 1 -> 'tiles' -> 0) = jsonb_build_object('kind', 'log',
+           'habit', (select name from public.nudges where id = pg_temp.n1()), 'code', (select code from public.nudges where id = pg_temp.n1())),
+    'the log tile names its habit and code: ' || (o -> 'weeks' -> 1 -> 'tiles' -> 0)::text;
+  assert o::text !~* 'Riley|Sam|"line"|"path"|log_id|reflection_id|moment_line_id|photo_id', 'still no names, lines, big photos or reference numbers: ' || o::text;
+  raise notice 'PASS: T151 an older-week habit tile names its habit''s code';
+end $$;
+do $$
+declare o jsonb := public.web_older_weeks('2026-11-16');
+begin
+  -- (The week's log photo was deleted by T113 above, so its moment's photo is the photo tile here.)
+  assert (o -> 'weeks' -> 0 -> 'tiles' -> 0) = '{"kind": "moment", "preview_path": "cara/moment-1109-small.jpg"}'::jsonb, 'a photo tile is unchanged: ' || (o -> 'weeks' -> 0 -> 'tiles' -> 0)::text;
+  assert not exists (select 1 from jsonb_array_elements(o -> 'weeks' -> 0 -> 'tiles') t where t ? 'preview_path' and t ? 'code'), 'a code only on a habit tile';
+  raise notice 'PASS: T151 a photo tile is unchanged and carries no code';
+end $$;
+select pg_temp.as_owner();
+do $$
+begin
+  assert has_column_privilege('authenticated', 'public.nudges', 'code', 'select'), 'a pass can read the code';
+  assert not has_column_privilege('authenticated', 'public.nudges', 'photo_idea', 'select') and not has_column_privilege('anon', 'public.nudges', 'code', 'select'),
+    'nothing else is opened, and a signed-out browser still reads nothing';
+  raise notice 'PASS: T151 the pass gains only the nudges'' code column';
+end $$;
+
 \echo ALL WEB APP ACCESS TESTS PASSED
