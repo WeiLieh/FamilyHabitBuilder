@@ -2,6 +2,10 @@
 
 Time spent with Claude Code on this project, for tracking efficiency and timeboxing future work. One entry per session, newest first. Times are estimates from commit timestamps unless noted (they miss reading and thinking time before the first save and after the last one).
 
+## [2026-11-26 23:03 SGT] Session 22 (2026-11-26 evening)
+- [2026-11-26 23:03 SGT] About 2 h elapsed (about 21:00 to 23:05 SGT), nearly all active. Start-of-session routine; the owner chose to automate UAT (option A): a runbook, then a Claude session on the owner's computer ran 38 tests in Telegram Web (21:25 to 22:32); the results recorded and sorted into 4 defects, 1 design gap and 6 rules working as designed; Settings fixes decided with six wireframes (W1 to W7, "all as recommended") and approved tests; pull request 1 (migration 018, remove a child, T147 to T150, both reviews) opened as #68.
+- **Notes for timeboxing:** the automated run took about 70 minutes for 38 tests with the owner tapping My page steps (the agent couldn't tap the pop-up page). Checking each "surprise" against its rule before calling it a defect saved fixing six things that weren't broken.
+
 ## [2026-11-25 23:18 SGT] Session 21 (2026-11-25 evening)
 - [2026-11-25 23:18 SGT] About 1 h 25 min elapsed (about 21:55 to 23:20 SGT), nearly all active (short waits while the owner merged and ran migrations). Start-of-session routine; Settings from the owner's wireframe (four conflicts settled in two rounds of questions, 33 tests approved in one round), migration 016 with database tests T131 to T145, the pages and pause both ways; three follow-ups found by the owner and the reviews (migration 017 for the habit buttons, the "Saved." cookie, the Sunday job and the Demo counting any activity); #64 to #66 merged; a testing backlog list.
 - **Notes for timeboxing:** the owner's own clickable wireframe made Settings fast to specify; the slow parts were the database rights (one policy missing made every behaviours change fail, caught by the tests) and one branch for several pull requests (pushes had to wait for merges). Each review round found one or two real fixes (about 10 minutes each).
