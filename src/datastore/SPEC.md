@@ -7,6 +7,9 @@
 ## Purpose
 [2026-10-31 09:59 SGT] Store the app's data safely: **Supabase** (database and photo storage, Singapore) for permanent records, **Upstash Redis** (Singapore) for short-term chat memory. The Datastore owns **all SQL** (rule S6): table structure, first-load data, one-off content changes and database tests. Other modules own the **rules** for their own tables' content (for example the [Nudge repository](../nudge-repository/SPEC.md) owns the rules for `nudges` and `examples`).
 
+## Proposed: migration 018, remove a child (owner decision of 26 Nov, awaiting the build)
+- [2026-11-26 22:52 SGT] Rule 8.4 edit 17 (Settings) gains **remove a child**, under the parent's own pass: the child and every earlier row of theirs (the renames kept as history, `replaces_id`) are deleted for good, never blanked (PDPA); refused for another parent's child and for the parent's **last** child; an event `child_removed` is written. A new function `web_remove_child` (owned by `web_page_writer`, as in migration 016) and a delete permission on `children` for that parent only. Test-first (T147 onwards); the owner runs the migration (rule B1). Web app side: rule 9.9, proposed change of 26 Nov.
+
 ## Proposed: migration 012, a log photo may be "not checked" (owner decision of 24 Nov, awaiting the build)
 - [2026-11-24 22:35 SGT] **Built as proposed** (24 Nov): migration 012 written and tested (T119, T120); not yet applied on Supabase.
 - [2026-11-24 22:16 SGT] The photo check is parked (owner, 24 Nov), so a log's photo is saved with no check. Today `photos` only allows `not_checked` for a moment photo (migration 005, line 110). Migration 012 would allow `not_checked` on a log photo too, and add the private Storage bucket for photos (owner: OK). The other photo functions (save onto a log, save a moment photo, delete one photo, consent required) are already built. Written test-first when photos are built.
