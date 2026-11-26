@@ -136,7 +136,8 @@ function countLine(w: OlderWeek): string {
   return [days, parts.join(", ")].filter(Boolean).join(" - ");
 }
 // [2026-11-26] A log tile without a photo whose habit has an icon: its colour and icon (L22).
-const habitIcon = (t: OlderTile) => (t.kind === "log" && !t.previewPath && t.code ? (HABIT_ICONS[t.code] ?? null) : null);
+// Only the map's own nine codes count (never a built-in name such as "constructor"; privacy review, Low).
+const habitIcon = (t: OlderTile) => (t.kind === "log" && !t.previewPath && t.code && Object.hasOwn(HABIT_ICONS, t.code) ? HABIT_ICONS[t.code]! : null);
 const tileClass = (t: OlderTile) =>
   t.kind === "reflection" ? "tile reflection" : habitIcon(t) ? `tile habit-${t.code!.toLowerCase()}` : "tile";
 const tileText = (t: OlderTile) =>

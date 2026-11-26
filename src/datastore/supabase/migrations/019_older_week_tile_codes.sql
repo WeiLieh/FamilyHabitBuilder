@@ -32,7 +32,9 @@ grant select (code) on public.nudges to authenticated;
 -- Read 2, older weeks, a page at a time: the weeks before p_before (a Monday),
 -- newest first, every calendar week since the parent joined (owner, 15 Nov),
 -- each with its counts and its tiles (the moment first, then logs and
--- reflections in date order). No names, lines, big photos or reference numbers.
+-- reflections in date order). No children's or parents' names, lines, big
+-- photos or reference numbers; a log tile carries its habit's name and code
+-- (the app's own content, not a family's; privacy review, 26 Nov).
 create or replace function public.web_older_weeks(p_before date)
 returns jsonb language plpgsql stable security invoker set search_path = public, pg_temp as $$
 declare

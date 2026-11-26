@@ -112,9 +112,10 @@ export const STYLESHEET = [
   ".habit-asd{background:#E5E9EF;color:#4F5F78}",
   // Words only screen readers read aloud (a habit tile's name under its icon).
   ".vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}",
-  // Pills (L10): the older weeks button, Cancel and Sign out are outlined;
+  // Pills (L10; [2026-11-26] L19: full pills, fully round ends at any height):
+  // the older weeks button, Cancel and Sign out are outlined;
   // only Delete is filled with the warning red.
-  ".pill{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border:1px solid var(--ring);border-radius:20px;background:var(--card);color:var(--text);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}",
+  ".pill{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border:1px solid var(--ring);border-radius:999px;background:var(--card);color:var(--text);font:inherit;font-weight:600;text-decoration:none;cursor:pointer}",
   ".pill.wide{width:100%;margin-top:20px}",
   ".pill.danger{background:var(--danger);border-color:var(--danger);color:var(--card)}",
   // [2026-11-26] L22: the older weeks button, an outlined green pill, 50px tall.
