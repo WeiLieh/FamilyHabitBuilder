@@ -255,7 +255,7 @@ export function createWebAppHandler(deps: {
           photoLinks.set(p.photo_id, null);
         }
       }
-      return styledAnswer(weekPage({ week: w, monday, connection, older, olderRemaining: remaining, photoLinks }));
+      return styledAnswer(weekPage({ week: w, monday, today: toSgt(signed.at).date, connection, older, olderRemaining: remaining, photoLinks }));
     } catch (error) {
       logFailure("Reading My page failed", error);
       return didntWork();
