@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings fixes wireframes</title>
+<style>
+:root{--bg:#fff;--ink:#222;--mid:#777;--line:#bbb;--fill:#e6e6e6;--dark:#555}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1c;--ink:#eee;--mid:#aaa;--line:#555;--fill:#333;--dark:#bbb}}
+:root[data-theme="dark"]{--bg:#1c1c1c;--ink:#eee;--mid:#aaa;--line:#555;--fill:#333;--dark:#bbb}
+body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,sans-serif}
+h1{font-size:18px;margin:0 0 4px}.note{color:var(--mid);margin:0 0 16px;max-width:60em}
+.grid{display:flex;flex-wrap:wrap;gap:20px}
+.cap{width:240px}.cap h2{font-size:13px;margin:0 0 6px}.cap p{color:var(--mid);font-size:12px;margin:6px 0 0}
+.ph{position:relative;width:240px;height:420px;border:2px solid var(--line);border-radius:18px;overflow:hidden;box-sizing:border-box;padding:10px}
+.bar{height:26px;border-bottom:1px solid var(--line);margin:-10px -10px 10px;padding:4px 10px;font-size:12px;color:var(--mid)}
+.box{border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin:6px 0}
+.row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--fill)}.row:last-child{border:0}
+.grow{flex:1}.tick{width:14px;height:14px;border:1.5px solid var(--dark);border-radius:3px;flex:none}
+.on{background:var(--dark)}.grey{opacity:.35}
+.field{flex:1;height:22px;border:1px solid var(--line);border-radius:4px;padding:0 6px;font-size:12px;line-height:22px;color:var(--mid)}
+.pill{display:inline-block;border:1.5px solid var(--dark);border-radius:12px;padding:3px 14px;font-size:12px;margin-top:8px}
+.bin{width:16px;height:18px;border:1.5px solid var(--dark);border-radius:2px 2px 4px 4px;flex:none;position:relative}
+.bin:before{content:"";position:absolute;left:-4px;right:-4px;top:-5px;border-top:1.5px solid var(--dark)}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
+.pop{background:var(--bg);border:1px solid var(--line);border-radius:10px;width:150px;padding:14px;text-align:center}
+.circle{width:34px;height:34px;border-radius:50%;border:2px solid var(--dark);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.sw{width:40px;height:22px;border-radius:11px;background:var(--fill);border:1px solid var(--line);position:relative;flex:none}
+.sw i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--dark)}
+.sw.mid i{left:11px}.sw.r i{left:20px}.sw.r{background:var(--line)}
+.lbl{font-size:11px;color:var(--mid)}
+</style></head><body>
+<h1>Settings fixes: layout wireframes (26 Nov)</h1>
+<p class="note">Layout only, plain greys, no look: the real colours and sizes come from your UI decisions. Each frame is one phone screen. The letters (W1 to W6) match the questions in Claude Code's message.</p>
+<div class="grid">
+
+<div class="cap"><h2>W1 · Your name: after Save</h2>
+<div class="ph"><div class="bar">‹ Back · Your name</div>
+<div class="box"><div class="row"><span class="field">John Tan</span></div></div>
+<span class="pill">Save</span>
+<div class="dim"><div class="pop"><div class="circle">✓</div><div>Saved.</div><span class="pill">OK</span></div></div>
+</div><p>A pop-up over a dimmed page: a tick in a circle, "Saved.", OK. After OK you stay on this page (Back goes to the list). Same for every Save.</p></div>
+
+<div class="cap"><h2>W2 · Behaviours: 2 quick ticked</h2>
+<div class="ph"><div class="bar">‹ Back · Behaviours</div>
+<div class="lbl">Quick behaviours</div>
+<div class="box">
+<div class="row"><span class="tick on"></span><span class="grow">Talking with children</span></div>
+<div class="row"><span class="tick on"></span><span class="grow">Giving attention</span></div>
+<div class="row grey"><span class="tick"></span><span class="grow">Showing affection</span></div>
+<div class="row grey"><span class="tick"></span><span class="grow">Descriptive praise</span></div>
+</div><div class="lbl">Choose up to 2. Untick one to choose another.</div>
+<div class="lbl" style="margin-top:8px">How often …</div><div class="box"><div class="row"><span class="grow">…</span></div></div>
+<span class="pill">Save</span>
+</div><p>With 2 ticked, the other boxes are greyed out and can't be ticked. Untick one and they come back.</p></div>
+
+<div class="cap"><h2>W3 · Children: a 🗑 per name</h2>
+<div class="ph"><div class="bar">‹ Back · Children</div>
+<div class="box">
+<div class="row"><span class="field">Riley</span><span class="bin"></span></div>
+<div class="row"><span class="field">UAT Child</span><span class="bin"></span></div>
+<div class="row"><span class="field">Add a child</span></div>
+</div><span class="pill">Save</span>
+<p class="lbl">With only one child left, that name has no 🗑 (at least 1 child, question W3b).</p>
+</div><p>Tap 🗑 → W4.</p></div>
+
+<div class="cap"><h2>W4 · Children: "Are you sure?"</h2>
+<div class="ph"><div class="bar">‹ Back · Children</div>
+<div class="box"><div class="row"><span class="field">Riley</span><span class="bin"></span></div><div class="row"><span class="field">UAT Child</span><span class="bin"></span></div></div>
+<div class="dim"><div class="pop"><div>Remove UAT Child?</div><div class="lbl">Their name is deleted for good.</div><span class="pill">Cancel</span> <span class="pill">Remove</span></div></div>
+</div><p>Option A (recommended): a pop-up asks first; then the W1 pop-up says "Saved." and you stay on Children. Option B: removed straight away, no question.</p></div>
+
+<div class="cap"><h2>W5 · Reminder times: 🗑 instead of "Remove"</h2>
+<div class="ph"><div class="bar">‹ Back · Reminder times</div>
+<div class="lbl">School days</div>
+<div class="box"><div class="row"><span class="grow">7:00 am</span><span class="bin"></span></div><div class="row"><span class="grow">7:00 pm</span><span class="bin"></span></div><div class="row"><span class="grow">9:30 pm</span><span class="bin"></span></div></div>
+<div class="lbl">Weekends and holidays</div>
+<div class="box"><div class="row"><span class="grow">9:00 am</span><span class="bin"></span></div><div class="row"><span class="grow">12:30 pm</span><span class="bin"></span></div></div>
+<div class="row" style="border:0"><span class="field">Pick a time</span><span class="pill" style="margin:0">Add</span></div>
+</div><p>Tap 🗑 → removed straight away, the W1 pop-up, and you stay here. Add works the same way. The last time in a list has no 🗑 (at least 1).</p></div>
+
+<div class="cap"><h2>W6 · Pause: the switch slides</h2>
+<div class="ph"><div class="bar">‹ Back · Pause reminders</div>
+<div class="box"><div class="row"><span class="grow">Pause all reminders</span><span class="sw"><i></i></span></div></div>
+<div class="lbl">Tap → it slides across smoothly:</div>
+<div class="row" style="border:0"><span class="sw"><i></i></span> → <span class="sw mid"><i></i></span> → <span class="sw r"><i></i></span></div>
+<div class="lbl">It saves without reloading the page. Taps are ignored while saving. If saving fails, it slides back and says it didn't work.</div>
+</div><p>No Save button and no pop-up: the switch and the Telegram message are the confirmation (question W6).</p></div>
+
+</div></body></html>

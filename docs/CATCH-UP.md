@@ -130,7 +130,6 @@ Cross-cutting files (`src/settings.ts`, `src/sgt.ts`, `api/health.ts` and the te
 - [2026-11-25 23:18 SGT] **Automating the phone tests:** a desktop-app session with browser control driving Telegram Web (most Telegram and Settings tests), and/or Playwright tests for My page here (needs a fresh sign-in link each run). Phone-only and clock-based tests stay with you.
 - [2026-11-25 23:18 SGT] **Step 2, the look:** the Settings switch and tick boxes (accent green?), row heights, the Back header, text boxes, the underlined Remove, the ✓ habit tile, the empty states (list in `docs/KNOWN-ISSUES.md`).
 - [2026-11-25 23:18 SGT] **Step 3, Habits so far:** layout wireframes first (rule 9.2 says only "show me we're growing"), then a high-fidelity mock-up shown only to you.
-- [2026-11-25 23:18 SGT] `docs/KNOWN-ISSUES.md` is 309 lines: move resolved and oldest entries word for word to `docs/archive/`?
 
 **4c. Still for Claude Chat (bring each back as a handoff file, habit H10)**
 - [2026-11-15 17:00 SGT] Tab 2 "Habits so far", tab 3 Rewards later; the empty states; the ✓ habit tile.

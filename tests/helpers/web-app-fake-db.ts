@@ -164,6 +164,13 @@ export class FakeWebDb implements WebAppDb {
         c.firstName = change.firstName.trim();
         return null;
       }
+      // [2026-11-26] As migration 018: only a current child of this parent; at least 1 stays.
+      case "remove-child": {
+        if (!s.children.some((x) => x.id === change.childId)) throw new Error("That child was not found.");
+        if (s.children.length <= 1) throw new Error("Please keep at least 1 child.");
+        s.children = s.children.filter((x) => x.id !== change.childId);
+        return null;
+      }
       case "behaviours": {
         const cat = (id: number) => s.behaviours.find((b) => b.id === id)?.category;
         const quick = change.picks.filter((k) => cat(k.nudgeId) === "quick").length;

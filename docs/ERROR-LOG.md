@@ -5,6 +5,18 @@
 One entry per error: What broke / Cause / Fix / How to prevent it. Newest first.
 
 
+## [2026-11-26 22:38 SGT] The UAT runbook expected four things the rules don't promise
+- **What broke:** [2026-11-26 22:38 SGT] Claude Code's `docs/UAT-RUNBOOK.md` (26 Nov) expected Undo under a ✅ Done receipt (U101), a 3rd demo reminder after Not today (U100), a 🗑 for a log's line while it has a photo (U65), and "Hi [first name]" (U63). The run marked U100 and U101 PARTLY and listed the others as surprising, though the app followed rules 5.8, 12.5, 9.6 and 9.4.
+- **Cause:** [2026-11-26 22:38 SGT] The runbook was written from the UAT checklists and memory, not checked against each rule's current wording.
+- **Fix:** [2026-11-26 22:38 SGT] The Demo's checklist (`src/demo/UAT-demo.md`) and the runbook now say what the rules say; old wording kept as SUPERSEDED.
+- **How to prevent it:** [2026-11-26 22:38 SGT] When writing an expected result, quote the rule it comes from (by ID), and read that rule first.
+
+## [2026-11-26 22:38 SGT] UAT found a misleading "Saved." and repeated bot messages in Settings (DEF-1 to DEF-3)
+- **What broke:** [2026-11-26 22:38 SGT] UAT U87 FAIL: a 3rd quick tick said "✅ Saved." (DEF-1). "✅ Your habits are updated." after saves that changed nothing (DEF-2). 17 messages from repeated taps on the pause switch (DEF-3).
+- **Cause:** [2026-11-26 22:38 SGT] DEF-2 and DEF-3: Settings tells Telegram after every save without checking whether anything changed; app tests SE and PZ check one save, never a save with no change or several taps. DEF-1: not found yet (the server refuses three; see `docs/KNOWN-ISSUES.md`).
+- **Fix:** [2026-11-26 22:38 SGT] Not yet; to be fixed test-first with the owner (26 Nov).
+- **How to prevent it:** [2026-11-26 22:38 SGT] For anything that sends a message, test "nothing changed" and "the same request twice", not only the first time.
+
 ## [2026-11-25 22:32 SGT] Timestamps written without running the clock
 - **What broke:** [2026-11-25 22:32 SGT] While building Settings, Claude Code wrote date prefixes 22:45, 23:05, 23:30 and 23:40 SGT into four specs and the diagram notes, guessing the time instead of running the date command. The real time was 22:32, so they were in the future.
 - **Cause:** [2026-11-25 22:32 SGT] The clock was read once at the start of the build (22:14) and later times were estimated.
