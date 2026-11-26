@@ -145,6 +145,7 @@
 - [2026-10-24 17:39 SGT] Project memory files created in `docs/` (plus `CLAUDE.md` at the root), so each new session can pick up where the last one stopped.
 
 ## Approved libraries
+- [2026-11-26 23:19 SGT] **`playwright` (development only, exact version `1.63.0`)** approved by the owner on 26 Nov (Q1 A) and installed on 26 Nov ("install approved"): it drives a real Chromium browser for `tests/web-app-settings-browser.test.ts` (SB1, SB2), the only way to test the Settings page script. It is never part of the app. `package.json` lists it under `devDependencies` with no `^`, so `package-lock.json` and CI always use 1.63.0 (it matches the browser already in this cloud container). GitHub Actions downloads Chromium after `npm ci` (`npx playwright install --with-deps chromium` in `.github/workflows/check.yml`).
 - [2026-11-14 00:16 SGT] Owner re-confirmed `@anthropic-ai/sdk` for the Claude personality build (rules 3.11, 7.5). It was already on this list (24 Oct); nothing else added.
 - [2026-10-24 18:50 SGT] Approved by the owner (npm, one lockfile `package-lock.json`):
   - `@anthropic-ai/sdk`: talk to Claude.

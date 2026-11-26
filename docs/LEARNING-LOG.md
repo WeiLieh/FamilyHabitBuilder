@@ -6,6 +6,15 @@
 
 ## Notebook
 
+### [2026-11-26 23:03 SGT] Automated user acceptance testing (UAT) with an AI agent driving a browser
+- **Concept:** user acceptance testing (UAT), checking the app works the way a real user expects, done by an AI agent that controls a browser, following a written runbook.
+- **In plain English:** instead of tapping through 38 checks yourself, a Claude session on your own computer opened Telegram Web, sent the commands, read the replies and filled in a results table. It paused for the things only you should do: signing in, choosing a photo, giving consent.
+- **Analogy:** a temp working through your checklist at your desk while you watch, instead of a machine in a factory that runs the checklist every night (that would be coded tests, option B).
+- **Why and when to use it:** for a batch of checks that would take you an evening, when nothing is coded yet. Not for checks that must run on every change with nobody watching (coded tests), nor for phone-only or clock-based checks.
+- **Best practices:** a runbook with safety rules (only the bot's chat, never "delete my data", consent is the owner's); evidence for every pass (quote what was seen); write each expected result from its rule, by ID; sort every "surprise" into defect, design gap or rule working.
+- **Where it showed up in this project:** 26 Nov, `docs/UAT-RUNBOOK.md`; 31 of 38 passed; it found DEF-1 to DEF-3 in Settings, and six "surprises" turned out to be rules working as designed.
+- **Explain it to others:** "We had an AI assistant run our acceptance checklist in a real browser, under strict safety rules, with the product owner signing in and making the consent choices. It found three real bugs in an hour, and we checked every surprise against our written rules before calling it a bug."
+
 ### [2026-11-25 23:18 SGT] A keyboard that only changes when a message brings a new one
 - **Concept:** Telegram's reply keyboard (the row of habit buttons under the chat) and how to keep it in step with a change made elsewhere.
 - **In plain English:** the button row is attached to a message the bot sent. It can't be edited later; it only changes when the bot sends a new message carrying a new row. So when a parent changed their habits on the Web app, Telegram kept showing the old buttons until the bot sent something new. The fix: after a Behaviours save, the bot sends one short line ("✅ Your habits are updated.") with the new row.

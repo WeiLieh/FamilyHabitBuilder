@@ -58,6 +58,8 @@ const ICONS = {
   settings: icon(`<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>`),
   up: icon(`<path d="M6 15l6-6 6 6"/>`, 16),
 };
+// [2026-11-26] Settings uses the same outline dustbin (L16).
+export const BIN_ICON = ICONS.bin;
 
 // A dustbin: a link to its own "Are you sure?" page (it deletes nothing itself).
 // Its label is read aloud by screen readers; the picture is the outline bin.

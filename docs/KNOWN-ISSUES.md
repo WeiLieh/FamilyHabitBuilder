@@ -4,30 +4,22 @@
 
 ## Open
 
-### [2026-11-26 22:38 SGT] DEF-1: a 3rd quick tick in Settings says "✅ Saved." instead of "Choose up to 2 quick behaviours." (UAT U87, FAIL)
-- **Issue:** [2026-11-26 22:38 SGT] On Behaviours, three quick boxes could be ticked; Save showed "✅ Saved." and Telegram "✅ Your habits are updated.", and the stored behaviours stayed as before. The server's own check does refuse three (`src/web-app/settings-page.ts` line 310, test SE5 passes), so the third tick most likely never reached the server: the save that arrived held the old two. **Cause not found yet**; to reproduce in a real browser (Playwright, already installed) before fixing.
-- **Impact:** [2026-11-26 22:38 SGT] No wrong data is saved, but the parent is told "Saved." when their choice was not saved (rule 1.3 spirit: never a misleading success).
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix (owner, 26 Nov: "fix them here"). The page could also stop a 3rd tick in the browser, which needs no new library.
+[2026-11-26 23:06 SGT] The 13 oldest **open** entries (logged 24 to 31 Oct) were moved word for word to [docs/archive/KNOWN-ISSUES-open-to-2026-10-31.md](archive/KNOWN-ISSUES-open-to-2026-10-31.md) to keep this file short (owner approved). They are still open.
 
-### [2026-11-26 22:38 SGT] DEF-2: "✅ Your habits are updated." is sent after a Behaviours save that changes nothing (seen in UAT U98)
-- **Issue:** [2026-11-26 22:38 SGT] `settingsSave` in `src/web-app/handler.ts` tells Telegram after **every** Behaviours save, without checking whether the picks changed. Seen 4 times at 21:39 to 21:40 and twice for one change (22:02 and 22:04, most likely two saves). The run also reported it after Wrap Up saves; the code sends it only for Behaviours, so that report still needs checking.
-- **Impact:** [2026-11-26 22:38 SGT] Extra bot messages; a parent may think something changed when it didn't.
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the saved picks differ from the ones before.
+### [2026-11-26 23:19 SGT] Both page scripts are allowed on every page (privacy review of the Settings fixes, Low)
+- **Issue:** [2026-11-26 23:19 SGT] The security rule (`src/web-app/handler.ts`) names the open page's script and the Settings script on every answer, though each is used on only some pages.
+- **Impact:** [2026-11-26 23:19 SGT] Small: both are fixed text written by us, so nothing else can run; the rule is just wider than it needs to be.
+- **Workaround:** [2026-11-26 23:19 SGT] None needed now. Option later: name only the script each page uses.
 
-### [2026-11-26 22:38 SGT] DEF-3: repeated taps on the pause switch send one Telegram message per tap (UAT U90)
-- **Issue:** [2026-11-26 22:38 SGT] The pause page's switch is a form button that sends the value the page was drawn with (`src/web-app/settings-page.ts` lines 193 to 195). Tapping it several times before the page reloads sends "pause" again each time, and `settingsSave` tells Telegram every time, even when nothing changed. 17 messages arrived in one minute (16 "paused", 1 "back on").
-- **Impact:** [2026-11-26 22:38 SGT] A burst of bot messages; Telegram may slow the bot down if it sends too many too fast.
-- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the pause state actually changes (the same fix as DEF-2), and possibly make the switch ignore a second tap until the page reloads.
+### [2026-11-26 23:19 SGT] A database error could put a child's name in Vercel's logs (privacy review of the Settings fixes, Low)
+- **Issue:** [2026-11-26 23:19 SGT] Failure logs blank out quoted text, long codes and long numbers, but a database message that repeats a value without quotes (for example `Key (...)=(Riley)`) would keep the name. Not new in this pull request.
+- **Impact:** [2026-11-26 23:19 SGT] Rare: only on a database error that repeats a value; the logs are seen only by the owner in Vercel.
+- **Workaround:** [2026-11-26 23:19 SGT] None yet. Option later: log only a fixed description of each failure, never the database's own message.
 
 ### [2026-11-26 22:38 SGT] DEF-4: no reminder arrived in the 9:30 pm slot added at 9:32 pm (UAT U45, BLOCKED)
 - **Issue:** [2026-11-26 22:38 SGT] The run added a 9:30 pm school-day time at 9:32 pm with reminders on; nothing came by 10:00 pm. **Probably by design, to check:** each behaviour is nudged at most once a day (rule 3.8), the owner had 2 quick behaviours and 7:00 am and 7:00 pm reminders today, and a behaviour logged today gets no reminder (rule 3.6). If both were already nudged or logged, 9:30 pm had nothing due. Needs today's rows in `messages_sent` and `logs` (Supabase) to confirm.
 - **Impact:** [2026-11-26 22:38 SGT] U45 (a keyboard tap answering a waiting reminder) is still untested on the live bot; app tests cover it.
 - **Workaround:** [2026-11-26 22:38 SGT] Run U45 at the next reminder that arrives (owner taps the keyboard, not ✅ Done).
-
-### [2026-11-26 22:38 SGT] A child can't be removed in Settings (UAT U86)
-- **Issue:** [2026-11-26 22:38 SGT] Rule 9.9 says "removing is not designed yet"; emptying a child's box gives "Each child needs a name." The UAT run left a test child, "UAT Child", on the owner's account.
-- **Impact:** [2026-11-26 22:38 SGT] The owner's real account names a child who doesn't exist, in messages that take turns naming children (rule 3.16) and on My page. A parent who adds a child by mistake can't undo it.
-- **Workaround:** [2026-11-26 22:38 SGT] Claude Code can remove "UAT Child" in Supabase with the owner's approval; designing "remove a child" goes to the backlog.
 
 ### [2026-11-25 23:10 SGT] On a shared phone, "Saved." can show for the next parent within a minute
 - **Issue:** [2026-11-25 23:10 SGT] The "✅ Saved." notice lives in a 60-second cookie that sign-out and "delete my data" don't clear (privacy review, Low).
@@ -235,83 +227,32 @@
 - **Impact:** [2026-11-01 09:56 SGT] If the owner adds an example by hand in the Supabase dashboard that already exists, a parent could see the same idea twice before all examples are used (rule 3.13 rotation would treat them as two examples).
 - **Workaround:** [2026-11-01 09:56 SGT] Check the list before adding by hand, or add examples through a content script. Option later: a database "unique" rule on nudge plus text (ask the owner first; it is a migration).
 
-### [2026-10-31 18:04 SGT] A failed history read could look like "nothing happened"
-- **Issue:** [2026-10-31 18:04 SGT] The Weekly Wrap Up decision (`src/nudge-engine/wrap-up.ts`) and the nudge planner trust the lists of logs and sent messages they are given. If reading them from the Datastore fails and the caller passes empty lists, a failure would look like "never sent" (the Wrap Up could go out twice) or "nothing logged" (silently skipped). Found by the privacy and security review of PR B; owner agreed to log it.
-- **Impact:** [2026-10-31 18:04 SGT] None yet (nothing is sent). Once the scheduler is wired up, this would break rule 1.3 (no fallbacks).
-- **Workaround:** [2026-10-31 18:04 SGT] When building the scheduler (Datastore and Telegram bot steps), a failed read must stop the decision for that parent and be reported as a failure, never replaced with an empty list. Add a test for it then.
-
-### [2026-10-31 14:47 SGT] New Supabase tables start with broad default access
-- [2026-10-31 15:07 SGT] Lower risk than first written: the project was created with "Automatically expose new tables" off and "Enable automatic RLS" on (`docs/CONTEXT.md`, 25 Oct), so new tables start locked from the Data API. Database-level grants can still be wider than needed, so the lock-down steps and permission tests remain the rule.
-- [2026-11-01 16:14 SGT] Migration 003 (the 14 Datastore tables) repeats the lock-down for every new table and function, and its database tests check the permissions (T1 to T5). The issue stays open for future migrations.
-- **Issue:** [2026-10-31 14:47 SGT] Supabase gives every new table wide default permissions. Migration 002 removed them for the nudge tables only. Each future migration must repeat the same "revoke, then grant only what is needed" steps (found by the privacy and security review of PR #11; owner agreed to log it).
-- **Impact:** [2026-10-31 14:47 SGT] A table created without those steps (for example parents' data in the Datastore build) could be readable or writable by more roles than intended.
-- **Workaround:** [2026-10-31 14:47 SGT] Every new migration copies the lock-down steps of migration 002, and its database tests check the permissions. Consider a drift or database test that fails if any table lacks them (ask the owner first).
-
-### [2026-10-31 09:41 SGT] "One diagram" means one architecture diagram
-- [2026-10-31 10:05 SGT] Path update: the rewards design (with its hook-loop flow) is now `src/variable-rewards/DESIGN.md`; the v0.1 original is in `docs/archive/`.
-- **Issue:** [2026-10-31 09:41 SGT] The drift test counts as a diagram: any image file, or a Mermaid block that names 2 or more official modules, outside `docs/archive/`. The "hook loop" Mermaid flows in the two rewards specs name no modules, so they are allowed.
-- **Impact:** [2026-10-31 09:41 SGT] If the owner meant "no other diagrams at all", the rewards specs' flow diagrams would need moving or removing.
-- **Workaround:** [2026-10-31 09:41 SGT] Owner to confirm the reading at PR 2 review.
-
-### [2026-10-28 22:23 SGT] Deliberate nudges can be crowded out on Friday and Sunday
-- **Issue:** [2026-10-28 22:23 SGT] Deliberate behaviours are only nudged on Friday and Sunday, and come after due quick behaviours in priority. A parent with few slots on those days (e.g. 1) and a due quick behaviour may never get a deliberate nudge that week.
-- **Impact:** [2026-10-28 22:23 SGT] Deliberate behaviours (the bigger family activities) could be under-nudged for some parents.
-- **Workaround:** [2026-10-28 22:23 SGT] Parents can still log on their own. Owner chose Option B "to progress things first; we'll figure it along the way". Option to revisit: on Friday and Sunday, put a due deliberate behaviour first.
-
-### [2026-10-28 22:23 SGT] Batch 2 parts that depend on later steps
-- **Issue:** [2026-10-28 22:23 SGT] The planner is built and tested, but these are not built yet: the sender that re-checks just before sending (Datastore and Telegram bot steps), the ✅ Done and 😴 Not today buttons, the slot setup screen, and the holiday dates (owner uploads before launch).
-- **Impact:** [2026-10-28 22:23 SGT] No nudge messages are sent yet.
-- **Workaround:** [2026-10-28 22:23 SGT] Build with the Datastore (step 2) and Telegram bot (step 3).
-
-### [2026-10-25 07:17 SGT] Database tests are not run automatically
-- [2026-10-31 09:59 SGT] Path update: the database tests now live in `src/datastore/supabase/tests/` (still run by hand with `npm run test:db`).
-- **Issue:** [2026-10-25 07:17 SGT] `npm run test:db` needs a running PostgreSQL, so it is not part of `npm run check` or GitHub Actions.
-- **Impact:** [2026-10-25 07:17 SGT] A change to the SQL could break the rules without CI noticing.
-- **Workaround:** [2026-10-25 07:17 SGT] Run `npm run test:db` manually after any SQL change. Later option: add a PostgreSQL service to the GitHub Actions workflow (ask the owner first).
-
-### [2026-10-25 06:25 SGT] Broken nudge rows are reported, but no alert is sent yet
-- [2026-10-25 07:48 SGT] Also covers nudges with fewer than 3 active examples (spec v1.6): the app reports them, but no alert is delivered yet.
-- **Issue:** [2026-10-25 06:25 SGT] The Nudge repository returns a list of broken rows (spec v1.4 says alert the owner), but nothing delivers that alert yet.
-- **Impact:** [2026-10-25 06:25 SGT] Until it is built, the owner would not hear about a broken row.
-- **Workaround:** [2026-10-25 06:25 SGT] Build the alert with the Datastore and Telegram bot (step 2 or 3), for example a Telegram message or log line to the owner. Not live yet, so no real impact.
-
-### [2026-10-24 22:14 SGT] Nudge repository edits skip review and history
-- **Issue:** [2026-10-24 22:14 SGT] Edits in the Supabase dashboard go live to parents immediately, without a pull request, tests or Git history.
-- **Impact:** [2026-10-24 22:14 SGT] A typo or a deleted row reaches parents straight away, and the old version cannot be recovered unless a backup was exported. A reviewer (for example a Change Advisory Board (CAB)) would ask who can change live content and how a bad change is undone.
-- [2026-10-25 06:59 SGT] Update: IDs are now generated automatically (no duplicates), and retiring a nudge uses the "active" column. Blocking deletes of chosen nudges needs the parents' targets table, so it arrives with the Datastore (step 2); until then, a delete is not blocked.
-- **Workaround:** [2026-10-24 22:14 SGT] Database rules block badly formed rows; the app refuses to use invalid rows; the owner exports a CSV backup before each big change. Only the owner has dashboard access.
-
-### [2026-10-24 22:09 SGT] Photo check judging against the photo idea may be too strict
-- **Status:** [2026-11-24 22:35 SGT] On hold: the photo check is parked (owner, 24 Nov), so no photo is judged for now. Revisit with the backlog item "The photo check".
-- **Issue:** [2026-10-24 22:09 SGT] The Photo check uses each nudge's photo idea to judge whether a photo fits. A parent may send a valid photo that looks nothing like the idea (for example, a cycling trip for "interesting activities" when the idea shows baking).
-- **Impact:** [2026-10-24 22:09 SGT] Valid photos could be rejected, which feels unfair and discourages logging.
-- **Workaround:** [2026-10-24 22:09 SGT] Owner agreed this rule "for now". When building the Photo check, propose treating the photo idea as a hint and judging against the nudge itself; if a check fails, the parent can still self-report (rule 9).
-
-### [2026-10-24 21:19 SGT] Development container runs Node.js 22, not 24
-- **Issue:** [2026-10-24 21:19 SGT] The project targets Node.js 24 (Vercel and GitHub Actions), but this cloud development container has Node.js 22. npm may print an "unsupported engine" warning here.
-- **Impact:** [2026-10-24 21:19 SGT] Low. Checks pass on 22; GitHub Actions runs them again on 24 for every pull request.
-- **Workaround:** [2026-10-24 21:19 SGT] Rely on the GitHub Actions run on Node.js 24 as the final word.
-
-### [2026-10-24 21:19 SGT] Vercel project settings not yet confirmed
-- **Issue:** [2026-10-24 21:19 SGT] The Vercel project has not been created yet. On the first deploy we must confirm the build settings (framework "Other", Node.js 24) and that `/api/health` answers.
-- **Impact:** [2026-10-24 21:19 SGT] Nothing is live yet.
-- **Workaround:** [2026-10-24 21:19 SGT] The owner creates the Vercel project when we are ready for the first preview; Claude guides the steps.
-
-### [2026-10-24 18:26 SGT] Weekend nudge moments not defined
-- [2026-10-28 21:21 SGT] Now part of the non-school-day schedule (Saturday, Sunday, public and MOE school holidays, spec v1.7). Still open: the default slots for non-school days.
-- **Issue:** [2026-10-24 18:26 SGT] Weekday nudges follow everyday moments (to school, dinner, bedtime). Weekends need a separate set, not defined yet.
-- **Impact:** [2026-10-24 18:26 SGT] The bot cannot send weekend nudges until these are defined.
-- **Workaround:** [2026-10-24 18:26 SGT] None. Product manager to define the weekend moments.
-- [2026-10-24 18:34 SGT] Kept as WIP, added to `docs/PRODUCT-BACKLOG.md`.
-
-### [2026-10-24 18:26 SGT] Photos kept with no time limit
-- [2026-11-01 16:32 SGT] Also: photos that fail the check are kept too (rule 6.2), and from alpha a child's birth year plus sign-up date and cohort could identify a family in a small group (privacy review, 1 Nov). Revisit both before alpha.
-- **Issue:** [2026-10-24 18:26 SGT] Photos (which may show children) are kept until the parent deletes their data. The PDPA expects organisations to stop keeping personal data once it is no longer needed.
-- **Impact:** [2026-10-24 18:26 SGT] Fine for a friends trial with consent; a reviewer would question it before opening to the public.
-- **Workaround:** [2026-10-24 18:26 SGT] Consent at sign-up plus the "delete my data" function. Revisit before any public launch.
-- [2026-10-24 18:34 SGT] Product manager confirmed: keep as an open issue.
-
 ## Resolved
+
+### [2026-11-26 22:38 SGT] DEF-1: a 3rd quick tick in Settings says "✅ Saved." instead of "Choose up to 2 quick behaviours." (UAT U87, FAIL)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-1 fixed: the other quick boxes grey out once 2 are ticked, and the server still refuses a 3rd (tests SE18, SE19, SB1).
+- **Issue:** [2026-11-26 22:38 SGT] On Behaviours, three quick boxes could be ticked; Save showed "✅ Saved." and Telegram "✅ Your habits are updated.", and the stored behaviours stayed as before. The server's own check does refuse three (`src/web-app/settings-page.ts` line 310, test SE5 passes), so the third tick most likely never reached the server: the save that arrived held the old two. **Cause not found yet**; to reproduce in a real browser (Playwright, already installed) before fixing.
+- **Impact:** [2026-11-26 22:38 SGT] No wrong data is saved, but the parent is told "Saved." when their choice was not saved (rule 1.3 spirit: never a misleading success).
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix (owner, 26 Nov: "fix them here"). The page could also stop a 3rd tick in the browser, which needs no new library.
+
+### [2026-11-26 22:38 SGT] DEF-2: "✅ Your habits are updated." is sent after a Behaviours save that changes nothing (seen in UAT U98)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-2 fixed: a Behaviours save with the same picks sends nothing to the database or Telegram (test SE24).
+- **Issue:** [2026-11-26 22:38 SGT] `settingsSave` in `src/web-app/handler.ts` tells Telegram after **every** Behaviours save, without checking whether the picks changed. Seen 4 times at 21:39 to 21:40 and twice for one change (22:02 and 22:04, most likely two saves). The run also reported it after Wrap Up saves; the code sends it only for Behaviours, so that report still needs checking.
+- **Impact:** [2026-11-26 22:38 SGT] Extra bot messages; a parent may think something changed when it didn't.
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the saved picks differ from the ones before.
+
+### [2026-11-26 22:38 SGT] DEF-3: repeated taps on the pause switch send one Telegram message per tap (UAT U90)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): DEF-3 fixed: the switch ignores repeat taps, and a pause that is already so sends nothing (tests SE25, SB2).
+- **Issue:** [2026-11-26 22:38 SGT] The pause page's switch is a form button that sends the value the page was drawn with (`src/web-app/settings-page.ts` lines 193 to 195). Tapping it several times before the page reloads sends "pause" again each time, and `settingsSave` tells Telegram every time, even when nothing changed. 17 messages arrived in one minute (16 "paused", 1 "back on").
+- **Impact:** [2026-11-26 22:38 SGT] A burst of bot messages; Telegram may slow the bot down if it sends too many too fast.
+- **Workaround:** [2026-11-26 22:38 SGT] None; to fix: tell Telegram only when the pause state actually changes (the same fix as DEF-2), and possibly make the switch ignore a second tap until the page reloads.
+
+### [2026-11-26 22:38 SGT] A child can't be removed in Settings (UAT U86)
+- [2026-11-26 23:15 SGT] **Resolved** in the Settings fixes pull request (rule 9.9): Fixed: a 🗑 beside each name asks first, then removes the child and every earlier name (migration 018, applied; tests SE20 to SE22, T147 to T150).
+- **Issue:** [2026-11-26 22:38 SGT] Rule 9.9 says "removing is not designed yet"; emptying a child's box gives "Each child needs a name." The UAT run left a test child, "UAT Child", on the owner's account.
+- **Impact:** [2026-11-26 22:38 SGT] The owner's real account names a child who doesn't exist, in messages that take turns naming children (rule 3.16) and on My page. A parent who adds a child by mistake can't undo it.
+- **Workaround:** [2026-11-26 22:38 SGT] Claude Code can remove "UAT Child" in Supabase with the owner's approval; designing "remove a child" goes to the backlog.
+
 
 [2026-11-25 23:20 SGT] Three entries resolved by Settings (25 Nov) were moved word for word to [docs/archive/KNOWN-ISSUES-resolved-to-2026-11-25.md](archive/KNOWN-ISSUES-resolved-to-2026-11-25.md) (owner approved).
 

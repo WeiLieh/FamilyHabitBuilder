@@ -100,8 +100,9 @@ export const STYLESHEET = [
   // [2026-11-25] Settings (rule 9.9), from the existing decisions only: rows in
   // a box with pale lines between them (L6, L7), 12px between rows and 16px
   // inside boxes (L11), 15px row labels (L9), pills (L10), Delete in warning red.
-  // Not yet decided by the owner (step 2, "the look"): the switch and the tick
-  // boxes use the accent green (L4, "ticks"); they are the browser's own controls.
+  // Not yet decided by the owner (step 2, "the look"): the switch's and the tick
+  // boxes' sizes; they use the accent green (L4, "ticks"). [2026-11-26] The
+  // switch's slide (0.2 seconds) is decided (L16).
   ".list{padding:0 16px}",
   ".set-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 0;border-top:1px solid var(--rule);font-size:15px;text-decoration:none;color:var(--text)}",
   ".list>li:first-child>.set-row,.list>.set-row:first-child,.list>.choice:first-child{border-top:0}",
@@ -111,7 +112,6 @@ export const STYLESHEET = [
   ".stack-row{flex-direction:column;align-items:flex-start;gap:4px}",
   ".val{color:var(--muted);font-size:14px;text-align:right}",
   ".gap{margin-top:8px}",
-  ".notice{margin:8px 0 0;font-weight:600}",
   ".error{margin:0 0 8px;font-weight:600}",
   ".sub-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}",
   ".sub-head h1{flex:1;font-size:20px;text-align:center;margin-right:72px}",
@@ -122,11 +122,23 @@ export const STYLESHEET = [
   ".add .field{flex:1}",
   ".choice{display:flex;align-items:center;gap:12px;min-height:48px;border-top:1px solid var(--rule);font-size:15px;cursor:pointer}",
   ".choice input{width:22px;height:22px;margin:0;accent-color:var(--accent)}",
-  ".link{all:unset;min-height:44px;padding:0 4px;display:flex;align-items:center;text-decoration:underline;cursor:pointer;color:var(--text);font-size:14px}",
   ".switch{position:relative;flex:none;width:52px;height:32px;border:0;border-radius:16px;background:var(--border);cursor:pointer;padding:0}",
   ".switch[aria-checked=true]{background:var(--accent)}",
-  ".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--bg)}",
+  ".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--bg);transition:left .2s}",
   ".switch[aria-checked=true] .knob{left:23px}",
+  // [2026-11-26] The Settings fixes (owner, 26 Nov): L14 the pop-up, a box on
+  // the page dimmed with black at 40% ("66" is 40% of full strength in this
+  // colour code), with the 32px filled green tick circle (L10, L13), body
+  // text and an OK pill; L15 a choice that can't be picked at 40% strength;
+  // L16 the switch's knob slides in 0.2 seconds (above). A child's name box
+  // sits in a row with its dustbin; a dustbin button looks like the link one.
+  ".dim{position:fixed;inset:0;background:#00000066;display:flex;align-items:center;justify-content:center;padding:20px}",
+  ".pop{width:100%;max-width:390px;text-align:center}",
+  ".pop .dot{margin:0 auto 12px}",
+  ".pop .actions form{flex:1;display:flex;margin:0}",
+  ".greyed{opacity:.4}",
+  ".child-row{display:flex;align-items:center;gap:12px}",
+  "button.bin{border:0;padding:0;background:none;cursor:pointer}",
 ].join("");
 
 // The fingerprint the security rule names, in the form browsers expect.

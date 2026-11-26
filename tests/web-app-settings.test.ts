@@ -10,11 +10,23 @@
 //   data · SE11 sign out · SE12 "Saved." · SE13 a failed save says so (rule
 //   1.3) · SE14 safety (forged forms, no copies kept) · SE15 the new habit
 //   buttons in Telegram after a Behaviours save (owner, 25 Nov).
+// [2026-11-26] The Settings fixes (owner, 26 Nov, "all as recommended"; W1
+// to W7, DEF-1 to DEF-3; rule 9.9): SE16 the Saved pop-up on the row's own
+// page · SE17 its "Telegram wasn't told" line · SE18 the quick boxes grey out
+// at 2 · SE19 the server still refuses a 3rd (DEF-1) · SE20 a 🗑 per child ·
+// SE21 it asks first · SE22 removing a child · SE23 the one small page
+// script, allowed by its fingerprint · SE24 the same picks tell Telegram
+// nothing (DEF-2) · SE25 a pause that is already so changes nothing (DEF-3).
+// Rewritten for the fixes (CLAUDE.md rule 12): SE3 (pause: no pop-up, back to
+// its own page), SE4 (a 🗑 per time), SE12 ("Saved." is a pop-up on the row's
+// page, not on the list), SE15 (back to Behaviours). What happens in a real
+// browser (greying, the slide) is in tests/web-app-settings-browser.test.ts.
 // It checks behaviour and words, not the look. The database is a pretend one
 // (tests/helpers/web-app-fake-db.ts) that follows the same counting rules as
 // migration 016; the real database is checked by T131 to T145.
 // =============================================================================
 
+import { createHash } from "node:crypto";
 import { beforeEach, describe, expect, it } from "vitest";
 import { sgtInstant } from "../src/sgt.js";
 import { createWebAppHandler, type WebResponse } from "../src/web-app/handler.js";
@@ -68,12 +80,16 @@ const text = (r: WebResponse) => r.body.replace(/<[^>]*>/g, " ").replace(/\s+/g,
 // in the address, so a crafted link can't make the page say it (privacy review item 3).
 const NOTICE = "__Host-fhb_notice";
 const noticeOf = (r: WebResponse) => /__Host-fhb_notice=([a-z-]+);/.exec(r.headers["set-cookie"] ?? "")?.[1] ?? null;
-const savedRedirect = (r: WebResponse, notice = "saved") => {
+// [2026-11-26] After a save the parent stays on that row's own page (W1).
+const savedRedirect = (r: WebResponse, part: string, notice = "saved") => {
   expect(r.status).toBe(303);
-  expect(r.headers.location).toBe("/api/web-app?page=settings");
+  expect(r.headers.location).toBe(`/api/web-app?page=settings&part=${part}`);
   expect(noticeOf(r)).toBe(notice);
   expect(r.headers["set-cookie"]).toContain("Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax");
 };
+// The Saved pop-up (W1, L14): a dialog with a tick, the words and OK.
+const popUp = (r: WebResponse) => /<div class="dim" role="dialog"[\s\S]*?<\/div><\/div>/.exec(r.body)?.[0] ?? null;
+const calledChange = () => db.calls.filter((c) => c.what === "changeSetting").length;
 const getWithNotice = (query: string, notice: string) =>
   handle({ method: "GET", url: `/api/web-app?${query}`, headers: { host: HOST, cookie: `__Host-fhb_sign_in=${COOKIE_SECRET}; ${NOTICE}=${notice}` }, body: "" });
 
@@ -124,32 +140,45 @@ describe("The Settings list (rule 9.9)", () => {
 });
 
 describe("Reminders (rule 9.9)", () => {
-  it("SE3 Pause turns pausing on and off, and the bot tells the parent in Telegram each time", async () => {
+  // [2026-11-26] Rewritten (W6, rule 12): no Save button and no pop-up; back to the pause page.
+  it("SE3 Pause turns pausing on and off with the switch alone, and the bot tells the parent in Telegram each time", async () => {
     const page = await get("page=settings&part=pause");
     expect(text(page)).toContain("While paused we send no reminders. Your photos, lines and weeks stay exactly as they are.");
     expect(page.body).toContain('role="switch" aria-checked="false"');
-    savedRedirect(await save("part=pause&paused=on"));
+    expect(page.body).toContain("data-slide");
+    expect(text(page)).not.toContain("Save");
+    const on = await save("part=pause&paused=on");
+    expect(on.status).toBe(303);
+    expect(on.headers.location).toBe("/api/web-app?page=settings&part=pause");
+    expect(noticeOf(on)).toBeNull(); // the switch and the Telegram line are the confirmation
     expect(db.settingsData.paused).toBe(true);
     expect(told).toEqual([{ chat: 2001, paused: true }]);
     expect(text(await get("page=settings"))).toContain("Pause reminders On");
-    expect((await get("page=settings&part=pause")).body).toContain('role="switch" aria-checked="true"');
-    savedRedirect(await save("part=pause&paused=off"));
+    const again = await get("page=settings&part=pause");
+    expect(again.body).toContain('role="switch" aria-checked="true"');
+    expect(popUp(again)).toBeNull();
+    await save("part=pause&paused=off");
     expect(db.settingsData.paused).toBe(false);
     expect(told.at(-1)).toEqual({ chat: 2001, paused: false });
   });
 
-  it("SE3 if the Telegram line can't be sent, the pause is still saved and the page says Telegram wasn't told", async () => {
+  it("SE3 if the Telegram line can't be sent, the pause is still saved and the pause page says Telegram wasn't told", async () => {
     tellFails = true;
-    const r = await save("part=pause&paused=on");
-    savedRedirect(r, "saved-not-told");
+    savedRedirect(await save("part=pause&paused=on"), "pause", "saved-not-told");
     expect(db.settingsData.paused).toBe(true);
-    expect(text(await getWithNotice("page=settings", "saved-not-told"))).toContain("Saved, but we couldn't tell you in Telegram.");
+    expect(text({ body: popUp(await getWithNotice("page=settings&part=pause", "saved-not-told")) ?? "" } as WebResponse)).toContain(
+      "Saved, but we couldn't tell you in Telegram.",
+    );
   });
 
-  it("SE4 reminder times: each time with Remove, an Add a time list, and the rules explained in words", async () => {
+  // [2026-11-26] Rewritten (W5, rule 12): a 🗑 instead of "Remove", and back to the times page.
+  it("SE4 reminder times: a 🗑 per time, an Add a time list, and the rules explained in words", async () => {
     const page = await get("page=settings&part=times");
     const t = text(page);
-    expect(t).toContain("School days 7:00 am Remove 7:00 pm Remove");
+    expect(t).toContain("School days 7:00 am 7:00 pm");
+    expect(t).not.toContain("Remove");
+    expect(page.body).toMatch(/<button class="bin" type="submit" aria-label="Remove 7:00 am"><svg/);
+    expect(page.body).toMatch(/<button class="bin" type="submit" aria-label="Remove 7:00 pm"><svg/);
     expect(t).toContain("Weekends and holidays 9:00 am");
     expect(t).toContain("Up to 3 times a day, at least 1 hour apart. The times are shared by all your behaviours.");
     // The school-day add list offers only allowed times: 7:30 am is less than 1 hour from 7:00 am.
@@ -157,11 +186,11 @@ describe("Reminders (rule 9.9)", () => {
     expect(school).toContain('<option value="510">8:30 am</option>');
     expect(school).not.toContain('<option value="450">');
     // Removing the only weekend time is not offered.
-    expect(weekend).not.toContain(">Remove<");
+    expect(weekend).not.toContain('class="bin"');
 
-    savedRedirect(await save("part=times&schedule=school&action=add&minute=600"));
+    savedRedirect(await save("part=times&schedule=school&action=add&minute=600"), "times");
     expect(db.settingsData.schoolSlots).toEqual([420, 600, 1140]);
-    savedRedirect(await save("part=times&schedule=school&action=remove&minute=600"));
+    savedRedirect(await save("part=times&schedule=school&action=remove&minute=600"), "times");
     expect(db.settingsData.schoolSlots).toEqual([420, 1140]);
 
     const tooClose = await save("part=times&schedule=school&action=add&minute=450");
@@ -185,7 +214,7 @@ describe("Reminders (rule 9.9)", () => {
     expect(page.body).toMatch(/type="radio" name="deliberate" value="none" checked/);
     expect(page.body).toMatch(/type="radio" name="quick_frequency" value="every_2_days" checked/);
 
-    savedRedirect(await save("part=behaviours&quick=1&quick=2&quick_frequency=every_day&deliberate=4&deliberate_frequency=twice_a_week"));
+    savedRedirect(await save("part=behaviours&quick=1&quick=2&quick_frequency=every_day&deliberate=4&deliberate_frequency=twice_a_week"), "behaviours");
     expect(db.settingsData.picks).toEqual([
       { nudgeId: 1, frequency: "every_day" },
       { nudgeId: 2, frequency: "every_day" },
@@ -204,8 +233,9 @@ describe("Reminders (rule 9.9)", () => {
   });
 
   // [2026-11-25] Owner-approved (25 Nov): the keyboard in Telegram follows a Behaviours change.
+  // [2026-11-26] Rewritten (W1, rule 12): the parent then stays on Behaviours.
   it("SE15 after a Behaviours save, the bot sends its line with the new habit buttons, in the order chosen", async () => {
-    savedRedirect(await save("part=behaviours&quick=2&quick=1&quick_frequency=every_day&deliberate=4&deliberate_frequency=once_a_week"));
+    savedRedirect(await save("part=behaviours&quick=2&quick=1&quick_frequency=every_day&deliberate=4&deliberate_frequency=once_a_week"), "behaviours");
     expect(toldHabits).toEqual([{ chat: 2001, names: ["Praising effort", "Showing affection", "One-on-one time"] }]);
     expect(told).toEqual([]);
   });
@@ -213,7 +243,7 @@ describe("Reminders (rule 9.9)", () => {
   it("SE15 if Telegram can't be told, the habits are still saved and the page says Telegram wasn't told", async () => {
     tellFails = true;
     const r = await save("part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
-    savedRedirect(r, "saved-not-told");
+    savedRedirect(r, "behaviours", "saved-not-told");
     expect(db.settingsData.picks).toEqual([{ nudgeId: 2, frequency: "every_day" }]);
   });
 
@@ -229,7 +259,7 @@ describe("Reminders (rule 9.9)", () => {
     expect(text(page)).toContain("A short summary of your week, sent on Sunday when you have logged a habit, a reflection or a moment that week.");
     expect(page.body).not.toContain('role="switch"');
     expect(page.body).toContain('<option value="1200" selected>8:00 pm</option>');
-    savedRedirect(await save("part=wrap-up&minute=1170"));
+    savedRedirect(await save("part=wrap-up&minute=1170"), "wrap-up");
     expect(db.settingsData.wrapUpMinute).toBe(1170);
     expect((await save("part=wrap-up&minute=1185")).status).toBe(400);
     expect(db.settingsData.wrapUpMinute).toBe(1170);
@@ -239,7 +269,7 @@ describe("Reminders (rule 9.9)", () => {
 describe("About you (rule 9.9)", () => {
   it("SE7 the name and children can be edited and saved; a blank name is refused; no 4th child", async () => {
     expect((await get("page=settings&part=name")).body).toContain('value="Cara"');
-    savedRedirect(await save("part=name&first_name=Cara%20Lim"));
+    savedRedirect(await save("part=name&first_name=Cara%20Lim"), "name");
     expect(db.settingsData.firstName).toBe("Cara Lim");
     const blank = await save("part=name&first_name=%20%20");
     expect(blank.status).toBe(400);
@@ -249,9 +279,9 @@ describe("About you (rule 9.9)", () => {
     const kids = await get("page=settings&part=children");
     expect(kids.body).toMatch(/name="child-11"[^>]*value="Riley"/);
     expect(text(kids)).toContain("A first name or a nickname is enough.");
-    savedRedirect(await save("part=children&child-11=Riley%20J&new=Sam"));
+    savedRedirect(await save("part=children&child-11=Riley%20J&new=Sam"), "children");
     expect(db.settingsData.children.map((c) => c.firstName)).toEqual(["Riley J", "Sam"]);
-    savedRedirect(await save("part=children&child-11=Riley%20J&child-101=Sam&new=Max"));
+    savedRedirect(await save("part=children&child-11=Riley%20J&child-101=Sam&new=Max"), "children");
     expect(db.settingsData.children).toHaveLength(3);
     // With 3 children, no empty box to add another.
     expect((await get("page=settings&part=children")).body).not.toContain('name="new"');
@@ -317,17 +347,19 @@ describe("Privacy and account (rule 9.9)", () => {
 
 describe("Saving safely (rules 1.3, 9.6, 9.9)", () => {
   // [2026-11-25] Rewritten (privacy review item 3, owner: "yes ok"): the notice comes from our cookie, not the address.
-  it("SE12 after a save the Settings list says ✅ Saved. once; a crafted address can't make it say so", async () => {
-    const shown = await getWithNotice("page=settings", "saved");
-    expect(text(shown)).toContain("✅ Saved.");
+  // [2026-11-26] Rewritten again (W1, rule 12): it is a pop-up on the row's own page; the list no longer shows it.
+  it("SE12 after a save the row's page shows the Saved pop-up once; the list never does; a crafted address can't make it show", async () => {
+    const shown = await getWithNotice("page=settings&part=name", "saved");
+    expect(popUp(shown)).not.toBeNull();
     expect(shown.headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`); // shown once, then cleared
-    expect(text(await get("page=settings"))).not.toContain("Saved.");
-    expect(text(await get("page=settings&saved=1&telegram=0"))).not.toContain("Saved");
-    expect(text(await getWithNotice("page=settings", "made-up"))).not.toContain("Saved");
-    // A row's own page and a failed read clear it too, so an old "Saved." can't show later.
-    expect((await getWithNotice("page=settings&part=pause", "saved")).headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`);
-    db.fail = "settings";
+    expect(popUp(await get("page=settings&part=name"))).toBeNull();
+    expect(text(await getWithNotice("page=settings", "saved"))).not.toContain("Saved");
+    expect(popUp(await get("page=settings&part=name&saved=1&telegram=0"))).toBeNull();
+    expect(popUp(await getWithNotice("page=settings&part=name", "made-up"))).toBeNull();
+    // The list and a failed read clear it too, so an old "Saved." can't show later.
     expect((await getWithNotice("page=settings", "saved")).headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`);
+    db.fail = "settings";
+    expect((await getWithNotice("page=settings&part=name", "saved")).headers["set-cookie"]).toContain(`${NOTICE}=; Max-Age=0`);
   });
 
   it("SE13 a failed save or read says it didn't work, and never shows the change as done", async () => {
@@ -359,5 +391,132 @@ describe("Saving safely (rules 1.3, 9.6, 9.9)", () => {
     // What a parent typed is shown, never obeyed.
     db.settingsData.firstName = "<b>Cara</b>";
     expect((await get("page=settings")).body).toContain("&lt;b&gt;Cara&lt;/b&gt;");
+  });
+});
+
+// [2026-11-26] The Settings fixes (owner, 26 Nov, "all as recommended"; W1 to W7, DEF-1 to DEF-3).
+describe("Settings fixes: the Saved pop-up (W1)", () => {
+  it("SE16 every Save leads back to that row's own page, where a pop-up says Saved. with OK; OK stays on the page, Back goes to the list", async () => {
+    const saves: [string, string][] = [
+      ["name", "part=name&first_name=Cara%20Lim"],
+      ["children", "part=children&child-11=Riley%20J"],
+      ["behaviours", "part=behaviours&quick=2&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week"],
+      ["times", "part=times&schedule=school&action=add&minute=600"],
+      ["times", "part=times&schedule=school&action=remove&minute=600"],
+      ["wrap-up", "part=wrap-up&minute=1170"],
+    ];
+    for (const [part, body] of saves) {
+      savedRedirect(await save(body), part);
+      const page = await getWithNotice(`page=settings&part=${part}`, "saved");
+      const pop = popUp(page);
+      expect(pop, part).not.toBeNull();
+      expect(pop!, part).toContain('aria-modal="true"');
+      expect(pop!, part).toContain('<span class="dot on"'); // the tick in a filled green circle (L14)
+      expect(text({ body: pop! } as WebResponse), part).toContain("Saved.");
+      expect(pop!, part).toContain(`href="/api/web-app?page=settings&amp;part=${part}">OK</a>`);
+      expect(page.body, part).toContain('class="back" href="/api/web-app?page=settings"');
+    }
+  });
+
+  it("SE17 when Telegram can't be told, the pop-up says so instead of plain Saved.", async () => {
+    const page = await getWithNotice("page=settings&part=behaviours", "saved-not-told");
+    const pop = text({ body: popUp(page) ?? "" } as WebResponse);
+    expect(pop).toContain("Saved, but we couldn't tell you in Telegram.");
+    expect(pop).not.toMatch(/Saved\.\s*OK/);
+  });
+});
+
+describe("Settings fixes: Behaviours (W2, DEF-1)", () => {
+  it("SE18 the quick boxes are one group that allows 2, and the hint says to untick one to choose another", async () => {
+    const page = await get("page=settings&part=behaviours");
+    expect(page.body).toMatch(/<div class="box list" data-max="2">(<label class="choice"><input type="checkbox" name="quick"[^]*?<\/label>){3}<\/div>/);
+    expect(text(page)).toContain("Choose up to 2. Untick one to choose another.");
+  });
+
+  it("SE19 a 3rd quick behaviour sent anyway is still refused: nothing saved, Telegram not told (DEF-1)", async () => {
+    const three = await save("part=behaviours&quick=1&quick=2&quick=3&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(three.status).toBe(400);
+    expect(text(three)).toContain("Choose up to 2 quick behaviours.");
+    expect(popUp(three)).toBeNull();
+    expect(db.settingsData.picks).toEqual([{ nudgeId: 1, frequency: "every_2_days" }]);
+    expect(toldHabits).toEqual([]);
+  });
+
+  it("SE24 a Behaviours save with the same picks changes nothing and tells Telegram nothing, but still says Saved. (DEF-2)", async () => {
+    savedRedirect(await save("part=behaviours&quick=1&quick_frequency=every_2_days&deliberate=none&deliberate_frequency=once_a_week"), "behaviours");
+    expect(calledChange()).toBe(0);
+    expect(toldHabits).toEqual([]);
+    // A real change is still sent.
+    await save("part=behaviours&quick=1&quick_frequency=every_day&deliberate=none&deliberate_frequency=once_a_week");
+    expect(calledChange()).toBe(1);
+    expect(toldHabits).toHaveLength(1);
+  });
+});
+
+describe("Settings fixes: Children (W3, W4)", () => {
+  beforeEach(() => {
+    db.settingsData.children = [{ id: 11, firstName: "Riley" }, { id: 12, firstName: "<i>Sam</i>" }];
+  });
+
+  it("SE20 each name has a 🗑 beside it, but the last child has none (at least 1 stays)", async () => {
+    const page = await get("page=settings&part=children");
+    expect(page.body).toMatch(/<a class="bin" aria-label="Remove Riley" href="\/api\/web-app\?page=settings&amp;part=children&amp;remove=11"><svg/);
+    expect(page.body).toContain('aria-label="Remove &lt;i&gt;Sam&lt;/i&gt;" href="/api/web-app?page=settings&amp;part=children&amp;remove=12"');
+    db.settingsData.children = [{ id: 11, firstName: "Riley" }];
+    expect((await get("page=settings&part=children")).body).not.toContain('class="bin"');
+  });
+
+  it("SE21 the 🗑 first asks in a pop-up 'Remove [name]? Their name is deleted for good.' with Cancel and Remove; asking deletes nothing", async () => {
+    const ask = await get("page=settings&part=children&remove=12");
+    expect(ask.status).toBe(200);
+    const pop = popUp(ask)!;
+    expect(text({ body: pop } as WebResponse)).toContain("Remove &lt;i&gt;Sam&lt;/i&gt;? Their name is deleted for good.");
+    expect(pop).toContain('href="/api/web-app?page=settings&amp;part=children">Cancel</a>');
+    expect(pop).toMatch(/<form method="post" action="\/api\/web-app\?page=settings-save"><input type="hidden" name="part" value="children-remove"><input type="hidden" name="child" value="12"><button class="pill danger" type="submit">Remove<\/button><\/form>/);
+    expect(calledChange()).toBe(0);
+    expect(db.settingsData.children).toHaveLength(2);
+    // A child that isn't theirs, or not a number: not found, nothing asked.
+    expect((await get("page=settings&part=children&remove=99")).status).toBe(404);
+    expect((await get("page=settings&part=children&remove=abc")).status).toBe(404);
+  });
+
+  it("SE22 Remove deletes the child (and every earlier name, in the database), then the Saved pop-up on Children; the last child can't be removed", async () => {
+    savedRedirect(await save("part=children-remove&child=12"), "children");
+    expect(db.calls.find((c) => c.what === "changeSetting")!.args[1]).toEqual({ kind: "remove-child", childId: 12 });
+    expect(db.settingsData.children).toEqual([{ id: 11, firstName: "Riley" }]);
+    const last = await save("part=children-remove&child=11");
+    expect(last.status).toBe(400);
+    expect(text(last)).toContain("Please keep at least 1 child.");
+    expect(db.settingsData.children).toHaveLength(1);
+    expect((await save("part=children-remove&child=99")).status).toBe(400);
+    expect(calledChange()).toBe(1);
+  });
+});
+
+describe("Settings fixes: the pause switch and the page script (W6, DEF-3)", () => {
+  it("SE25 a pause that is already so (a repeated tap) changes nothing and sends nothing to Telegram (DEF-3)", async () => {
+    await save("part=pause&paused=on");
+    expect(told).toHaveLength(1);
+    const again = await save("part=pause&paused=on");
+    expect(again.status).toBe(303);
+    expect(again.headers.location).toBe("/api/web-app?page=settings&part=pause");
+    expect(calledChange()).toBe(1);
+    expect(told).toHaveLength(1);
+  });
+
+  it("SE23 Behaviours and Pause carry one small script, allowed only by its fingerprint; no other page has it, and the forms still post without it", async () => {
+    const policyHashes = (r: WebResponse) => /script-src ([^;]*)/.exec(r.headers["content-security-policy"]!)![1]!.split(" ");
+    for (const part of ["behaviours", "pause"]) {
+      const r = await get(`page=settings&part=${part}`);
+      const scripts = [...r.body.matchAll(/<script>([^<]*)<\/script>/g)].map((m) => m[1]!);
+      expect(scripts, part).toHaveLength(1);
+      expect(policyHashes(r), part).toContain(`'sha256-${createHash("sha256").update(scripts[0]!).digest("base64")}'`);
+      expect(r.headers["content-security-policy"], part).toContain("default-src 'none'");
+      expect(r.headers["content-security-policy"], part).not.toContain("unsafe-inline");
+      expect(r.body, part).toContain('method="post" action="/api/web-app?page=settings-save"');
+    }
+    for (const q of ["page=settings", "page=settings&part=name", "page=settings&part=times", "page=week"]) {
+      expect((await get(q)).body, q).not.toContain("<script>");
+    }
   });
 });

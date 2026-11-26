@@ -23,7 +23,10 @@
 //   - ?page=habits (GET): a placeholder tab (rule 9.2).
 //   - [2026-11-25] ?page=settings (GET): the Settings list, and &part=… each
 //     row's own page (rule 9.9, settings-page.ts). ?page=settings-save (POST)
-//     checks and saves one change, then back to the list with "Saved."; a
+//     checks and saves one change, then [2026-11-26] back to that row's own
+//     page with the Saved pop-up (W1); &remove=<child> on Children asks
+//     "Remove [name]?" first (W4). A save that changes nothing is not sent
+//     (DEF-2, DEF-3), and a pause change shows no pop-up (W6). A
 //     pause change also has the bot tell the parent in Telegram (owner, 25
 //     Nov), and so does a Behaviours change, with the new habit buttons.
 //     ?page=delete-my-data (POST): only with the box ticked; every
@@ -55,7 +58,7 @@ import type { DeleteKind, OlderWeek } from "../datastore/web-app-store.js";
 import { escapeHtml } from "./html.js";
 import { signPass } from "./pass.js";
 import { STYLESHEET, STYLESHEET_HASH } from "./style.js";
-import { checkSave, deletedPage, isPart, settingsList, settingsPart } from "./settings-page.js";
+import { checkSave, deletedPage, isPart, NOTICES, type Notice, SETTINGS_SCRIPT, settingsList, settingsPart } from "./settings-page.js";
 import { confirmPage, habitsPage, weekPage } from "./week-page.js";
 import { WEB_WORDS } from "./words.js";
 
@@ -76,6 +79,8 @@ const SECRET = /^[A-Za-z0-9_-]{32,128}$/;
 const OPEN_SCRIPT =
   'var s=location.hash.slice(1);history.replaceState(null,"",location.pathname+location.search);document.getElementById("secret").value=s;';
 const OPEN_SCRIPT_HASH = createHash("sha256").update(OPEN_SCRIPT).digest("base64");
+// [2026-11-26] The Settings pages' one script (greying, the sliding switch), allowed the same way.
+const SETTINGS_SCRIPT_HASH = createHash("sha256").update(SETTINGS_SCRIPT).digest("base64");
 
 // Headers on every answer: no copies kept (rule 9.6), no address passed on to
 // other sites, no framing, and only our own one script and one stylesheet may
@@ -87,7 +92,7 @@ const SAFE_HEADERS: Record<string, string> = {
   "referrer-policy": "no-referrer",
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
-  "content-security-policy": `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_HASH}'; style-src 'sha256-${STYLESHEET_HASH}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
+  "content-security-policy": `default-src 'none'; script-src 'sha256-${OPEN_SCRIPT_HASH}' 'sha256-${SETTINGS_SCRIPT_HASH}'; style-src 'sha256-${STYLESHEET_HASH}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`,
 };
 
 // The same headers, for the few plain answers api/web-app.ts makes itself.
@@ -133,8 +138,6 @@ function cookieOf(req: WebRequest, wanted = COOKIE): string | null {
 // cookie, set only by our server, never in the address, so a crafted link
 // can't make a page say something was saved (privacy review item 3).
 const NOTICE = "__Host-fhb_notice";
-const NOTICES = ["saved", "saved-not-told"] as const;
-type Notice = (typeof NOTICES)[number];
 const noticeCookie = (value: Notice | "", maxAge: number) => `${NOTICE}=${value}; Max-Age=${maxAge}; ${COOKIE_FLAGS}`;
 
 // [2026-11-24] photoOrigin: our Supabase project's address ("https://…supabase.co"), where photo links point.
@@ -299,8 +302,9 @@ export function createWebAppHandler(deps: {
   }
 
   // [2026-11-25] ?page=settings (&part=…): the Settings list or one row's own
-  // page (rule 9.9). The list shows "Saved." once, from our notice cookie. The settings must be read, or the page says it
-  // didn't work (rule 1.3).
+  // page (rule 9.9). [2026-11-26] A row's page shows the Saved pop-up once,
+  // from our notice cookie (W1); Children with &remove=<id> asks first (W4).
+  // The settings must be read, or the page says it didn't work (rule 1.3).
   async function settings(req: WebRequest): Promise<WebResponse> {
     const signed = await passFor(req);
     if (isAnswer(signed)) return signed;
@@ -313,29 +317,35 @@ export function createWebAppHandler(deps: {
     const clearing = (r: WebResponse) => (sent === null ? r : { ...r, headers: { ...r.headers, "set-cookie": noticeCookie("", 0) } });
     try {
       const s = await db.settings(signed.pass);
-      if (part !== null) return clearing(styledAnswer(settingsPart(part, s)));
-      return clearing(styledAnswer(settingsList(s, NOTICES.find((n) => n === sent) ?? null)));
+      if (part === null) return clearing(styledAnswer(settingsList(s)));
+      // Only one of this parent's own children can be asked about.
+      const removeId = params.get("remove");
+      const removing = removeId === null || part !== "children" ? null : (s.children.find((c) => String(c.id) === removeId) ?? "unknown");
+      if (removing === "unknown") return clearing(answer(404, paragraph(WEB_WORDS.notFound)));
+      return clearing(styledAnswer(settingsPart(part, s, { notice: NOTICES.find((n) => n === sent) ?? null, removing })));
     } catch (error) {
       logFailure("Reading Settings failed", error);
       return clearing(didntWork());
     }
   }
 
-  // ?page=settings-save (POST): check what was sent, save it, back to the list.
+  // ?page=settings-save (POST): check what was sent, save it, back to that row's page (W1).
   // A problem with what was sent shows the same page with its reason (400) and
   // saves nothing; a failed save says it didn't work (rule 1.3).
   async function settingsSave(req: WebRequest): Promise<WebResponse> {
     const signed = await passFor(req);
     if (isAnswer(signed)) return signed;
     let told = true;
+    let part: string;
     try {
       const s = await db.settings(signed.pass);
       const check = checkSave(new URLSearchParams(req.body), s);
       if (!check.ok) {
         return check.part === null
           ? answer(400, paragraph(WEB_WORDS.badRequest))
-          : { ...styledAnswer(settingsPart(check.part, s, check.error)), status: 400 };
+          : { ...styledAnswer(settingsPart(check.part, s, { error: check.error })), status: 400 };
       }
+      part = check.part;
       for (const change of check.changes) {
         const chat = await db.changeSetting(signed.pass, change);
         if (chat === null) continue;
@@ -357,8 +367,11 @@ export function createWebAppHandler(deps: {
       logFailure("Saving Settings failed", error);
       return didntWork();
     }
+    const location = `${BASE}?page=settings&part=${part}`;
+    // A pause shows no pop-up when all went well: the switch and the Telegram line confirm it (W6).
+    if (part === "pause" && told) return { status: 303, headers: { ...headers, location }, body: "" };
     const notice: Notice = told ? "saved" : "saved-not-told";
-    return { status: 303, headers: { ...headers, location: `${BASE}?page=settings`, "set-cookie": noticeCookie(notice, 60) }, body: "" };
+    return { status: 303, headers: { ...headers, location, "set-cookie": noticeCookie(notice, 60) }, body: "" };
   }
 
   // ?page=delete-my-data (POST): only with "I understand" ticked. The photo
@@ -370,7 +383,7 @@ export function createWebAppHandler(deps: {
     if (new URLSearchParams(req.body).get("understood") !== "yes") {
       try {
         const s = await db.settings(signed.pass);
-        return { ...styledAnswer(settingsPart("delete-sure", s, WEB_WORDS.settings.tickTheBox)), status: 400 };
+        return { ...styledAnswer(settingsPart("delete-sure", s, { error: WEB_WORDS.settings.tickTheBox })), status: 400 };
       } catch (error) {
         logFailure("Reading Settings failed", error);
         return didntWork();

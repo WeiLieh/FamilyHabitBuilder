@@ -61,8 +61,10 @@ export const WEB_WORDS = {
     account: "Account",
     signOut: "Sign out",
     staySignedIn: (days: number) => `You stay signed in on this phone for ${days} days.`,
-    saved: "✅ Saved.", // draft
-    savedNotTold: "✅ Saved, but we couldn't tell you in Telegram.", // draft, rule 1.3
+    // [2026-11-26] The Saved pop-up (W1, L14): the tick is drawn beside the words.
+    saved: "Saved.", // draft
+    savedNotTold: "Saved, but we couldn't tell you in Telegram.", // draft, rule 1.3
+    ok: "OK",
     back: "Back",
     save: "Save",
     whatShallWeCallYou: "What shall we call you?",
@@ -71,7 +73,7 @@ export const WEB_WORDS = {
     addChildLabel: "Add another child", // wireframe button, here an empty box (no page scripts)
     nicknameIsEnough: "A first name or a nickname is enough.",
     quickBehaviours: "Quick behaviours",
-    chooseUpTo2: "Choose up to 2.",
+    chooseUpTo2: "Choose up to 2. Untick one to choose another.", // [2026-11-26] W2
     howOftenQuick: "How often (quick behaviours)", // draft
     oneDeliberate: "One deliberate behaviour",
     none: "None",
@@ -79,6 +81,11 @@ export const WEB_WORDS = {
     howOftenDeliberate: "How often (deliberate behaviour)", // draft
     schoolDays: "School days",
     weekends: "Weekends and holidays",
+    // [2026-11-26] A 🗑's label, read aloud by screen readers (W3, W5).
+    removeLabel: (what: string) => `Remove ${what}`,
+    // [2026-11-26] Removing a child asks first (W4).
+    removeChildQuestion: (name: string) => `Remove ${name}?`,
+    removeChildNote: "Their name is deleted for good.",
     remove: "Remove",
     addTime: "Add a time",
     addTimeLabel: (schedule: string) => `A time to add to ${schedule}`, // draft, read aloud by screen readers
@@ -120,6 +127,7 @@ export const WEB_WORDS = {
     pickHowOften: "Please choose how often.",
     upTo2Quick: "Choose up to 2 quick behaviours.",
     keepOneBehaviour: "Please keep at least 1 behaviour.",
+    keepOneChild: "Please keep at least 1 child.", // [2026-11-26] W3
     keepOneTime: "Please keep at least 1 time on each schedule. To take a break, use Pause.",
     timeNotFound: "That time isn't on your list.",
     pickAListedTime: "Please pick one of the listed times.",

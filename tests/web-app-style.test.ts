@@ -11,6 +11,11 @@
 //   ST5 the tab bar marks the tab you are on
 //   ST6 the sign-in, expired-link, signed-out and error pages stay plain
 //   ST7 on "Are you sure?", only Delete is the warning-red button
+//   [2026-11-26] ST8 the Settings fixes' look (owner, 26 Nov): the pop-up on
+//       a page dimmed with black at 40% (L14), greyed choices at 40% (L15),
+//       the switch sliding in 0.2 seconds and the outline dustbin (L16)
+// [2026-11-26] ST2's list gains black at 40% (#00000066), the dimming the
+// owner approved in L14; no other colour is added.
 // These check that the look is applied and kept to what was approved, not
 // how it looks to the eye: the owner checks that on the phone (UAT).
 // =============================================================================
@@ -27,7 +32,7 @@ const COOKIE_SECRET = "Ck3_9xVq2mZ8pR1tY6wB4nH7cJ0sD5fG8aE2uK9iO1l";
 const HOST = "family-habit-builder.vercel.app";
 
 // The colours the owner approved on 24 Nov (L2 to L8 and the warning red).
-const APPROVED_COLOURS = ["#1F2328", "#4F5660", "#1F6F5C", "#9CC7BC", "#D5D9DE", "#E6E9ED", "#FFFFFF", "#B42318"];
+const APPROVED_COLOURS = ["#1F2328", "#4F5660", "#1F6F5C", "#9CC7BC", "#D5D9DE", "#E6E9ED", "#FFFFFF", "#B42318", "#00000066"];
 
 let db: FakeWebDb;
 let handle: ReturnType<typeof createWebAppHandler>;
@@ -113,5 +118,20 @@ describe("My page's look (owner, 24 Nov; CLAUDE.md rule 6)", () => {
     // The red is used by that one class only.
     expect(STYLESHEET.match(/var\(--danger\)/g)).toHaveLength(2); // its fill and its border
     expect(STYLESHEET).toMatch(/\.pill\.danger\{background:var\(--danger\);border-color:var\(--danger\);/);
+  });
+
+  it("ST8 the Settings fixes' look: a pop-up on a page dimmed black at 40%, greyed choices at 40%, a 0.2-second slide", async () => {
+    expect(STYLESHEET).toMatch(/\.dim\{position:fixed;inset:0;background:#00000066;/); // L14
+    expect(STYLESHEET).toContain(".greyed{opacity:.4}"); // L15
+    expect(STYLESHEET).toContain(".knob{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--bg);transition:left .2s}"); // L16
+    // The pop-up is a box (12px corners) with the tick in a filled green circle and an OK pill.
+    db.settingsData.firstName = "Cara";
+    const saved = await get("page=settings&part=name", { ...signedIn, cookie: `${signedIn.cookie}; __Host-fhb_notice=saved` });
+    expect(saved.body).toMatch(/<div class="dim" role="dialog" aria-modal="true" aria-labelledby="pop-words"><div class="box pop"><span class="dot on" aria-hidden="true">✓<\/span>/);
+    expect(saved.body).toMatch(/<a class="pill wide" href="[^"]*">OK<\/a>/);
+    // The times page's dustbins are the same outline dustbin as Week so far's (L12).
+    const times = await get("page=settings&part=times");
+    const bin = '<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>';
+    expect(times.body).toContain(bin);
   });
 });

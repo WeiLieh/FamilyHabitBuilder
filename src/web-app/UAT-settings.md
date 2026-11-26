@@ -30,3 +30,15 @@
 | U96 | Tap **Download my memories** and **Help us improve** | Nothing happens (Coming soon) | [x] PASS, 26 Nov |
 | U97 | **With a test account only** (not your own): **Delete my data**, **Continue to delete**, try **Yes, delete everything** without ticking, then tick it and press again | First "Please tick the box first."; then "Your data has been deleted"; the bot stops messaging that account; its photos are gone from Supabase Storage | [ ] NOT RUN (no test account), 26 Nov |
 | U98 | [2026-11-25 22:43 SGT] After G4: change your **Behaviours** in Settings, **Save**, then open Telegram | "✅ Your habits are updated." with the new habit buttons under the chat; the old ones are gone | [x] PASS (DEF-2), 26 Nov |
+
+## [2026-11-26 23:16 SGT] The Settings fixes (U104 to U110), after the Settings fixes pull request is merged
+No migration to run (migration 018 is already applied). Your expectations changed for U85 (after Save you stay on the page, with a pop-up, instead of the list).
+| ID | Do this | Expect | Result |
+|---|---|---|---|
+| U104 | **Your name**: change it, **Save** | A pop-up over a dimmed page: a green tick, "Saved." and **OK**. After OK you are still on Your name; **Back** goes to the list (which no longer says "Saved.") | [ ] |
+| U105 | **Behaviours**: tick a 2nd quick behaviour | The 3rd quick box goes pale and can't be ticked; untick one and it comes back (was DEF-1, U87) | [ ] |
+| U106 | **Behaviours**: **Save** without changing anything | The Saved pop-up, and **no** "✅ Your habits are updated." in Telegram (was DEF-2, U98) | [ ] |
+| U107 | **Children**: tap the 🗑 beside **UAT Child** | A pop-up "Remove UAT Child? Their name is deleted for good." with Cancel and Remove. **Cancel** first: nothing changes. Tap 🗑 again, **Remove**: the Saved pop-up, and UAT Child is gone. Riley alone has no 🗑 | [ ] |
+| U108 | **Reminder times**: add a time, then tap its 🗑 | Each time the Saved pop-up, and you stay on Reminder times; the last time in a list has no 🗑 | [ ] |
+| U109 | **Pause reminders**: tap the switch, then quickly tap it 3 more times | It slides across smoothly, then the page reloads once; Telegram gets **one** pause line (was DEF-3, U90). Tap again to resume: one resume line | [ ] |
+| U110 | **Dark mode on your phone**, open the Saved pop-up | The page stays white and the dimmed backdrop is see-through grey | [ ] |
