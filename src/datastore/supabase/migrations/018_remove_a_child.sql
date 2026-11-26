@@ -41,6 +41,10 @@ declare me bigint := pass_parent_id();
         current_children int;
 begin
   if me is null then raise exception 'Not signed in (rule 9.8).'; end if;
+  -- Hold the parent's row until the end, so two removals at the same moment
+  -- (two open tabs) wait in line and can't both pass "at least 1 child"
+  -- (privacy review, Low, 26 Nov).
+  perform 1 from parents where id = me for update;
   -- The child must be one of this parent's current children (not an old name).
   if not exists (select 1 from children c
                   where c.id = p_child and c.parent_id = me
