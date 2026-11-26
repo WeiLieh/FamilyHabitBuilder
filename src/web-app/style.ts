@@ -100,8 +100,9 @@ export const STYLESHEET = [
   // [2026-11-25] Settings (rule 9.9), from the existing decisions only: rows in
   // a box with pale lines between them (L6, L7), 12px between rows and 16px
   // inside boxes (L11), 15px row labels (L9), pills (L10), Delete in warning red.
-  // Not yet decided by the owner (step 2, "the look"): the switch and the tick
-  // boxes use the accent green (L4, "ticks"); they are the browser's own controls.
+  // Not yet decided by the owner (step 2, "the look"): the switch's and the tick
+  // boxes' sizes; they use the accent green (L4, "ticks"). [2026-11-26] The
+  // switch's slide (0.2 seconds) is decided (L16).
   ".list{padding:0 16px}",
   ".set-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 0;border-top:1px solid var(--rule);font-size:15px;text-decoration:none;color:var(--text)}",
   ".list>li:first-child>.set-row,.list>.set-row:first-child,.list>.choice:first-child{border-top:0}",
