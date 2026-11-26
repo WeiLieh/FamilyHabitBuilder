@@ -6,6 +6,16 @@
 
 [2026-11-26 23:06 SGT] The 13 oldest **open** entries (logged 24 to 31 Oct) were moved word for word to [docs/archive/KNOWN-ISSUES-open-to-2026-10-31.md](archive/KNOWN-ISSUES-open-to-2026-10-31.md) to keep this file short (owner approved). They are still open.
 
+### [2026-11-26 23:19 SGT] Both page scripts are allowed on every page (privacy review of the Settings fixes, Low)
+- **Issue:** [2026-11-26 23:19 SGT] The security rule (`src/web-app/handler.ts`) names the open page's script and the Settings script on every answer, though each is used on only some pages.
+- **Impact:** [2026-11-26 23:19 SGT] Small: both are fixed text written by us, so nothing else can run; the rule is just wider than it needs to be.
+- **Workaround:** [2026-11-26 23:19 SGT] None needed now. Option later: name only the script each page uses.
+
+### [2026-11-26 23:19 SGT] A database error could put a child's name in Vercel's logs (privacy review of the Settings fixes, Low)
+- **Issue:** [2026-11-26 23:19 SGT] Failure logs blank out quoted text, long codes and long numbers, but a database message that repeats a value without quotes (for example `Key (...)=(Riley)`) would keep the name. Not new in this pull request.
+- **Impact:** [2026-11-26 23:19 SGT] Rare: only on a database error that repeats a value; the logs are seen only by the owner in Vercel.
+- **Workaround:** [2026-11-26 23:19 SGT] None yet. Option later: log only a fixed description of each failure, never the database's own message.
+
 ### [2026-11-26 22:38 SGT] DEF-4: no reminder arrived in the 9:30 pm slot added at 9:32 pm (UAT U45, BLOCKED)
 - **Issue:** [2026-11-26 22:38 SGT] The run added a 9:30 pm school-day time at 9:32 pm with reminders on; nothing came by 10:00 pm. **Probably by design, to check:** each behaviour is nudged at most once a day (rule 3.8), the owner had 2 quick behaviours and 7:00 am and 7:00 pm reminders today, and a behaviour logged today gets no reminder (rule 3.6). If both were already nudged or logged, 9:30 pm had nothing due. Needs today's rows in `messages_sent` and `logs` (Supabase) to confirm.
 - **Impact:** [2026-11-26 22:38 SGT] U45 (a keyboard tap answering a waiting reminder) is still untested on the live bot; app tests cover it.
