@@ -7,6 +7,7 @@
 - [2026-11-26 22:38 SGT] Start-of-session routine (drift check passed, 24 checks). Owner chose to automate UAT with option A (`docs/CONTEXT.md`): runbook `docs/UAT-RUNBOOK.md`, run on the owner's computer 21:25 to 22:32 SGT.
 - [2026-11-26 22:38 SGT] Results recorded in the UAT files and the new Demo checklist `src/demo/UAT-demo.md`: 31 PASS, U87 FAIL, U45 BLOCKED, U86 PARTLY, U97 and U70 not run; U100 and U101 pass against rules 12.5 and 5.8 (the runbook's expectations were wrong, logged in `docs/ERROR-LOG.md`).
 - [2026-11-26 22:38 SGT] Defects DEF-1 to DEF-4 and "can't remove a child" added to `docs/KNOWN-ISSUES.md` (now 318 lines, over 300); backlog: coded tests (option B), remove a child.
+- [2026-11-26 23:01 SGT] **Pull request 1 of 2 open, [#68](https://github.com/WeiLieh/FamilyHabitBuilder/pull/68)** (migration 018, remove a child; T147 to T150). Owner, on the two review items: "ignore both" (the two-tabs rename race is not a known issue; the remove pop-up keeps its wording). Not to raise again.
 ### In progress
 - [2026-11-26 22:38 SGT] Fixing the defects, test-first, with the owner.
 ### Next steps
